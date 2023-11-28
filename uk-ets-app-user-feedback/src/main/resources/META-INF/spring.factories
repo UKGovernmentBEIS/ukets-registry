@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    gov.uk.ets.commons.logging.Config
+

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport"
+	          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">    
+	    <title>Survey</title>
+	    <style>
+			table, th, td {
+			  border: 1px solid black;
+			  border-collapse: collapse;
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+		  <tr>
+		    <th><b>Timestamp</b></th>
+		    <th><b>User registration & 2FA</b></th>
+		    <th><b>Online guidance & communication</b></th>
+		    <th><b>Create accounts</b></th>
+		    <th><b>On-boarding, Identity & security checks</b></th>
+		    <th><b>View, search & respond to tasks</b></th>
+		    <th><b>Overall experience</b></th>		    
+		    <th><b>Improvement Suggestion</b></th>
+		  </tr>
+		  <tr>
+		    <td th:text="${userFeedbackRequest.timestamp}"></td>		    
+		    <td th:text="${userFeedbackRequest.userRegistrationRate}"></td>
+		    <td th:text="${userFeedbackRequest.onlineGuidanceRate}"></td>
+		    <td th:text="${userFeedbackRequest.creatingAccountRate}"></td>
+		    <td th:text="${userFeedbackRequest.onBoardingRate}"></td>
+		    <td th:text="${userFeedbackRequest.tasksRate}"></td>
+		    <td th:text="${userFeedbackRequest.satisfactionRate}"></td>
+		    <td th:text="${userFeedbackRequest.improvementSuggestion}"></td>
+		  </tr>
+		</table>
+	</body>
+</html>
