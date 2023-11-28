@@ -1,0 +1,186 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Add the' + accountHolderTypeText"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form [formGroup]="formGroup" (ngSubmit)="onContinue()">
+      <div
+        class="govuk-form-group"
+        *ngIf="accountHolderType"
+        [class.govuk-form-group--error]="showErrors"
+      >
+        <fieldset
+          class="govuk-fieldset"
+          aria-describedby="account-holder-selection-hint"
+        >
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl">Add the account holder</span>
+              Add the {{ accountHolderTypeText }}
+            </h1>
+          </legend>
+          <span
+            *ngFor="let error of getErrors()"
+            class="govuk-error-message"
+            [attr.id]="'account-holder-selection-error-label'"
+          >
+            <span class="govuk-visually-hidden">Error:</span>{{ error }}
+          </span>
+          <div
+            class="govuk-radios__item"
+            *ngIf="
+              'urn:uk-ets-registry-api:page:accountOpeningAccountHolder:fromList:view'
+                | protect
+                | async
+            "
+          >
+            <input
+              class="govuk-radios__input"
+              id="existing-dropdown"
+              name="accountHolderSelection"
+              formControlName="accountHolderSelection"
+              type="radio"
+              [value]="accountHolderSelectionTypes.FROM_LIST"
+              (click)="
+                accountHolderSelectionType =
+                  accountHolderSelectionTypes.FROM_LIST
+              "
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              for="existing-dropdown"
+            >
+              From the list below
+            </label>
+          </div>
+          <div
+            *ngIf="
+              'urn:uk-ets-registry-api:page:accountOpeningAccountHolder:fromList:view'
+                | protect
+                | async
+            "
+            class="govuk-radios__conditional govuk-radios__conditional--hidden"
+            [class.govuk-radios__conditional--hidden]="
+              accountHolderSelectionType !==
+              accountHolderSelectionTypes.FROM_LIST
+            "
+            id="conditional-select-from-dropdown"
+          >
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="selection-from-dropdown">
+                {{
+                  accountHolderType === accountHolderTypes.INDIVIDUAL
+                    ? 'Select one person'
+                    : 'Select one organisation'
+                }}
+              </label>
+              <select
+                class="govuk-select"
+                id="selection-from-dropdown"
+                name="selectedIdFromList"
+                formControlName="selectedIdFromList"
+              >
+                <option [value]="null">Please select</option>
+                <option
+                  *ngFor="let accountHolder of accountHolderList"
+                  [value]="accountHolder.id"
+                >
+                  {{ accountHolder | formatAccountHolderResult }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="new-account-holder"
+              name="accountHolderSelection"
+              type="radio"
+              formControlName="accountHolderSelection"
+              [value]="accountHolderSelectionTypes.NEW"
+              (click)="
+                accountHolderSelectionType = accountHolderSelectionTypes.NEW
+              "
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              for="new-account-holder"
+            >
+              Add a new {{ accountHolderTypeText }}
+            </label>
+          </div>
+
+          <div
+            class="govuk-radios__item"
+            *ngIf="
+              'urn:uk-ets-registry-api:page:accountOpeningAccountHolder:searchByName:view'
+                | protect
+                | async
+            "
+          >
+            <input
+              class="govuk-radios__input"
+              id="existing-search"
+              name="accountHolderSelection"
+              formControlName="accountHolderSelection"
+              type="radio"
+              [value]="accountHolderSelectionTypes.FROM_SEARCH"
+              (click)="
+                accountHolderSelectionType =
+                  accountHolderSelectionTypes.FROM_SEARCH
+              "
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              for="existing-search"
+            >
+              Search by name
+            </label>
+          </div>
+          <div
+            class="govuk-radios__conditional govuk-radios__conditional--hidden"
+            [class.govuk-radios__conditional--hidden]="
+              accountHolderSelectionType !==
+              accountHolderSelectionTypes.FROM_SEARCH
+            "
+            id="conditional-select-from-search1"
+            *ngIf="
+              'urn:uk-ets-registry-api:page:accountOpeningAccountHolder:searchByName:view'
+                | protect
+                | async
+            "
+          >
+            <div class="govuk-form-group">
+              <app-type-ahead
+                [label]="'Enter a name'"
+                [url]="searchByNameRequestUrl"
+                [params]="requestParams"
+                searchKey="name"
+                [resultTemplate]="accountHolder"
+                [inputFormatter]="accountHolderResultFormatter"
+                placeHolder="Search by name"
+                (resultItem)="onSelectFromSearch($event)"
+              ></app-type-ahead>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+  <ng-template #accountHolder let-r="result" let-t="term">
+    <ngb-highlight
+      [result]="r | formatTypeAheadAccountHolderResult"
+      [term]="t"
+    ></ngb-highlight>
+    <hr class="govuk-section-break" />
+  </ng-template>
+</div>

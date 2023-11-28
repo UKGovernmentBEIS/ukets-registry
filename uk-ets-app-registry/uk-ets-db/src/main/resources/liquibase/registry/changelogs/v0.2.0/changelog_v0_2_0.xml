@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="0_2_0_TABLE_CONTACT" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Contact</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table CONTACT
+			--------------------------------------------------------
+
+			CREATE SEQUENCE contact_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "contact"
+			(
+			"id" bigint,
+			"line_1" varchar(256),
+			"line_2" varchar(256),
+			"line_3" varchar(256),
+			"post_code" varchar(64),
+			"city" varchar(256),
+			"country" varchar(2),
+			"phone_number_1" varchar(256),
+			"phone_number_2" varchar(256),
+			"email_address" varchar(256),
+			constraint "pk_cntct" primary key("id")
+			);
+
+			create unique index "idx_pk_cntct" on "contact"("id");
+
+			COMMENT ON TABLE "contact" IS 'Contact information (address, phone, e-mail etc.)';
+			COMMENT ON COLUMN "contact"."id" IS 'The primary key';
+			COMMENT ON COLUMN "contact"."line_1" IS 'First address line';
+			COMMENT ON COLUMN "contact"."line_2" IS 'Second address line';
+			COMMENT ON COLUMN "contact"."line_3" IS 'Third address line';
+			COMMENT ON COLUMN "contact"."post_code" IS 'Postal code';
+			COMMENT ON COLUMN "contact"."city" IS 'The city';
+			COMMENT ON COLUMN "contact"."country" IS 'The country';
+			COMMENT ON COLUMN "contact"."phone_number_1" IS 'First phone number';
+			COMMENT ON COLUMN "contact"."phone_number_2" IS 'Second phone number';
+			COMMENT ON COLUMN "contact"."email_address" IS 'The email address';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "contact" CASCADE;
+				DROP SEQUENCE IF EXISTS contact_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_TABLE_USER" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of User</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table USERS
+			--------------------------------------------------------
+
+			CREATE SEQUENCE users_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "users" (
+			"id" bigint,
+			"urid" VARCHAR(56) NOT NULL,
+			"iam_identifier" VARCHAR(255),
+			"enrolment_key" VARCHAR(96) ,
+			"enrolment_key_date" TIMESTAMP,
+			"previous_state" VARCHAR(255) ,
+			"state" VARCHAR(255) NOT NULL);
+
+			ALTER TABLE "users" ADD CONSTRAINT "pk_usrs" PRIMARY KEY ("id");
+			CREATE UNIQUE INDEX "usrs_urid_idx" ON "users" ("urid");
+
+			COMMENT ON TABLE "users"  IS 'Stores the basic information about a User.';
+			COMMENT ON COLUMN "users"."urid" IS 'The user identifier';
+			COMMENT ON COLUMN "users"."iam_identifier" IS 'The unique identification of the user in IAM';
+			COMMENT ON COLUMN "users"."enrolment_key" IS 'The enrolment key';
+			COMMENT ON COLUMN "users"."enrolment_key_date" IS 'When the enrolment key was created';
+			COMMENT ON COLUMN "users"."previous_state" IS 'Previous state';
+			COMMENT ON COLUMN "users"."state" IS 'The users current state';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "users" CASCADE;
+				DROP SEQUENCE IF EXISTS users_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_ACCOUNT_HOLDER" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Account Holder</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table ACCOUNT_HOLDER
+			--------------------------------------------------------
+
+			CREATE SEQUENCE account_holder_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+			CREATE SEQUENCE account_holder_identifier_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "account_holder"
+			("id" bigint,
+			"identifier" bigint,
+			"name" VARCHAR(256),
+			"birth_year" integer,
+			"birth_country" VARCHAR(2),
+			"registration_number" VARCHAR(255),
+			"vat_number" VARCHAR(255),
+			"justification" VARCHAR(1024),
+			"status" VARCHAR(255),
+			"type" VARCHAR(255),
+			"contact_id" bigint
+			);
+
+			COMMENT ON TABLE "account_holder"  IS 'Account Holder information';
+			COMMENT ON COLUMN "account_holder"."id" IS 'The primary key';
+			COMMENT ON COLUMN "account_holder"."identifier" IS 'A unique identifier';
+			COMMENT ON COLUMN "account_holder"."name" IS 'The name';
+			COMMENT ON COLUMN "account_holder"."birth_year" IS 'The date of birth';
+			COMMENT ON COLUMN "account_holder"."birth_country" IS 'The place of birth';
+			COMMENT ON COLUMN "account_holder"."registration_number" IS 'The registration number of the company';
+			COMMENT ON COLUMN "account_holder"."vat_number" IS 'The VAT number of the company';
+			COMMENT ON COLUMN "account_holder"."justification" IS 'Justification why the VAT is empty';
+			COMMENT ON COLUMN "account_holder"."status" IS 'The current status';
+			COMMENT ON COLUMN "account_holder"."type" IS 'The type; person, company etc.';
+			COMMENT ON COLUMN "account_holder"."contact_id" IS 'Foreign key to contact';
+
+			create index "ah_id_status_reg" on "account_holder" ("identifier", "status");
+			create index "ah_id_status" on "account_holder" ("status");
+			create index "acc_hol_coid_idx" on "account_holder" ("contact_id");
+
+			alter table "account_holder" alter column "id" set not null;
+			alter table "account_holder" alter column "identifier" set not null;
+			alter table "account_holder" alter column "contact_id" set not null;
+			alter table "account_holder" add constraint "pk_accnt_hldr" primary key ("id");
+
+			alter table "account_holder" add constraint "fk_ah_cntct" foreign key ("contact_id")
+			references "contact" ("id");
+
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "account_holder" CASCADE;
+				DROP SEQUENCE IF EXISTS account_holder_seq;
+				DROP SEQUENCE IF EXISTS account_holder_identifier_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_AIRCRAFT_OPERATOR" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Aircraft Operator</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table AIRCRAFT_OPERATOR
+			--------------------------------------------------------
+
+			CREATE TABLE "aircraft_operator" (
+			"compliant_entity_id" BIGINT NOT NULL,
+			"monitoring_plan_expiry_date" TIMESTAMP,
+			"monitoring_plan_first_year_app" TIMESTAMP NOT NULL,
+			"monitoring_plan_identifier" VARCHAR(1020) NOT NULL,
+			"permit_status" VARCHAR(1020) ,
+			"first_year" integer);
+
+			ALTER TABLE "aircraft_operator" ADD CONSTRAINT "pk_arcrft_prtr" PRIMARY KEY ("compliant_entity_id");
+
+			COMMENT ON TABLE "aircraft_operator"  IS 'Represents an Aircraft Operator';
+			COMMENT ON COLUMN "aircraft_operator"."monitoring_plan_expiry_date" IS 'The expiration date of the aircraft operator monitoring plan';
+			COMMENT ON COLUMN "aircraft_operator"."monitoring_plan_first_year_app" IS 'First year that the monitoring plan is applicable for this aircraft operator';
+			COMMENT ON COLUMN "aircraft_operator"."monitoring_plan_identifier" IS 'The unique id of the monitoring plan';
+			COMMENT ON COLUMN "aircraft_operator"."compliant_entity_id" IS 'Foreign key to verified entity';
+			COMMENT ON COLUMN "aircraft_operator"."permit_status" IS 'Current status of the aircraft operator permit';
+			COMMENT ON COLUMN "aircraft_operator"."first_year" IS 'First year of verification';
+
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "aircraft_operator" CASCADE;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_INSTALLATION" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Installation</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table INSTALLATION
+			--------------------------------------------------------
+
+			CREATE TABLE "installation" (
+			"compliant_entity_id" BIGINT NOT NULL,
+			"installation_name" VARCHAR(1020) ,
+			"activity_type" VARCHAR(1020)  NOT NULL,
+			"permit_identifier" VARCHAR(1020)  NOT NULL,
+			"permit_entry_into_force_date" TIMESTAMP NOT NULL,
+			"permit_expiry_date" TIMESTAMP,
+			"permit_revocation_date" TIMESTAMP,
+			"permit_status" VARCHAR(1020) ,
+			"first_year" integer
+			);
+
+			ALTER TABLE "installation" ADD CONSTRAINT "pk_instlltn" PRIMARY KEY ("compliant_entity_id");
+
+			CREATE INDEX "idx_install_revdate_st" ON "installation" ("permit_revocation_date", "permit_status");
+
+			COMMENT ON TABLE "installation"  IS 'Represents an Installation';
+			COMMENT ON COLUMN "installation"."compliant_entity_id" IS 'Foreign key to compliant entity';
+			COMMENT ON COLUMN "installation"."installation_name" IS 'The name of the installation';
+			COMMENT ON COLUMN "installation"."activity_type" IS 'The activity type of the installation';
+			COMMENT ON COLUMN "installation"."permit_identifier" IS 'Id of the permit for this installation';
+			COMMENT ON COLUMN "installation"."permit_entry_into_force_date" IS 'The date that the installation permit goes into force';
+			COMMENT ON COLUMN "installation"."permit_expiry_date" IS 'Date that installation permit expires';
+			COMMENT ON COLUMN "installation"."permit_revocation_date" IS 'The revocation date of the installation permit';
+			COMMENT ON COLUMN "installation"."permit_status" IS 'Current permit status';
+			COMMENT ON COLUMN "installation"."first_year" IS 'First year of compliant emission submission';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "installation" CASCADE;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_COMPLIANT_ENTITY" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Compliant Entity</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table COMPLIANT_ENTITY
+			--------------------------------------------------------
+
+			CREATE SEQUENCE compliant_entity_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+			CREATE SEQUENCE compliant_entity_identifier_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "compliant_entity" (
+			"id" BIGINT NOT NULL,
+			"identifier" BIGINT NOT NULL,
+			"status" VARCHAR(255) ,
+			"account_id" BIGINT,
+			"start_year" BIGINT DEFAULT 0 NOT NULL,
+			"end_year" BIGINT,
+			"has_been_compliant" SMALLINT DEFAULT 0);
+
+			ALTER TABLE "compliant_entity" ADD CONSTRAINT "pk_vrfd_ntt" PRIMARY KEY ("id");
+
+			CREATE INDEX "ver_ent_ide_idx" ON "compliant_entity" ("identifier");
+			CREATE INDEX "ver_ent_veacid_idx" ON "compliant_entity" ("account_id");
+
+			COMMENT ON TABLE "compliant_entity"  IS 'Represents a compliant entity (aircraft operator, installation etc.)';
+			COMMENT ON COLUMN "compliant_entity"."id" IS 'The primary key';
+			COMMENT ON COLUMN "compliant_entity"."identifier" IS 'The business key of the entity. This is the identifier that the entity is known by the users and the EUTL.';
+			COMMENT ON COLUMN "compliant_entity"."status" IS 'Current status of the compliant entity';
+			COMMENT ON COLUMN "compliant_entity"."account_id" IS 'Foreign key to account';
+			COMMENT ON COLUMN "compliant_entity"."start_year" IS 'Year of first emissions ';
+			COMMENT ON COLUMN "compliant_entity"."end_year" IS 'Last year for the compliant emission submission';
+			COMMENT ON COLUMN "compliant_entity"."has_been_compliant" IS 'A flag that denotes if the entity has been compliant at least once in the past';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "compliant_entity" CASCADE;
+				DROP SEQUENCE IF EXISTS compliant_entity_seq;
+				DROP SEQUENCE IF EXISTS compliant_entity_identifier_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_TABLE_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Account</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table ACCOUNT
+			--------------------------------------------------------
+
+			CREATE SEQUENCE account_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+			CREATE SEQUENCE account_identifier_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "account" (
+			"id" BIGINT NOT NULL,
+			"identifier" BIGINT NOT NULL,
+			"previous_account_identifier" BIGINT,
+			"account_name" VARCHAR(1024) NOT NULL,
+			"registry_account_type" VARCHAR(1020) ,
+			"kyoto_account_type" VARCHAR(1020) ,
+			"account_status" VARCHAR(1020) NOT NULL,
+			"previous_account_status" VARCHAR(1020) ,
+			"opening_date" TIMESTAMP NOT NULL,
+			"closing_date" TIMESTAMP,
+			"status" VARCHAR(1020) NOT NULL,
+			"account_holder_id" BIGINT,
+			"commitment_period_code" SMALLINT NOT NULL,
+			"hosting_registry_code" VARCHAR(8) ,
+			"registry_code" VARCHAR(8) ,
+			"transfer_date" TIMESTAMP,
+			"transaction_initiation_allowed" SMALLINT,
+			"verifier_account_id" BIGINT,
+			"compliant_entity_id" BIGINT,
+			"balance" BIGINT DEFAULT 0,
+			"check_digits" SMALLINT DEFAULT -1 NOT NULL,
+			"suspend_reason" VARCHAR(256) ,
+			"esd_year" SMALLINT,
+			"esd_member_state" VARCHAR(2));
+
+			ALTER TABLE "account" ADD CONSTRAINT "pk_accnt" PRIMARY KEY ("id");
+
+			CREATE INDEX "acc_achoid_idx" ON "account" ("account_holder_id");
+			CREATE INDEX "acc_copeco_idx" ON "account" ("commitment_period_code");
+			CREATE INDEX "acc_esd_member_ix" ON "account" ("esd_member_state");
+			CREATE INDEX "acc_esd_year_ix" ON "account" ("esd_year");
+			CREATE INDEX "acc_horeco_idx" ON "account" ("hosting_registry_code");
+			CREATE INDEX "acc_reco_idx" ON "account" ("registry_code");
+			CREATE INDEX "acc_veacid_idx" ON "account" ("verifier_account_id");
+			CREATE INDEX "acc_ver_ent_id_idx" ON "account" ("compliant_entity_id");
+			CREATE UNIQUE INDEX "unq_acc_identifier_hosting_reg" ON "account" ("hosting_registry_code", "identifier");
+
+			COMMENT ON TABLE "account"  IS 'Represents an account';
+			COMMENT ON COLUMN "account"."id" IS 'The account id';
+			COMMENT ON COLUMN "account"."account_status" IS 'The current status of the account (Open, Blocked etc.)';
+			COMMENT ON COLUMN "account"."closing_date" IS 'For closed account, the date that the account was closed';
+			COMMENT ON COLUMN "account"."registry_account_type" IS 'The EU type of the account';
+			COMMENT ON COLUMN "account"."identifier" IS 'A unique account identifier';
+			COMMENT ON COLUMN "account"."kyoto_account_type" IS 'The Kyoto type of the account';
+			COMMENT ON COLUMN "account"."account_name" IS 'The name of the account';
+			COMMENT ON COLUMN "account"."opening_date" IS 'The date that the account was opened';
+			COMMENT ON COLUMN "account"."previous_account_status" IS 'Last account status before current status';
+			COMMENT ON COLUMN "account"."status" IS 'Status showing if the account is active';
+			COMMENT ON COLUMN "account"."transfer_date" IS 'If the account has been transferred, the date of the transfer';
+			COMMENT ON COLUMN "account"."transaction_initiation_allowed" IS 'Information if there is the possibility to initiate a transaction for the account';
+			COMMENT ON COLUMN "account"."account_holder_id" IS 'The id of the account holder of the account';
+			COMMENT ON COLUMN "account"."commitment_period_code" IS 'The commitment period';
+			COMMENT ON COLUMN "account"."hosting_registry_code" IS 'The code for the registry under which the account is hosted';
+			COMMENT ON COLUMN "account"."registry_code" IS 'The registry where the account belongs';
+			COMMENT ON COLUMN "account"."verifier_account_id" IS 'The Id of the verifier account';
+			COMMENT ON COLUMN "account"."previous_account_identifier" IS 'The previous account identifier in case that identifier has been changed';
+			COMMENT ON COLUMN "account"."balance" IS 'The current accumulated balance for the account';
+			COMMENT ON COLUMN "account"."check_digits" IS '2 check digits calculated according to a modulo 97,10 scheme as defined in ISO 7064:2002';
+			COMMENT ON COLUMN "account"."compliant_entity_id" IS 'FK to the compliant entity id of the compliant entity table';
+			COMMENT ON COLUMN "account"."suspend_reason" IS 'User provided reason for account suspension';
+			COMMENT ON COLUMN "account"."esd_year" IS 'The ESD compliance year';
+			COMMENT ON COLUMN "account"."esd_member_state" IS 'The member state whose representatives are responsible for performing transactions for this account';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "account" CASCADE;
+				DROP SEQUENCE IF EXISTS account_seq;
+				DROP SEQUENCE IF EXISTS account_identifier_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+	<changeSet id="0_2_0_CONSTRAINTS" author="pougouniasn" context="migrate">
+
+		<comment>Introduces reference constraints between account and compliant entities</comment>
+		<sql>
+			ALTER TABLE "aircraft_operator" ADD CONSTRAINT "fk_arcrft_prtr_vrfd_ntt" FOREIGN KEY ("compliant_entity_id")
+			REFERENCES "compliant_entity" ("id");
+
+			ALTER TABLE "installation" ADD CONSTRAINT "fk_instlltn_vrfd_ntt" FOREIGN KEY ("compliant_entity_id")
+			REFERENCES "compliant_entity" ("id");
+
+			ALTER TABLE "compliant_entity" ADD CONSTRAINT "fk_ve_va" FOREIGN KEY ("account_id")
+			REFERENCES "account" ("id");
+
+			ALTER TABLE "account" ADD CONSTRAINT "fk_acc_ve" FOREIGN KEY ("compliant_entity_id")
+			REFERENCES "compliant_entity" ("id");
+
+			ALTER TABLE "account" ADD CONSTRAINT "fk_vacnt_vfracnt" FOREIGN KEY ("verifier_account_id")
+			REFERENCES "account" ("id");
+
+			ALTER TABLE "account" ADD CONSTRAINT "fk_acc_ah" FOREIGN KEY ("account_holder_id")
+			REFERENCES "account_holder" ("id");
+		</sql>
+
+		<rollback>
+			<sql>
+				ALTER TABLE "aircraft_operator" DROP CONSTRAINT "fk_arcrft_prtr_vrfd_ntt";
+
+				ALTER TABLE "installation" DROP CONSTRAINT "fk_instlltn_vrfd_ntt";
+
+				ALTER TABLE "compliant_entity" DROP CONSTRAINT "fk_ve_va";
+
+				ALTER TABLE "account" DROP CONSTRAINT "fk_acc_ve";
+
+				ALTER TABLE "account" DROP CONSTRAINT "fk_vacnt_vfracnt";
+
+				ALTER TABLE "account" DROP CONSTRAINT "fk_acc_ah";
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_TABLE_LEGAL_REPRESENTATIVE" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Legal Representative</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table LEGAL_REPRESENTATIVE
+			--------------------------------------------------------
+
+			CREATE SEQUENCE legal_representative_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "legal_representative" (
+			"id" BIGINT NOT NULL,
+			"first_name" VARCHAR(40) NOT NULL,
+			"last_name" VARCHAR(40) NOT NULL,
+			"also_known_as" VARCHAR(40) NOT NULL,
+			"birth_year" integer,
+			"contact_id" bigint,
+			"account_holder_id" bigint);
+
+			CREATE INDEX "legrep_idx_contact_id" ON "legal_representative" ("contact_id");
+			CREATE INDEX "legrep_idx_acchold_id" ON "legal_representative" ("account_holder_id");
+
+			ALTER TABLE "legal_representative" ADD CONSTRAINT "pk_lgrep_pk" PRIMARY KEY ("id");
+
+			alter table "legal_representative" add constraint "fk_lgrep_cntct" foreign key ("contact_id")
+			references "contact" ("id");
+
+			alter table "legal_representative" add constraint "fk_lgrep_ahid" foreign key ("account_holder_id")
+			references "account_holder" ("id");
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "legal_representative" CASCADE;
+				DROP SEQUENCE IF EXISTS legal_representative_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_REQUEST" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Request</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table REQUEST
+			--------------------------------------------------------
+
+			CREATE SEQUENCE request_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "request" (
+			"id" BIGINT NOT NULL,
+			"type" VARCHAR(1020) NOT NULL,
+			"user_id" BIGINT NOT NULL,
+			"account_id" BIGINT,
+			"insert_date" TIMESTAMP NOT NULL,
+			"current_state" VARCHAR(1020) NOT NULL,
+			"before" TEXT,
+			"after" TEXT,
+			"difference" TEXT);
+
+			ALTER TABLE "request" ADD CONSTRAINT "pk_rqst" PRIMARY KEY ("id");
+			ALTER TABLE "request" ADD CONSTRAINT "fk_req_acc" FOREIGN KEY ("account_id") REFERENCES "account" ("id");
+			ALTER TABLE "request" ADD CONSTRAINT "fk_req_usrs" FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+			CREATE INDEX "req_acid_idx" ON "request" ("account_id");
+			CREATE INDEX "req_usrd_idx" ON "request" ("user_id");
+			CREATE INDEX "req_acid_cmpl1_idx" ON "request" ("account_id", "type", "current_state");
+			CREATE INDEX "req_acid_cmpl2_idx" ON "request" ("user_id", "account_id", "type", "current_state");
+
+			COMMENT ON TABLE "request"  IS 'Represents a request in the system';
+			COMMENT ON COLUMN "request"."id" IS 'Primary key';
+			COMMENT ON COLUMN "request"."type" IS 'The type (e.g. Account Opening, Account Claim)';
+			COMMENT ON COLUMN "request"."user_id" IS 'Foreign key. The user that initiated the request.';
+			COMMENT ON COLUMN "request"."account_id" IS 'Foreign key. The account related to the request (e.g. the account to open).';
+			COMMENT ON COLUMN "request"."insert_date" IS 'The date when the request was initiated.';
+			COMMENT ON COLUMN "request"."current_state" IS 'The current state of the request (e.g. Approved)';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "request" CASCADE;
+				DROP SEQUENCE IF EXISTS request_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_REQUEST_STATE" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Request State</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table REQUEST_STATE
+			--------------------------------------------------------
+
+			CREATE SEQUENCE request_state_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+
+			CREATE TABLE "request_state" (
+			"id" BIGINT NOT NULL,
+			"state" VARCHAR(1020) NOT NULL,
+			"insert_date" TIMESTAMP NOT NULL,
+			"request_id" BIGINT NOT NULL);
+
+			ALTER TABLE "request_state" ADD CONSTRAINT "pk_rqst_stt" PRIMARY KEY ("id");
+			ALTER TABLE "request_state" ADD CONSTRAINT "fk_reqst_req" FOREIGN KEY ("request_id") REFERENCES "request" ("id");
+
+			CREATE INDEX "reqst_idx1" ON "request_state" ("request_id");
+
+			COMMENT ON TABLE "request_state"  IS 'Keeps the state history of a request';
+			COMMENT ON COLUMN "request_state"."id" IS 'Primary key';
+			COMMENT ON COLUMN "request_state"."state" IS 'The state (e.g. Approved, Rejected)';
+			COMMENT ON COLUMN "request_state"."insert_date" IS 'The date when this state was applied';
+			COMMENT ON COLUMN "request_state"."request_id" IS 'Foreign key to the request.';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "request_state" CASCADE;
+				DROP SEQUENCE IF EXISTS request_state_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_UPDATES" author="pougouniasn" context="migrate">
+
+		<comment>Minor updates</comment>
+		<sql>
+			alter table compliant_entity
+				alter column has_been_compliant drop default,
+				alter column has_been_compliant type boolean using case when has_been_compliant=0 then false else true end,
+				alter column has_been_compliant set default false;
+
+			alter table account
+				alter column commitment_period_code type integer,
+				alter column esd_year type integer,
+				alter column check_digits type integer;
+
+			alter table "contact"
+			add column "country_code_1" varchar(2),
+			add column "country_code_2" varchar(2);
+
+			comment on column "contact"."country_code_1" IS 'The country code of the first phone number';
+			comment on column "contact"."country_code_2" IS 'The country code of the second phone number';
+
+			alter table "account"
+			add column "transfers_outside_tal" boolean default false,
+			add column "approval_second_ar_required"  boolean default false;
+
+			comment on column "account"."transfers_outside_tal" IS 'Whether transfers outside TAL are allowed for this account';
+			comment on column "account"."approval_second_ar_required" IS 'Whether the approval of a second AR is required';
+
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_ACCOUNT_ACCESS" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Account Access</comment>
+		<sql>
+
+			CREATE SEQUENCE account_access_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			create table account_access
+			(
+			"id" bigint not null constraint pk_accsss	primary key,
+			"state" varchar(40) not null,
+			"account_id" bigint constraint fk_acs_accnt references account,
+			"user_id" bigint not null constraint fk_acs_usrs references users,
+			"previous_state" varchar(40),
+			"type" varchar(40),
+			"right" varchar(40)
+			);
+
+			comment on table account_access is 'The access of a user on the account.';
+			comment on column account_access.id is 'Primary Key.';
+			comment on column account_access.state is 'Current state of the account_access.';
+			comment on column account_access.account_id is 'Foreign Key to account table.';
+			comment on column account_access.user_id is 'Foreign Key to users.';
+			comment on column account_access.previous_state is 'Stores the previous state of this record.';
+			comment on column account_access."type" is 'The access type, e.g. Authorised Representative';
+			comment on column account_access."right" is 'The access right, e.g. Approve';
+
+			create index acc_acid_idx
+			on account_access (account_id);
+
+			create index acc_usid_idx
+			on account_access (user_id);
+
+			create unique index acc_acid_roid_st_idx
+			on account_access (account_id, user_id, state);
+
+		</sql>
+		<rollback>
+			DROP TABLE IF EXISTS "account_access" CASCADE;
+			DROP SEQUENCE IF EXISTS account_access_seq;
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_ALTER_ACCOUNT_ID_SEQ" author="pougouniasn" context="migrate">
+
+		<comment>Restarts the sequence of account business identifiers</comment>
+		<sql>
+			ALTER SEQUENCE account_identifier_seq RESTART WITH 10000;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_USER_ADDITION" author="pougouniasn" context="migrate">
+
+		<comment>Adds columns to user</comment>
+		<sql>
+			alter table users
+			add column first_name varchar(100) default null,
+			add column last_name varchar(100) default null;
+
+			comment on column users.first_name is 'First name.';
+			comment on column users.last_name is 'Last name.';
+		</sql>
+
+	</changeSet>
+
+</databaseChangeLog>

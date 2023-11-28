@@ -1,0 +1,460 @@
+@import 'node_modules/govuk-frontend/govuk/all';
+@import 'variables';
+@import 'sub-header';
+@import 'summary-list-helpers';
+@import '@angular/cdk';
+
+@include a11y-visually-hidden();
+
+/**
+Extends the width of the application main container to 1320
+ */
+.govuk-width-container {
+  @include govuk-width-container(1320px);
+}
+
+/**
+  Generates background-color css classes for every color in gds pallete
+  e.g .ukets-background-light-grey { background: #f3f2f1}
+ */
+@each $name, $hexcode in $govuk-colours {
+  .ukets-background-#{$name} {
+    background-color: $hexcode;
+  }
+}
+
+.govuk-notification-banner--warning {
+  border-color: govuk-colour('yellow');
+
+  .govuk-notification-banner__header {
+    background-color: govuk-colour('yellow');
+  }
+
+  .govuk-notification-banner__title {
+    color: govuk-colour('black');
+  }
+}
+
+// Vendor polyfill
+dialog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: -moz-fit-content;
+  width: -webkit-fit-content;
+  width: fit-content;
+  height: -moz-fit-content;
+  height: -webkit-fit-content;
+  height: fit-content;
+  margin: auto;
+  border: solid;
+  padding: 1em;
+  background: govuk-colour('white');
+  color: black;
+  display: block;
+}
+
+dialog:not([open]) {
+  display: none;
+}
+
+dialog + .backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+._dialog_overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+dialog.fixed {
+  position: fixed;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.govuk-timeout-warning {
+  display: none;
+  @include govuk-responsive-padding(6);
+  // Setting width allows IE to center dialog vertically
+  width: 100%;
+
+  // To do: allow this to be customised
+  max-width: 500px;
+
+  .govuk-button {
+    margin: 0 govuk-spacing(2) govuk-spacing(3) 0;
+    @include govuk-media-query($from: tablet) {
+      margin-bottom: govuk-spacing(0);
+    }
+  }
+
+  &[open] {
+    display: block;
+
+    $backdrop-colour: rgba(0, 0, 0, 0.8);
+
+    // Backdrop styles for browsers with native support
+    & + .backdrop {
+      background: $backdrop-colour;
+    }
+
+    // Backdrop styles for browsers using
+    // Keep these two backdrop styles separate - Safari didn't
+    // work when combined
+    &::backdrop {
+      background: $backdrop-colour;
+    }
+  }
+}
+
+// Stop background scrolling while dialog open.
+.govuk-timeout-warning-overlay {
+  overflow: hidden;
+}
+
+.js-enabled .govuk-timeout-warning-fallback {
+  display: none;
+}
+
+.tabular-numbers {
+  font-family: $govuk-font-family-tabular;
+}
+
+/*
+************ STYLES MOVED FROM styles.css file ****************************************************
+*/
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+button[aria-sort],
+button[aria-sort]:hover {
+  background-color: transparent;
+  border-width: 0;
+  -webkit-box-shadow: 0 0 0 0;
+  -moz-box-shadow: 0 0 0 0;
+  box-shadow: 0 0 0 0;
+  color: govuk-colour('blue');
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: inherit;
+  padding: 0 10px 0 0;
+  position: relative;
+  text-align: inherit;
+  font-size: 1em;
+  margin: 0;
+  right: auto;
+}
+
+button[aria-sort]:focus {
+  outline: 3px solid transparent;
+  color: govuk-colour('black');
+  background-color: govuk-colour('yellow');
+  box-shadow: 0 -2px govuk-colour('yellow'), 0 4px govuk-colour('black');
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+button[aria-sort]:before {
+  content: ' \25bc';
+  position: absolute;
+  right: -1px;
+  top: 9px;
+  font-size: 0.5em;
+}
+
+button[aria-sort]:after {
+  content: ' \25b2';
+  position: absolute;
+  right: -1px;
+  top: 1px;
+  font-size: 0.5em;
+}
+
+button[aria-sort='ascending']:before,
+button[aria-sort='descending']:before {
+  content: none;
+}
+
+button[aria-sort='ascending']:after {
+  content: ' \25b2';
+  font-size: 0.8em;
+  position: absolute;
+  right: -5px;
+  top: 2px;
+}
+
+button[aria-sort='descending']:after {
+  content: ' \25bc';
+  font-size: 0.8em;
+  position: absolute;
+  right: -5px;
+  top: 2px;
+}
+
+a.govuk-header__link.govuk-header__link--homepage.govuk-header__link--home-custom:focus,
+a.govuk-header__link.govuk-header__link--service-name.govuk-header__link--service-custom:focus,
+a.govuk-header__link.govuk-header__link--custom:focus,
+a.govuk-header__link.uk_ets_sign_in_out_link.govuk-header__link--sign-custom:focus {
+  border-bottom: 4px solid govuk-colour('white');
+}
+
+/* Dropdown styling for the typeahead input field */
+.dropup,
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: '';
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+.dropdown-toggle:empty::after {
+  margin-left: 0;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+}
+
+.dropup .dropdown-menu {
+  margin-top: 0;
+  margin-bottom: 0.125rem;
+}
+
+.dropup .dropdown-toggle::after {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: '';
+  border-top: 0;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0.3em solid;
+  border-left: 0.3em solid transparent;
+}
+
+.dropup .dropdown-toggle:empty::after {
+  margin-left: 0;
+}
+
+.dropright .dropdown-menu {
+  margin-top: 0;
+  margin-left: 0.125rem;
+}
+
+.dropright .dropdown-toggle::after {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: '';
+  border-top: 0.3em solid transparent;
+  border-bottom: 0.3em solid transparent;
+  border-left: 0.3em solid;
+}
+
+.dropright .dropdown-toggle:empty::after {
+  margin-left: 0;
+}
+
+.dropright .dropdown-toggle::after {
+  vertical-align: 0;
+}
+
+.dropleft .dropdown-menu {
+  margin-top: 0;
+  margin-right: 0.125rem;
+}
+
+.dropleft .dropdown-toggle::after {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: '';
+}
+
+.dropleft .dropdown-toggle::after {
+  display: none;
+}
+
+.dropleft .dropdown-toggle::before {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 0.255em;
+  vertical-align: 0.255em;
+  content: '';
+  border-top: 0.3em solid transparent;
+  border-right: 0.3em solid;
+  border-bottom: 0.3em solid transparent;
+}
+
+.dropleft .dropdown-toggle:empty::after {
+  margin-left: 0;
+}
+
+.dropleft .dropdown-toggle::before {
+  vertical-align: 0;
+}
+
+.dropdown-divider {
+  height: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border-top: 1px solid #e9ecef;
+}
+
+.dropdown-item {
+  font-family: 'GDS Transport', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 19px;
+  display: block;
+  width: 100%;
+  padding: 0.25rem 1.5rem;
+  clear: both;
+  color: #16181b;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  color: #16181b;
+  text-decoration: none;
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  color: #fff;
+  text-decoration: none;
+  background-color: #1d70b8;
+}
+
+.dropdown-item.disabled,
+.dropdown-item:disabled {
+  color: #6c757d;
+  background-color: transparent;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+/* Guidance styling */
+.section-title {
+  color: #1d70b8;
+  text-decoration: none;
+}
+
+.section-from {
+  width: 50%;
+  float: left;
+}
+
+.guidance-title {
+  color: #1d70b8;
+}
+
+.guidance-img {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+/* End of guidance styling */
+
+/*
+************ END OF STYLES MOVED FROM styles.css file *********************************************
+*/
+
+/*
+* Useful for dividing button groups
+*/
+.vertical-divider {
+  @media (min-width: 40.0625em) {
+    display: inline-block;
+    border-left: 2px solid govuk-colour('light-grey');
+    margin: 0 20px;
+    height: 40px;
+  }
+}
+
+/*
+* Alignment
+*/
+
+.govuk-align-v-top {
+  vertical-align: top;
+}
+
+/*
+Remove buggy ng bootstrap element
+that appears randomly throughout
+the app.
+*/
+#ngb-live {
+  display: none;
+}
+
+/*
+ *NOTE: Fixes bug where hidden text appears on copy
+ */
+.govuk-visually-hidden {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

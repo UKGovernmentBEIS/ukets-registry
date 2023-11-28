@@ -1,0 +1,68 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">
+          Transaction details
+        </dt>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Transaction type</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            transactionTaskDetails.trType
+              | apiEnumTypes: ApiEnumTypes.TransactionType
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Transaction ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ transactionTaskDetails.transactionIdentifier }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Acquiring account</dt>
+        <dd class="govuk-summary-list__value">
+          {{ transactionTaskDetails.acquiringAccount.fullIdentifier }} -
+          {{ transactionTaskDetails.acquiringAccount.accountName }}
+        </dd>
+      </div>
+    </dl>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">
+          Quantity to issue for {{ getActiveYear() }}
+        </dt>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <app-allowance-transaction-quantity-table
+            [activeYear]="getActiveYear()"
+            [isEditable]="false"
+            [transactionBlockSummaries]="transactionTaskDetails.blocks"
+          >
+          </app-allowance-transaction-quantity-table>
+        </div>
+      </div>
+    </dl>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">
+          Transaction reference
+        </dt>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <app-transaction-reference
+            [reference]="transactionTaskDetails?.reference"
+          ></app-transaction-reference>
+          <app-transaction-reference-warning
+            *ngIf="transactionTaskDetails.reference"
+          ></app-transaction-reference-warning>
+        </div>
+      </div>
+    </dl>
+  </div>
+</div>

@@ -1,0 +1,110 @@
+<app-banner [type]="BannerType.SUCCESS" *ngIf="fileDeleted">
+  <span> {{ fileDeleted }} has been deleted </span>
+</app-banner>
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <app-side-menu
+        *ngIf="currentViewMode === viewMode.USER_DETAILS"
+        [menuItems]="sideMenuItems"
+        [selectedItem]="currentItem"
+        (selectItem)="currentItem = $event"
+      ></app-side-menu>
+      <div
+        [ngClass]="
+          currentViewMode === viewMode.USER_DETAILS
+            ? 'govuk-grid-column-three-quarters'
+            : 'govuk-grid-column-full'
+        "
+        [ngSwitch]="currentItem"
+      >
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+            <span class="govuk-heading-xl">{{ title }}</span>
+          </div>
+          <div
+            class="govuk-grid-column-one-quarter profile-button-wrapper"
+            *ngIf="currentViewMode !== viewMode.USER_DETAILS"
+          >
+            <button
+              (click)="goToUpdateUserDetails()"
+              [routerLink]="[]"
+              class="govuk-button profile-button"
+              data-module="govuk-button"
+            >
+              Request Update
+            </button>
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <ng-container *ngIf="hasUserDetailsPendingTask">
+            <div class="govuk-warning-text">
+              <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+              <strong class="govuk-warning-text__text">
+                <span class="govuk-warning-text__assistive">Warning</span>
+                There are update requests pending approval
+              </strong>
+            </div>
+          </ng-container>
+          <span class="govuk-heading-l">{{
+            user | keycloakUserDisplayName
+          }}</span>
+          <dl class="govuk-summary-list govuk-summary-list--no-border">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Last signed in</dt>
+              <dd class="govuk-summary-list__value">
+                {{
+                  user?.attributes?.lastLoginDate &&
+                  user.attributes.lastLoginDate.length > 0
+                    ? (user.attributes.lastLoginDate[0]
+                      | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+                      | gdsDateTimeShort)
+                    : 'Not available'
+                }}
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <app-registration-details
+          [user]="user"
+          [isVisible]="isSeniorAdmin"
+          [enrolmentKeyDetails]="enrolmentKeyDetails"
+          [currentViewMode]="currentViewMode"
+          (emailChange)="onEmailChange()"
+          (tokenChange)="onTokenChange()"
+          (passwordChange)="onPasswordChange()"
+          *ngSwitchCase="'User details'"
+        ></app-registration-details>
+        <app-personal-details
+          [user]="user"
+          *ngSwitchCase="'User details'"
+        ></app-personal-details>
+        <app-work-contact-details
+          [user]="user"
+          *ngSwitchCase="'User details'"
+        ></app-work-contact-details>
+        <app-identification-documentation
+          [user]="user"
+          *ngSwitchCase="'User details'"
+          [documents]="documents"
+          (requestDocuments)="onRequestDocuments()"
+          (downloadFileEmitter)="onDownloadFile($event)"
+          (deleteFileEmitter)="onDeleteFile($event)"
+          [canDeleteFile]="canDeleteFile"
+        ></app-identification-documentation>
+        <app-ar-in-accounts
+          [arInAccount]="arInAccount"
+          *ngSwitchCase="'User details'"
+        ></app-ar-in-accounts>
+        <app-domain-events
+          [domainEvents]="domainEvents"
+          [isAdmin]="isAdmin"
+          (navigate)="navigateToUserPage($event)"
+          *ngSwitchCase="'History and comments'"
+        ></app-domain-events>
+      </div>
+    </div>
+    <app-back-to-top></app-back-to-top>
+  </div>
+</div>

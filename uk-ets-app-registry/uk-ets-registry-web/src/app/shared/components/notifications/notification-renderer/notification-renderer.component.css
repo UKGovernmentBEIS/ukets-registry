@@ -1,0 +1,9 @@
+/* needed to preserve tabs (and generally leading spaces)
+and also wrap words inside container */
+:host ::ng-deep .white-space-preserved {
+  white-space: pre-wrap;
+}
+
+:host ::ng-deep .ql-editor {
+  padding-left: 0;
+}

@@ -1,0 +1,13 @@
+@import '_variables';
+
+.panel-change-notification {
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  border-left-style: solid;
+  border-width: 5px;
+  display: inline-block;
+  margin: -7px 20px -4px 0;
+  padding: 7px;
+  text-align: left;
+  width: 100%;
+}

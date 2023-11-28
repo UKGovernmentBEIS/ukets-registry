@@ -1,0 +1,131 @@
+<div class="govuk-body info" *ngIf="showSalesContactInfo">
+  Sales contact details can now be added
+</div>
+<dl
+  *ngIf="isConfirmMode"
+  class="
+    govuk-summary-list govuk-summary-list--no-border
+    govuk-!-margin-bottom-0
+  "
+>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      <span class="govuk-heading-m">Account details</span>
+    </dt>
+  </div>
+</dl>
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account type</dt>
+    <dd class="govuk-summary-list__value">
+      {{ AccountTypeMap[accountType].label }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account name</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountDetails.name }}
+    </dd>
+  </div>
+  <div
+    class="govuk-summary-list__row"
+    *ngIf="
+      accountDetails.salesContactDetails?.emailAddress?.emailAddress &&
+      isConfirmMode
+    "
+  >
+    <dt class="govuk-summary-list__key">Sales contact email</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountDetails.salesContactDetails?.emailAddress?.emailAddress }}
+    </dd>
+  </div>
+  <div
+    class="govuk-summary-list__row"
+    *ngIf="accountDetails.salesContactDetails?.phoneNumber && isConfirmMode"
+  >
+    <dt class="govuk-summary-list__key">Sales contact phone</dt>
+    <dd class="govuk-summary-list__value">
+      <app-shared-phone-number
+        [countryCode]="
+          accountDetails.salesContactDetails.phoneNumberCountryCode
+        "
+        [phoneNumber]="accountDetails.salesContactDetails.phoneNumber"
+      ></app-shared-phone-number>
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Opened on</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountDetails.openingDate | gdsDateTime }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row" *ngIf="accountDetails.closingDate">
+    <dt class="govuk-summary-list__key">Closed on</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountDetails.closingDate | gdsDateTime }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row" *ngIf="accountDetails.closureReason">
+    <dt class="govuk-summary-list__key">Reason for closing the account</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountDetails.closureReason }}
+    </dd>
+  </div>
+</dl>
+<ng-container *ngIf="showSalesContactDetails">
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-0
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-heading-m">Sales Contact Details</span>
+        <span class="govuk-hint"
+          >These optional fields for sales contact email and sales contact phone
+          will be displayed in the public reports.</span
+        >
+      </dt>
+    </div>
+  </dl>
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-9
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Sales contact email</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountDetails.salesContactDetails?.emailAddress?.emailAddress }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Sales contact phone</dt>
+      <dd
+        class="govuk-summary-list__value"
+        *ngIf="accountDetails.salesContactDetails?.phoneNumber"
+      >
+        <app-shared-phone-number
+          [countryCode]="
+            accountDetails.salesContactDetails?.phoneNumberCountryCode
+          "
+          [phoneNumber]="accountDetails.salesContactDetails?.phoneNumber"
+        ></app-shared-phone-number>
+      </dd>
+    </div>
+  </dl>
+</ng-container>
+
+<ng-container *ngIf="accountType | isBillable">
+  <app-billing-details-view
+    *ngIf="accountDetails"
+    [accountDetails]="accountDetails"
+    [accountType]="accountType"
+    [countries]="countries"
+    [isConfirmMode]="isConfirmMode"
+    [isAdmin]="isAdmin"
+  >
+  </app-billing-details-view>
+</ng-container>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_16_0_ADD_ART37TER_CANCELLATION_ACCOUNT" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Art37ter cancellation account to the registry</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1017,
+            'Art37ter cancellation Account',
+            'NONE',
+            'ART37TER_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            28,
+            'GB-270-1017-2-28',
+            'Art37ter cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_16_0_ADD_AMBITION_INCREASE_CANCELLATION_ACCOUNT" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Ambition increase cancellation account to the registry</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1018,
+            'Ambition increase cancellation Account',
+            'NONE',
+            'AMBITION_INCREASE_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            30,
+            'GB-280-1018-2-30',
+            'Ambition increase cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_16_0_ADD_VOLUNTARY_CANCELLATION_ACCOUNT_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Voluntary cancellation account to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1019,
+            'Voluntary cancellation account for CP1',
+            'NONE',
+            'VOLUNTARY_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            90,
+            'GB-230-1019-1-90',
+            'Voluntary cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_16_0_ADD_VOLUNTARY_CANCELLATION_ACCOUNT_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Voluntary cancellation account to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1020,
+            'Voluntary cancellation account for CP2',
+            'NONE',
+            'VOLUNTARY_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            82,
+            'GB-230-1020-2-82',
+            'Voluntary cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_16_0_ADD_RETIREMENT_ACCOUNT_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Retirement account to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1021,
+            'Retirement account for CP1',
+            'NONE',
+            'RETIREMENT_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            32,
+            'GB-300-1021-1-32',
+            'Retirement account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_16_0_ADD_RETIREMENT_ACCOUNT_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Retirement account to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1022,
+            'Retirement account for CP2',
+            'NONE',
+            'RETIREMENT_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            24,
+            'GB-300-1022-2-24',
+            'Retirement account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

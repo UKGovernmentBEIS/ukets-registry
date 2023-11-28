@@ -1,0 +1,57 @@
+<app-summary-list
+  [class]="'govuk-summary-list govuk-summary-list--no-border'"
+  [summaryListItems]="getSummaryListItems()"
+></app-summary-list>
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row govuk-summary-list--no-border">
+    <dt class="govuk-summary-list__key govuk-body-l">Personal details</dt>
+  </div>
+</dl>
+<app-personal-details-summary-changes
+  [countries]="countries$ | async"
+  [isWizardOrientedFlag]="false"
+  [current]="userDetailsUpdateTaskDetails.current"
+  [changed]="userDetailsUpdateTaskDetails.changed"
+></app-personal-details-summary-changes>
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row govuk-summary-list--no-border">
+    <dt class="govuk-summary-list__key govuk-body-l govuk-!-padding-top-6">
+      Work contact details
+    </dt>
+  </div>
+</dl>
+<app-work-details-summary-changes
+  [countries]="countries$ | async"
+  [isWizardOrientedFlag]="false"
+  [current]="userDetailsUpdateTaskDetails.current"
+  [changed]="userDetailsUpdateTaskDetails.changed"
+></app-work-details-summary-changes>
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row govuk-summary-list--no-border">
+    <dt class="govuk-summary-list__key govuk-body-l govuk-!-padding-top-6">
+      Memorable phrase
+    </dt>
+  </div>
+</dl>
+<app-memorable-phrase-summary-changes
+  [isWizardOrientedFlag]="false"
+  [current]="userDetailsUpdateTaskDetails.current"
+  [changed]="userDetailsUpdateTaskDetails.changed"
+></app-memorable-phrase-summary-changes>
+
+<ng-container
+  *ngIf="userDetailsUpdateTaskDetails.currentUserClaimant && !isCompleted"
+>
+  <div class="govuk-grid-column-full">
+    <div class="govuk-grid-row">
+      <button
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="onUserRequestDocuments()"
+        (keypress)="onUserRequestDocuments()"
+      >
+        Request documents
+      </button>
+    </div>
+  </div>
+</ng-container>

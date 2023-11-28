@@ -1,0 +1,109 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"> Issue KP Units </span>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            Select the unit type to specify the quantity to issue
+          </h1>
+        </legend>
+
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Select Unit Type</th>
+              <th scope="col" class="govuk-table__header">Limit</th>
+              <th scope="col" class="govuk-table__header">Issued</th>
+              <th scope="col" class="govuk-table__header">Pending</th>
+              <th scope="col" class="govuk-table__header">Remaining</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr
+              *ngFor="let registryInfo of registryLevelInfos"
+              class="govuk-table__row"
+              [class.ukets-background-light-grey]="
+                unitTypeControl.value === (registryInfo | unitTypeAndActivity)
+              "
+            >
+              <th scope="row" class="govuk-table__header">
+                <div
+                  class="govuk-radios govuk-radios--small govuk-radios--conditional"
+                >
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [id]="
+                        'unit-type-environmental-activity-' + registryInfo?.id
+                      "
+                      type="radio"
+                      (change)="unitTypeChanged(registryInfo)"
+                      formControlName="unitTypeAndEnvironmentalActivity"
+                      value="{{ registryInfo | unitTypeAndActivity }}"
+                      data-aria-controls="conditional-how-contacted-conditional"
+                    />
+
+                    <label
+                      class="govuk-label govuk-radios__label"
+                      [attr.for]="
+                        'unit-type-environmental-activity-' + registryInfo?.id
+                      "
+                    >
+                      {{ registryInfo | unitTypeAndActivity }}
+                    </label>
+                  </div>
+                  <div
+                    *ngIf="
+                      unitTypeControl.value ===
+                      (registryInfo | unitTypeAndActivity)
+                    "
+                    class="govuk-radios__conditional"
+                  >
+                    <div class="govuk-form-group">
+                      <label
+                        class="govuk-label"
+                        [attr.for]="'conditional-quantity-' + registryInfo?.id"
+                      >
+                        Quantity to issue
+                      </label>
+                      <input
+                        formControlName="quantity"
+                        class="govuk-input govuk-!-width-one-third"
+                        [id]="'quantity-to-issue-' + registryInfo?.id"
+                        [attr.name]="'quantity-to-issue-' + registryInfo?.id"
+                        type="text"
+                        [style.text-align]="'right'"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </th>
+              <td class="govuk-table__cell">
+                {{ registryInfo.initialQuantity }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ registryInfo.consumedQuantity }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ registryInfo.pendingQuantity }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ registryInfo | remainingQuantity }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

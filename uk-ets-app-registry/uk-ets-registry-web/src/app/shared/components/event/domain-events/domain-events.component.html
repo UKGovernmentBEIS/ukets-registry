@@ -1,0 +1,42 @@
+<ng-container *ngIf="domainEvents != null && domainEvents.length === 0">
+  <span class="govuk-hint"> No items added.</span>
+</ng-container>
+<ng-container *ngIf="domainEvents != null && domainEvents.length > 0">
+  <table class="govuk-table" aria-describedby="Domain events table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">When</th>
+        <th scope="col" class="govuk-table__header">Who</th>
+        <th scope="col" class="govuk-table__header">What</th>
+        <th scope="col" class="govuk-table__header">Request ID</th>
+        <th scope="col" class="govuk-table__header">Comments</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr *ngFor="let event of domainEvents" class="govuk-table__row">
+        <td class="govuk-table__cell">
+          {{ event.creationDate | gdsDateTimeShort }}
+        </td>
+        <td class="govuk-table__cell">
+          <ng-container
+            *ngIf="isAdmin && event.creatorUserIdentifier; else nonAdmin"
+          >
+            <a
+              [routerLink]="[]"
+              (click)="navigateTo(event.creatorUserIdentifier)"
+              >{{ event.creatorType === 'user' ? event.creator : 'System' }}</a
+            >
+          </ng-container>
+          <ng-template #nonAdmin>
+            {{ event.creatorType === 'user' ? event.creator : 'System' }}
+          </ng-template>
+        </td>
+        <td class="govuk-table__cell">{{ event.domainAction }}</td>
+        <td class="govuk-table__cell">{{ event.domainId }}</td>
+        <td class="govuk-table__cell" style="white-space: pre-line">
+          {{ event.description }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>

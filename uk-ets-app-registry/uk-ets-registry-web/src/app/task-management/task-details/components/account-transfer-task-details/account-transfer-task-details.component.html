@@ -1,0 +1,93 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr class="govuk-section-break govuk-section-break--visible" />
+  </div>
+
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-top-6
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <h2 class="govuk-summary-list__key">Account details</h2>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Account number</dt>
+      <dd class="govuk-summary-list__value">
+        {{ taskDetails?.account.accountNumber }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Account name</dt>
+      <dd class="govuk-summary-list__value">
+        {{ taskDetails?.account.name }}
+      </dd>
+    </div>
+  </dl>
+
+  <app-summary-list
+    *ngIf="taskDetails?.action.installationDetails"
+    [class]="'govuk-summary-list govuk-summary-list--no-border'"
+    [summaryListItems]="getInstallationSummaryListItems()"
+  ></app-summary-list>
+
+  <app-transferring-account-holder-summary
+    [isSectionBreakVisible]="false"
+    [transferringAccountHolder]="taskDetails?.currentAccountHolder"
+  ></app-transferring-account-holder-summary>
+
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-top-6
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <h2 class="govuk-summary-list__key">Acquiring account holder</h2>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Account Holder ID</dt>
+      <dd class="govuk-summary-list__value">
+        {{ taskDetails?.action.accountHolderDTO.id }}
+      </dd>
+    </div>
+  </dl>
+
+  <app-acquiring-account-holder-individual-summary
+    [acquiringAccountHolder]="taskDetails?.action.accountHolderDTO"
+  ></app-acquiring-account-holder-individual-summary>
+
+  <app-acquiring-account-holder-organisation-summary
+    [acquiringAccountHolder]="taskDetails?.action.accountHolderDTO"
+  ></app-acquiring-account-holder-organisation-summary>
+
+  <div
+    class="govuk-grid-row"
+    *ngIf="taskDetails.currentUserClaimant && !isCompleted"
+  >
+    <div class="govuk-grid-column-full">
+      <button
+        class="govuk-button govuk-button--secondary"
+        (click)="onAccountHolderRequestDocuments()"
+        (keypress)="onAccountHolderRequestDocuments()"
+        data-module="govuk-button"
+      >
+        Request documents
+      </button>
+    </div>
+  </div>
+
+  <hr
+    class="
+      govuk-section-break govuk-section-break--visible
+      govuk-!-margin-bottom-6
+    "
+  />
+
+  <app-acquiring-account-holder-contact-summary
+    [acquiringAccountHolderPrimaryContact]="
+      taskDetails?.action.accountHolderContactInfo
+    "
+  ></app-acquiring-account-holder-contact-summary>
+</div>

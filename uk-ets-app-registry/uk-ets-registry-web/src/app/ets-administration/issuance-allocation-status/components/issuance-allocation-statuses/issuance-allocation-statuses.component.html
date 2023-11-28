@@ -1,0 +1,41 @@
+<table class="govuk-table" aria-describedby="allocation-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Year</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        CAP
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Entitlement
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Issued
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Allocated
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr
+      *ngFor="let issuanceAllocationStatus of issuanceAllocationStatuses"
+      class="govuk-table__row"
+    >
+      <th scope="row" class="govuk-table__header">
+        {{ issuanceAllocationStatus.description }}
+      </th>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ issuanceAllocationStatus.cap | number }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ issuanceAllocationStatus.entitlement | number }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ issuanceAllocationStatus.issued | number }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ issuanceAllocationStatus.allocated | number }}
+      </td>
+    </tr>
+  </tbody>
+</table>

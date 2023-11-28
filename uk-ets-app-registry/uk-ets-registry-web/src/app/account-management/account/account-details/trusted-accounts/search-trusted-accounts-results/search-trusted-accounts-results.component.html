@@ -1,0 +1,140 @@
+<table
+  appSortableTable
+  (sorting)="onSorting($event)"
+  class="govuk-table"
+  aria-describedby="Trusted accounts search results table"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'accountFullIdentifier'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountFullIdentifier'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Account number
+      </th>
+      <th scope="col" class="govuk-table__header">
+        Account name / Description
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'underSameAccountHolder'"
+        [sortDirection]="
+          sortParameters?.sortField === 'underSameAccountHolder'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Trusted account type
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'status'"
+        [sortDirection]="
+          sortParameters?.sortField === 'status'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Action
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'status'"
+        [sortDirection]="
+          sortParameters?.sortField === 'status'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Pending
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let account of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        {{ account?.accountFullIdentifier }}
+      </td>
+      <td class="govuk-table__cell">
+        <span class="govuk-!-display-block">{{
+          account.underSameAccountHolder ? account?.name : account?.description
+        }}</span>
+        <a
+          *ngIf="
+            ('urn:uk-ets-registry-api:trusted-accounts-update-description:write'
+              | protect
+              | async) &&
+            account.status === TrustedAccountStatus.ACTIVE &&
+            !account.underSameAccountHolder &&
+            canRequestUpdate
+          "
+          class="govuk-link govuk-link--no-underline govuk-!-font-size-19"
+          [routerLink]="['trusted-account-list', 'change-description']"
+          skipLocationChange
+          (click)="loadTrustedAccountToBeUpdated(account)"
+          >Change</a
+        >
+      </td>
+      <td class="govuk-table__cell">
+        {{ getAccountType(account?.underSameAccountHolder) }}
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag
+          *ngIf="
+            account.status === TrustedAccountStatus.PENDING_ADDITION_APPROVAL ||
+            account.status === TrustedAccountStatus.PENDING_REMOVAL_APPROVAL
+          "
+          [color]="trustedAccountActionMap[account.status].color"
+        >
+          {{ trustedAccountActionMap[account.status].label }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag
+          *ngIf="
+            account.status === TrustedAccountStatus.PENDING_ADDITION_APPROVAL ||
+            account.status === TrustedAccountStatus.PENDING_ACTIVATION ||
+            account.status === TrustedAccountStatus.PENDING_REMOVAL_APPROVAL
+          "
+          [color]="trustedAccountPendingMap[account.status].color"
+        >
+          {{ trustedAccountPendingMap[account.status].label }}
+        </app-govuk-tag>
+        <div *ngIf="account.status === TrustedAccountStatus.PENDING_ACTIVATION">
+          <span class="govuk-!-display-block" *ngIf="account.activationDate"
+            >Activation date</span
+          >
+          <span> {{ account?.activationDate | gdsDateTime }}</span>
+          <div>
+            <a
+              *ngIf="
+                ('urn:uk-ets-registry-api:trusted-accounts-cancel-addition:write'
+                  | protect
+                  | async) &&
+                canRequestUpdate &&
+                account.status === TrustedAccountStatus.PENDING_ACTIVATION
+              "
+              class="govuk-link govuk-link--no-underline govuk-!-font-size-19"
+              [routerLink]="[
+                'trusted-account-list',
+                'cancel-pending-activation'
+              ]"
+              skipLocationChange
+              (click)="loadTrustedAccountToBeUpdated(account)"
+              >Cancel addition</a
+            >
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

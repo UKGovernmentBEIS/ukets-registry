@@ -1,0 +1,126 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="
+    ((trustedAccountListCompleted$ | async) ? 'View ' : 'Check ') +
+    'the transaction rules you have set'
+  "
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">Choose the transaction rules</span>
+      {{ (trustedAccountListCompleted$ | async) ? 'View ' : 'Check ' }}
+      the transaction rules you have set
+    </h1>
+
+    <ng-container *ngIf="trustedAccountList$ | async">
+      <dl
+        class="
+          govuk-summary-list govuk-summary-list--no-border
+          govuk-!-margin-bottom-9
+        "
+        [class.govuk-summary-list--no-border]="
+          trustedAccountListCompleted$ | async
+        "
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-!-width-full">
+            {{ question1 }}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ getTransactionRuleValue((trustedAccountList$ | async).rule1) }}
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a
+              *ngIf="!(trustedAccountListCompleted$ | async).valueOf()"
+              class="govuk-link"
+              [routerLink]="
+                trustedAccountListWizardRoutes.SECOND_APPROVAL_NECESSARY
+              "
+              skipLocationChange="true"
+            >
+              Change<span class="govuk-visually-hidden">
+                {{ question1 }}
+              </span>
+            </a>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-!-width-full">
+            {{ question2 }}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ getTransactionRuleValue((trustedAccountList$ | async).rule2) }}
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a
+              *ngIf="!(trustedAccountListCompleted$ | async).valueOf()"
+              class="govuk-link"
+              [routerLink]="
+                trustedAccountListWizardRoutes.TRANSFERS_OUTSIDE_LIST_ALLOWED
+              "
+              skipLocationChange="true"
+            >
+              Change<span class="govuk-visually-hidden">
+                {{ question2 }}
+              </span>
+            </a>
+          </dd>
+        </div>
+        <div *ngIf="isOHAorAOHA$ | async" class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-!-width-full">
+            {{ question3 }}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ getTransactionRuleValue((trustedAccountList$ | async).rule3) }}
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a
+              *ngIf="!(trustedAccountListCompleted$ | async).valueOf()"
+              class="govuk-link"
+              [routerLink]="
+                trustedAccountListWizardRoutes.SINGLE_PERSON_SURRENDER_EXCESS_ALLOCATION
+              "
+              skipLocationChange="true"
+            >
+              Change<span class="govuk-visually-hidden">
+                {{ question3 }}
+              </span>
+            </a>
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+
+    <div class="govuk-form-group">
+      <button
+        *ngIf="trustedAccountListCompleted$ | async"
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="input"
+        (click)="onEdit()"
+      >
+        Edit
+      </button>
+      <button
+        *ngIf="!(trustedAccountListCompleted$ | async).valueOf()"
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="input"
+        (click)="onApply()"
+        id="continue"
+      >
+        Continue
+      </button>
+      <button
+        *ngIf="trustedAccountListCompleted$ | async"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        type="input"
+        (click)="onDelete()"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

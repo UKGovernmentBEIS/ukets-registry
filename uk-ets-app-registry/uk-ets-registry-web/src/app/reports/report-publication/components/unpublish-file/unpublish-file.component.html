@@ -1,0 +1,24 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        Are you sure you want to unpublish the file "{{ trimLongFileName }}"?
+      </h1>
+    </div>
+    <hr class="govuk-section-break govuk-section-break--m" />
+    <div class="govuk-form-group">
+      <p class="govuk-body">
+        After unpublishing, the file will be removed from the public report page
+        and will not be available on the section page.<br />
+        Please confirm that you want to unpublish the file.
+      </p>
+    </div>
+    <button
+      (click)="onSubmit()"
+      class="govuk-button govuk-button--warning"
+      data-module="govuk-button"
+    >
+      Unpublish file
+    </button>
+  </div>
+</div>

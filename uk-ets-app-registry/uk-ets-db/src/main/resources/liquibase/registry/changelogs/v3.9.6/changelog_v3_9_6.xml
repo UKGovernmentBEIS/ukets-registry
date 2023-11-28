@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="fragkise" id="3_9_6_EMULATE_RUNNING_BALANCES_MIGRATION_RUN" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='RUNNING_BALANCE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>Force the allocation classification migrator to run again</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'RUNNING_BALANCE_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

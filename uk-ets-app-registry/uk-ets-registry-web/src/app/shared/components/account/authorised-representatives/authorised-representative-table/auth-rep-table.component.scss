@@ -1,0 +1,31 @@
+@import '_variables';
+
+.panel-change-notification {
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  border-left-style: solid;
+  border-width: 5px;
+  display: table-row;
+  padding: 7px;
+  text-align: left;
+}
+
+.highlighted-row {
+  padding-left: 10px;
+}
+
+.wrap-text {
+  word-wrap: break-word;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%; /* optional: make the table span the entire container width */
+}
+
+td {
+  width: 16.67%;
+  min-width: 80px;
+  max-width: 200px;
+  word-wrap: break-word;
+}

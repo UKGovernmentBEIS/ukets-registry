@@ -1,0 +1,427 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Request to open an Emissions Trading Registry Account'"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <form (ngSubmit)="onContinue()">
+      <div class="govuk-form-group">
+        <div class="govuk-fieldset">
+          <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl">
+                Request to open an Emissions Trading Registry Account
+              </span>
+              New {{ AccountTypeMap[accountType$ | async]?.label }}
+            </h1>
+          </div>
+          <div
+            *ngIf="(isOHAorAOHA$ | async) === false"
+            class="govuk-body govuk-details__text"
+          >
+            <div class="govuk-!-margin-bottom-3">
+              The following transaction rules will be applied to your account by
+              default:
+            </div>
+            <div>
+              <ul class="govuk-list govuk-list--bullet">
+                <li>
+                  A second authorized representative must approve transfers of
+                  units to a trusted account;
+                </li>
+                <li>
+                  Transfers of units cannot be made to accounts that are not on
+                  the trusted account list
+                </li>
+              </ul>
+            </div>
+            <div class="govuk-!-margin-bottom-3">
+              These rules can be changed after account opening.
+            </div>
+            <div>
+              <app-about-trusted-account-list
+                [isOHAOrAOHA]="isOHAorAOHA$ | async"
+              ></app-about-trusted-account-list>
+            </div>
+          </div>
+          <hr class="govuk-section-break govuk-section-break" />
+
+          <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-7">
+            Fill in the sections below in the order they appear.
+          </p>
+          <hr class="govuk-section-break govuk-section-break" />
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key govuk-heading-m">
+                1. Add the account holder
+              </dt>
+              <dd class="govuk-summary-list__value">
+                <app-govuk-tag
+                  *ngIf="
+                    accountHolderSectionCompleted$ | async;
+                    else incompleteTag
+                  "
+                  class="right-aligned"
+                >
+                  Complete
+                </app-govuk-tag>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dd class="govuk-summary-list__value">
+                <ng-container
+                  [ngTemplateOutlet]="conditionalLink"
+                  [ngTemplateOutletContext]="{
+                    condition:
+                      (accountHolderCompleted$ | async) &&
+                      (accountHolder$ | async),
+                    route: {
+                      truthy: accountHolderWizardRoutes.OVERVIEW,
+                      falsy: accountHolderWizardRoutes.ACCOUNT_HOLDER_TYPE
+                    },
+                    label: {
+                      truthy: !(accountHolder$ | async | individual)
+                        ? (accountHolder$ | async)?.details?.name
+                        : ((accountHolder$ | async | individual)?.details
+                          | individualFullName),
+                      falsy: 'Account Holder details'
+                    }
+                  }"
+                >
+                </ng-container>
+              </dd>
+            </div>
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="accountHolderCompleted$ | async"
+            >
+              <dd class="govuk-summary-list__value">
+                <ng-container
+                  *ngIf="
+                    primaryContact$ | async as primaryContact;
+                    else addPrimaryContact
+                  "
+                >
+                  <a
+                    class="govuk-link"
+                    (click)="
+                      goToAccountHolderContact(primaryContact, 'primary')
+                    "
+                    (keypress)="
+                      goToAccountHolderContact(primaryContact, 'primary')
+                    "
+                    [routerLink]="[]"
+                  >
+                    {{ primaryContact.details.firstName }}
+                    {{ primaryContact.details.lastName }}
+                  </a>
+                </ng-container>
+              </dd>
+            </div>
+            <div
+              *ngIf="alternativeContact$ | async as alternativeContact"
+              class="govuk-summary-list__row"
+            >
+              <dd class="govuk-summary-list__value">
+                <a
+                  class="govuk-link"
+                  (click)="
+                    goToAccountHolderContact(alternativeContact, 'alternative')
+                  "
+                  (keypress)="
+                    goToAccountHolderContact(alternativeContact, 'alternative')
+                  "
+                  [routerLink]="[]"
+                >
+                  {{ alternativeContact.details.firstName }}
+                  {{ alternativeContact.details.lastName }} (alternative primary
+                  contact)
+                </a>
+              </dd>
+            </div>
+          </dl>
+          <div
+            *ngIf="
+              (accountHolderCompleted$ | async) &&
+              (primaryContact$ | async) &&
+              !(primaryContact$ | async).id &&
+              (alternativeContact$ | async) === null
+            "
+          >
+            <button
+              class="govuk-button govuk-button--secondary"
+              (click)="onAddAlternativeContact()"
+              (keypress)="onAddAlternativeContact()"
+              data-module="govuk-button"
+              type="button"
+            >
+              Add an alternative Primary Contact (optional)
+            </button>
+          </div>
+
+          <hr class="govuk-section-break govuk-section-break" />
+          <app-about-primary-contact></app-about-primary-contact>
+
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key govuk-heading-m">
+                {{
+                  '2. Add the ' +
+                    (AccountTypeMap[accountType$ | async]?.label | lowercase) +
+                    ' details'
+                }}
+              </dt>
+              <dd class="govuk-summary-list__value">
+                <app-govuk-tag
+                  *ngIf="accountDetailsCompleted$ | async; else incompleteTag"
+                  class="right-aligned"
+                >
+                  Complete
+                </app-govuk-tag>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dd class="govuk-summary-list__value">
+                <div
+                  class="govuk-caption-m"
+                  *ngIf="
+                    (accountHolderContactCompleted$ | async) === false &&
+                      (primaryContact$ | async) === null;
+                    else accountDetailsTemplate
+                  "
+                >
+                  {{
+                    (accountDetailsCompleted$ | async)
+                      ? (accountDetails$ | async).name
+                      : 'Account details'
+                  }}
+                </div>
+                <ng-template #accountDetailsTemplate>
+                  <ng-container
+                    [ngTemplateOutlet]="conditionalLink"
+                    [ngTemplateOutletContext]="{
+                      condition: accountDetailsCompleted$ | async,
+                      route: {
+                        truthy: accountDetailsWizardRoutes.OVERVIEW,
+                        falsy: accountDetailsWizardRoutes.ACCOUNT_DETAILS
+                      },
+                      label: {
+                        truthy: (accountDetails$ | async)?.name,
+                        falsy: 'Account details'
+                      }
+                    }"
+                  >
+                  </ng-container>
+                </ng-template>
+              </dd>
+            </div>
+          </dl>
+
+          <ng-container *ngIf="(isOha$ | async) || (isAOHA$ | async)">
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-heading-m">
+                  {{
+                    '3. Add the ' +
+                      ((isOha$ | async)
+                        ? 'installation information'
+                        : 'aircraft operator')
+                  }}
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  <app-govuk-tag
+                    *ngIf="operatorCompleted$ | async; else incompleteTag"
+                    class="right-aligned"
+                  >
+                    Complete
+                  </app-govuk-tag>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dd class="govuk-summary-list__value">
+                  <div
+                    class="govuk-caption-m"
+                    *ngIf="
+                      (trustedAccountListCompleted$ | async) === false &&
+                        (operatorCompleted$ | async) === false;
+                      else installationOrAircraftTemplate
+                    "
+                  >
+                    {{ generateInstallationOrAircraftOperatorText() | async }}
+                  </div>
+                  <ng-template #installationOrAircraftTemplate>
+                    <a
+                      class="govuk-link"
+                      [routerLink]="operatorWizardLink() | async"
+                      skipLocationChange="true"
+                    >
+                      {{ generateInstallationOrAircraftOperatorText() | async }}
+                    </a>
+                  </ng-template>
+                </dd>
+              </div>
+            </dl>
+          </ng-container>
+
+          <dl class="govuk-summary-list">
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="(minNumberOfARs$ | async) > 0; else optionalARs"
+            >
+              <dt class="govuk-summary-list__key govuk-heading-m">
+                3. Add authorised representatives
+              </dt>
+              <dd class="govuk-summary-list__value">
+                <app-govuk-tag
+                  *ngIf="
+                    authorisedRepresentativesCompleted$ | async;
+                    else incompleteTag
+                  "
+                  class="right-aligned"
+                >
+                  Complete
+                </app-govuk-tag>
+              </dd>
+            </div>
+            <ng-template #optionalARs>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-heading-m">
+                  4. Add authorised representatives
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  <app-govuk-tag color="grey" class="right-aligned">
+                    Optional
+                  </app-govuk-tag>
+                </dd>
+              </div>
+            </ng-template>
+
+            <div class="govuk-summary-list__row">
+              <dd
+                class="govuk-summary-list__value"
+                *ngIf="(authorisedRepresentatives$ | async).length === 0"
+              >
+                <div
+                  class="govuk-caption-m"
+                  *ngIf="
+                    (showAuthorisedRepresentativeLink$ | async) === false;
+                    else arTemplate
+                  "
+                >
+                  Authorised Representative details
+                </div>
+                <ng-template #arTemplate>
+                  <a
+                    class="govuk-link"
+                    [routerLink]="authorisedRepresentativeSelectionWizardLink"
+                    skipLocationChange="true"
+                  >
+                    Authorised Representative details
+                  </a>
+                </ng-template>
+              </dd>
+            </div>
+            <ng-container
+              *ngIf="(authorisedRepresentatives$ | async).length > 0"
+            >
+              <div
+                class="govuk-summary-list__row"
+                *ngFor="
+                  let ar of authorisedRepresentatives$ | async;
+                  let i = index
+                "
+              >
+                <dd class="govuk-summary-list__value">
+                  <a
+                    class="govuk-link"
+                    [routerLink]="[]"
+                    (click)="onAuthorisedRepresentativeClick(i)"
+                    (keypress)="onAuthorisedRepresentativeClick(i)"
+                  >
+                    {{ ar | authorisedRepresentativeDetails }} -
+                    {{ ar.right | accessRights }}
+                  </a>
+                </dd>
+              </div>
+            </ng-container>
+          </dl>
+          <div *ngIf="(authorisedRepresentatives$ | async).length > 0">
+            <button
+              class="govuk-button govuk-button--secondary"
+              data-module="govuk-button"
+              type="button"
+              (click)="onAddAuthorisedRepresentative()"
+              (keypress)="onAddAuthorisedRepresentative()"
+            >
+              Add an Authorised Representative
+            </button>
+          </div>
+
+          <hr class="govuk-section-break govuk-section-break" />
+          <app-rules-for-authorised-representative></app-rules-for-authorised-representative>
+
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <h2 class="govuk-heading-m">
+                {{ (isOha$ | async) || (isAOHA$ | async) ? '5.' : '4.' }}
+                Check and submit your request
+              </h2>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        [disabled]="(submitButtonEnabled$ | async) === false"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+    <a
+      class="govuk-link"
+      (click)="onCancelRequest()"
+      (keypress)="onCancelRequest()"
+      [routerLink]="[]"
+      >Cancel</a
+    >
+  </div>
+</div>
+
+<ng-template #incompleteTag>
+  <app-govuk-tag class="right-aligned" color="grey">Incomplete</app-govuk-tag>
+</ng-template>
+
+<ng-template
+  #conditionalLink
+  let-condition="condition"
+  let-route="route"
+  let-label="label"
+>
+  <a
+    *ngIf="condition"
+    class="govuk-link"
+    [routerLink]="route.truthy"
+    skipLocationChange="true"
+    >{{ label.truthy }}</a
+  >
+  <a
+    *ngIf="!condition"
+    class="govuk-link"
+    [routerLink]="route.falsy"
+    skipLocationChange="true"
+    >{{ label.falsy }}</a
+  >
+</ng-template>
+
+<ng-template #addPrimaryContact>
+  <a
+    class="govuk-link"
+    [routerLink]="[accountHolderContactWizardLink, 'primary']"
+    skipLocationChange="true"
+  >
+    Add the Primary Contact
+  </a>
+</ng-template>

@@ -1,0 +1,32 @@
+export class RegistryDbTestUser {
+  id: string;
+  urid: string;
+  state: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  email: string;
+  aka: string;
+  personalStreet: string;
+  personalStreetOptional: string;
+  personalStreetOptional2: string;
+  personalCountry: string;
+  countryOfBirth: string;
+  yearOfBirth: string;
+  personalPostCode: string;
+  personalTownOrCity: string;
+  personalStateOrProvince: string;
+  workStreet: string;
+  workStreetOptional: string;
+  workStreetOptional2: string;
+  workPostCode: string;
+  workTownOrCity: string;
+  workStateOrProvince: string;
+  workCountry: string;
+  workCountryCode: string;
+  workPhoneNumber: string;
+  workEmail: string;
+  registryRoles: string[] = [];
+  disclosedName: string;
+}

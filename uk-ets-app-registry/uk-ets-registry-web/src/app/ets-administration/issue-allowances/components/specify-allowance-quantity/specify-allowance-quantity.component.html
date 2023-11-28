@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"> Propose to issue UK allowances </span>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend
+          class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-padding-bottom-5"
+        >
+          <h1 class="govuk-fieldset__heading">
+            Enter the quantity to issue for {{ activeYear }}
+          </h1>
+        </legend>
+        <app-allowance-transaction-quantity-table
+          [activeYear]="activeYear"
+          [isEditable]="true"
+          [transactionBlockSummaries]="transactionBlockSummaries"
+        >
+        </app-allowance-transaction-quantity-table>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

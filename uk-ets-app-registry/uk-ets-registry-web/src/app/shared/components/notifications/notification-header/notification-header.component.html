@@ -1,0 +1,75 @@
+<div
+  class="hmcts-identity-bar"
+  *ngIf="notificationHeaderVisibility && notification"
+>
+  <div class="hmcts-identity-bar__container">
+    <div *ngIf="showBackToList" class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <a
+          [routerLink]="'/notifications'"
+          [queryParams]="{ mode: searchMode.LOAD }"
+          class="govuk-back-link"
+          id="back"
+          >Back to notifications list</a
+        >
+      </div>
+    </div>
+    <div
+      class="govuk-grid-row"
+      [style.margin-top]="showBackToList ? '0px' : '50px'"
+      *ngIf="notification"
+    >
+      <div class="govuk-grid-column-two-thirds">
+        <h3 class="govuk-heading-l govuk-!-margin-bottom-0">
+          {{ notification?.contentDetails?.subject }}
+        </h3>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <div style="float: right">
+          <button
+            *ngIf="showClone"
+            (click)="goToCloneNotification()"
+            style="margin-bottom: 0"
+            class="govuk-button govuk-button--secondary"
+            data-module="govuk-button"
+          >
+            Clone
+          </button>
+          <button
+            *ngIf="showRequestUpdate"
+            (click)="goToUpdateNotificationDetails()"
+            [routerLink]="[]"
+            style="margin-bottom: 0"
+            class="govuk-button govuk-!-margin-left-3 govuk-!-margin-right-1"
+            data-module="govuk-button"
+          >
+            Update notification
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <app-govuk-tag
+        style="margin-left: 15px"
+        [color]="notificationStatusMap[notification?.status].color"
+      >
+        {{
+          notification?.status
+            ? notificationStatusMap[notification?.status].label
+            : ''
+        }}
+      </app-govuk-tag>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full" *ngIf="notification">
+        <div class="govuk-body">
+          <div>
+            Last updated by {{ notification.updatedBy }} on
+            {{ notification.lastUpdated | gdsDateTime }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,211 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Check your answers'"></div>
+<div class="govuk-grid-row">
+  <div
+    class="govuk-grid-column-two-thirds"
+    *ngIf="user$ | async as user"
+    aria-live="polite"
+  >
+    <div class="govuk-form-group">
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl">Create a registry sign in</span>
+            Check your answers
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <h2 class="govuk-summary-list__key">Your details</h2>
+        <div class="govuk-summary-list__actions">
+          <a class="govuk-link" routerLink="/registration/personal-details">
+            Change<span class="govuk-visually-hidden"> personal details</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <dl
+      class="
+        govuk-summary-list govuk-!-margin-bottom-9
+        govuk-summary-list--no-border
+      "
+      *ngIf="user.firstName"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">First and middle names</dt>
+        <dd class="govuk-summary-list__value" id="first-name">
+          {{ user.firstName }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Last name</dt>
+        <dd class="govuk-summary-list__value" id="last-name">
+          {{ user.lastName }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Also known as</dt>
+        <dd class="govuk-summary-list__value" id="also-known-as">
+          {{ user.alsoKnownAs }}
+        </dd>
+      </div>
+      <div *ngIf="user.buildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Address</dt>
+        <dd class="govuk-summary-list__value" id="personal-address">
+          {{ user.buildingAndStreet }}
+          <span *ngIf="user.buildingAndStreetOptional"
+            >, {{ user.buildingAndStreetOptional }}</span
+          ><span *ngIf="user.buildingAndStreetOptional2"
+            >, {{ user.buildingAndStreetOptional2 }}</span
+          >
+        </dd>
+      </div>
+      <div *ngIf="user.buildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Town or city</dt>
+        <dd class="govuk-summary-list__value" id="town-or-city">
+          {{ user.townOrCity }}
+        </dd>
+      </div>
+      <div *ngIf="user.buildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">State or Province</dt>
+        <dd class="govuk-summary-list__value" id="state-or-province">
+          {{ user.stateOrProvince }}
+        </dd>
+      </div>
+      <div *ngIf="user.buildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+        <dd class="govuk-summary-list__value" id="postcode">
+          {{ user.postCode }}
+        </dd>
+      </div>
+      <div *ngIf="user.buildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country</dt>
+        <dd class="govuk-summary-list__value" id="country">
+          {{ residenceCountry$ | async }}
+        </dd>
+      </div>
+      <div
+        *ngIf="birthCountry$ | async as birthCountry"
+        class="govuk-summary-list__row"
+      >
+        <dt class="govuk-summary-list__key">Country of birth</dt>
+        <dd class="govuk-summary-list__value" id="country-of-birth">
+          {{ birthCountry }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Date of birth</dt>
+        <dd
+          class="govuk-summary-list__value"
+          id="date-of-birth"
+          *ngIf="user.birthDate"
+        >
+          {{ user.birthDate.day }}/{{ user.birthDate.month }}/{{
+            user.birthDate.year
+          }}
+        </dd>
+      </div>
+    </dl>
+
+    <div class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <h2 class="govuk-summary-list__key">Your work details</h2>
+        <div class="govuk-summary-list__actions">
+          <a class="govuk-link" routerLink="/registration/work-details">
+            Change<span class="govuk-visually-hidden"> work details</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <dl
+      class="
+        govuk-summary-list govuk-!-margin-bottom-9
+        govuk-summary-list--no-border
+      "
+      *ngIf="user.firstName"
+    >
+      <div
+        *ngIf="phoneNumberFull$ | async as phoneNumberFull"
+        class="govuk-summary-list__row"
+      >
+        <dt class="govuk-summary-list__key">Work phone number</dt>
+        <dd class="govuk-summary-list__value" id="phone-number">
+          <span>{{ phoneNumberFull }}</span>
+        </dd>
+      </div>
+      <div *ngIf="user.workBuildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Work contact address</dt>
+        <dd class="govuk-summary-list__value" id="work-address">
+          {{ user.workBuildingAndStreet
+          }}<span *ngIf="user.workBuildingAndStreetOptional"
+            >, {{ user.workBuildingAndStreetOptional }}</span
+          >
+          <span *ngIf="user.workBuildingAndStreetOptional2"
+            >, {{ user.workBuildingAndStreetOptional2 }}</span
+          >
+        </dd>
+      </div>
+      <div *ngIf="user.workBuildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Town or city</dt>
+        <dd class="govuk-summary-list__value" id="work-town-or-city">
+          {{ user.workTownOrCity }}
+        </dd>
+      </div>
+      <div *ngIf="user.workBuildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">State or Province</dt>
+        <dd class="govuk-summary-list__value" id="work-state-or-province">
+          {{ user.workStateOrProvince }}
+        </dd>
+      </div>
+      <div *ngIf="user.workBuildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+        <dd class="govuk-summary-list__value" id="work-postcode">
+          {{ user.workPostCode }}
+        </dd>
+      </div>
+      <div *ngIf="user.workBuildingAndStreet" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country</dt>
+        <dd class="govuk-summary-list__value" id="work-country">
+          {{ workCountry$ | async }}
+        </dd>
+      </div>
+    </dl>
+    <ng-container *ngIf="user.firstName">
+      <div class="govuk-summary-list govuk-!-margin-bottom-9">
+        <div class="govuk-summary-list__row">
+          <h2 class="govuk-summary-list__key">Memorable phrase</h2>
+          <div class="govuk-summary-list__actions">
+            <a class="govuk-link" routerLink="/registration/memorable-phrase">
+              Change
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="govuk-summary-list govuk-!-margin-bottom-9">
+        <div class="govuk-summary-list__row">
+          <h2 class="govuk-summary-list__key">Password</h2>
+          <div class="govuk-summary-list__actions">
+            <a class="govuk-link" routerLink="/registration/choose-password">
+              Change
+            </a>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div>
+      <button
+        appDebounceClick
+        (debounceClick)="onSubmit(user)"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="button"
+        id="submit"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</div>

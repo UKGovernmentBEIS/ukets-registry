@@ -1,0 +1,13 @@
+export enum HeaderItem {
+  HOME,
+  TASKS,
+  ACCOUNTS,
+  TRANSACTIONS,
+  USER_ADMIN,
+  ETS_ADMIN,
+  KP_ADMIN,
+  REG_ADMIN,
+  REPORTS,
+  NOTIFICATIONS,
+  ABOUT,
+}

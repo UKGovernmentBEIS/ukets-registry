@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">The transaction has been cancelled.</h1>
+      <div class="govuk-panel__body">
+        Tranasction ID is<br /><strong>{{ transactionIdentifier }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      The reserved unit blocks will be released to your account.
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="['/transaction-list']"
+        [queryParams]="{ mode: 0 }"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >Back to transaction list</a
+      >
+    </p>
+  </div>
+</div>

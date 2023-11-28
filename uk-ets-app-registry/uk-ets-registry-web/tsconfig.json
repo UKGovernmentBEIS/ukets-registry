@@ -1,0 +1,102 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2018", "dom"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "paths": {
+      "@registry-web/*": ["src/app/*"],
+      "@shared/*": ["src/app/shared/*"],
+      "@task-management/*": ["src/app/task-management/*"],
+      "@task-details/*": ["src/app/task-management/task-details/*"],
+      "@transaction-proposal/*": ["src/app/transaction-proposal/*"],
+      "@account-management/*": ["src/app/account-management/*"],
+      "@account-opening/*": ["src/app/account-opening/*"],
+      "@account-holder-contact/*": [
+        "src/app/account-opening/account-holder-contact/*"
+      ],
+      "@user-management/*": ["src/app/user-management/*"],
+      "@user-update/*": [
+        "src/app/user-management/user-details/user-details-update-wizard/*"
+      ],
+      "@email-change/*": ["src/app/user-management/email-change/*"],
+      "@password-change/*": ["src/app/user-management/password-change/*"],
+      "@trusted-account-list/*": [
+        "src/app/account-management/account/trusted-account-list/*"
+      ],
+      "@notifications/*": ["src/app/notifications/*"],
+      "@operator-update/*": [
+        "src/app/account-management/account/operator-update-wizard/*"
+      ],
+      "@tal-transaction-rules/*": [
+        "src/app/account-management/account/tal-transaction-rules/*"
+      ],
+      "@account-transfer/*": [
+        "src/app/account-management/account/account-transfer/*"
+      ],
+      "@account-transfer-shared/*": ["src/app/account-transfer-shared/*"],
+      "@account-shared/*": ["src/app/account-shared/*"],
+      "@authorised-representatives/*": [
+        "src/app/account-management/account/authorised-representatives/*"
+      ],
+      "@exclusion-status-update-wizard/*": [
+        "src/app/account-management/account/exclusion-status-update-wizard/*"
+      ],
+      "@allocation-table/*": ["src/app/ets-administration/allocation-table/*"],
+      "@emissions-table/*": ["src/app/ets-administration/emissions-table/*"],
+      "@issue-allowances/*": ["src/app/ets-administration/issue-allowances/*"],
+      "@recalculate-compliance-status/*": [
+        "src/app/ets-administration/recalculate-compliance-status/*"
+      ],
+      "@issue-kp-units/*": ["src/app/kp-administration/issue-kp-units/*"],
+      "@request-allocation/*": [
+        "src/app/ets-administration/request-allocation/*"
+      ],
+      "@request-documents/*": ["src/app/request-documents/*"],
+      "@delete-file/*": ["src/app/delete-file/*"],
+      "@allocation-status/*": [
+        "src/app/account-management/account/allocation-status/*"
+      ],
+      "@transaction-management/*": ["src/app/transaction-management/*"],
+      "@signing/*": ["src/app/signing/*"],
+      "@reports/*": ["src/app/reports/*"],
+      "@timeout/*": ["src/app/timeout/*"],
+      "@report-publication/*": ["src/app/reports/report-publication/*"],
+      "@reconciliation-administration/*": [
+        "src/app/ets-administration/reconciliation/*"
+      ],
+      "@kp-administration/*": ["src/app/kp-administration/*"],
+      "@itl-message-list/*": ["src/app/kp-administration/itl-message-list/*"],
+      "@itl-message-details/*": [
+        "src/app/kp-administration/itl-message-details/*"
+      ],
+      "@send-itl-message/*": ["src/app/kp-administration/send-itl-message/*"],
+      "@registry-administration/*": ["src/app/registry-administration/*"],
+      "@authority-setting/*": [
+        "src/app/registry-administration/authority-setting/*"
+      ],
+      "@uk-password-control/*": ["src/app/uk-password-control/*"],
+      "@guidance/*": ["src/app/guidance/*"],
+      "@google-analytics/*": ["src/app/google-analytics/*"],
+      "@generate-logs/*": ["src/app/generate-logs/*"],
+      "moment": ["node_modules/moment/min/moment.min.js"]
+    },
+    "useDefineForClassFields": false
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
+}

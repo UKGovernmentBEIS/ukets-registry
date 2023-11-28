@@ -1,0 +1,26 @@
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-body-l">
+      {{ computeAccessRightsTitle() }}
+    </dt>
+    <dd class="govuk-summary-list__actions">
+      <a
+        *ngIf="displayedChangeLink"
+        class="govuk-link"
+        [routerLink]="[]"
+        (click)="onChangeClicked()"
+      >
+        Change<span class="govuk-visually-hidden"> permissions</span>
+      </a>
+    </dd>
+  </div>
+</dl>
+<div
+  class="govuk-body-m"
+  [class.panel-change-notification]="
+    updateType === updateTypes.CHANGE_ACCESS_RIGHTS
+  "
+>
+  {{ accessRights | accessRights }}
+</div>
+<hr class="govuk-section-break govuk-section-break--m" />

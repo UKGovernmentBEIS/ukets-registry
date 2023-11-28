@@ -1,0 +1,53 @@
+<details
+  class="govuk-details govuk-!-margin-bottom-0"
+  data-module="govuk-details"
+>
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      About the trusted account list
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full" *ngIf="!informativeText">
+        <p class="govuk-body govuk-!-margin-bottom-3">
+          Unless you change the default transaction rules:
+        </p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>
+            transfers of units to trusted accounts must be approved by a second
+            Authorised Representative
+          </li>
+          <li>
+            you will not be able to carry out transfers of units to accounts
+            that are not on the trusted account list
+          </li>
+          <li *ngIf="isOHAOrAOHA">
+            surrender transactions or return of excess allocations must be
+            approved by a second Authorised Representative
+          </li>
+        </ul>
+      </div>
+      <div class="govuk-grid-column-full" *ngIf="informativeText">
+        <ul class="govuk-list govuk-list--bullet">
+          <li>
+            Accounts from the same account holder are automatically added to the
+            trusted account list.
+          </li>
+          <li>
+            Once an account is opened, you can add accounts from different
+            account holders to the trusted account list.
+          </li>
+          <li>
+            The addition or removal of a trusted account from your Trusted
+            Account List must be approved by a second Authorised Representative
+            with either Initiate and Approve or Approve permissions. Addition
+            and removal requests that have not yet been approved will be
+            displayed as requiring ‘Approval’ in the Pending column of the
+            Trusted Account List.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</details>

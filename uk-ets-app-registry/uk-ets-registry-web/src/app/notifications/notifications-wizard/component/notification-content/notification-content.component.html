@@ -1,0 +1,68 @@
+<app-feature-header-wrapper
+  *ngIf="notificationRequest === NotificationRequestEnum.UPDATE"
+  ><app-notification-header
+    [notification]="newNotification"
+    [notificationHeaderVisibility]="
+      notificationRequest === NotificationRequestEnum.UPDATE
+    "
+    [showRequestUpdate]="false"
+    [showClone]="false"
+    [showBackToList]="false"
+  ></app-notification-header
+></app-feature-header-wrapper>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-form-group">
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl">{{
+              notificationRequest === NotificationRequestEnum.NEW ||
+              notificationRequest === NotificationRequestEnum.CLONE
+                ? 'New ' + notificationTypeLabels[newNotification?.type].label
+                : 'Request to update the notification'
+            }}</span>
+            Add the notification details
+          </h1>
+        </div>
+      </div>
+    </div>
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <app-form-control-text
+        [label]="'Title'"
+        [showLabelInBold]="true"
+        [hint]="
+          NotificationType.AD_HOC !== newNotification.type
+            ? 'This will be the subject of the email.'
+            : 'This title is for internal use. It will appear only in the Notifications list and will not be displayed to the end-user.'
+        "
+        [maxlength]="250"
+        [validationErrorMessage]="validationErrorMessage.notificationSubject"
+        controlName="notificationSubject"
+      ></app-form-control-text>
+      <app-uk-rich-text-editor
+        [label]="'Content'"
+        [labelTitleBold]="true"
+        [moreInfo]="
+          NotificationType.AD_HOC !== newNotification.type ? infoText1 : ''
+        "
+        [showFormattingButtons]="
+          NotificationType.AD_HOC !== newNotification.type
+        "
+        [controlName]="'notificationContent'"
+        validationErrorMessage="This field is required."
+      ></app-uk-rich-text-editor>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>
+<app-cancel-request-link
+  (goToCancelScreen)="onCancel()"
+></app-cancel-request-link>

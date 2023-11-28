@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="govuk-template">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b0c0c" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!--    this is added here only for dev purposes. In case of inline javascript the browser will throw an error in the console. -->
+    <!--     because of the presence of this tag, we also need to add the analytics urls here which will be blocked in local dev environments otherwise-->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' 'unsafe-eval' *.googletagmanager.com *.google-analytics.com;"
+    />
+
+    <title>UK Emissions Trading Registry - GOV.UK</title>
+    <!-- Affects how the browser resolves URLs when loading static resources like script and img tags -->
+    <base href="/" />
+
+    <link
+      rel="shortcut icon"
+      sizes="16x16 32x32 48x48"
+      href="/assets/images/favicon.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="mask-icon"
+      href="/assets/images/govuk-mask-icon.svg"
+      color="#0b0c0c"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/images/govuk-apple-touch-icon-180x180.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="167x167"
+      href="/assets/images/govuk-apple-touch-icon-167x167.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="/assets/images/govuk-apple-touch-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="/assets/images/govuk-apple-touch-icon.png"
+    />
+
+    <meta
+      property="og:image"
+      content="/assets/images/govuk-opengraph-image.png"
+    />
+  </head>
+
+  <body class="govuk-template__body">
+    <app-root> </app-root>
+
+    <noscript>
+      <h1>You must enable JavaScript to sign in</h1>
+      <p>
+        JavaScript must be enabled to sign in to the UK Emissions Trading
+        Registry. Either your web browser does not support JavaScript, or
+        scripts are being blocked.
+      </p>
+      <p>
+        Check your browser's help section to find out how your browser supports
+        JavaScript or allows scripts.
+      </p>
+      <p>
+        Contact your systems administrator or IT support team for more
+        information.
+      </p>
+    </noscript>
+  </body>
+  <!--  This must be loaded last to work-->
+  <script src="/assets/scripts/index.js"></script>
+</html>

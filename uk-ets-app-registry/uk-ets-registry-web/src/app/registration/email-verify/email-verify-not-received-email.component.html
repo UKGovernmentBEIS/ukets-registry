@@ -1,0 +1,44 @@
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text"> I didn't get an email </span>
+  </summary>
+  <div class="govuk-details__text">
+    <p class="govuk-body">
+      If you have not received the email after a few minutes, check your spam or
+      junk folder. The email will be sent from
+      <a
+        href="mailto:{{ serviceDeskEmail$ | async }}?subject={{
+          serviceDeskEmailSubject$ | async
+        }}"
+        class="govuk-link"
+        rel="noreferrer noopener"
+        target="_blank"
+        >{{ serviceDeskEmail$ | async }}</a
+      >
+      and the subject of the email is 'Confirm your work email address - UK
+      Emissions Trading Registry'.
+    </p>
+
+    <p class="govuk-body">
+      You can
+      <a class="govuk-link" [routerLink]="emailAddressRoute">
+        enter your email address again
+      </a>
+      if it still has not arrived.
+    </p>
+
+    <p class="govuk-body">
+      If you are still experiencing issues, contact your organisation’s
+      technical support team, such as the IT helpdesk, to check that the email
+      has not been quarantined by your email system. Your technical support team
+      may need to add the
+      <a
+        class="govuk-link"
+        [href]="'http://' + serviceDeskWeb"
+        target="_blank"
+        >{{ serviceDeskWeb }}</a
+      >
+      domain to their safe list of email sources.
+    </p>
+  </div>
+</details>

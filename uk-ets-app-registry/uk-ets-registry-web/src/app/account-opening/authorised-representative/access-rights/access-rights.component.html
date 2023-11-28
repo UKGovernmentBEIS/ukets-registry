@@ -1,0 +1,95 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="arAccessRightGroupInfo.radioGroupHeading"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <form (ngSubmit)="onContinue()" [formGroup]="accessRightsFormGroup">
+      <fieldset class="govuk-fieldset">
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="showErrors()"
+          [id]="arAccessRightGroupInfo.key + '-label'"
+        >
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl">{{
+                arAccessRightGroupInfo.radioGroupHeadingCaption
+              }}</span>
+              {{ arAccessRightGroupInfo.radioGroupHeading }}
+            </h1>
+          </legend>
+          <dl class="govuk-summary-list govuk-summary-list--no-border">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                <span class="govuk-body-m govuk-!-font-weight-bold">
+                  Authorised Representative</span
+                >
+              </dt>
+              <dd class="govuk-summary-list__value">
+                <p class="govuk-body">
+                  {{
+                    _authorisedRepresentative | authorisedRepresentativeDetails
+                  }}
+                </p>
+              </dd>
+            </div>
+          </dl>
+          <span [id]="arAccessRightGroupInfo.key + '-hint'" class="govuk-hint">
+            {{ arAccessRightGroupInfo.radioGroupHint }}
+          </span>
+          <span
+            *ngIf="showErrors()"
+            [id]="arAccessRightGroupInfo.key + '-error-label'"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span
+            >{{ this.validationErrorMessage.arAccessRights }}
+          </span>
+
+          <div class="govuk-radios">
+            <ng-container
+              *ngFor="
+                let option of arAccessRightGroupInfo.options;
+                let i = index
+              "
+            >
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [id]="'access-rights-' + i"
+                  name="arAccessRights"
+                  type="radio"
+                  formControlName="arAccessRights"
+                  [value]="option.value"
+                />
+                <label
+                  class="govuk-label govuk-radios__label govuk-!-font-weight-bold"
+                  [for]="'access-rights-' + i"
+                >
+                  {{ option.label }}
+                </label>
+                <span
+                  *ngIf="option.hint"
+                  [id]="'access-rights-' + i + '-hint'"
+                  class="govuk-hint govuk-radios__hint"
+                >
+                  {{ option.hint }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+      <app-rules-for-authorised-representative></app-rules-for-authorised-representative>
+    </form>
+  </div>
+</div>

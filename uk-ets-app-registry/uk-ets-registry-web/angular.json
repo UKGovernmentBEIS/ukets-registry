@@ -1,0 +1,181 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "uk-ets-registry-web": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/uk-ets-registry-web",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "aot": false,
+            "assets": [
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/govuk-frontend/govuk/assets",
+                "output": "assets/"
+              }
+            ],
+            "styles": [
+              "src/sass/ukets-styles.scss",
+              "node_modules/dialog-polyfill/dialog-polyfill.css",
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.bubble.css",
+              "node_modules/quill/dist/quill.snow.css"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/sass/include"]
+            },
+            "scripts": [
+              "node_modules/govuk-frontend/govuk/all.js",
+              "node_modules/keycloak-js/dist/keycloak.min.js",
+              "node_modules/keycloak-js/dist/keycloak-authz.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "core-js",
+              "file-saver",
+              "crypto-js",
+              "keycloak-js",
+              "dayjs",
+              "google-libphonenumber",
+              "govuk-frontend",
+              "js-sha256",
+              "base64-js",
+              "quill"
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "aot": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
+            "development": {},
+            "es5": {
+              "tsConfig": "./tsconfig.es5.json"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "uk-ets-registry-web:build"
+          },
+          "configurations": {
+            "development": {
+              "browserTarget": "uk-ets-registry-web:build:development"
+            },
+            "production": {
+              "browserTarget": "uk-ets-registry-web:build:production"
+            },
+            "es5": {
+              "browserTarget": "uk-ets-registry-web:build:es5"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "uk-ets-registry-web:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {}
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "uk-ets-registry-web:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "uk-ets-registry-web:serve:production"
+            },
+            "env": {
+              "protractorConfig": "e2e/protractor.conf.js",
+              "devServerTarget": ""
+            },
+            "remote": {
+              "protractorConfig": "e2e/protractor.conf.js",
+              "baseUrl": "https://e2e.ukets.net",
+              "devServerTarget": ""
+            },
+            "local": {
+              "protractorConfig": "e2e/protractor.conf.js",
+              "baseUrl": "http://ukets.docker.internal",
+              "devServerTarget": ""
+            }
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "schematicCollections": ["@ngrx/schematics"],
+    "analytics": false
+  },
+  "schematics": {
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
+    }
+  }
+}

@@ -1,0 +1,67 @@
+<div class="app-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-m govuk-!-margin-bottom-7 guidance-title">
+        UK Emissions Trading Registry guidance
+      </h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l">Registry features</h2>
+      <span class="govuk-caption-l"
+        >Manage your details in the UK Registry.</span
+      >
+
+      <app-guidance-modification-date></app-guidance-modification-date>
+
+      <p class="govuk-body">Contents</p>
+
+      <ul class="govuk-list">
+        <li>
+          -
+          <a class="govuk-link" [routerLink]="[]" fragment="subsection1"
+            >Managing your profile</a
+          >
+        </li>
+        <li>
+          -
+          <a class="govuk-link" [routerLink]="[]" fragment="subsection2"
+            >Automatic timeout</a
+          >
+        </li>
+      </ul>
+
+      <h3 class="govuk-heading-s" id="subsection1">Managing your profile</h3>
+      <p class="govuk-body">
+        You can update your email address, password and two-factor
+        authentication app in the UK Registry by selecting ‘My Profile’ from the
+        top menu and following the instructions shown on the page.
+      </p>
+
+      <p class="govuk-body">
+        To change other information including your personal or work details,
+        email the
+        <a class="govuk-link" href="mailto:{{ serviceDeskEmail }}"
+          >UK Registry Helpdesk</a
+        >.
+      </p>
+
+      <img
+        class="guidance-img"
+        src="/assets/images/guidance/my-profile.png"
+        alt="My profile"
+      />
+
+      <h2 class="govuk-heading-s" id="subsection2">Automatic timeout</h2>
+      <p class="govuk-body">
+        If you’re inactive on the UK Registry for 30 minutes you will be
+        automatically signed out for security reasons. A warning will appear
+        before your session ends.
+      </p>
+    </div>
+  </div>
+</div>
+
+<app-back-to-top></app-back-to-top>

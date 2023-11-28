@@ -1,0 +1,39 @@
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Rules for Authorised Representatives
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body govuk-!-margin-bottom-3">
+          You’ll need to decide what an Authorised Representative can do on
+          behalf of the account holder.
+        </p>
+        <p
+          class="govuk-body govuk-!-margin-bottom-3"
+          *ngIf="(minNumberOfARs$ | async) > 0"
+        >
+          You must have at least {{ minNumberOfARs$ | async }} Authorised
+          Representatives on the account.
+        </p>
+        <div>
+          <p class="govuk-body govuk-!-margin-bottom-3">
+            You can add up to {{ maxNumberOfARs$ | async }} Authorised
+            Representatives with permission to:
+          </p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>initiate transfers and TAL updates</li>
+            <li>approve transfers and TAL updates</li>
+            <li>both initiate and approve transactions and TAL updates</li>
+            <li *ngIf="showSurrenderText$ | async">
+              initiate and approve surrender and return of allocation
+              transactions
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</details>

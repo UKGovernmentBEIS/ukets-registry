@@ -1,0 +1,44 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        You will be automatically signed out after you submit your request, and
+        will no longer be able to access the Registry until your request is
+        approved.
+      </strong>
+    </div>
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <span class="govuk-caption-xl"> Change two factor authentication </span>
+        <h1 class="govuk-fieldset__heading">
+          Enter the reason for requesting the change
+        </h1>
+      </legend>
+      <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+        <p class="govuk-body">
+          Authenticator app installed on My Phone
+          <br />
+          <span class="govuk-!-font-weight-bold">Added</span>
+          {{ state.tokenDate }}
+        </p>
+        <app-form-comment-area
+          controlName="reason"
+          [label]="'Explain why you are requesting this change'"
+          [maxlength]="1024"
+          [validationErrorMessage]="this.validationErrorMessage.reason"
+        ></app-form-comment-area>
+        <button
+          data-prevent-double-click="true"
+          class="govuk-button"
+          data-module="govuk-button"
+          type="Submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </form>
+    </fieldset>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet id="0_9_0_ALTER_ACCOUNT_HOLDER_DROP_BIRTH_YEAR" author="fragkise" context="migrate">
+        <comment>Drops birth_year column of account_holder</comment>
+        <sql>
+            alter table account_holder drop column birth_year;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_9_0_ALTER_ACCOUNT_HOLDER_REPRESENTATIVE_DROP_BIRTH_YEAR" author="fragkise" context="migrate">
+        <comment>Drops birth_year column of account_holder_representative</comment>
+        <sql>
+            alter table account_holder_representative drop column birth_year;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_9_0_CREATE_DOMAIN_EVENT" author="gkountak" context="migrate">
+
+        <comment>Implements the domain event model</comment>
+        <sql>
+            --------------------------------------------------------
+            --  Table Domain Event
+            --------------------------------------------------------
+
+            CREATE SEQUENCE domain_event_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "domain_event"
+            (
+            "id" bigint,
+            "creation_date" timestamp,
+            "creator" varchar(256),
+            "creator_type" varchar(256),
+            "domain_id" varchar(256),
+            "domain_type" varchar(256),
+            "description" varchar(1024) default null,
+            constraint "pk_audit_event" primary key("id")
+            );
+
+            COMMENT ON TABLE  "domain_event" is 'Represents a task event';
+            COMMENT ON COLUMN "domain_event"."id" is 'The primary key';
+            COMMENT ON COLUMN "domain_event"."creation_date" is 'The date of creation';
+            COMMENT ON COLUMN "domain_event"."creator" is 'The user who triggered this event (URID) or the system';
+            COMMENT ON COLUMN "domain_event"."domain_type" is 'The domain type (e.g. INITIATION, COMMENT, TASK_CLAIMED, TASK_ASSIGNED)';
+            COMMENT ON COLUMN "domain_event"."domain_id" is 'The domain identifier (e.g. Request Id, Transaction Id, etc.';
+            COMMENT ON COLUMN "domain_event"."description" is 'The description of what happened';
+        </sql>
+
+    </changeSet>
+
+    <changeSet id="0_9_0_ADD_COLUMN_TO_DOMAIN_EVENT" author="fragkise" context="migrate">
+        <comment>Alter table domain_event by adding column domainAction</comment>
+        <sql>
+            ALTER TABLE domain_event ADD COLUMN domain_action character varying(255) NULL;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

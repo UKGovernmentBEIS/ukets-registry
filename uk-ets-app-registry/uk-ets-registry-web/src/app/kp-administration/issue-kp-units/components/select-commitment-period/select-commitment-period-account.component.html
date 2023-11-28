@@ -1,0 +1,37 @@
+<div class="govuk-grid-row">
+  <span class="govuk-caption-xl"> Issue KP Units </span>
+  <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">
+          Specify the commitment period and the acquiring account
+        </h1>
+      </legend>
+      <app-form-control-select
+        controlName="commitmentPeriod"
+        [validationErrorMessage]="validationErrorMessage.commitmentPeriod"
+        [class]="'govuk-grid-column-one-half'"
+        [placeHolder]="'Select from list'"
+        [options]="commitmentPeriodOptions()"
+        (change)="changeCommitmentPeriod()"
+        [label]="'Commitment period'"
+      ></app-form-control-select>
+      <app-form-control-select
+        controlName="acquiringAccount"
+        [validationErrorMessage]="validationErrorMessage.acquiringAccount"
+        [class]="'govuk-grid-column-one-half'"
+        [placeHolder]="'Select from list'"
+        [options]="accountOptions()"
+        [label]="'Acquiring account'"
+      ></app-form-control-select>
+    </fieldset>
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      type="submit"
+      id="continue"
+    >
+      Continue
+    </button>
+  </form>
+</div>

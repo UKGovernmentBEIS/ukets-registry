@@ -1,0 +1,47 @@
+<div class="govuk-grid-row govuk-!-margin-top-5">
+  <div class="govuk-grid-column-full">
+    <ng-container *ngIf="documents && documents.length === 0; else elseBlock">
+      <span class="govuk-hint"> No items added.</span>
+    </ng-container>
+    <ng-template #elseBlock>
+      <table aria-describedby="show-user-files" class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">File</th>
+            <th scope="col" class="govuk-table__header">Type</th>
+            <th scope="col" class="govuk-table__header">Uploaded on</th>
+            <th scope="col" class="govuk-table__header" *ngIf="canDeleteFile">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <ng-container *ngFor="let file of documents">
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header">
+                <a
+                  class="govuk-link"
+                  (click)="onDownloadFile(file)"
+                  [routerLink]="[]"
+                  >{{ file.name }}</a
+                >
+              </th>
+              <td class="govuk-table__cell">{{ file.type }}</td>
+              <td class="govuk-table__cell">
+                {{ file.uploadedDate | gdsDateTimeShort }}
+              </td>
+              <td class="govuk-table__cell" *ngIf="canDeleteFile">
+                <a
+                  class="govuk-link"
+                  (click)="onDeleteFile(file)"
+                  [routerLink]="[]"
+                  >Delete</a
+                >
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </ng-template>
+  </div>
+</div>

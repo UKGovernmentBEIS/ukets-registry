@@ -1,0 +1,14 @@
+<hr
+  class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
+/>
+<app-summary-list
+  [class]="'govuk-summary-list govuk-summary-list--no-border'"
+  [summaryListItems]="getSummaryListItems()"
+  [title]="'Account details'"
+></app-summary-list>
+<app-operator-summary-changes
+  [current]="operatorUpdateTaskDetails.current"
+  [changed]="operatorUpdateTaskDetails.changed"
+  [isWizardOrientedFlag]="false"
+>
+</app-operator-summary-changes>

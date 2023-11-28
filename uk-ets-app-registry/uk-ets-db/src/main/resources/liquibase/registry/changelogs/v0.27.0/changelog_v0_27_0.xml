@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_27_0_UPDATE_UK_MARKET_STABILITY_RESERVE_ACCOUNT" author="georgopoulosp" context="migrate">
+        <comment>
+            Updates the account name of the Market Stability Reserve Account to Market Stability Mechanism Account.
+        </comment>
+        <sql>
+            update account set type_label = 'ETS - UK Market Stability Mechanism Account',
+            registry_account_type = 'UK_MARKET_STABILITY_MECHANISM_ACCOUNT',
+            account_name = 'UK Market Stability Mechanism Account'
+            where registry_account_type = 'UK_MARKET_STABILITY_RESERVE_ACCOUNT';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_27_0_UPDATE_KP_ACCOUNTS_AH_NAME" author="nakoup" context="migrate">
+        <comment>
+            Updates the account holder name of the KP Government accounts
+        </comment>
+        <sql>
+            update account_holder
+            set name='BEIS International'
+            where id in (
+            select distinct(account_holder_id)
+            from account
+            where kyoto_account_type in (
+            'PARTY_HOLDING_ACCOUNT',
+            'PREVIOUS_PERIOD_SURPLUS_RESERVE_ACCOUNT',
+            'NET_SOURCE_CANCELLATION_ACCOUNT',
+            'NON_COMPLIANCE_CANCELLATION_ACCOUNT',
+            'VOLUNTARY_CANCELLATION_ACCOUNT',
+            'EXCESS_ISSUANCE_CANCELLATION_ACCOUNT',
+            'CCS_NET_REVERSAL_CANCELLATION_ACCOUNT',
+            'CCS_NON_SUBMISSION_OF_VERIFICATION_REPORT_CANCELLATION_ACCOUNT',
+            'MANDATORY_CANCELLATION_ACCOUNT',
+            'ADMINISTRATIVE_CANCELLATION_ACCOUNT',
+            'ART37TER_CANCELLATION_ACCOUNT',
+            'AMBITION_INCREASE_CANCELLATION_ACCOUNT',
+            'RETIREMENT_ACCOUNT',
+            'TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT')
+            and registry_account_type = 'NONE'
+            )
+        </sql>
+
+        <rollback>
+            <sql>
+                update account_holder
+                set name='UK Government'
+                where id in (
+                select distinct(account_holder_id)
+                from account
+                where kyoto_account_type in (
+                'PARTY_HOLDING_ACCOUNT',
+                'PREVIOUS_PERIOD_SURPLUS_RESERVE_ACCOUNT',
+                'NET_SOURCE_CANCELLATION_ACCOUNT',
+                'NON_COMPLIANCE_CANCELLATION_ACCOUNT',
+                'VOLUNTARY_CANCELLATION_ACCOUNT',
+                'EXCESS_ISSUANCE_CANCELLATION_ACCOUNT',
+                'CCS_NET_REVERSAL_CANCELLATION_ACCOUNT',
+                'CCS_NON_SUBMISSION_OF_VERIFICATION_REPORT_CANCELLATION_ACCOUNT',
+                'MANDATORY_CANCELLATION_ACCOUNT',
+                'ADMINISTRATIVE_CANCELLATION_ACCOUNT',
+                'ART37TER_CANCELLATION_ACCOUNT',
+                'AMBITION_INCREASE_CANCELLATION_ACCOUNT',
+                'RETIREMENT_ACCOUNT',
+                'TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+                'LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+                'LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE',
+                'LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT')
+                and registry_account_type = 'NONE'
+                )
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_27_0_SET_UK_HOLIDAYS" author="nakoup" context="migrate">
+        <comment>Sets the UK bank Holidays</comment>
+        <sql>
+            --2022
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-01-03');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-04-15');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-04-18');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-05-02');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-06-02');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-06-03');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-08-29');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-12-26');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2022-12-27');
+
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_27_0_CREATE_NOTIFICATION_TABLES" author="trifyllisa" context="migrate">
+        <sql>
+            create sequence notification_definition_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            CREATE TABLE notification_definition
+            (
+                id             BIGINT NOT NULL PRIMARY KEY,
+                type           VARCHAR(50) NOT NULL,
+                short_text     VARCHAR(255),
+                long_text      TEXT,
+                channel_type   VARCHAR(50) NOT NULL,
+                supported_parameters TEXT,
+                selection_criteria TEXT
+            );
+
+            COMMENT ON TABLE "notification_definition" IS 'Contains the template for every type of notification';
+            COMMENT ON COLUMN "notification_definition"."short_text" IS 'The subject of the notification';
+            COMMENT ON COLUMN "notification_definition"."long_text" IS 'The body of the notification';
+            COMMENT ON COLUMN "notification_definition"."supported_parameters" IS 'The comma-separated list of allowed parameters for this notification';
+            COMMENT ON COLUMN "notification_definition"."selection_criteria" IS 'A JSON representation containing various filters that can be applied to retrieve recipients';
+
+
+            create sequence notification_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            CREATE TABLE notification
+            (
+                id                         BIGINT NOT NULL PRIMARY KEY,
+                notification_definition_id BIGINT
+                    CONSTRAINT fk_notification_definition references notification_definition,
+                status                     VARCHAR(50) NOT NULL,
+                short_text                 VARCHAR(255),
+                long_text                  TEXT,
+                times_fired                BIGINT,
+                creator                    VARCHAR(50) NOT NULL,
+                last_execution_date        TIMESTAMP,
+                start_date_time            TIMESTAMP,
+                end_date_time              TIMESTAMP,
+                run_every_x_days           INTEGER
+            );
+
+            COMMENT ON TABLE "notification" IS 'A user-initiated notification based on a definition';
+            COMMENT ON COLUMN "notification"."status" IS 'Can be ACTIVE, PENDING or EXPIRED';
+            COMMENT ON COLUMN "notification"."short_text" IS 'The subject of the notification, originally copied from its definition';
+            COMMENT ON COLUMN "notification"."long_text" IS 'The body of the notification, originally copied from its definition';
+            COMMENT ON COLUMN "notification"."creator" IS 'The URID of the user that created the notification';
+
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "notification" CASCADE;
+                DROP TABLE IF EXISTS "notification_definition" CASCADE;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_27_0_CREATE_INITIAL_NOTIFICATION_DEFINITIONS" author="trifyllisa" context="migrate">
+        <sqlFile path="initial_notification_definition_data.sql" relativeToChangelogFile="true"
+                 splitStatements="false"/>
+        <rollback>
+            <sql>
+                delete
+                from notification_definition
+                where 1 = 1;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_27_0_ADD_UPDATE_COLUMNS_IN_NOTIFICATION_TABLE" author="trifyllisa" context="migrate">
+
+        <sql>
+            alter table notification
+                add column last_updated timestamp,
+                add column updated_by   varchar(50);
+
+            comment on column notification.updated_by is 'The URID of the user that updated the notification';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_27_0_ACCOUNT_AND_UNIT_BLOCK_CONSTRAINTS_AND_INDEXES_CHANGES" author="nakoup" context="migrate">
+        <comment>
+            Adds a constraint and removes indexes on account table and renames a column on unit_block table
+        </comment>
+        <sql>
+            alter table "account" add constraint "acc_full_identifier_ukey" unique ("full_identifier");
+
+            drop index if exists acc_reco_idx;
+            drop index if exists acc_copeco_idx;
+
+            alter table unit_block rename column "account_id" to account_identifier;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_27_0_ADD_KNOWN_AS_COLUMN" author="apostolouk" context="migrate">
+		<comment>Adds "known_as" column to users table</comment>
+		<sql>
+			alter table users
+			add column known_as varchar(100) default null;
+
+			comment on column users.known_as is 'Known as.';
+		</sql>
+
+	</changeSet>
+
+    <changeSet id="0_27_0_ADD_SINGLE_PERSON_APPROVAL_REQUIRED_COLUMN_TO_ACCOUNT" author="koukoulakisg" context="migrate">
+        <comment>Adds new single person approval column on account table.</comment>
+        <sql>
+            alter table account
+            add column single_person_approval_required boolean default false;
+
+            comment on column account.single_person_approval_required is 'Whether a single person approval is required for specific transactions';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_27_0_UPDATE_SINGLE_PERSON_APPROVAL_COLUMN_TO_TRUE_FOR_OHA_AOHA_ACCOUNTS" author="koukoulakisg" context="migrate">
+        <comment>Update sigle person approval column to true for OHA and AOHA accounts.</comment>
+        <sql>
+            update account set single_person_approval_required = true
+            where registry_account_type in ('OPERATOR_HOLDING_ACCOUNT', 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT');
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_27_0_INSERT_DEFAULT_AD_HOC_NOTIFICATION" author="trifyllisa" context="migrate">
+        <comment>Insert the default dashboard notification concerning help and advice.</comment>
+        <sqlFile path="default_ad_hoc_notification.sql" relativeToChangelogFile="true"
+                 splitStatements="false"/>
+    </changeSet>
+
+    <changeSet id="0_27_0_ADD_SIGNATURE_INFO_COLUMNS_IN_TRANSACTION_TABLE" author="koukoulakisg" context="migrate">
+        <sql>
+            alter table "transaction"
+                add column "signature" varchar(255),
+                add column "signed_data" json;
+            comment on column "transaction"."signature" is 'Contains the signature, given by the signing-api during signing.';
+            comment on column "transaction"."signed_data" is 'The signed data object. Contains a JSON representation of the transaction summary.';
+        </sql>
+    </changeSet>
+    <changeSet id="0_27_0_MIGRATE_CURRENT_TRANSACTION_RULES_TO_OPENED_TASKS" author="koukoulakisg" context="migrate">
+        <comment>Migrate the current transaction rules to opened transaction rules update tasks</comment>
+        <sqlFile path="migrate_current_transaction_rules_to_opened_tasks.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
+	
+	<changeSet id="0_27_0_UPDATE_USERS_DISCLOSED_NAME_IF_EMPTY" author="apostolouk" context="migrate">
+        <comment>
+            Updates empty disclosed_name values with first and last name.
+        </comment>
+        <sql>
+            update users
+            set disclosed_name = concat(first_name,' ',last_name)
+            where (disclosed_name = '') is not false;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

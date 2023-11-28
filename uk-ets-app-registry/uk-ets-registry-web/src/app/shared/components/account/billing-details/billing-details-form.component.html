@@ -1,0 +1,188 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="
+    (updateMode ? 'Request to update ' : 'Add ') +
+    'the' +
+    AccountTypeMap[accountType].label +
+    'details'
+  "
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl"
+      >{{ updateMode ? 'Request to update ' : 'Add ' }}the
+      {{ AccountTypeMap[accountType].label }} details</span
+    >
+    <h1 class="govuk-heading-xl">
+      {{ updateMode ? 'Update' : 'Add' }} the account billing details
+    </h1>
+
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="_accountDetails"
+    >
+      <ng-container
+        *ngIf="
+          updateMode &&
+          (!_billingPhoneInfo ||
+            !_accountDetails.billingContactDetails.contactName ||
+            !_accountDetails.billingContactDetails.email)
+        "
+      >
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Warning</span>
+            There is pending mandatory information.
+          </strong>
+        </div>
+      </ng-container>
+      <div class="govuk-fieldset" role="group">
+        <ng-container *ngIf="accountType | isBillable">
+          <fieldset class="govuk-fieldset" role="group">
+            <div class="govuk-form-group" id="address-form-checkbox">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                Billing address
+              </legend>
+
+              <div class="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    (change)="onSameAddressCheckChange($event)"
+                    class="govuk-checkboxes__input"
+                    id="address-checkbox"
+                    name="address-checkbox"
+                    type="checkbox"
+                    [checked]="accountDetailsSameBillingAddress"
+                  />
+                  <label
+                    class="govuk-label govuk-checkboxes__label"
+                    for="address-checkbox"
+                  >
+                    The billing address is the same as the account holder
+                    address
+                  </label>
+                </div>
+              </div>
+            </div>
+            <app-form-control-text
+              [readonly]="!!accountDetailsSameBillingAddress"
+              [disabled]="!!accountDetailsSameBillingAddress"
+              label="Address line 1"
+              [maxlength]="256"
+              [validationErrorMessage]="
+                validationErrorMessage.buildingAndStreet
+              "
+              controlName="address.buildingAndStreet"
+            ></app-form-control-text>
+            <app-form-control-text
+              [readonly]="!!accountDetailsSameBillingAddress"
+              [disabled]="!!accountDetailsSameBillingAddress"
+              label="Address line 2 (optional)"
+              [maxlength]="256"
+              controlName="address.buildingAndStreet2"
+            ></app-form-control-text>
+            <app-form-control-text
+              [readonly]="!!accountDetailsSameBillingAddress"
+              [disabled]="!!accountDetailsSameBillingAddress"
+              label="Address line 3 (optional)"
+              [maxlength]="256"
+              controlName="address.buildingAndStreet3"
+            ></app-form-control-text>
+            <app-form-control-text
+              [readonly]="!!accountDetailsSameBillingAddress"
+              [disabled]="!!accountDetailsSameBillingAddress"
+              label="Town or city"
+              [validationErrorMessage]="validationErrorMessage.townOrCity"
+              [maxlength]="256"
+              controlName="address.townOrCity"
+            ></app-form-control-text>
+            <app-form-control-text
+              [readonly]="!!accountDetailsSameBillingAddress"
+              [disabled]="!!accountDetailsSameBillingAddress"
+              label="State or Province (optional)"
+              [maxlength]="256"
+              controlName="address.stateOrProvince"
+            ></app-form-control-text>
+            <app-form-control-select
+              [readonly]="!!accountDetailsSameBillingAddress"
+              [options]="_countryOptions"
+              [class]="'govuk-!-width-two-thirds'"
+              [label]="'Country'"
+              [validationErrorMessage]="validationErrorMessage.country"
+              controlName="address.country"
+            ></app-form-control-select>
+            <app-form-control-text
+              appDebounceClick
+              [readonly]="!!accountDetailsSameBillingAddress"
+              [disabled]="!!accountDetailsSameBillingAddress"
+              [label]="'Postal Code or ZIP (optional, if outside UK)'"
+              [class]="'govuk-input--width-10'"
+              [maxlength]="65"
+              [validationErrorMessage]="validationErrorMessage.postCode"
+              controlName="address.postCode"
+            ></app-form-control-text>
+          </fieldset>
+
+          <fieldset class="govuk-fieldset" role="group">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              Billing contact details
+            </legend>
+            <span class="govuk-hint"
+              >We will only use this information to contact you about invoices
+              for this Registry Account</span
+            >
+            <app-form-control-text
+              *ngIf="isAdmin"
+              [readonly]="!isSeniorAdmin"
+              [disabled]="!isSeniorAdmin"
+              [label]="'SOP Customer ID (optional)'"
+              [maxlength]="256"
+              [validationErrorMessage]="validationErrorMessage.sopCustomerId"
+              controlName="billingContactDetails.sopCustomerId"
+            ></app-form-control-text>
+            <app-form-control-text
+              [label]="'Contact Name'"
+              [hint]="
+                'This is the name of the person or department your invoices will be sent to'
+              "
+              [maxlength]="256"
+              [validationErrorMessage]="validationErrorMessage.contactName"
+              controlName="billingContactDetails.contactName"
+            ></app-form-control-text>
+            <span class="govuk-label">Phone number</span>
+            <span class="govuk-hint"
+              >This is the number we will call if we have a query about your
+              invoices</span
+            >
+            <app-uk-phone-select
+              [phoneInfo]="_billingPhoneInfo"
+              [showErrors]="showErrors"
+              [countryCodes]="countryCodes"
+              [validationErrorMessages]="validationMessages.billingPhone"
+              formControlName="billingPhone"
+            ></app-uk-phone-select>
+            <app-form-control-email
+              [label]="'Email address'"
+              [hint]="
+                'This is where we will send your annual subsistence invoice(s)'
+              "
+              [maxlength]="256"
+              [validationErrorMessage]="validationErrorMessage.email"
+              controlName="billingContactDetails.email"
+            ></app-form-control-email>
+          </fieldset>
+        </ng-container>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

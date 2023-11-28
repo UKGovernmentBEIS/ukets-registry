@@ -1,0 +1,29 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="formRadioGroupInfo.radioGroupHeadingCaption"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="accountHolderTypeFormGroup"
+      [appConnectForm]="accountHolderType"
+    >
+      <app-uk-radio-input
+        controlName="accountHolderType"
+        [formRadioGroupInfo]="formRadioGroupInfo"
+        [validationErrorMessage]="this.validationErrorMessage.accountHolderType"
+      >
+      </app-uk-radio-input>
+
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

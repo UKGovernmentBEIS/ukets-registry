@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="0_10_0_ADD_TOTAL_QUANTITY_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<comment>Adds a UK Total Quantity account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal,
+			account_holder_id
+			)
+			values
+			(
+			nextval('account_seq'),
+			1010,
+			'Total Quantity Account',
+			'UK_TOTAL_QUANTITY_ACCOUNT',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			0,
+			'UK',
+			47,
+			'UK-100-1010-0-47',
+			'UK Total Quantity Account',
+			true,
+			true,
+			(select id from account_holder where name = 'HMG')
+			);
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>
+

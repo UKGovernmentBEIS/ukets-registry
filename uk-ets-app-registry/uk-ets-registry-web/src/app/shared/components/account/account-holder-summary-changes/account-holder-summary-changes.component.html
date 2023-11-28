@@ -1,0 +1,101 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <ng-container *ngIf="!isContactBasedUpdate; else contactUpdate">
+      <ng-container *ngIf="isIndividual">
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-3'"
+          [summaryListItems]="getSummaryListIndividualItemsHeader()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-9'"
+          [summaryListItems]="getSummaryListIndividualItems()"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-3'"
+          [summaryListItems]="getSummaryListIndividualContactItemsHeader()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-9'"
+          [summaryListItems]="getSummaryListIndividualContactItems()"
+        ></app-summary-list>
+      </ng-container>
+
+      <ng-container *ngIf="!isIndividual">
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-3'"
+          [summaryListItems]="getSummaryListOrganizationItemsHeader()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-9'"
+          [summaryListItems]="getSummaryListOrganizationItems()"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-3'"
+          [summaryListItems]="getSummaryListOrganizationAddressItemsHeader()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-9'"
+          [summaryListItems]="getSummaryListOrganizationAddressItems()"
+        ></app-summary-list>
+      </ng-container>
+    </ng-container>
+    <ng-template #contactUpdate>
+      <ng-container *ngIf="showRemoveAPCMessage">
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-!-margin-bottom-0'"
+          [summaryListItems]="getRemoveMessageSummaryListItemsHeader()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+        <app-summary-list
+          [class]="'govuk-summary-list govuk-summary-list--no-border'"
+          [summaryListItems]="getRemoveMessageSummaryListItems()"
+        ></app-summary-list>
+      </ng-container>
+
+      <app-summary-list
+        [class]="
+          showBorderLine
+            ? 'govuk-summary-list govuk-!-margin-bottom-3'
+            : 'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-3'
+        "
+        [summaryListItems]="getSummaryListItemsDetailsHeader()"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+      <app-summary-list
+        [class]="
+          showBorderLine
+            ? 'govuk-summary-list govuk-!-margin-bottom-9'
+            : 'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
+        "
+        [summaryListItems]="getSummaryListItemsDetailsItems()"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+
+      <app-summary-list
+        [class]="
+          showBorderLine
+            ? 'govuk-summary-list govuk-!-margin-bottom-3'
+            : 'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-3'
+        "
+        [summaryListItems]="getSummaryListItemsWorkDetailsHeader()"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+      <app-summary-list
+        [class]="
+          showBorderLine
+            ? 'govuk-summary-list govuk-!-margin-bottom-9'
+            : 'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
+        "
+        [summaryListItems]="getSummaryListItemsWorkDetailsItems()"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+    </ng-template>
+  </div>
+</div>

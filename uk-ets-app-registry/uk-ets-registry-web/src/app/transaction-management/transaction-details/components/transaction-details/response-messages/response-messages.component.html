@@ -1,0 +1,37 @@
+<div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+  <h2 class="govuk-heading-m">Warning and error messages</h2>
+</div>
+<ng-container
+  *ngIf="transactionResponses != null && transactionResponses.length === 0"
+>
+  <span class="govuk-hint"> No items added.</span>
+</ng-container>
+<ng-container
+  *ngIf="transactionResponses != null && transactionResponses.length > 0"
+>
+  <table class="govuk-table" aria-describedby="display-response-messages">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">When</th>
+        <th scope="col" class="govuk-table__header">Response code</th>
+        <th scope="col" class="govuk-table__header">Details</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let response of transactionResponses">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">
+            {{ response.dateOccurred | date: 'dd MMM yyyy, hh:mm' | titlecase
+            }}{{ response.dateOccurred | date: 'a' | lowercase }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ response.errorCode }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ response.details }}
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</ng-container>

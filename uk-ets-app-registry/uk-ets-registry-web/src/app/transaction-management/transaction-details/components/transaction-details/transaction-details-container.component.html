@@ -1,0 +1,41 @@
+<app-feature-header-wrapper>
+  <app-transaction-header
+    [transactionDetails]="transactionDetails$ | async"
+    (cancelTransaction)="navigateToManuallyCancel($event)"
+    [goBackToListRoute]="goBackToListRoute$ | async"
+    [goBackToListNavigationExtras]="goBackToListNavigationExtras$ | async"
+    [isReportSuccess]="isReportSuccess$ | async"
+  >
+  </app-transaction-header>
+</app-feature-header-wrapper>
+<app-transaction-info
+  [transactionDetails]="transactionDetails$ | async"
+  [isAdmin]="isAdmin$ | async"
+></app-transaction-info>
+<div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+  <h2 class="govuk-heading-m">Quantity to transfer</h2>
+</div>
+<app-transaction-quantity
+  [transactionBlocks]="transactionBlocks$ | async"
+  [transactionType]="transactionType$ | async"
+  [isEtsTransaction]="isEtsTransaction$ | async"
+></app-transaction-quantity>
+
+<div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+  <h2 class="govuk-heading-m">Transaction reference</h2>
+</div>
+<app-transaction-reference [reference]="transactionReference$ | async">
+</app-transaction-reference>
+
+<div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+  <h2 class="govuk-heading-m">History and comments</h2>
+</div>
+<app-domain-events
+  [domainEvents]="eventHistory$ | async"
+  [isAdmin]="isAdmin$ | async"
+  (navigate)="navigateToUserPage($event)"
+></app-domain-events>
+<app-response-messages
+  [transactionResponses]="transactionResponses$ | async"
+></app-response-messages>
+<app-back-to-top></app-back-to-top>

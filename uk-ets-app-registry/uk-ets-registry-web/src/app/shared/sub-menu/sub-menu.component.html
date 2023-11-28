@@ -1,0 +1,24 @@
+<div class="govuk-width-container">
+  <div class="govuk-grid-row" *ngIf="subMenuItems?.length > 0">
+    <div class="govuk-grid-column-full">
+      <nav class="hmcts-sub-navigation" aria-label="Sub navigation">
+        <ul class="hmcts-sub-navigation__list">
+          <li
+            class="hmcts-sub-navigation__item"
+            *ngFor="let item of subMenuItems"
+          >
+            <a
+              class="hmcts-sub-navigation__link govuk-link"
+              [attr.aria-current]="
+                subMenuActive === item.routerLink ? 'page' : 'false'
+              "
+              [routerLink]="item.routerLink"
+            >
+              {{ item.label }}
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

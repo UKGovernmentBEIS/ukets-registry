@@ -1,0 +1,103 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <span class="govuk-caption-xl"
+        >Request to update the authorised representatives</span
+      >
+      <h1 class="govuk-heading-xl">
+        {{ updateType | arUpdateType }}
+      </h1>
+      <span id="changed-name-hint" class="govuk-hint">
+        Select one option from the users below
+      </span>
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="showErrors"
+        id="authorisedRepresentative-label"
+      >
+        <span
+          *ngIf="showErrors"
+          class="govuk-error-message"
+          [attr.id]="'authorisedRepresentative-error-label'"
+        >
+          <span class="govuk-visually-hidden">Error:</span
+          >{{ validationErrorMessage['authorisedRepresentative'] }}
+        </span>
+        <table
+          aria-describedby="trusted-accounts"
+          class="govuk-table govuk-!-margin-bottom-4"
+        >
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Select</th>
+              <th scope="col" class="govuk-table__header">Name</th>
+              <th scope="col" class="govuk-table__header">Permissions</th>
+              <th scope="col" class="govuk-table__header">
+                Work contact details
+              </th>
+              <th scope="col" class="govuk-table__header">AR status</th>
+              <th scope="col" class="govuk-table__header">User status</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr
+              *ngFor="let ar of authorisedRepresentatives"
+              class="govuk-table__row"
+            >
+              <th scope="row" class="govuk-table__header">
+                <div class="govuk-radios govuk-radios--small">
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [id]="'authorised-representative-' + ar.urid"
+                      type="radio"
+                      formControlName="authorisedRepresentative"
+                      value="{{ ar.urid }}"
+                      data-aria-controls="conditional-how-contracted-conditional"
+                    />
+                    <label
+                      class="govuk-label govuk-radios__label"
+                      [attr.for]="'authorised-representative-' + ar.urid"
+                    >
+                    </label>
+                  </div>
+                </div>
+              </th>
+              <td class="govuk-table__cell">
+                {{ ar | arDisplayName }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ ar.right | accessRights }}
+              </td>
+              <td class="govuk-table__cell">
+                <app-shared-authorised-representative-contact
+                  [contact]="ar.contact"
+                  [firstName]="ar.user.firstName"
+                  [lastName]="ar.user.lastName"
+                ></app-shared-authorised-representative-contact>
+              </td>
+              <td class="govuk-table__cell">
+                <app-govuk-tag [color]="accountAccessStateMap[ar.state].color">
+                  {{ accountAccessStateMap[ar.state].label }}
+                </app-govuk-tag>
+              </td>
+              <td class="govuk-table__cell">
+                <app-govuk-tag [color]="userStatusMap[ar.user.status].color">
+                  {{ userStatusMap[ar.user.status].label }}
+                </app-govuk-tag>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

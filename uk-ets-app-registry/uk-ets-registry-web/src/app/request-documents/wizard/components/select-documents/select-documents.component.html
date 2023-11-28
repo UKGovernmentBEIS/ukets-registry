@@ -1,0 +1,106 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <span class="govuk-caption-xl">{{ getTitleText() }}</span>
+    <h1 class="govuk-heading-xl">Choose the documents you need</h1>
+    <form [formGroup]="formGroup" (submit)="onSubmit()">
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="recipientName"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">
+            Recipient details
+          </dt>
+          <dd class="govuk-summary-list__value"></dd>
+          <dd class="govuk-summary-list__key"></dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngIf="recipientName">
+          <dt class="govuk-summary-list__key">Recipient</dt>
+          <dd class="govuk-summary-list__value">
+            {{ recipientName }}
+          </dd>
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="accountHolderName || accountNumber || accountName"
+      >
+        <div class="govuk-summary-list__row govuk-body-l">
+          <dt class="govuk-summary-list__key">Account details</dt>
+          <dd class="govuk-summary-list__value"></dd>
+          <dd class="govuk-summary-list__key"></dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngIf="accountHolderName">
+          <dt class="govuk-summary-list__key">Account Holder</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountHolderName }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngIf="accountNumber">
+          <dt class="govuk-summary-list__key">Account number</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountNumber }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngIf="accountName">
+          <dt class="govuk-summary-list__key">Account name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountName }}
+          </dd>
+        </div>
+      </dl>
+      <ol class="govuk-list govuk-list--number">
+        <li *ngFor="let control of getAllFormControls()">
+          <dl
+            class="
+              govuk-summary-list govuk-summary-list--no-border
+              govuk-!-margin-bottom-0
+            "
+          >
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Document name</dt>
+              <dd class="govuk-summary-list__actions">
+                <a
+                  class="govuk-link"
+                  [routerLink]="[]"
+                  (click)="removeFormControl(control)"
+                >
+                  Remove
+                </a>
+              </dd>
+            </div>
+          </dl>
+          <app-form-control-text
+            [maxlength]="256"
+            [validationErrorMessage]="
+              validationErrorMessage[getControlName(control)]
+            "
+            [controlName]="getControlName(control)"
+            [label]="'Add Document Name'"
+            [showLabel]="false"
+          ></app-form-control-text>
+        </li>
+      </ol>
+      <ul class="govuk-list">
+        <li>
+          <a
+            [routerLink]="[]"
+            (click)="addFormControl()"
+            class="govuk-link govuk-link--no-visited-state"
+            >Add another document</a
+          >
+        </li>
+      </ul>
+      <div>
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

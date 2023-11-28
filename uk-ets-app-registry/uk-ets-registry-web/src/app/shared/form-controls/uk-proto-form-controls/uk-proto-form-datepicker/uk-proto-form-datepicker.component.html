@@ -1,0 +1,117 @@
+<div
+  class="govuk-form-group"
+  [ngClass]="{ 'd-flex': isHorizontal }"
+  [class.govuk-form-group--error]="showError()"
+  [attr.role]="attrRole"
+  [attr.aria-labelledby]="attrDefaultAriaLabelledBy"
+>
+  <label
+    *ngIf="label"
+    class="govuk-label"
+    [ngClass]="{ 'govuk-!-display-inline-block': dateFormatHint && !hint }"
+    [attr.for]="id"
+    [attr.id]="labelId"
+  >
+    {{ label }}
+  </label>
+
+  <span
+    *ngIf="hint"
+    [attr.id]="hintId"
+    class="govuk-!-display-inline-block govuk-hint"
+    [ngClass]="hintStyleClass"
+  >
+    {{ hint }}
+  </span>
+  <span
+    *ngIf="dateFormatHint"
+    class="
+      govuk-!-padding-left-1
+      govuk-!-display-inline-block
+      govuk-hint
+      govuk-text-grey
+    "
+    [attr.id]="id + '-dateFormatHint'"
+    [ngClass]="hintStyleClass"
+  >
+    (e.g. 31/03/2021)
+  </span>
+  <ng-container *ngIf="validationErrorMessage">
+    <span
+      *ngIf="showError() && formControl.errors"
+      id="event-name-error"
+      class="govuk-error-message"
+      role="alert"
+      [attr.aria-describedby]="labelId"
+    >
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ validationErrorMessage }}
+    </span>
+  </ng-container>
+
+  <div class="input-group relative">
+    <input
+      class="govuk-input"
+      [readonly]="isReadonly"
+      [ngClass]="class"
+      [required]="hasRequiredField(formControl)"
+      [attr.id]="id"
+      [attr.name]="id"
+      [placeholder]="'DD/MM/YYYY'"
+      [formControl]="formControl"
+      [attr.aria-invalid]="formControl.dirty && formControl.invalid"
+      ngbDatepicker
+      #d="ngbDatepicker"
+      [attr.aria-labelledby]="attrDefaultAriaLabelledBy"
+      [dayTemplate]="dayTemplate"
+      [footerTemplate]="footerTemplate"
+    />
+    <button
+      type="button"
+      class="icon-calendar"
+      aria-label="open calendar"
+      title="open calendar"
+      (click)="d.toggle()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+        <path
+          d="M400 64h-48V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H160V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zm-6 400H54c-3.3 0-6-2.7-6-6V160h352v298c0 3.3-2.7 6-6 6z"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Documentation: https://ng-bootstrap.github.io/#/components/datepicker/api#DayTemplateContext -->
+
+<ng-template #footerTemplate>
+  <div class="link-container">
+    <a class="govuk-link pointer" (click)="setToToday(); d.close()"
+      >Set to Today</a
+    >
+  </div>
+</ng-template>
+
+<ng-template
+  #dayTemplate
+  let-date="date"
+  let-selected="selected"
+  let-today="today"
+>
+  <div
+    role="gridcell"
+    class="ngb-dp-day"
+    [ngClass]="{
+      'today-date': today,
+      'selected-date': selected
+    }"
+    tabindex="-1"
+    [attr.aria-label]="
+      date.year + '-' + date.month + '-' + date.day | date: 'fullDate'
+    "
+  >
+    <div ngbdatepickerdayview class="date-text">
+      <span>{{ date.day }}</span>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,86 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-report-success-banner
+      [isVisible]="isReportSuccess$ | async"
+    ></app-report-success-banner>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Transactions</h1>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-show-hide-toggle-button
+          [displayable]="true"
+          [condition]="hideCriteria$ | async"
+          [trueStateLabel]="'Show filters'"
+          [falseStateLabel]="'Hide filters'"
+          (toggle)="hideShowCriteria($event)"
+        ></app-show-hide-toggle-button>
+
+        <span class="vertical-divider"></span>
+
+        <app-search-report-button
+          *ngIf="
+            'urn:uk-ets-reports-api:anyReportingAction'
+              | protect: 'uk-ets-reports-api'
+              | async
+          "
+          [criteria]="storedCriteria$ | async"
+          (requestReport)="requestReport($event)"
+        ></app-search-report-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-search-transactions-form
+  *ngIf="sortParameters$ | async as sortParameters"
+  [ngStyle]="{ display: (hideCriteria$ | async) ? 'none' : 'block' }"
+  [filtersDescriptor]="filtersDescriptor"
+  (search)="onSearchTransactions($event, sortParameters)"
+  (submitClick)="onSubmitClick()"
+  (errorDetails)="onError($event)"
+  [storedCriteria]="storedCriteria$ | async"
+  [isAdmin]="isAdmin$ | async"
+  [showAdvancedSearch]="showAdvancedSearch$ | async"
+  (advancedSearch)="toggleAdvancedSearch($event)"
+>
+</app-search-transactions-form>
+
+<app-search-transactions-results
+  *ngIf="resultsLoaded$ | async"
+  [results]="results$ | async"
+  (sort)="onSort($event)"
+  [sortParameters]="sortParameters$ | async"
+  [goBackToListRoute]="'transaction-list'"
+  [showRunningBalances]="false"
+  [isAdmin]="isAdmin$ | async"
+>
+</app-search-transactions-results>
+
+<app-empty-search-results
+  *ngIf="(resultsLoaded$ | async) && (results$ | async).length === 0"
+>
+</app-empty-search-results>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-paginator
+      [pagination]="pagination$ | async"
+      [pageSizeOptions]="pageSizeOptions"
+      (selectFirstPage)="goToFirstPageOfResults($event)"
+      (selectLastPage)="goToLastPageOfResults($event)"
+      (selectNextPage)="goToNextPageOfResults($event)"
+      (selectPreviousPage)="goToPreviousPageOfResults($event)"
+      (changePageSize)="onChangePageSize($event)"
+    >
+    </app-paginator>
+  </div>
+</div>

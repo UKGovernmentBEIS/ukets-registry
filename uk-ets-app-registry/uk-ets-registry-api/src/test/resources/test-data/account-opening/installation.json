@@ -1,0 +1,80 @@
+{
+  "accountDetails": {
+    "address": {
+      "buildingAndStreet": "",
+      "buildingAndStreet2": "",
+      "buildingAndStreet3": "",
+      "country": "UK",
+      "postCode": "",
+      "townOrCity": ""
+    },
+    "name": "test installation account"
+  },
+  "accountHolder": {
+    "address": {
+      "buildingAndStreet": "1",
+      "buildingAndStreet2": "",
+      "buildingAndStreet3": "",
+      "country": "GR",
+      "postCode": "",
+      "townOrCity": "a"
+    },
+    "details": {
+      "name": "test new organization",
+      "noRegistrationNumJustification": "re",
+      "registrationNumber": ""
+    },
+    "type": "ORGANISATION"
+  },
+  "accountHolderContactInfo": {
+    "alternativeContact": null,
+    "primaryContact": {
+      "address": {
+        "buildingAndStreet": "1",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": "",
+        "country": "GR",
+        "postCode": "",
+        "townOrCity": "a"
+      },
+      "details": {
+        "aka": "",
+        "firstName": "givenname primary contact",
+        "lastName": "last name"
+      },
+      "emailAddress": {
+        "emailAddress": "test@test.test",
+        "emailAddressConfirmation": "test@test.test"
+      },
+      "phoneNumber": {
+        "countryCode1": "GR (30)",
+        "countryCode2": "",
+        "phoneNumber1": "2102222222",
+        "phoneNumber2": ""
+      },
+      "positionInCompany": "position-in-company"
+    }
+  },
+  "accountType": "OPERATOR_HOLDING_ACCOUNT",
+  "authorisedRepresentatives": [],
+  "operator": {
+    "activityType": "COMBUSTION_OF_FUELS",
+    "firstYear": "2022",
+    "lastYear": null,
+    "name": "name of installation",
+    "permit": {
+      "date": {
+        "day": "1",
+        "month": "1",
+        "year": "2023"
+      },
+      "id": "unique-permit-id"
+    },
+    "regulator": "NRW",
+    "type": "INSTALLATION"
+  },
+  "trustedAccountListRules": {
+    "rule1": true,
+    "rule2": true
+  }
+}

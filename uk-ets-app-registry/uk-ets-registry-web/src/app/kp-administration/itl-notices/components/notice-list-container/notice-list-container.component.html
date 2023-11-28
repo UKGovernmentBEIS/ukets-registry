@@ -1,0 +1,20 @@
+<h1 class="govuk-heading-xl">ITL Notifications</h1>
+
+<app-notice-list
+  [notices]="notices$ | async"
+  [sortParameters]="sortParameters$ | async"
+  (sort)="onSort($event)"
+></app-notice-list>
+
+<app-paginator
+  [pagination]="pagination$ | async"
+  [pageSizeOptions]="pageSizeOptions"
+  (changePageSize)="onPageEvent($event)"
+  (selectFirstPage)="onPageEvent($event)"
+  (selectLastPage)="onPageEvent($event)"
+  (selectNextPage)="onPageEvent($event)"
+  (selectPreviousPage)="onPageEvent($event)"
+>
+</app-paginator>
+
+<app-back-to-top></app-back-to-top>

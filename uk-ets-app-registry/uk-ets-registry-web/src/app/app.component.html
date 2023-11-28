@@ -1,0 +1,30 @@
+<app-skip-link></app-skip-link>
+<app-header [isAuthenticated]="isAuthenticated$ | async"></app-header>
+<main
+  id="main-content"
+  role="main"
+  tabindex="-1"
+  [attr.aria-hidden]="isTimeoutDialogVisible$ | async"
+>
+  <app-feedback-banner *ngIf="isAuthenticated$ | async"></app-feedback-banner>
+  <app-submenu-container
+    *ngIf="isAuthenticated$ | async"
+  ></app-submenu-container>
+  <div id="feature-header" *ngIf="isAuthenticated$ | async"></div>
+  <div class="govuk-width-container">
+    <div
+      class="govuk-main-wrapper"
+      [ngClass]="noPadding ? 'govuk-!-padding-0' : ''"
+    >
+      <app-back-button></app-back-button>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <app-error-summary-container></app-error-summary-container>
+        </div>
+      </div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</main>
+<app-footer [isAuthenticated]="isAuthenticated$ | async"></app-footer>
+<app-timeout-banner-container></app-timeout-banner-container>

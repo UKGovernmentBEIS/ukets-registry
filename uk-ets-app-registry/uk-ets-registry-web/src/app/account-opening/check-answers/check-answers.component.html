@@ -1,0 +1,693 @@
+<!--TODO: all summary lists are duplicate of the overview components in each subwizard. We should not maintain them twice
+  if more changes are required, refactor the summary lists in the respected overview component and reuse here
+  As an example see the operator summary  which is already updated
+-->
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="
+    'Check your answers before submitting your account opening request'
+  "
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl"
+          >Request to open an Emissions Trading Registry account</span
+        >
+        Check your answers before submitting your account opening request
+      </h1>
+    </div>
+
+    <!--new markup-->
+    <div
+      class="govuk-accordion"
+      data-module="govuk-accordion"
+      id="accordion-with-summary-sections"
+    >
+      <div
+        class="govuk-accordion__section govuk-accordion__section--expanded"
+        *ngIf="accountHolder$ | async as accountHolder"
+      >
+        <div class="govuk-accordion__section-header">
+          <h2 class="govuk-accordion__section-heading">
+            <button
+              type="button"
+              id="accordion-with-summary-sections-account-holder"
+              aria-controls="accordion-with-summary-sections-content-1"
+              class="govuk-accordion__section-button"
+              aria-describedby="accordion-with-summary-sections-summary-1"
+              aria-expanded="true"
+            >
+              <span class="govuk-!-display-inline-block govuk-!-padding-right-4"
+                >1</span
+              >Account holder
+              <span class="govuk-accordion__icon" aria-hidden="true"></span>
+            </button>
+          </h2>
+        </div>
+        <div
+          id="accordion-with-summary-sections-account-holder"
+          class="govuk-accordion__section-content govuk-!-padding-left-6"
+          aria-labelledby="accordion-with-summary-sections-account-holder"
+        >
+          <!-- Individual details -->
+          <ng-container
+            *ngIf="
+              (accountHolderType$ | async) === accountHolderTypes.INDIVIDUAL
+            "
+          >
+            <div class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <div class="govuk-summary-list__key">
+                  <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                    Individual's details
+                  </h2>
+                </div>
+                <div class="govuk-summary-list__actions">
+                  <a
+                    class="govuk-link"
+                    [routerLink]="[]"
+                    *ngIf="
+                      !(accountHolderExisting$ | async).valueOf();
+                      else navigateToAccountHolderOverviewPage
+                    "
+                    (click)="navigateTo(this.accountHolderWizardLinkIndividual)"
+                    >Change</a
+                  >
+                </div>
+              </div>
+            </div>
+            <dl
+              class="govuk-summary-list govuk-summary-list--no-border"
+              *ngIf="accountHolder?.details"
+            >
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">First and middle names</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ accountHolder?.details | individualFirstAndMiddleNames }}
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Last name</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ accountHolder?.details?.lastName }}
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Country of birth</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ accountHolderCountryOfBirth$ | async }}
+                </dd>
+                <dd class="govuk-summary-list__value"></dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  I confirm that the account holder is aged 18 or over
+                </dt>
+                <dd class="govuk-summary-list__value">Yes</dd>
+              </div>
+            </dl>
+
+            <div class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <div class="govuk-summary-list__key">
+                  <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                    Individual's contact details
+                  </h2>
+                </div>
+                <div
+                  class="govuk-summary-list__actions"
+                  *ngIf="!(accountHolderExisting$ | async).valueOf()"
+                >
+                  <a
+                    class="govuk-link"
+                    [routerLink]="[]"
+                    *ngIf="accountHolder"
+                    (click)="
+                      onAddressDetailsClick(
+                        accountHolder,
+                        accountHolderWizardLinkIndividualContact
+                      )
+                    "
+                    >Change</a
+                  >
+                </div>
+              </div>
+            </div>
+            <dl
+              class="govuk-summary-list govuk-summary-list--no-border"
+              *ngIf="accountHolder?.address"
+            >
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Home address</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ (accountHolder | individual).address.buildingAndStreet }}
+                  <ng-container
+                    *ngIf="
+                      (accountHolder | individual).address.buildingAndStreet2 ||
+                      (accountHolder | individual).address.buildingAndStreet3
+                    "
+                  >
+                    <br />
+                    {{
+                      (accountHolder | individual).address.buildingAndStreet2
+                    }}
+                  </ng-container>
+                  <ng-container
+                    *ngIf="
+                      (accountHolder | individual).address.buildingAndStreet3
+                    "
+                  >
+                    <br />{{
+                      (accountHolder | individual).address.buildingAndStreet3
+                    }}</ng-container
+                  ><br />
+                  {{ (accountHolder | individual).address.townOrCity }}
+                  <br />
+                  {{ (accountHolder | individual).address.stateOrProvince }}
+                  <br />
+                  {{ accountHolderAddressCountry$ | async }}
+                  <br />
+                  {{ (accountHolder | individual).address.postCode }}
+                </dd>
+              </div>
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="(accountHolder | individual).phoneNumber?.phoneNumber1"
+              >
+                <dt class="govuk-summary-list__key">Phone number 1</dt>
+                <dd class="govuk-summary-list__value">
+                  +{{ (accountHolder | individual).phoneNumber.countryCode1
+                  }}{{ (accountHolder | individual).phoneNumber.phoneNumber1 }}
+                </dd>
+              </div>
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="(accountHolder | individual).phoneNumber?.phoneNumber2"
+              >
+                <dt class="govuk-summary-list__key">Phone number 2</dt>
+                <dd class="govuk-summary-list__value">
+                  +{{ (accountHolder | individual).phoneNumber.countryCode2
+                  }}{{ (accountHolder | individual).phoneNumber.phoneNumber2 }}
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Email address</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ (accountHolder | individual).emailAddress?.emailAddress }}
+                </dd>
+              </div>
+            </dl>
+          </ng-container>
+          <!-- Organization details -->
+          <ng-container
+            *ngIf="
+              (accountHolderType$ | async) === accountHolderTypes.ORGANISATION
+            "
+          >
+            <div class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <div class="govuk-summary-list__value">
+                  <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                    Organisation details
+                  </h2>
+                </div>
+                <div class="govuk-summary-list__actions">
+                  <a
+                    class="govuk-link"
+                    [routerLink]="[]"
+                    *ngIf="
+                      !(accountHolderExisting$ | async).valueOf();
+                      else navigateToAccountHolderOverviewPage
+                    "
+                    (click)="
+                      navigateTo(this.accountHolderWizardLinkOrganisation)
+                    "
+                    >Change
+                  </a>
+                </div>
+              </div>
+            </div>
+            <dl
+              class="govuk-summary-list govuk-summary-list--no-border"
+              *ngIf="accountHolder?.details"
+            >
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Name</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ accountHolder.details?.name }}
+                </dd>
+              </div>
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="
+                  (accountHolder | organisation).details?.registrationNumber
+                "
+              >
+                <dt class="govuk-summary-list__key">Registration number</dt>
+                <dd class="govuk-summary-list__value">
+                  {{
+                    (accountHolder | organisation).details.registrationNumber
+                  }}
+                </dd>
+              </div>
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="
+                  (accountHolder | organisation).details
+                    ?.noRegistrationNumJustification
+                "
+              >
+                <dt class="govuk-summary-list__key">
+                  Reason for not providing a Registration number
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  {{
+                    (accountHolder | organisation).details
+                      ?.noRegistrationNumJustification
+                  }}
+                </dd>
+              </div>
+            </dl>
+
+            <div class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <div class="govuk-summary-list__key">
+                  <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                    Organisation address
+                  </h2>
+                </div>
+                <div
+                  class="govuk-summary-list__actions"
+                  *ngIf="!(accountHolderExisting$ | async).valueOf()"
+                >
+                  <a
+                    class="govuk-link"
+                    [routerLink]="[]"
+                    *ngIf="accountHolder"
+                    (click)="
+                      onAddressDetailsClick(
+                        accountHolder,
+                        accountHolderWizardLinkOrganisationAddress
+                      )
+                    "
+                    >Change</a
+                  >
+                </div>
+              </div>
+            </div>
+            <dl
+              class="govuk-summary-list govuk-summary-list--no-border"
+              *ngIf="accountHolder.address"
+            >
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Address</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ (accountHolder | organisation).address.buildingAndStreet }}
+                  <ng-container
+                    *ngIf="
+                      (accountHolder | organisation).address
+                        .buildingAndStreet2 ||
+                      (accountHolder | organisation).address.buildingAndStreet3
+                    "
+                  >
+                    <br />
+                    {{
+                      (accountHolder | organisation).address.buildingAndStreet2
+                    }}
+                  </ng-container>
+                  <ng-container
+                    *ngIf="
+                      (accountHolder | organisation).address.buildingAndStreet3
+                    "
+                  >
+                    <br />{{
+                      (accountHolder | organisation).address.buildingAndStreet3
+                    }}</ng-container
+                  >
+                  <br />
+                  {{ (accountHolder | organisation).address.townOrCity }}
+                  <br />
+                  {{ (accountHolder | organisation).address.stateOrProvince }}
+                  <br />
+                  {{ accountHolderAddressCountry$ | async }}
+                  <br />
+                  {{ (accountHolder | organisation).address.postCode }}
+                </dd>
+              </div>
+            </dl>
+          </ng-container>
+          <!-- Account holder contact details -->
+          <app-account-holder-contacts-details></app-account-holder-contacts-details>
+        </div>
+      </div>
+      <div
+        class="govuk-accordion__section"
+        *ngIf="accountDetails$ | async as accountDetails"
+      >
+        <div class="govuk-accordion__section-header">
+          <h2 class="govuk-accordion__section-heading">
+            <span
+              class="govuk-accordion__section-button"
+              id="accordion-with-summary-sections-account-details"
+            >
+              <span class="govuk-!-display-inline-block govuk-!-padding-right-4"
+                >2</span
+              >Account details
+            </span>
+          </h2>
+        </div>
+        <div
+          id="accordion-with-summary-sections-account-details"
+          class="govuk-accordion__section-content govuk-!-padding-left-6"
+          aria-labelledby="accordion-with-summary-sections-account-details"
+        >
+          <div class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <div class="govuk-summary-list__value">
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                  Account details
+                </h2>
+              </div>
+              <div class="govuk-summary-list__actions">
+                <a
+                  class="govuk-link"
+                  [routerLink]="[]"
+                  (click)="navigateTo(this.accountDetailsWizardLink)"
+                  >Change</a
+                >
+              </div>
+            </div>
+          </div>
+          <dl class="govuk-summary-list govuk-summary-list--no-border">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Account type</dt>
+              <dd class="govuk-summary-list__value">
+                {{ accountTypeText }}
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Account name</dt>
+              <dd class="govuk-summary-list__value">
+                {{ accountDetails?.name }}
+              </dd>
+            </div>
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="
+                accountDetails?.salesContactDetails?.emailAddress?.emailAddress
+              "
+            >
+              <dt class="govuk-summary-list__key">Sales contact email</dt>
+              <dd class="govuk-summary-list__value">
+                {{
+                  accountDetails.salesContactDetails.emailAddress.emailAddress
+                }}
+              </dd>
+            </div>
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="accountDetails?.salesContactDetails?.phoneNumber"
+            >
+              <dt class="govuk-summary-list__key">Sales contact phone</dt>
+              <dd class="govuk-summary-list__value">
+                <app-shared-phone-number
+                  [countryCode]="
+                    accountDetails.salesContactDetails.phoneNumberCountryCode
+                  "
+                  [phoneNumber]="accountDetails.salesContactDetails.phoneNumber"
+                ></app-shared-phone-number>
+              </dd>
+            </div>
+          </dl>
+          <ng-container *ngIf="accountType$ | async | isBillable">
+            <div class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <div class="govuk-summary-list__value">
+                  <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                    Billing details
+                  </h2>
+                </div>
+                <div class="govuk-summary-list__actions">
+                  <a
+                    class="govuk-link"
+                    [routerLink]="[]"
+                    (click)="navigateTo(this.billingDetailsWizardLink)"
+                    >Change</a
+                  >
+                </div>
+              </div>
+            </div>
+            <dl class="govuk-summary-list govuk-summary-list--no-border">
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Address</dt>
+                <dd class="govuk-summary-list__value">
+                  <app-shared-three-line-address
+                    [line1]="accountDetails.address.buildingAndStreet"
+                    [line2]="accountDetails.address.buildingAndStreet2"
+                    [line3]="accountDetails.address.buildingAndStreet3"
+                  ></app-shared-three-line-address>
+                </dd>
+              </div>
+
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Town or city</dt>
+                <dd class="govuk-summary-list__value">
+                  <ng-container *ngIf="accountDetails.address.townOrCity">
+                    {{ accountDetails.address.townOrCity }}
+                  </ng-container>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">State or Province</dt>
+                <dd class="govuk-summary-list__value">
+                  <ng-container *ngIf="accountDetails.address.stateOrProvince">
+                    {{ accountDetails.address.stateOrProvince }}
+                  </ng-container>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+                <dd class="govuk-summary-list__value">
+                  <ng-container *ngIf="accountDetails.address.postCode">
+                    {{ accountDetails.address.postCode }}
+                  </ng-container>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Country</dt>
+                <dd class="govuk-summary-list__value">
+                  <ng-container *ngIf="accountDetails.address.country">
+                    {{ accountDetailsCountry$ | async }}
+                  </ng-container>
+                </dd>
+              </div>
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="accountDetails.billingContactDetails.sopCustomerId"
+              >
+                <dt class="govuk-summary-list__key">SOP Customer Id</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ accountDetails.billingContactDetails.sopCustomerId }}
+                </dd>
+              </div>
+
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="accountDetails.billingContactDetails.contactName"
+              >
+                <dt class="govuk-summary-list__key">Contact name</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ accountDetails.billingContactDetails.contactName }}
+                </dd>
+              </div>
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="accountDetails.billingContactDetails.phoneNumber"
+              >
+                <dt class="govuk-summary-list__key">Phone number</dt>
+                <dd class="govuk-summary-list__value">
+                  <app-shared-phone-number
+                    [countryCode]="
+                      accountDetails.billingContactDetails
+                        .phoneNumberCountryCode
+                    "
+                    [phoneNumber]="
+                      accountDetails.billingContactDetails.phoneNumber
+                    "
+                  ></app-shared-phone-number>
+                </dd>
+              </div>
+              <div
+                class="govuk-summary-list__row"
+                *ngIf="accountDetails.billingContactDetails.email"
+              >
+                <dt class="govuk-summary-list__key">E-mail address</dt>
+                <dd class="govuk-summary-list__value">
+                  {{ accountDetails.billingContactDetails.email }}
+                </dd>
+              </div>
+            </dl>
+          </ng-container>
+        </div>
+      </div>
+      <div
+        class="govuk-accordion__section"
+        *ngIf="operator$ | async as operator"
+      >
+        <div class="govuk-accordion__section-header">
+          <h2 class="govuk-accordion__section-heading">
+            <span
+              class="govuk-accordion__section-button"
+              id="accordion-with-summary-sections-operator"
+            >
+              <span class="govuk-!-display-inline-block govuk-!-padding-right-4"
+                >3</span
+              >{{ installationOrAircraftOperatorText }}
+            </span>
+          </h2>
+        </div>
+        <div
+          id="accordion-with-summary-sections-operator"
+          class="govuk-accordion__section-content govuk-!-padding-left-6"
+          aria-labelledby="accordion-with-summary-sections-operator"
+        >
+          <!-- add content -->
+          <ng-container [ngSwitch]="operatorType$ | async">
+            <app-overview-installation
+              *ngSwitchCase="type.INSTALLATION"
+              [installation]="operator"
+              [operatorCompleted]="false"
+            ></app-overview-installation>
+            <app-overview-aircraft-operator
+              *ngSwitchCase="type.AIRCRAFT_OPERATOR"
+              [aircraftOperator]="operator"
+              [operatorCompleted]="false"
+            ></app-overview-aircraft-operator>
+            <app-overview-installation-transfer
+              *ngSwitchCase="type.INSTALLATION_TRANSFER"
+              [installationToBeTransferred]="
+                installationToBeTransferred$ | async
+              "
+              [installationTransfer]="operator"
+              [operatorCompleted]="false"
+            ></app-overview-installation-transfer>
+          </ng-container>
+        </div>
+      </div>
+      <ng-container
+        *ngIf="authorisedRepresentatives$ | async as authorisedRepresentatives"
+      >
+        <div
+          class="govuk-accordion__section"
+          *ngIf="authorisedRepresentatives.length > 0"
+        >
+          <div class="govuk-accordion__section-header">
+            <h2 class="govuk-accordion__section-heading">
+              <span
+                class="govuk-accordion__section-button"
+                id="accordion-with-summary-sections-auth-representatives"
+              >
+                <span
+                  class="govuk-!-display-inline-block govuk-!-padding-right-4"
+                  >{{ (operator$ | async) ? '4' : '3' }}</span
+                >Authorised representatives
+              </span>
+            </h2>
+          </div>
+          <div
+            id="accordion-with-summary-sections-auth-representatives"
+            class="govuk-accordion__section-content govuk-!-padding-left-6"
+            aria-labelledby="accordion-with-summary-sections-auth-representatives"
+          >
+            <ng-container
+              *ngFor="let ar of authorisedRepresentatives; let i = index"
+            >
+              <div class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                  <div class="govuk-summary-list__value">
+                    <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                      {{ ar | arDisplayName }}
+                    </h2>
+                  </div>
+                  <div class="govuk-summary-list__actions">
+                    <a
+                      class="govuk-link"
+                      [routerLink]="[]"
+                      (click)="onAuthorisedRepresentativeClick(i)"
+                      (keypress)="onAuthorisedRepresentativeClick(i)"
+                      >Change</a
+                    >
+                  </div>
+                </div>
+              </div>
+              <dl class="govuk-summary-list govuk-summary-list--no-border">
+                <div class="govuk-summary-list__row">
+                  <dt class="govuk-summary-list__key">Name</dt>
+                  <dd class="govuk-summary-list__value">
+                    {{ ar | arDisplayName }}
+                  </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                  <dt class="govuk-summary-list__key">User ID</dt>
+                  <dd class="govuk-summary-list__value">
+                    {{ ar.urid }}
+                  </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                  <dt class="govuk-summary-list__key">Permissions</dt>
+                  <dd class="govuk-summary-list__value">
+                    {{ getAccessRightsText(ar) }}
+                  </dd>
+                </div>
+              </dl>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div>
+      <span
+        class="
+          govuk-!-display-inline-block
+          govuk-!-padding-right-4
+          govuk-align-v-top
+          govuk-heading-m
+        "
+        >{{
+          (operator$ | async) && (authorisedRepresentatives$ | async).length > 0
+            ? '5'
+            : '4'
+        }}</span
+      >
+      <div class="govuk-align-v-top govuk-!-display-inline-block">
+        <h2 class="govuk-heading-m">Now submit your request</h2>
+        <p class="govuk-body">
+          By submitting this request you confirm that all the information you
+          have given is correct and up to date
+        </p>
+        <button
+          [disabled]="!(completeInformation$ | async).valueOf()"
+          appDebounceClick
+          (debounceClick)="onContinue()"
+          class="govuk-button"
+          data-module="govuk-button"
+          type="button"
+          id="submit"
+        >
+          Confirm and submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #navigateToAccountHolderOverviewPage>
+  <a
+    class="govuk-link"
+    [routerLink]="[]"
+    (click)="navigateTo(this.accountHolderOverviewWizardLink)"
+    >Change
+  </a>
+</ng-template>

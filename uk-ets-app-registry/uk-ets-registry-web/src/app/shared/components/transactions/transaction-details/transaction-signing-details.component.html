@@ -1,0 +1,14 @@
+<h2 class="govuk-heading-m">Transaction details</h2>
+<hr
+  *ngIf="!isTaskBased"
+  class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
+/>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <p class="govuk-body"><strong>Transaction ID</strong></p>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <p class="govuk-body">{{ transactionId }}</p>
+  </div>
+</div>

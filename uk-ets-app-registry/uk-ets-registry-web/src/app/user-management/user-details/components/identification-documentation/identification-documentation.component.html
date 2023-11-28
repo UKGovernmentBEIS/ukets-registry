@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-summary-list__row">
+    <h2
+      class="govuk-summary-list__key govuk-heading-m"
+      style="padding-right: 78px"
+    >
+      Identification documentation
+    </h2>
+  </div>
+
+  <app-identification-documentation-list
+    [documents]="documents"
+    (downloadFile)="downloadFile($event)"
+    (deleteFile)="deleteFile($event)"
+    [canDeleteFile]="canDeleteFile"
+  >
+  </app-identification-documentation-list>
+  <button
+    *ngIf="
+      'urn:uk-ets-registry-api:user:documents:request'
+        | requestDoc: isUserEligibleForDocRequest()
+        | async
+    "
+    class="govuk-button govuk-button--secondary"
+    (click)="onRequestDocuments()"
+    (keypress)="onRequestDocuments()"
+    data-module="govuk-button"
+  >
+    Request documents
+  </button>
+</div>

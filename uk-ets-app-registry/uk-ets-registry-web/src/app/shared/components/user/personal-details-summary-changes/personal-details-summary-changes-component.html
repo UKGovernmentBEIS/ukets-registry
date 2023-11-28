@@ -1,0 +1,9 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-summary-list
+      [class]="'govuk-summary-list'"
+      [summaryListItems]="getSummaryListItems()"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-summary-list>
+  </div>
+</div>

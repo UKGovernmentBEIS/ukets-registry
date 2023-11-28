@@ -1,0 +1,47 @@
+<div class="govuk-width-container">
+  <span class="govuk-caption-l"
+    >Request to update the trusted account list</span
+  >
+  <h2 class="govuk-heading-l">Add account</h2>
+  <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+    <div class="govuk-form-group">
+      <app-account-input
+        titleToDisplay="Account Number"
+        subTitleToDisplay="Example: UK-100-123456-0-12 for UK account, JP-100-123456 for non-UK account"
+        countryCode="userDefinedCountryCode"
+        accountType="userDefinedAccountType"
+        accountId="userDefinedAccountId"
+        period="userDefinedPeriod"
+        checkDigits="userDefinedCheckDigits"
+      ></app-account-input>
+    </div>
+    <div class="govuk-form-group">
+      <app-form-comment-area
+        [label]="'Specify a description'"
+        [maxlength]="256"
+        [rows]="3"
+        controlName="accountDescription"
+      ></app-form-comment-area>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  </form>
+  <div>
+    <a
+      routerLink="../cancel"
+      skipLocationChange
+      class="govuk-link govuk-link--no-visited-state"
+      >Cancel</a
+    >
+  </div>
+</div>

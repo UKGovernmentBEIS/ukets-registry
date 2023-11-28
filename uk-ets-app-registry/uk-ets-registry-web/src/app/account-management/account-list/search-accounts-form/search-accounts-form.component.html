@@ -1,0 +1,176 @@
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <div class="govuk-grid-row">
+    <div
+      class="govuk-grid-column-one-third"
+      [ngClass]="isAdmin ? 'order1' : 'order4'"
+    >
+      <app-form-control-text
+        controlName="accountIdOrName"
+        [label]="'Account name or ID'"
+        [hint]="'Enter text'"
+      ></app-form-control-text>
+    </div>
+    <div class="govuk-grid-column-one-third order2" *ngIf="!isAR">
+      <app-form-control-select
+        controlName="accountStatus"
+        [options]="accountStatusOptions"
+        [class]="'govuk-!-width-full'"
+        [hint]="'Select from list'"
+        [label]="'Account status'"
+      ></app-form-control-select>
+    </div>
+    <div
+      class="govuk-grid-column-one-third order3"
+      *ngIf="accountTypeOptions.length > 1"
+    >
+      <app-form-control-select
+        controlName="accountType"
+        [options]="accountTypeOptions"
+        [class]="'govuk-!-width-full'"
+        [hint]="'Select from list'"
+        [label]="'Account type'"
+      ></app-form-control-select>
+    </div>
+    <div
+      class="govuk-grid-column-one-third"
+      [ngClass]="isAdmin ? 'order4' : 'order1'"
+    >
+      <app-form-control-text
+        controlName="accountHolderName"
+        [label]="'Account Holder name'"
+        [hint]="'Enter text'"
+      ></app-form-control-text>
+    </div>
+    <div class="govuk-grid-column-one-third order5">
+      <app-form-control-select
+        controlName="complianceStatus"
+        [options]="complianceStatusOptions"
+        [class]="'govuk-!-width-full'"
+        [hint]="'Select from list'"
+        [label]="'Dynamic Surrender status'"
+      ></app-form-control-select>
+    </div>
+    <div class="govuk-grid-column-one-third order6">
+      <app-form-control-text
+        controlName="permitOrMonitoringPlanIdentifier"
+        [label]="'Permit or monitoring plan ID'"
+        [hint]="'Enter text'"
+      ></app-form-control-text>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <details
+        class="govuk-details"
+        data-module="govuk-details"
+        [attr.open]="showAdvancedSearch ? true : null"
+      >
+        <summary
+          class="govuk-details__summary"
+          #summary
+          (click)="toggleAdvancedSearch()"
+        >
+          <span class="govuk-details__summary-text"> Advanced search </span>
+        </summary>
+        <div class="govuk-details__text">
+          <div class="govuk-grid-row">
+            <div
+              *ngIf="
+                'urn:uk-ets-registry-api:page:account:search:authorizedRepresentativeUrid:view'
+                  | protect
+                  | async
+              "
+              class="govuk-grid-column-one-third"
+            >
+              <app-form-control-text
+                controlName="authorizedRepresentativeUrid"
+                [label]="'Authorised Representative ID'"
+                [hint]="'Enter text'"
+              ></app-form-control-text>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <app-form-control-select
+                controlName="regulatorType"
+                [options]="regulatorOptions"
+                [hint]="'Select from list'"
+                [label]="'Regulator'"
+                [class]="'govuk-!-width-full'"
+              ></app-form-control-select>
+            </div>
+            <div
+              *ngIf="
+                'urn:uk-ets-registry-api:page:account:search:excludedForYear:view'
+                  | protect
+                  | async
+              "
+              class="govuk-grid-column-one-third"
+            >
+              <app-form-control-text
+                controlName="excludedForYear"
+                [label]="'Excluded For Year'"
+                [hint]="'Enter text'"
+              ></app-form-control-text>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <app-form-control-select
+                controlName="allocationStatus"
+                [options]="allocationStatusOptions"
+                [hint]="'Select from list'"
+                [label]="'Allocation Status'"
+                [class]="'govuk-!-width-full'"
+              ></app-form-control-select>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <app-form-control-select
+                controlName="allocationWithholdStatus"
+                [options]="allocationWithholdStatusOptions"
+                [hint]="'Select from list'"
+                [label]="'Allocation Withhold Status'"
+                [class]="'govuk-!-width-full'"
+              ></app-form-control-select>
+            </div>
+            <div
+              *ngIf="
+                'urn:uk-ets-registry-api:page:account:search:installationOrAircraftOperatorId:view'
+                  | protect
+                  | async
+              "
+              class="govuk-grid-column-one-third"
+            >
+              <app-form-control-text
+                controlName="installationOrAircraftOperatorId"
+                [label]="'Installation or Aircraft Operator ID'"
+                [hint]="'Enter text'"
+              ></app-form-control-text>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <button
+        type="submit"
+        data-prevent-double-click="true"
+        class="govuk-button submit-form"
+        data-module="govuk-button"
+      >
+        Search
+      </button>
+      <button
+        type="button"
+        (click)="onClear()"
+        class="
+          govuk-button govuk-button--secondary
+          govuk-!-margin-left-3
+          clear-form
+        "
+        data-module="govuk-button"
+      >
+        Clear
+      </button>
+    </div>
+  </div>
+</form>

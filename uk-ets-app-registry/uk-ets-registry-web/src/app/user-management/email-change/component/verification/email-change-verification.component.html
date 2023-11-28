@@ -1,0 +1,39 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Verification email sent</h1>
+    <p class="govuk-body">
+      We have sent a verification email to
+      <span class="govuk-!-font-weight-bold">
+        {{ newEmail }}
+      </span>
+    </p>
+    <h2 class="govuk-heading-m">What happens next</h2>
+    <p class="govuk-body">
+      Confirm your work email address by clicking the link in the email.
+    </p>
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text"> I didn't get an email </span>
+      </summary>
+      <div class="govuk-details__text">
+        <p class="govuk-body">
+          If you have not received the email after a few minutes, check your
+          spam or junk folder. The subject of the email is 'Confirm your new
+          work email address - UK Emissions Trading Registry'.
+        </p>
+        <p class="govuk-body">
+          You can
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (keypress)="requestEmailChangeAgain()"
+            (click)="requestEmailChangeAgain()"
+          >
+            request to change your email address again
+          </a>
+          if it still has not arrived.
+        </p>
+      </div>
+    </details>
+  </div>
+</div>

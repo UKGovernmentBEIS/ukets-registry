@@ -1,0 +1,105 @@
+<nav *ngIf="displayable" class="hmcts-pagination" id="pagination-label">
+  <p class="govuk-visually-hidden" aria-labelledby="pagination-label">
+    Pagination navigation
+  </p>
+
+  <ul class="hmcts-pagination__list">
+    <li class="hmcts-pagination__item hmcts-pagination__item--prev">
+      <a
+        class="hmcts-pagination__link goToPreviousPage"
+        (click)="goToPreviousPage()"
+        (keypress)="goToPreviousPage()"
+        [routerLink]="[]"
+        >Previous<span class="govuk-visually-hidden"> set of pages</span></a
+      >
+    </li>
+
+    <li *ngIf="firstPage != currentPage" class="hmcts-pagination__item">
+      <a
+        class="hmcts-pagination__link goToFirstPage"
+        (click)="goToFirstPage()"
+        (keypress)="goToFirstPage()"
+        [routerLink]="[]"
+        >{{ firstPage }}</a
+      >
+    </li>
+
+    <li
+      *ngIf="dashBefore"
+      class="hmcts-pagination__item hmcts-pagination__item--dots dots-before"
+    >
+      ...
+    </li>
+
+    <li *ngIf="previousPage" class="hmcts-pagination__item">
+      <a
+        class="hmcts-pagination__link previousPage"
+        (click)="goToPreviousPage()"
+        (keypress)="goToPreviousPage()"
+        [routerLink]="[]"
+        >{{ previousPage }}</a
+      >
+    </li>
+
+    <li class="hmcts-pagination__item hmcts-pagination__item--active">
+      {{ currentPage }}
+    </li>
+
+    <li *ngIf="nextPage" class="hmcts-pagination__item">
+      <a
+        class="hmcts-pagination__link nextPage"
+        (click)="goToNextPage()"
+        (keypress)="goToNextPage()"
+        [routerLink]="[]"
+        >{{ nextPage }}</a
+      >
+    </li>
+
+    <li
+      *ngIf="dashAfter"
+      class="hmcts-pagination__item hmcts-pagination__item--dots dots-after"
+    >
+      ...
+    </li>
+
+    <li *ngIf="currentPage != lastPage" class="hmcts-pagination__item">
+      <a
+        class="hmcts-pagination__link goToLastPage"
+        (click)="goToLastPage()"
+        (keypress)="goToLastPage()"
+        [routerLink]="[]"
+        >{{ lastPage }}</a
+      >
+    </li>
+
+    <li class="hmcts-pagination__item hmcts-pagination__item--next">
+      <a
+        class="hmcts-pagination__link goToNextPage"
+        (click)="goToNextPage()"
+        (keypress)="goToNextPage()"
+        [routerLink]="[]"
+        >Next<span class="govuk-visually-hidden"> set of pages</span></a
+      >
+    </li>
+  </ul>
+
+  <p class="hmcts-pagination__results">
+    <label class="govuk-label govuk-!-display-inline" for="pageSize">
+      rows per page
+    </label>
+    <select
+      class="govuk-select"
+      id="pageSize"
+      name="pageSize"
+      [ngModel]="selectedPageSize"
+      (ngModelChange)="onChangePageSize($event)"
+    >
+      <option *ngFor="let option of pageSizeOptions" [ngValue]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+    Showing <b class="showingFromIndex">{{ showingFromIndex }}</b> to
+    <b class="showingToIndex">{{ showingToIndex }}</b> of
+    <b class="totalResults">{{ totalResults }}</b> results
+  </p>
+</nav>

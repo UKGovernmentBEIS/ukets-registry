@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="3_5_0_TEMPORARY_TABLE_TRANSACTION_BLOCK_EMPTY_BLOCK_ROLE"
+		author="fragkise" context="migrate" failOnError="false">
+		<comment>Drops temporary table transaction_block_empty_block_role created for UKETS-6937</comment>
+		<sql>
+               drop table transaction_block_empty_block_role;
+		</sql>
+	</changeSet>
+
+
+    <changeSet id="3_5_0_TEMPORARY_TABLE_TEMP_TRNS_SEF_BLOCK_ROLE"
+        author="fragkise" context="migrate" failOnError="false">
+        <comment>Drops temporary table  temp_trns_sef_block_role created for UKETS-6937</comment>
+        <sql>
+               drop table temp_trns_sef_block_role;
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

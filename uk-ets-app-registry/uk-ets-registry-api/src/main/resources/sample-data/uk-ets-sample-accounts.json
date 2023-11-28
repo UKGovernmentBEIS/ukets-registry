@@ -1,0 +1,653 @@
+[
+  {
+    "accountType": "OPERATOR_HOLDING_ACCOUNT",
+    "accountHolder": {
+      "id": null,
+      "emailAddress": null,
+      "address": {
+        "country": "UK",
+        "postCode": "N32TT",
+        "empty": false,
+        "townOrCity": "London",
+        "buildingAndStreet": "1 Baker Street",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      },
+      "phoneNumber": null,
+      "details": {
+        "name": "ABC Limited",
+        "registrationNumber": "UK 12454787",
+        "noVatJustification": null,
+        "noRegistrationNumJustification": "",
+        "countryOfBirth": null,
+        "yearOfBirth": null,
+        "birthDate": null
+      },
+      "type": "ORGANISATION",
+      "status": "ACTIVE"
+    },
+    "legalRepresentatives": null,
+    "accountHolderContactInfo": {
+      "primaryContact": {
+        "id": null,
+        "details": {
+          "firstName": "LE Contact First Name",
+          "lastName": "LE Contact Last Name",
+          "aka": "",
+          "yearOfBirth": null,
+          "birthDate": {
+            "day": "11",
+            "month": "01",
+            "year": "1985"
+          }
+        },
+        "address": {
+          "country": "UK",
+          "postCode": "N32SS",
+          "empty": false,
+          "townOrCity": "London",
+          "buildingAndStreet": "1 Taylor Street",
+          "buildingAndStreet2": "",
+          "buildingAndStreet3": ""
+        },
+        "phoneNumber": {
+          "phoneNumber1": "07756780987",
+          "phoneNumber2": "",
+          "countryCode1": "44",
+          "countryCode2": "",
+          "empty": false
+        },
+        "emailAddress": {
+          "emailAddress": "contact1@trasys.gr",
+          "emailAddressConfirmation": null,
+          "empty": false
+        }
+      },
+      "alternativeContact": null
+    },
+    "accountDetails": {
+      "name": "South York",
+      "accountType": null,
+      "accountNumber": null,
+      "accountHolderName": null,
+      "accountStatus": null,
+      "address": {
+        "country": "UK",
+        "postCode": "",
+        "empty": false,
+        "townOrCity": "",
+        "buildingAndStreet": "",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      }
+    },
+    "accountDetailsSameBillingAddress": false,
+    "trustedAccountListRules": {
+      "rule1": true,
+      "rule2": true
+    },
+    "operator": {
+      "type": "INSTALLATION",
+      "name": "South Yorkshire",
+      "activityType": "PRODUCTION_OF_CEMENT_CLINKER",
+      "regulator": "EA",
+      "changedRegulator": null,
+      "firstYear": 2021,
+      "permit": {
+        "id": "123457",
+        "date": {
+          "day": 1,
+          "month": 1,
+          "year": 2019
+        }
+      },
+      "monitoringPlan": null
+    },
+    "authorisedRepresentatives": [
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK405681794859",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      },
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK588332110438",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      }
+    ],
+    "changedAccountHolderId": null,
+    "balance": null,
+    "unitType": null,
+    "governmentAccount": false,
+    "trustedAccountList": null,
+    "transactionsAllowed": false
+  },
+  {
+    "accountType": "AIRCRAFT_OPERATOR_HOLDING_ACCOUNT",
+    "accountHolder": {
+      "id": null,
+      "emailAddress": null,
+      "address": {
+        "country": "UK",
+        "postCode": "BT97FD",
+        "empty": false,
+        "townOrCity": "Belfast",
+        "buildingAndStreet": "Chadwick Street",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      },
+      "phoneNumber": null,
+      "details": {
+        "name": "British Wings",
+        "registrationNumber": "UK 12454785",
+        "noVatJustification": null,
+        "noRegistrationNumJustification": "",
+        "countryOfBirth": null,
+        "yearOfBirth": null,
+        "birthDate": null
+      },
+      "type": "ORGANISATION",
+      "status": null
+    },
+    "legalRepresentatives": null,
+    "accountHolderContactInfo": {
+      "primaryContact": {
+        "id": null,
+        "details": {
+          "firstName": "AOHA Contact First Name",
+          "lastName": "AOHA Contact Last Name",
+          "aka": "",
+          "yearOfBirth": null,
+          "birthDate": {
+            "day": "22",
+            "month": "4",
+            "year": "1987"
+          }
+        },
+        "address": {
+          "country": "UK",
+          "postCode": "BT97FD",
+          "empty": false,
+          "townOrCity": "Belfast",
+          "buildingAndStreet": "Chadwick Street",
+          "buildingAndStreet2": "",
+          "buildingAndStreet3": ""
+        },
+        "phoneNumber": {
+          "phoneNumber1": "07756780987",
+          "phoneNumber2": "",
+          "countryCode1": "44",
+          "countryCode2": "",
+          "empty": false
+        },
+        "emailAddress": {
+          "emailAddress": "contact1@trasys.gr",
+          "emailAddressConfirmation": "contact1@trasys.gr",
+          "empty": false
+        }
+      },
+      "alternativeContact": null
+    },
+    "accountDetails": {
+      "name": "British Air Wings",
+      "accountType": null,
+      "accountNumber": null,
+      "accountHolderName": null,
+      "accountStatus": null,
+      "address": {
+        "country": "UK",
+        "postCode": "",
+        "empty": false,
+        "townOrCity": "",
+        "buildingAndStreet": "",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      }
+    },
+    "accountDetailsSameBillingAddress": false,
+    "trustedAccountListRules": {
+      "rule1": true,
+      "rule2": true
+    },
+    "operator": {
+      "type": "AIRCRAFT_OPERATOR",
+      "name": null,
+      "activityType": null,
+      "regulator": "NRW",
+      "changedRegulator": null,
+      "firstYear": 2021,
+      "permit": null,
+      "monitoringPlan": {
+        "id": "12346",
+        "firstYear": 2021
+      }
+    },
+    "authorisedRepresentatives": [
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK405681794859",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      },
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK588332110438",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      }
+    ],
+    "changedAccountHolderId": null,
+    "balance": null,
+    "unitType": null,
+    "governmentAccount": false,
+    "trustedAccountList": null,
+    "transactionsAllowed": false
+  },
+  {
+    "accountType": "TRADING_ACCOUNT",
+    "accountHolder": {
+      "id": null,
+      "emailAddress": null,
+      "address": {
+        "country": "GR",
+        "postCode": "",
+        "empty": false,
+        "townOrCity": "Athens",
+        "buildingAndStreet": "Ethnikis Antistasis 30",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      },
+      "phoneNumber": null,
+      "details": {
+        "name": "Organisation 1",
+        "registrationNumber": "UK 45458547",
+        "noVatJustification": null,
+        "noRegistrationNumJustification": "",
+        "countryOfBirth": null,
+        "yearOfBirth": null,
+        "birthDate": null
+      },
+      "type": "ORGANISATION",
+      "status": null
+    },
+    "legalRepresentatives": null,
+    "accountHolderContactInfo": {
+      "primaryContact": {
+        "id": null,
+        "details": {
+          "firstName": "Trader First Name",
+          "lastName": "Trader Last Name",
+          "aka": "",
+          "yearOfBirth": null,
+          "birthDate": {
+            "day": "2",
+            "month": "6",
+            "year": "1989"
+          }
+        },
+        "address": {
+          "country": "UK",
+          "postCode": "N32TT",
+          "empty": false,
+          "townOrCity": "London",
+          "buildingAndStreet": "Carnaby",
+          "buildingAndStreet2": "",
+          "buildingAndStreet3": ""
+        },
+        "phoneNumber": {
+          "phoneNumber1": "07756780987",
+          "phoneNumber2": "",
+          "countryCode1": "44",
+          "countryCode2": "",
+          "empty": false
+        },
+        "emailAddress": {
+          "emailAddress": "contact1@trasys.gr",
+          "emailAddressConfirmation": "contact1@trasys.gr",
+          "empty": false
+        }
+      },
+      "alternativeContact": null
+    },
+    "accountDetails": {
+      "name": "Trader Account Test",
+      "accountType": null,
+      "accountNumber": null,
+      "accountHolderName": null,
+      "accountStatus": null,
+      "address": {
+        "country": "GR",
+        "postCode": "",
+        "empty": false,
+        "townOrCity": "Athens",
+        "buildingAndStreet": "Ethnikis Antistasis 30",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      }
+    },
+    "accountDetailsSameBillingAddress": false,
+    "trustedAccountListRules": {
+      "rule1": true,
+      "rule2": true
+    },
+    "operator": null,
+    "authorisedRepresentatives": [
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK588332110438",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      },
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK405681794859",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      }
+    ],
+    "changedAccountHolderId": null,
+    "balance": null,
+    "unitType": null,
+    "governmentAccount": false,
+    "trustedAccountList": null,
+    "transactionsAllowed": false
+  },
+  {
+    "accountType": "PERSON_HOLDING_ACCOUNT",
+    "accountHolder": {
+      "id": null,
+      "emailAddress": {
+        "emailAddress": "pha1@trasys.gr",
+        "emailAddressConfirmation": "pha1@trasys.gr",
+        "empty": false
+      },
+      "address": {
+        "country": "UK",
+        "postCode": "SW1V 4LA",
+        "empty": false,
+        "townOrCity": "London",
+        "buildingAndStreet": "Sutherland Str",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      },
+      "phoneNumber": {
+        "phoneNumber1": "2075968755",
+        "phoneNumber2": "",
+        "countryCode1": "44",
+        "countryCode2": "",
+        "empty": false
+      },
+      "details": {
+        "name": "KP PHA Account Holder 1",
+        "registrationNumber": null,
+        "noVatJustification": null,
+        "noRegistrationNumJustification": null,
+        "countryOfBirth": "UK",
+        "yearOfBirth": null,
+        "birthDate": {
+          "day": "2",
+          "month": "5",
+          "year": "1990"
+        }
+      },
+      "type": "INDIVIDUAL",
+      "status": null
+    },
+    "legalRepresentatives": null,
+    "accountHolderContactInfo": {
+      "primaryContact": {
+        "id": null,
+        "details": {
+          "firstName": "PHA 1 Holder First Name",
+          "lastName": "PHA 1 Holder Last Name",
+          "aka": "",
+          "yearOfBirth": null,
+          "birthDate": {
+            "day": "1",
+            "month": "3",
+            "year": "2000"
+          }
+        },
+        "address": {
+          "country": "UK",
+          "postCode": "SW1V 4QT",
+          "empty": false,
+          "townOrCity": "London",
+          "buildingAndStreet": "Clarendon Str 5",
+          "buildingAndStreet2": "",
+          "buildingAndStreet3": ""
+        },
+        "phoneNumber": {
+          "phoneNumber1": "20 7588 8750",
+          "phoneNumber2": "",
+          "countryCode1": "44",
+          "countryCode2": "",
+          "empty": false
+        },
+        "emailAddress": {
+          "emailAddress": "contact1@trasys.gr",
+          "emailAddressConfirmation": "contact1@trasys.gr",
+          "empty": false
+        }
+      },
+      "alternativeContact": null
+    },
+    "accountDetails": {
+      "name": "Person Holding Account 1",
+      "accountType": null,
+      "accountNumber": null,
+      "accountHolderName": null,
+      "accountStatus": null,
+      "address": {
+        "country": "UK",
+        "postCode": "SW1V 4LA",
+        "empty": false,
+        "townOrCity": "London",
+        "buildingAndStreet": "Sutherland Str 16",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      }
+    },
+    "accountDetailsSameBillingAddress": false,
+    "trustedAccountListRules": {
+      "rule1": true,
+      "rule2": true
+    },
+    "operator": null,
+    "authorisedRepresentatives": [
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK405681794859",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      },
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK588332110438",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      }
+    ],
+    "changedAccountHolderId": null,
+    "balance": null,
+    "unitType": null,
+    "governmentAccount": false,
+    "trustedAccountList": null,
+    "transactionsAllowed": false
+  },
+  {
+    "accountType": "PERSON_HOLDING_ACCOUNT",
+    "accountHolder": {
+      "id": null,
+      "emailAddress": {
+        "emailAddress": "pha2@trasys.gr",
+        "emailAddressConfirmation": "pha2@trasys.gr",
+        "empty": false
+      },
+      "address": {
+        "country": "UK",
+        "postCode": "SW1V 4LA",
+        "empty": false,
+        "townOrCity": "London",
+        "buildingAndStreet": "Cambridge St 15",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      },
+      "phoneNumber": {
+        "phoneNumber1": "2075922754",
+        "phoneNumber2": "",
+        "countryCode1": "44",
+        "countryCode2": "",
+        "empty": false
+      },
+      "details": {
+        "name": "KP PHA Account Holder 2",
+        "registrationNumber": null,
+        "noVatJustification": null,
+        "noRegistrationNumJustification": null,
+        "countryOfBirth": "UK",
+        "yearOfBirth": null,
+        "birthDate": {
+          "day": "15",
+          "month": "8",
+          "year": "1990"
+        }
+      },
+      "type": "INDIVIDUAL",
+      "status": null
+    },
+    "legalRepresentatives": null,
+    "accountHolderContactInfo": {
+      "primaryContact": {
+        "id": null,
+        "details": {
+          "firstName": "PHA 2 Holder First Name",
+          "lastName": "PHA 2 Holder Last Name",
+          "aka": "",
+          "yearOfBirth": null,
+          "birthDate": {
+            "day": "12",
+            "month": "9",
+            "year": "1999"
+          }
+        },
+        "address": {
+          "country": "UK",
+          "postCode": "SW7 4AU",
+          "empty": false,
+          "townOrCity": "London",
+          "buildingAndStreet": "Gloucester St 9",
+          "buildingAndStreet2": "",
+          "buildingAndStreet3": ""
+        },
+        "phoneNumber": {
+          "phoneNumber1": "20 7511 8744",
+          "phoneNumber2": "",
+          "countryCode1": "44",
+          "countryCode2": "",
+          "empty": false
+        },
+        "emailAddress": {
+          "emailAddress": "contact2@trasys.gr",
+          "emailAddressConfirmation": "contact2@trasys.gr",
+          "empty": false
+        }
+      },
+      "alternativeContact": null
+    },
+    "accountDetails": {
+      "name": "Person Holding Account 2",
+      "accountType": null,
+      "accountNumber": null,
+      "accountHolderName": null,
+      "accountStatus": null,
+      "address": {
+        "country": "UK",
+        "postCode": "SW1W 9QB",
+        "empty": false,
+        "townOrCity": "London",
+        "buildingAndStreet": "Ebury Str 88",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      }
+    },
+    "accountDetailsSameBillingAddress": false,
+    "trustedAccountListRules": {
+      "rule1": true,
+      "rule2": true
+    },
+    "operator": null,
+    "authorisedRepresentatives": [
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK405681794859",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      },
+      {
+        "right": "INITIATE_AND_APPROVE",
+        "number": null,
+        "urid": "UK588332110438",
+        "user": null,
+        "contact": null,
+        "state": null,
+        "accountName": null,
+        "accountIdentifier": null,
+        "accountHolderName": null
+      }
+    ],
+    "changedAccountHolderId": null,
+    "balance": null,
+    "unitType": null,
+    "governmentAccount": false,
+    "trustedAccountList": null,
+    "transactionsAllowed": false
+  }
+]

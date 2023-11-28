@@ -1,0 +1,21 @@
+<!--ql-editor class needed so that styles are applied (e.g. nested list styles)-->
+<app-govuk-notification-banner
+  title="Important"
+  *ngIf="notifications?.length > 0"
+  class="ql-editor"
+>
+  <ng-container *ngFor="let notification of notifications; last as isLast">
+    <app-notification-renderer
+      [content]="notification.content"
+    ></app-notification-renderer>
+    <div class="govuk-body-s govuk-!-font-weight-bold">
+      Posted {{ notification.posted | gdsDate }}
+    </div>
+    <hr
+      *ngIf="!isLast"
+      class="
+        govuk-section-break govuk-section-break--m govuk-section-break--visible
+      "
+    />
+  </ng-container>
+</app-govuk-notification-banner>

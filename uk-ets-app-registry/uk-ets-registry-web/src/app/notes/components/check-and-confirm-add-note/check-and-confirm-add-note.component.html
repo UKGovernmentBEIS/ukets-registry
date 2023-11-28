@@ -1,0 +1,58 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Upload new file'"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Add note</span>
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">
+          Check your answers
+        </h1>
+      </legend>
+
+      <div class="govuk-summary-list govuk-!-margin-top-30">
+        <div class="govuk-summary-list__row">
+          <div class="govuk-summary-list__key">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Note</h2>
+          </div>
+          <div class="govuk-summary-list__actions">
+            <a class="govuk-link" (click)="onChange()">Change</a>
+          </div>
+        </div>
+      </div>
+      <dl
+        class="
+          govuk-summary-list govuk-summary-list govuk-!-font-weight-bold
+          key
+        "
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__value">Entity type</dt>
+          <dd class="govuk-summary-list__value">Notes</dd>
+        </div>
+      </dl>
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__value">{{ storedTypeLabel }}</dt>
+          <dd class="govuk-summary-list__value">{{ storedNote }}</dd>
+        </div>
+      </dl>
+    </fieldset>
+    <button
+      id="submit"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="submitChanges()"
+    >
+      Submit
+    </button>
+    <div>
+      <a
+        [routerLink]="[]"
+        class="govuk-link govuk-link--no-visited-state"
+        (click)="onCancel()"
+        >Cancel</a
+      >
+    </div>
+  </div>
+</div>

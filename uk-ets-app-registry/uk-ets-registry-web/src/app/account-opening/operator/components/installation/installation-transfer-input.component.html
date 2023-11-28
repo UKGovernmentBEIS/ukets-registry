@@ -1,0 +1,70 @@
+<div appScreenReaderPageAnnounce [pageTitle]="headerTitle"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">{{ headerTitle }}</span>
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="installation"
+    >
+      <div class="govuk-form-group">
+        <div class="govuk-fieldset">
+          <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              {{ title }}
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">
+            Installation to be transferred
+          </h1>
+        </legend>
+        <app-form-control-type-ahead
+          [label]="'Installation ID'"
+          [url]="searchByIdRequestUrl"
+          [params]="requestParams"
+          searchKey="installationId"
+          [resultTemplate]="operator"
+          [inputFormatter]="operatorResultFormatter"
+          [validationErrorMessage]="validationErrorMessage.identifier"
+          controlName="identifier"
+          [maxlength]="256"
+          [isNumber]="true"
+          (resultItem)="onSelectFromSearch($event)"
+        ></app-form-control-type-ahead>
+      </fieldset>
+
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-fieldset__heading">Installation details</h1>
+        </legend>
+        <app-form-control-text
+          [label]="' Installation name'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.name"
+          controlName="name"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Permit ID'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.id"
+          controlName="permit.id"
+        ></app-form-control-text>
+      </fieldset>
+      <button class="govuk-button" data-module="govuk-button" type="submit">
+        Continue
+      </button>
+    </form>
+  </div>
+</div>
+
+<ng-template #operator let-r="result" let-t="term">
+  <ngb-highlight [result]="r.identifier" [term]="t"></ngb-highlight>
+  <div>Name: {{ r.installationName }}</div>
+  <div>Permit ID: {{ r.permitIdentifier }}</div>
+  <hr class="govuk-section-break" />
+</ng-template>

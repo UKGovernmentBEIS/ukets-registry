@@ -1,0 +1,61 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <!-- A custom error panel since it contains a link to download csv from server -->
+    <ng-container *ngIf="containsErrorFile()">
+      <div
+        id="allocation-errors-file"
+        class="govuk-form-group govuk-form-group--error"
+      >
+        <ul class="govuk-list">
+          <li>
+            <p class="govuk-body">
+              Download the following CSV file to view the errors:
+            </p>
+            <p class="govuk-body">
+              <img
+                src="/assets/images/icon-file-download.png"
+                style="vertical-align: middle; margin-right: 10px"
+                alt="download"
+              />
+              <a
+                id="csv-download-errors-link"
+                class="govuk-link govuk-link--no-visited-state"
+                (click)="onDownloadErrorsCSV()"
+                [routerLink]="[]"
+                >{{ errorFileName() }}
+              </a>
+            </p>
+            <p class="govuk-body">
+              You can send this file to the relevant stakeholders
+            </p>
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+    <form (submit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Upload allocation table</h1>
+        </legend>
+        <app-uk-select-file
+          formControlName="allocationTable"
+          [isInProgress]="isInProgress"
+          [fileProgress]="fileProgress"
+          [showErrors]="showErrors"
+          [hint]="hint"
+          [fileType]="allowedFileTypes"
+          [isFileRequired]="true"
+        >
+        </app-uk-select-file>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

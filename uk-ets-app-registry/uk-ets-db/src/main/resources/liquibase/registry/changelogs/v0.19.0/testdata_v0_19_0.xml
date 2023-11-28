@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_19_0_ADD_UK_SURRENDER_ACCOUNT" author="fragkise" context="migrate">
+
+        <comment>Adds a UK Surrender Account</comment>
+        <sql>
+				insert into account (id,identifier,account_name,registry_account_type,kyoto_account_type,account_status,opening_date,request_status,commitment_period_code,registry_code,check_digits,full_identifier,type_label,approval_second_ar_required,transfers_outside_tal,account_holder_id)
+				values (nextval('account_seq'),10000025,'UK Surrender Account','UK_SURRENDER_ACCOUNT','PARTY_HOLDING_ACCOUNT','OPEN',now(),'ACTIVE',0,'UK',33,'UK-100-10000025-0-33','UK Surrender Account',true,true,(select id from account_holder where name = 'UK ETS Authority'));
+        </sql>
+        
+        <rollback>
+            <sql>
+                delete from account where identifier=10000025;
+            </sql>
+        </rollback>
+    </changeSet>
+    
+</databaseChangeLog>

@@ -1,0 +1,154 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <table
+      aria-describedby="notification-results-table"
+      appSortableTable
+      (sorting)="onSorting($event)"
+      class="govuk-table"
+    >
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th
+            scope="col"
+            appSortableColumn
+            [sortField]="'notificationId'"
+            [sortDirection]="
+              sortParameters?.sortField === 'notificationId'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            ID
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            [sortField]="'subject'"
+            [sortDirection]="
+              sortParameters?.sortField === 'subject'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Subject/Title
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            [sortField]="'type'"
+            [sortDirection]="
+              sortParameters?.sortField === 'type'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Type
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            [sortField]="'scheduledDate'"
+            [sortDirection]="
+              sortParameters?.sortField === 'scheduledDate'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Scheduled date
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            [sortField]="'runEveryXDays'"
+            [sortDirection]="
+              sortParameters?.sortField === 'runEveryXDays'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Recurrence frequency
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            [sortField]="'expirationDate'"
+            [sortDirection]="
+              sortParameters?.sortField === 'expirationDate'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Expiration date
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            [sortField]="'status'"
+            [sortDirection]="
+              sortParameters?.sortField === 'status'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr *ngFor="let result of results" class="govuk-table__row">
+          <td class="govuk-table__cell">
+            {{ result.notificationId }}
+          </td>
+          <td class="govuk-table__cell">
+            <a
+              [routerLink]="['/notifications/', result.notificationId]"
+              class="disabled"
+              >{{ result.shortText }}
+            </a>
+          </td>
+          <td class="govuk-table__cell">
+            {{ result.type ? notificationTypeLabels[result?.type].label : '-' }}
+          </td>
+          <td class="govuk-table__cell">
+            {{
+              result.scheduledDate
+                | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+                | gdsDate
+            }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ result.runEveryXDays ? result.runEveryXDays : '-' }}
+          </td>
+          <td class="govuk-table__cell">
+            {{
+              result.expirationDate
+                ? (result.expirationDate
+                  | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+                  | gdsDate)
+                : '-'
+            }}
+          </td>
+          <td class="govuk-table__cell">
+            <app-govuk-tag [color]="notificationStatusMap[result.status].color">
+              {{ notificationStatusMap[result.status].label }}
+            </app-govuk-tag>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-paginator
+          [pagination]="pagination"
+          [pageSizeOptions]="pageSizeOptions"
+          (selectFirstPage)="goToFirstPageOfResults($event)"
+          (selectLastPage)="goToLastPageOfResults($event)"
+          (selectNextPage)="goToNextPageOfResults($event)"
+          (selectPreviousPage)="goToPreviousPageOfResults($event)"
+          (changePageSize)="onChangePageSize($event)"
+        >
+        </app-paginator>
+      </div>
+    </div>
+  </div>
+</div>

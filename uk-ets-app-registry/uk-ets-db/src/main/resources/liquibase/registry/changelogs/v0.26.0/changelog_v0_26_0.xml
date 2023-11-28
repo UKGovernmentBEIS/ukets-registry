@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_26_0_DELETE_EXISTING_ROLE_BASED_ACCOUNT_ACCESS_ENTRIES" author="koukoulakisg" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">select count(*) from account_access aa
+                    WHERE aa.user_id IN (SELECT u.id FROM users u
+                    JOIN user_role_mapping urm ON u.id = urm.user_id
+                    JOIN iam_user_role iur ON urm.role_id = iur.id
+                    WHERE iur.role_name LIKE '%administrator')
+                    AND aa.access_right = 'ROLE_BASED'
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <comment>Check and delete any existing of the new account access right entries</comment>
+        <sql>DELETE FROM account_access aa
+             WHERE aa.user_id IN (SELECT u.id FROM users u
+                                                       JOIN user_role_mapping urm ON u.id = urm.user_id
+                                                       JOIN iam_user_role iur ON urm.role_id = iur.id
+                                  WHERE iur.role_name LIKE '%administrator')
+               AND aa.access_right = 'ROLE_BASED';
+        </sql>
+    </changeSet>
+    <changeSet id="0_26_0_ADD_NEW_ACCOUNT_ACCESS_ENTRIES_FOR_ADMINISTRATORS" author="koukoulakisg" context="migrate">
+        <comment>Adds new account access entries for administrators to all accounts except Central types</comment>
+        <sqlFile path="add_new_account_access_right_to_admins.sql" relativeToChangelogFile="true" splitStatements="false"/>
+        <rollback>
+            <sql>DELETE FROM account_access aa
+                WHERE aa.user_id IN (SELECT u.id FROM users u
+                                        JOIN user_role_mapping urm ON u.id = urm.user_id
+                                        JOIN iam_user_role iur ON urm.role_id = iur.id
+                                        WHERE iur.role_name LIKE '%administrator')
+                AND aa.access_right = 'ROLE_BASED';
+            </sql>
+        </rollback>
+	</changeSet>
+
+	<changeSet id="0_26_0_DELETE_AR_RIGHTS_FOR_AUTHORITY_USERS_ON_NON_CENTRAL_ACCOUNTS" author="apostolouk" context="migrate">
+        <comment>
+            Deletes all access rights that authority users might have on non-central accounts.
+        </comment>
+        <sql>
+            delete from account_access aa
+			using account a, user_role_mapping urm
+			where aa.account_id = a.id
+			and aa.user_id = urm.user_id
+			and a.registry_account_type not in
+			('UK_TOTAL_QUANTITY_ACCOUNT', 'UK_AUCTION_ACCOUNT', 'UK_ALLOCATION_ACCOUNT', 'UK_NEW_ENTRANTS_RESERVE_ACCOUNT',
+			'UK_MARKET_STABILITY_RESERVE_ACCOUNT', 'UK_GENERAL_HOLDING_ACCOUNT', 'UK_SURRENDER_ACCOUNT', 'UK_DELETION_ACCOUNT')
+			and urm.role_id = (select id from iam_user_role where role_name = 'authority-user');
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_26_0_INSERT_ROLE_BASED_RIGHT_FOR_AUTHORITY_USERS_ON_ETS_ACCOUNTS" author="apostolouk" context="migrate">
+        <comment>
+            Inserts entries in account_access table with the access right "ROLE_BASED"
+			for every authority user and every UK-ETS account (non-KP, non-central).
+        </comment>
+        <sql>
+            insert into account_access (id, state, account_id, user_id, access_right)
+			select nextval('account_access_seq'), 'ACTIVE', account.id, user_role_mapping.user_id, 'ROLE_BASED'
+			from account, user_role_mapping where account.registry_account_type not in
+			('NONE', 'UK_TOTAL_QUANTITY_ACCOUNT', 'UK_AUCTION_ACCOUNT', 'UK_ALLOCATION_ACCOUNT', 'UK_NEW_ENTRANTS_RESERVE_ACCOUNT',
+			'UK_MARKET_STABILITY_RESERVE_ACCOUNT', 'UK_GENERAL_HOLDING_ACCOUNT', 'UK_SURRENDER_ACCOUNT', 'UK_DELETION_ACCOUNT')
+			and user_role_mapping.role_id = (select id from iam_user_role where role_name = 'authority-user');
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_26_0_UPDATE_CONTACT_NULL_ADDRESS_LINES" author="nakoup" context="migrate">
+
+        <comment>Updates the contact address lines from null to an empty string</comment>
+        <sql>
+            update contact set line_1 = '' where line_1 is null;
+            update contact set line_2 = '' where line_2 is null;
+            update contact set line_3 = '' where line_3 is null;
+        </sql>
+    </changeSet>
+    <changeSet id="0_26_0_DELETE_ACCOUNT_ACCESS_ENTRIES_OF_DELETION_AND_SURRENDER_ACCOUNTS_FOR_ADMINS" author="koukoulakisg" context="migrate">
+
+        <comment>Deletes the account access entries of UK Surrender and UK Deletion account for the administrators</comment>
+        <sql>
+            delete
+            from account_access aa
+            where account_id in
+                  (select a.id from account a where a.registry_account_type in ('UK_DELETION_ACCOUNT', 'UK_SURRENDER_ACCOUNT'))
+              and user_id in (select u.id
+                              from users u
+                                       join user_role_mapping urm on u.id = urm.user_id
+                                       join iam_user_role iur on urm.role_id = iur.id
+                              where iur.role_name in ('junior-registry-administrator',
+                                                      'readonly-administrator',
+                                                      'senior-registry-administrator'));
+        </sql>
+    </changeSet>
+    <changeSet id="0_26_0_DELETE_ACCOUNT_ACCESS_ENTRIES_OF_UK_ALLOCATION_ACCOUNT_FOR_AUTHORITY_USERS" author="koukoulakisg" context="migrate">
+
+        <comment>Deletes the account access entries of UK Allocation account for the authority users</comment>
+        <sql>
+            delete
+            from account_access aa
+            where account_id in
+                  (select a.id from account a where a.registry_account_type = 'UK_ALLOCATION_ACCOUNT')
+              and user_id in (select u.id
+                              from users u
+                                       join user_role_mapping urm on u.id = urm.user_id
+                                       join iam_user_role iur on urm.role_id = iur.id
+                              where iur.role_name = 'authority-user');
+        </sql>
+    </changeSet>
+    <changeSet id="0_26_0_INSERT_ACCOUNT_ACCESS_ENTRY_FOR_AUTHORITY_USERS_ON_UK_ALLOCATION_ACCOUNT" author="koukoulakisg" context="migrate">
+        <comment>
+            Inserts entries in account_access table regarding the UK ALLOCATION ACCOUNT with the access right "INITIATE_AND_APPROVE"
+            for every authority user.
+        </comment>
+        <sql>
+            insert into account_access (id, state, account_id, user_id, access_right)
+            select nextval('account_access_seq'), 'ACTIVE', account.id, user_role_mapping.user_id, 'INITIATE_AND_APPROVE'
+            from account, user_role_mapping where account.registry_account_type = 'UK_ALLOCATION_ACCOUNT'
+            and user_role_mapping.role_id = (select id from iam_user_role where role_name = 'authority-user');
+        </sql>
+    </changeSet>
+    <changeSet id="0_26_0_INSERT_ACCOUNT_ACCESS_ENTRY_FOR_AUTHORITY_USERS_ON_UK SURRENDER ACCOUNT_AND_UK DELETION ACCOUNT" author="koukoulakisg" context="migrate">
+        <comment>
+            Inserts entries in account_access table regarding the UK SURRENDER ACCOUNT and UK DELETION ACCOUNT with the access right "READ_ONLY"
+            for every authority user.
+        </comment>
+        <sql>
+            insert into account_access (id, state, account_id, user_id, access_right)
+            select nextval('account_access_seq'), 'ACTIVE', account.id, user_role_mapping.user_id, 'READ_ONLY'
+            from account, user_role_mapping where account.registry_account_type in ('UK_SURRENDER_ACCOUNT', 'UK_DELETION_ACCOUNT')
+                                              and user_role_mapping.role_id = (select id from iam_user_role where role_name = 'authority-user')
+                                              on conflict do nothing;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

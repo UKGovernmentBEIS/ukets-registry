@@ -1,0 +1,61 @@
+<ng-container [formGroup]="nestedForm">
+  <div
+    class="govuk-form-group"
+    [id]="compositeFormGroupId"
+    [class.govuk-form-group--error]="this.showErrors && formControl.invalid"
+  >
+    <span
+      *ngIf="this.showErrors && formControl.invalid"
+      id="event-name-error"
+      class="govuk-error-message"
+      role="alert"
+      [attr.aria-describedby]="compositeFormGroupId"
+    >
+      <span class="govuk-visually-hidden">Error:</span>
+      <span *ngFor="let errorCode of getObjectKeys(formControl.errors)">
+        {{
+          validationErrorMessages[errorCode] || formControl.errors[errorCode]
+        }}
+      </span>
+    </span>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+        <label class="govuk-label" [for]="controlName + '-country-code'">
+          {{ countryCodeLabel }}
+        </label>
+        <select
+          class="govuk-select"
+          formControlName="countryCode"
+          [attr.aria-labelledby]="countryCodeLabel"
+          [id]="controlName + '-country-code'"
+          [name]="controlName + '-country-code'"
+          [class.govuk-select--error]="this.showErrors && formControl.invalid"
+        >
+          <option
+            *ngFor="let countryCode of countryCodes"
+            [value]="countryCode.region + ' (' + countryCode.code + ')'"
+          >
+            {{ countryCode.region + ' (' + countryCode.code + ')' }}
+          </option>
+        </select>
+      </div>
+      <div class="govuk-grid-column-one-half">
+        <label class="govuk-label" [for]="controlName + '-phone-number'">
+          {{ phoneNumberLabel }}
+        </label>
+        <input
+          aria-describedby="telephone-number-hint"
+          autocomplete="tel"
+          class="govuk-input govuk-input--width-20"
+          formControlName="phoneNumber"
+          [attr.aria-labelledby]="phoneNumberLabel"
+          [id]="controlName + '-phone-number'"
+          [name]="controlName + '-phone-number'"
+          type="tel"
+          [class.govuk-input--error]="this.showErrors && formControl.invalid"
+        />
+      </div>
+    </div>
+  </div>
+</ng-container>

@@ -1,0 +1,95 @@
+<h2 class="govuk-heading-m">{{ title }} emissions during reporting period</h2>
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      {{ helpMessageTitle }}
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    This table outlines the verified emissions of the operator per year for the
+    reporting period between the first and the last year of verified emissions
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <ul class="govuk-list govuk-list--bullet">
+          <li>
+            For the excluded years, the operator has no legal obligation to
+            report emissions for excluded years.
+          </li>
+          <li>
+            For the non-excluded years, the operator must report emissions for
+            all other years.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</details>
+
+<span
+  *ngIf="
+    !verifiedEmissionsResult?.verifiedEmissions ||
+    !verifiedEmissionsResult?.verifiedEmissions.length
+  "
+  class="govuk-caption-m govuk-!-margin-bottom-5"
+>
+  No emissions reported yet.
+</span>
+<span
+  *ngIf="showUploadedEmissionsNotification()"
+  class="govuk-caption-m govuk-!-margin-bottom-5"
+>
+  <svg
+    class="hmcts-banner__icon"
+    fill="black"
+    role="presentation"
+    focusable="false"
+    viewBox="0 0 25 25"
+    height="30"
+    width="30"
+  >
+    <path
+      d="M13.7,18.5h-2.4v-2.4h2.4V18.5z M12.5,13.7c-0.7,0-1.2-0.5-1.2-1.2V7.7c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v4.8 C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z"
+    />
+  </svg>
+  <b>&nbsp;&nbsp;&nbsp;Emissions for the current year have been uploaded</b>
+</span>
+<table
+  class="govuk-table"
+  id="emissions-table"
+  *ngIf="verifiedEmissionsResult?.verifiedEmissions.length"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Year</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        {{ title }} emissions
+      </th>
+      <th scope="col" class="govuk-table__header">Last update</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr
+      class="govuk-table__row"
+      *ngFor="let e of verifiedEmissionsResult?.verifiedEmissions"
+    >
+      <th scope="row" class="govuk-table__cell">{{ e.year }}</th>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ e.reportableEmissions }}
+      </td>
+      <td class="govuk-table__cell">{{ e.lastUpdated | gdsDateTimeShort }}</td>
+    </tr>
+  </tbody>
+</table>
+<button
+  *ngIf="
+    canRequestUpdateExclusionStatus &&
+    verifiedEmissionsResult?.verifiedEmissions.length
+  "
+  data-prevent-double-click="true"
+  class="govuk-button"
+  data-module="govuk-button"
+  (click)="updateExclusionStatus()"
+  id="updateExclusionStatus"
+>
+  Update exclusion status
+</button>

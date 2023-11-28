@@ -1,0 +1,51 @@
+<div
+  [class.govuk-form-group]="addFormGroupClass"
+  [class.govuk-form-group--error]="showError()"
+>
+  <label
+    class="govuk-label"
+    [class.govuk-visually-hidden]="!showLabel"
+    [attr.for]="id"
+    [attr.id]="labelId"
+    [ngClass]="showLabelInBold ? 'govuk-!-font-weight-bold' : ''"
+  >
+    {{ label }}
+  </label>
+  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+    {{ hint }}
+  </span>
+  <ng-container *ngIf="showError()">
+    <span
+      *ngIf="showError()"
+      id="event-name-error"
+      class="govuk-error-message"
+      role="alert"
+      [attr.aria-describedby]="labelId"
+    >
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ validationErrorMessage }}
+    </span>
+  </ng-container>
+
+  <input
+    class="govuk-input"
+    [class.govuk-input--error]="showError()"
+    [ngClass]="class"
+    [ngStyle]="style"
+    [formControl]="formControl"
+    [attr.id]="id"
+    [attr.name]="id"
+    type="text"
+    [maxlength]="maxlength"
+    [autocomplete]="autocomplete"
+    [required]="hasRequiredField(formControl)"
+    [readonly]="readonly"
+    [attr.aria-invalid]="showError()"
+    [appDisableControl]="disabled"
+    (keydown)="keyDown($event)"
+    (blur)="onBlur($event)"
+  />
+  <span class="govuk-body" *ngIf="showTextAfterInputElement"
+    ><strong>&nbsp;&nbsp;{{ showTextAfterInputElement }}</strong></span
+  >
+</div>

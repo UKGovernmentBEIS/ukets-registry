@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_00_0_CREATE_DOCUMENT_REQUEST_REMINDER_TABLE" author="nikiforos" context="migrate" failOnError="false">
+        <comment>Creates document_request_reminder table.</comment>
+        <sql>
+            CREATE SEQUENCE IF NOT EXISTS document_request_reminder_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE IF NOT EXISTS "document_request_reminder" (
+            "id" BIGINT NOT NULL,
+            "request_identifier" BIGINT NOT NULL,
+            "claimant_urid" VARCHAR(56) NOT NULL,
+            "reminder_sent_at" timestamp DEFAULT NULL,
+            constraint "pk_document_request_reminder" primary key(id)
+            );
+
+            COMMENT ON TABLE "document_request_reminder" IS 'Stores if the claimant of a document request task has been notified for pending actions.';
+            COMMENT ON COLUMN "document_request_reminder"."id" IS 'The primary key';
+            COMMENT ON COLUMN "document_request_reminder"."request_identifier" IS 'The request identifier of the related task';
+            COMMENT ON COLUMN "document_request_reminder"."claimant_urid" IS 'The urid of the claimant';
+            COMMENT ON COLUMN "document_request_reminder"."reminder_sent_at" IS 'When the claimant has been notified.';
+
+            CREATE UNIQUE INDEX IF NOT EXISTS "request_id_idx" ON "document_request_reminder" ("request_identifier");
+        </sql>
+    </changeSet>
+    
+      <changeSet id="4_00_0_ADD_FLAG_EXCLUDE_FROM_BILLING_TO_ACCOUNT" author="loukerip" context="migrate">
+        <comment>Add flag exclude from billing to account.</comment>
+        <sql>
+            alter table account add column if not exists excluded_from_billing boolean default false;
+            alter table account add column if not exists excluded_from_billing_remarks varchar(1024);
+        </sql>
+    </changeSet>
+
+    <changeSet id="4_00_0_CREATE_NOTE_TABLE" author="piliotid" context="migrate">
+        <comment>Creates note table.</comment>
+        <sql>
+            CREATE SEQUENCE note_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "note" (
+                    "id" bigint,
+                    "user_id" bigint constraint fk_note_user references users,
+                    "description" varchar(1024),
+                    "domain_type" varchar(256),
+                    "domain_id" varchar(256),
+                    "creation_date" timestamp,
+                    constraint "pk_note" primary key("id")
+                );
+
+            COMMENT ON TABLE "note" IS 'Stores user notes.';
+            COMMENT ON COLUMN "note"."id" IS 'The primary key';
+            COMMENT ON COLUMN "note"."user_id" IS 'The user id';
+            COMMENT ON COLUMN "note"."description" IS 'The description of the note';
+            COMMENT ON COLUMN "note"."domain_type" is 'The domain type (e.g. ACCOUNT, ACCOUNT_HOLDER)';
+            COMMENT ON COLUMN "note"."domain_id" is 'The domain identifier (e.g. Account Id, Account Holder Id, etc.';
+            COMMENT ON COLUMN "note"."creation_date" is 'The date of creation';
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

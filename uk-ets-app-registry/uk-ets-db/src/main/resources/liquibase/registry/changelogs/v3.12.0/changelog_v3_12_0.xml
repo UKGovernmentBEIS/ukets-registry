@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_12_0_CLEAR_BALANCE_MIGRATOR_DATA" author="piliotid" context="migrate">
+        <comment>Force the allocation classification migrator to run again</comment>
+        <sql>
+            delete from migrator_history where migrator_name = 'RUNNING_BALANCE_MIGRATOR';
+            delete from transaction_account_balance;
+            delete from account_balance_history;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

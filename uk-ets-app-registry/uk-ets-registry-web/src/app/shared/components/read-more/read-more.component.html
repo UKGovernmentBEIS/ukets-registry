@@ -1,0 +1,18 @@
+<div>
+  <div
+    #textbox
+    [ngClass]="{ less: !expand }"
+    [ngStyle]="{ '-webkit-line-clamp': maxLines }"
+  >
+    <ng-content></ng-content>
+  </div>
+  <a
+    class="govuk-link govuk-link--no-visited-state link cursor-pointer"
+    (click)="expand = !expand"
+    *ngIf="
+      textbox.offsetHeight < textbox.scrollHeight ||
+      (expand === true && textbox.offsetHeight > 40)
+    "
+    >{{ expand ? 'less' : 'more' }}</a
+  >
+</div>

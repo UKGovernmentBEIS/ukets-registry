@@ -1,0 +1,66 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l">
+      {{ title }}
+    </h1>
+
+    <button
+      *ngIf="!reconciliation?.readOnly"
+      class="govuk-button"
+      data-module="govuk-button"
+      type="submit"
+      (click)="startReconciliation()"
+    >
+      Start reconciliation
+    </button>
+
+    <h2 class="govuk-heading-m">Last Started Reconciliation</h2>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Identifier</dt>
+        <dd class="govuk-summary-list__value">
+          {{ reconciliation?.identifier }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Started</dt>
+        <dd class="govuk-summary-list__value">
+          {{ reconciliation?.created | gdsDateTime }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Updated</dt>
+        <dd class="govuk-summary-list__value">
+          {{ reconciliation?.updated | gdsDateTime }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Status</dt>
+        <dd
+          *ngIf="reconciliation?.readOnly; else etsRecon"
+          class="govuk-summary-list__value"
+        >
+          <app-govuk-tag
+            [color]="reconciliationStatusMap[reconciliation.status].color"
+          >
+            {{ reconciliationStatusMap[reconciliation.status].label }}
+          </app-govuk-tag>
+        </dd>
+        <ng-template #etsRecon class="govuk-summary-list__value">
+          {{ reconciliation?.status }}
+        </ng-template>
+      </div>
+    </dl>
+
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      type="submit"
+      (click)="refresh()"
+      id="submit"
+    >
+      Refresh
+    </button>
+  </div>
+</div>

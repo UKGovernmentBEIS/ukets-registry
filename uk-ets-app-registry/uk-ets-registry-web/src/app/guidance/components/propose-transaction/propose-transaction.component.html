@@ -1,0 +1,104 @@
+<div class="app-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-m govuk-!-margin-bottom-7 guidance-title">
+        UK Emissions Trading Registry guidance
+      </h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l">Proposing a transaction</h2>
+      <span class="govuk-caption-l"
+        >You can propose a transaction to transfer allowances or Kyoto
+        units.</span
+      >
+
+      <app-guidance-modification-date></app-guidance-modification-date>
+
+      <p class="govuk-body">Contents</p>
+
+      <ul class="govuk-list">
+        <li>
+          -
+          <a class="govuk-link" [routerLink]="[]" fragment="subsection1"
+            >Transfering allowances or Kyoto units</a
+          >
+        </li>
+      </ul>
+
+      <h3 class="govuk-heading-s" id="subsection1">
+        Transfering allowances or Kyoto units
+      </h3>
+      <p class="govuk-body">
+        To transfer allowances or Kyoto units, you will need:
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          the account number of the account that will receive the allowances,
+          for example UK-123-123456-1-12
+        </li>
+        <li>access to the FreeOTP Authenticator app</li>
+      </ul>
+      <p class="govuk-body">
+        Select Accounts at the top of the page and choose the account that you
+        want to transfer allowances or Kyoto units from
+      </p>
+      <img
+        class="guidance-img"
+        src="/assets/images/guidance/select-accounts-menu.png"
+        alt="Select accounts menu"
+      />
+
+      <p class="govuk-body">
+        Under the Overview for the account, select Propose transaction
+      </p>
+      <img
+        class="guidance-img"
+        src="/assets/images/guidance/propose-transaction.png"
+        alt="Propose transaction"
+      />
+
+      <p class="govuk-body">
+        Enter the number of allowances or Kyoto units you want to transfer
+      </p>
+      <img
+        class="guidance-img"
+        src="/assets/images/guidance/enter-units.png"
+        alt="Enter units"
+      />
+
+      <p class="govuk-body">
+        Enter the account number of the acquiring account
+      </p>
+      <img
+        class="guidance-img"
+        src="/assets/images/guidance/enter-account-number.png"
+        alt="Enter account number"
+      />
+
+      <p class="govuk-body">
+        You will be able to check the transfer proposal before you submit it. To
+        confirm a transaction proposal, you will need to generate and enter a
+        two-factor authentication code using the FreeOTP Authenticator app. This
+        is known as ‘digital signing’ and provides additional security for
+        transactions within the UK Registry.
+      </p>
+
+      <img
+        class="guidance-img"
+        src="/assets/images/guidance/check-transaction.png"
+        alt="Check transaction"
+      />
+
+      <p class="govuk-body">
+        After you sign and submit the proposal, it will need to be approved by
+        another Authorised Representative with the correct permissions on the
+        account.
+      </p>
+    </div>
+  </div>
+</div>
+
+<app-back-to-top></app-back-to-top>

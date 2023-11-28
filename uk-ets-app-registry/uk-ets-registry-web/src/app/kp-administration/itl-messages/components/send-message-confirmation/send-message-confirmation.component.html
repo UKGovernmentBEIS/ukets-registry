@@ -1,0 +1,27 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-7">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">You have sent a message to the ITL</h1>
+      <div class="govuk-panel__body">
+        <div>
+          The message ID is
+          <strong>{{ messageId$ | async }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="['/kpadministration/itl-message-list']"
+        [queryParams]="{ mode: 0 }"
+        class="govuk-back-link"
+        skipLocationChange
+        id="back"
+        >Back to ITL messages</a
+      >
+    </p>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+.govuk-summary-list__row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.govuk-summary-list__value {
+  flex: 1 0 auto;
+  width: auto;
+}

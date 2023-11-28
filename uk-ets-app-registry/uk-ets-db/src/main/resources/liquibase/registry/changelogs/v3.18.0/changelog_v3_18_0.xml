@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_18_0_REMOVE_PERMIT_ENTRY_INTO_FORCE_DATE" author="nikiforos" context="migrate">
+        <comment>Remove permit_entry_into_force_date column from installation table</comment>
+        <sql>
+            alter table installation drop column permit_entry_into_force_date;
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_18_0_DROP_WORK_EMAIL_COLUMN" author="gourgiog" context="migrate">
+        <comment>Drop the work email column from registry db</comment>
+        <sql>
+            alter table users drop column if exists work_email;
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_18_0_ADD_EMAIL_COLUMN" author="gourgiog" context="migrate">
+        <comment>Add a new email column that actually represents the true user email</comment>
+        <sql>
+            alter table users add column email varchar(255);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

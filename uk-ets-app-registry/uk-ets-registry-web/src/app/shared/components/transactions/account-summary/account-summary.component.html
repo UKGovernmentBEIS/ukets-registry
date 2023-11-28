@@ -1,0 +1,96 @@
+<div
+  class="govuk-grid-row govuk-summary-list govuk-!-padding-bottom-2"
+  [class.section-border]="hasLink"
+>
+  <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+      {{ header }}
+    </h2>
+  </div>
+  <div *ngIf="hasLink" class="govuk-grid-column-one-third govuk-!-padding-0">
+    <a
+      class="govuk-link right-aligned govuk-!-margin-top-2"
+      [routerLink]="[]"
+      (click)="linkClicked.emit()"
+    >
+      Change<span class="govuk-visually-hidden"> {{ header }}</span>
+    </a>
+  </div>
+</div>
+<dl class="govuk-summary-list" [class.govuk-summary-list--no-border]="!hasLink">
+  <div
+    *ngIf="tip && !hideTip"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt
+      class="govuk-summary-list__key govuk-summary-list__key_custom"
+      *ngIf="!hideTip"
+    >
+      <div class="govuk-inset-text" style="margin-top: 0; margin-bottom: 0">
+        {{ tip }}
+      </div>
+    </dt>
+    <dd
+      *ngIf="!hideTip"
+      class="govuk-summary-list__value govuk-summary-list__value_custom"
+    ></dd>
+  </div>
+  <div
+    *ngIf="accountInfo?.accountHolderName && !hideAccountHolderName"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Account Holder</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountInfo.accountHolderName }}
+    </dd>
+  </div>
+  <div
+    *ngIf="isTransactionReversal"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Account type</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountInfo.accountType }}
+    </dd>
+  </div>
+  <div
+    *ngIf="
+      accountInfo?.fullIdentifier &&
+      !hideAccountNumber &&
+      !showAccountNameInsteadOfNumber &&
+      !accountInfo?.isGovernment
+    "
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Account number</dt>
+    <dd class="govuk-summary-list__value">
+      <div *ngIf="hasAccountAccess; else elseBlockAccountNumber">
+        <a
+          [routerLink]="['/account', accountInfo.identifier]"
+          [queryParams]="{ selectedSideMenu }"
+          class="disabled"
+        >
+          {{ accountInfo.fullIdentifier }}
+        </a>
+      </div>
+      <ng-template #elseBlockAccountNumber>
+        {{ accountInfo.fullIdentifier }}</ng-template
+      >
+    </dd>
+  </div>
+  <div
+    *ngIf="accountInfo?.accountName"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">
+      {{
+        showAccountNameOrDescriptionLabel
+          ? 'Account name or description'
+          : 'Account name'
+      }}
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountInfo.accountName }}
+    </dd>
+  </div>
+</dl>

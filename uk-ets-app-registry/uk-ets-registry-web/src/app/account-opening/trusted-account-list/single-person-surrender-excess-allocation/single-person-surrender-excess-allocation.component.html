@@ -1,0 +1,61 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Second approval rule'"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form>
+      <div class="govuk-form-group">
+        <fieldset
+          class="govuk-fieldset"
+          aria-describedby="account-holder-type-hint"
+        >
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl">Choose the transaction rules</span>
+              Do you want a second authorised representative to approve a
+              surrender transaction or a return of excess allocation?
+            </h1>
+          </legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="yes"
+                name="answer"
+                type="radio"
+                value="yes"
+                (click)="selectedValue = 'yes'"
+                [ngModel]="selectedValue"
+              />
+              <label class="govuk-label govuk-radios__label" for="yes">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="no"
+                name="answer"
+                type="radio"
+                value="no"
+                (click)="selectedValue = 'no'"
+                [ngModel]="selectedValue"
+              />
+              <label class="govuk-label govuk-radios__label" for="no">
+                No
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <button
+        [disabled]="!selectedValue"
+        (click)="onContinue()"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="input"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

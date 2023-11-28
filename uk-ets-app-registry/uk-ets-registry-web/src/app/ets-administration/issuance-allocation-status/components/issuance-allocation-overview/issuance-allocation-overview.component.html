@@ -1,0 +1,18 @@
+<h1 class="govuk-heading-xl">View issuance and allocation status</h1>
+<h2 class="govuk-heading-m">
+  Issuance and allocation status
+</h2>
+<app-issuance-allocation-statuses-container></app-issuance-allocation-statuses-container>
+<button
+  *ngIf="'urn:uk-ets-registry-api:allocation-table:write' | protect | async"
+  class="govuk-button"
+  data-module="govuk-button"
+  (click)="navigateToUploadAllocationTable()"
+>
+  Upload allocation table
+</button>
+<h2 class="govuk-heading-m">
+  History and comments
+</h2>
+<app-allocation-table-history-container></app-allocation-table-history-container>
+<app-back-to-top></app-back-to-top>

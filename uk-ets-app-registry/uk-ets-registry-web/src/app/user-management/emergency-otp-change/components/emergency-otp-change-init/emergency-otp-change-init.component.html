@@ -1,0 +1,23 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Request emergency access to my account</h1>
+    <p class="govuk-body">
+      If you have lost your device and cannot access your authenticator app you
+      must request an emergency access link email.
+    </p>
+    <p class="govuk-body">
+      When you click on the link in the email, a Registry Administrator will
+      review your request.
+    </p>
+
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      (click)="onContinue()"
+      [disabled]="!cookiesAccepted"
+      id="continue"
+    >
+      Continue
+    </button>
+  </div>
+</div>

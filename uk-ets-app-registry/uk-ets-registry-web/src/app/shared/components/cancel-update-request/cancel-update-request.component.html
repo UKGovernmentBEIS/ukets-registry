@@ -1,0 +1,30 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl">Cancel request</span>
+        <ng-container *ngIf="updateRequestText; else freeText">
+          Are you sure you want to cancel the update request of the
+          {{ updateRequestText }} and return back to the {{ pageTitle }} page?
+        </ng-container>
+        <ng-template #freeText>
+          {{ notification }}
+        </ng-template>
+      </h1>
+    </div>
+    <hr class="govuk-section-break govuk-section-break--m" />
+    <div class="govuk-form-group">
+      <p class="govuk-body">
+        Any data you entered so far in this request will be lost.<br />
+        Please confirm that you want to cancel this request.
+      </p>
+    </div>
+    <button
+      (click)="onCancel()"
+      class="govuk-button govuk-button--warning"
+      data-module="govuk-button"
+    >
+      Cancel request
+    </button>
+  </div>
+</div>

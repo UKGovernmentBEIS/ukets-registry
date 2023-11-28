@@ -1,0 +1,29 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr class="govuk-section-break govuk-section-break--visible" />
+  </div>
+  <div class="govuk-grid-row">
+    <app-account-summary
+      header="Account details"
+      [accountInfo]="transactionRuleUpdateTaskDetails?.accountInfo"
+      [hasAccountAccess]="true"
+      [showAccountNameOrDescriptionLabel]="false"
+    ></app-account-summary>
+  </div>
+  <div class="govuk-grid-row">
+    <h3 class="govuk-heading-m">Update details</h3>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        The following changes will only apply to future transactions.
+      </strong>
+    </div>
+    <app-summary-list
+      [class]="'govuk-summary-list'"
+      [summaryListItems]="getSummaryListItems()"
+    ></app-summary-list>
+  </div>
+</div>

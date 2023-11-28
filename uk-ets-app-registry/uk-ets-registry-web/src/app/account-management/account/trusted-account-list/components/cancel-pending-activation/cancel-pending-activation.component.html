@@ -1,0 +1,20 @@
+<h1 class="govuk-heading-l">
+  <span class="govuk-caption-l">Cancel addition</span>
+  Are you sure you want to cancel the addition of this account to the trusted
+  account list?
+</h1>
+<p class="govuk-body">
+  The account '{{ description }}' will not be added to the trusted account
+  list.<br />
+  This action cannot be reversed.
+</p>
+
+<button
+  id="submit"
+  (click)="cancel()"
+  data-prevent-double-click="true"
+  class="govuk-button govuk-button--warning"
+  data-module="govuk-button"
+>
+  Cancel addition
+</button>

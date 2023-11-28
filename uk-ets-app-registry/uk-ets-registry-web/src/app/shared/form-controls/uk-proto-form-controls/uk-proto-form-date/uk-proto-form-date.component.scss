@@ -1,0 +1,10 @@
+@import '_variables';
+
+::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari - affects only safari */
+  color: govuk-colour('black');
+}
+
+input[type='date']:focus::-webkit-input-placeholder {
+  color: govuk-colour('white');
+}

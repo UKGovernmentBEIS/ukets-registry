@@ -1,0 +1,33 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'What is your email address'"
+></div>
+<div class="govuk-grid-row" aria-live="polite">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl">Create a registry sign in</span>
+        What is your work email address?
+      </h1>
+      <p class="govuk-body">
+        This should be your work email. We'll send a link to confirm that you
+        have access to this address.
+      </p>
+      <app-form-control-email
+        [label]="'Work email address'"
+        [maxlength]="256"
+        [validationErrorMessage]="validationErrorMessage.email"
+        controlName="email"
+      ></app-form-control-email>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="Submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

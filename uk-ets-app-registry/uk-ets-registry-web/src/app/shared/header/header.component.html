@@ -1,0 +1,73 @@
+<app-cookies-pop-up-container></app-cookies-pop-up-container>
+<header class="govuk-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-width-container">
+    <div class="govuk-header__logo">
+      <a
+        href="https://www.gov.uk/"
+        class="govuk-header__link govuk-header__link--homepage govuk-header__link--home-custom"
+      >
+        <span
+          class="govuk-header__logotype"
+          [inlineSVG]="'/assets/images/govuk-header-logotype-crown.svg'"
+          prepend="true"
+        >
+          <span class="govuk-header__logotype-text"> GOV.UK </span>
+        </span>
+      </a>
+    </div>
+    <div id="header" class="govuk-header__content" tabindex="-1">
+      <a
+        *ngIf="!!isAuthenticated"
+        [routerLink]="menuRoutes.DASHBOARD"
+        class="govuk-header__link govuk-header__link--service-name govuk-header__link--service-custom"
+      >
+        UK Emissions Trading Registry
+      </a>
+
+      <a
+        *ngIf="!isAuthenticated"
+        href="/"
+        class="govuk-header__link govuk-header__link--service-name govuk-header__link--service-custom"
+      >
+        UK Emissions Trading Registry
+      </a>
+      <span *ngIf="!isAuthenticated" class="govuk-header__link-item">
+        <a
+          (click)="login()"
+          (keypress)="login()"
+          routerLink=""
+          id="sign-in"
+          class="govuk-header__link uk_ets_sign_in_out_link govuk-header__link--sign-custom"
+          >Sign in</a
+        >
+      </span>
+      <span *ngIf="!!isAuthenticated" class="govuk-header__link-item">
+        <a
+          (click)="logout()"
+          (keypress)="logout()"
+          routerLink=""
+          class="govuk-header__link uk_ets_sign_in_out_link govuk-header__link--sign-custom"
+          id="sign-out"
+          >Sign out</a
+        >
+      </span>
+      <span *ngIf="!!isAuthenticated" class="govuk-header__link-item">
+        <app-my-profile [urid]="urid$ | async"></app-my-profile>
+      </span>
+      <button
+        type="button"
+        class="govuk-header__menu-button govuk-js-header-toggle"
+        aria-controls="navigation"
+        aria-label="Show or hide Top Level Navigation"
+      >
+        Menu
+      </button>
+      <app-nav-menu
+        [navMenu]="navMenu$ | async"
+        [authenticated]="!!isAuthenticated"
+        [activeMenuItem]="activeMenuItem$ | async"
+        (clickedItem)="onClickedItem($event)"
+      ></app-nav-menu>
+    </div>
+  </div>
+</header>

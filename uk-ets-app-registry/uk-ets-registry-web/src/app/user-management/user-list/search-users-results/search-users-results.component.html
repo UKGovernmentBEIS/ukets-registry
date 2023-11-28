@@ -1,0 +1,125 @@
+<table
+  aria-describedby="search-users-results-table"
+  appSortableTable
+  (sorting)="onSorting($event)"
+  class="govuk-table"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'userId'"
+        [sortDirection]="
+          sortParameters?.sortField === 'userId'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        User ID
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'firstName'"
+        [sortDirection]="
+          sortParameters.sortField === 'firstName'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        First and middle names
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'lastName'"
+        [sortDirection]="
+          sortParameters?.sortField === 'lastName'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Last name
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'knownAs'"
+        [sortDirection]="
+          sortParameters?.sortField === 'knownAs'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Known as
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'registeredOn'"
+        [sortDirection]="
+          sortParameters?.sortField === 'registeredOn'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Registered on
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'lastSignIn'"
+        [sortDirection]="
+          sortParameters?.sortField === 'lastSignIn'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Last sign in
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'status'"
+        [sortDirection]="
+          sortParameters?.sortField === 'status'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Status
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let user of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a
+          [routerLink]="[]"
+          (click)="goToUserDetailsAndChangeLocationState(user.userId, $event)"
+          class="disabled"
+          >{{ user.userId }}</a
+        >
+      </td>
+      <td class="govuk-table__cell">{{ user.firstName }}</td>
+      <td class="govuk-table__cell">{{ user.lastName }}</td>
+      <td class="govuk-table__cell">{{ user.knownAs }}</td>
+      <td class="govuk-table__cell">
+        {{ user.registeredOnDate | date: dateFormat | titlecase }}
+      </td>
+      <td class="govuk-table__cell">
+        {{
+          user.lastSignInDate
+            | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+            | gdsDateTimeShort
+        }}
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag [color]="userStatusMap[user.status].color">
+          {{ userStatusMap[user.status].label }}
+        </app-govuk-tag>
+      </td>
+    </tr>
+  </tbody>
+</table>

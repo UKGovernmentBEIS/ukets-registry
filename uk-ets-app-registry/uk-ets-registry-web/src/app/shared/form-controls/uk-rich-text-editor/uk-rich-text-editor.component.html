@@ -1,0 +1,41 @@
+<div
+  class="govuk-form-group"
+  [class.govuk-form-group--error]="showError()"
+  [attr.role]="'group'"
+>
+  <!--  [attr.aria-labelledby]="id"-->
+
+  <label class="govuk-label" [attr.for]="id" [attr.id]="labelId">
+    <ng-container *ngIf="labelTitleBold; else notBold">
+      <p class="govuk-heading-s">{{ label }}</p>
+    </ng-container>
+    <ng-template #notBold>
+      {{ label }}
+    </ng-template>
+  </label>
+  <div [innerHTML]="moreInfo"></div>
+  <ng-container *ngIf="validationErrorMessage">
+    <span
+      *ngIf="showError() && formControl.errors"
+      id="event-name-error"
+      class="govuk-error-message"
+      role="alert"
+      [attr.aria-describedby]="labelId"
+    >
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ validationErrorMessage }}
+    </span>
+  </ng-container>
+  <quill-editor
+    #quillis
+    [attr.id]="id"
+    [customModules]="customModules"
+    [modules]="getModules()"
+    [sanitize]="true"
+    [formControl]="formControl"
+    [preserveWhitespace]="true"
+    [formats]="formats"
+    classes="govuk-!-margin-bottom-5"
+    [class.govuk-input--error]="showError() && formControl.errors"
+  ></quill-editor>
+</div>

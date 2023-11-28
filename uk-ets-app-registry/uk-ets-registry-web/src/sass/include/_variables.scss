@@ -1,0 +1,13 @@
+@import 'node_modules/govuk-frontend/govuk/settings/all';
+@import 'node_modules/govuk-frontend/govuk/tools/all';
+@import 'node_modules/govuk-frontend/govuk/helpers/all';
+
+$yellow-tint-25: govuk-tint(govuk-colour('yellow'), 25);
+$yellow-tint-50: govuk-tint(govuk-colour('yellow'), 50);
+$red-tint-50: govuk-tint(govuk-colour('red'), 50);
+$red-tint-25: govuk-tint(govuk-colour('red'), 25);
+$green-tint-50: govuk-tint(govuk-colour('green'), 50);
+$green-tint-25: govuk-tint(govuk-colour('green'), 25);
+
+$yellow-highlight-bg-colour: govuk-tint(govuk-colour('yellow'), 75);
+$yellow-highlight-border-colour: rgba(govuk-colour('yellow'), 0.5);

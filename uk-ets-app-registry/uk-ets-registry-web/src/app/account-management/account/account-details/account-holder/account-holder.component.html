@@ -1,0 +1,75 @@
+<ng-container *ngIf="accountHolder">
+  <app-shared-account-holder
+    [accountHolder]="accountHolder"
+    [countries]="countries"
+  ></app-shared-account-holder>
+  <span class="govuk-heading-m">Identification documentation</span>
+  <app-identification-documentation-list
+    [documents]="documents"
+    (downloadFile)="downloadFile($event)"
+    (deleteFile)="deleteFile($event)"
+    [canDeleteFile]="canDeleteFile"
+  >
+  </app-identification-documentation-list>
+  <button
+    *ngIf="
+      ('urn:uk-ets-registry-api:user:documents:request'
+        | requestDoc: isKpNonGovernmentAccount()
+        | async) && canRequestUpdateDocuments
+    "
+    id="onAccountHolderRequestDocumentsButtonId"
+    class="govuk-button govuk-button--secondary"
+    (click)="onAccountHolderRequestDocuments()"
+    (keypress)="onAccountHolderRequestDocuments()"
+    data-module="govuk-button"
+  >
+    Request documents
+  </button>
+</ng-container>
+<ng-container *ngIf="accountHolderContactInfo.primaryContact as primaryContact">
+  <hr
+    class="
+      govuk-section-break govuk-section-break--m govuk-section-break--visible
+    "
+  />
+  <h2 class="govuk-heading-l" style="font-size: 30px">Primary Contact</h2>
+  <ng-container>
+    <app-shared-account-holder-contact
+      [accountHolderContact]="primaryContact"
+      [countries]="countries"
+      [contactType]="primaryContactType"
+    ></app-shared-account-holder-contact>
+  </ng-container>
+  <ng-container
+    *ngIf="accountHolderContactInfo.alternativeContact as alternativeContact"
+  >
+    <hr
+      class="
+        govuk-section-break govuk-section-break--l govuk-section-break--visible
+      "
+    />
+    <h2 class="govuk-heading-l" style="font-size: 30px">
+      Alternative Primary Contact
+    </h2>
+    <app-shared-account-holder-contact
+      [accountHolderContact]="alternativeContact"
+      [countries]="countries"
+      [contactType]="alternativeContactType"
+    ></app-shared-account-holder-contact>
+  </ng-container>
+</ng-container>
+
+<div class="govuk-button-group">
+  <button
+    id="goToRequestUpdateButtonId"
+    (click)="goToRequestUpdate()"
+    *ngIf="
+      (accountHolder || accountHolderContactInfo.primaryContact) &&
+      canRequestUpdateContact
+    "
+    class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+    data-module="govuk-button"
+  >
+    Request Update
+  </button>
+</div>

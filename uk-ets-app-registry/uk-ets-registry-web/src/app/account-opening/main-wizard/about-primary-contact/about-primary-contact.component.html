@@ -1,0 +1,20 @@
+<details
+  class="govuk-details"
+  data-module="govuk-details"
+  *ngIf="accountHolderCompleted$ | async"
+>
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text"> About the Primary Contact </span>
+  </summary>
+  <div class="govuk-details__text">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body govuk-!-margin-bottom-3">
+          This should be someone who has the authority to sign on behalf of the
+          company, for example a director or someone named in the scheme of
+          delegation.
+        </p>
+      </div>
+    </div>
+  </div>
+</details>

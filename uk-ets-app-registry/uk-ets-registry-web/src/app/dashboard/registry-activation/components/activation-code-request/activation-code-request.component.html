@@ -1,0 +1,48 @@
+<div class="govuk-grid-row" *ngIf="!!enrolmentKeyDetails">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Request a new registry activation code</h1>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body">
+          Current code issued:
+          {{ enrolmentKeyDetails?.enrolmentKeyDateCreated | gdsDate }}
+        </p>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body">
+          {{ keyExpirationLabel() }}
+          {{ enrolmentKeyDetails?.enrolmentKeyDateExpired | gdsDate }}
+        </p>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row govuk-!-margin-top-4">
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body">
+          When you submit this request it will be sent to the Registry
+          Administrator for review.<br />
+          If your request is approved you will receive an email with your
+          registry activation code within 10 days.
+        </p>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row govuk-!-margin-top-7">
+      <div class="govuk-grid-column-two-thirds">
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          appDebounceClick
+          (debounceClick)="onSubmit()"
+          id="submit"
+        >
+          Submit request
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

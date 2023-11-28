@@ -1,0 +1,4 @@
+/* by default the notification content takes only part of the width of the container*/
+.govuk-notification-banner__content > p {
+  max-width: none;
+}

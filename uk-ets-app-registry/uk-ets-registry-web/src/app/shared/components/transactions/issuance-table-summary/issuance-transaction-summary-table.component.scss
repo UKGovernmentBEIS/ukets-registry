@@ -1,0 +1,9 @@
+@import '_variables';
+
+.panel-display-quantity {
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  border-left-style: solid;
+  border-left-width: 5px;
+  border-bottom: 1px solid govuk-colour('mid-grey');
+}

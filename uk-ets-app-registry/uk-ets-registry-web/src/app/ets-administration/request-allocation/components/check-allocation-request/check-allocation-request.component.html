@@ -1,0 +1,68 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"> Request allocation of UK allowances </span>
+
+    <div class="govuk-heading-l">Check this request</div>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Allocation Year</dt>
+        <dd class="govuk-summary-list__value">
+          {{ selectedAllocationYear }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            routerLink="/ets-administration/request-allocation"
+          >
+            Change
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Allocation Category</dt>
+        <dd class="govuk-summary-list__value">
+          {{ selectedAllocationCategory | allocationCategory }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            routerLink="/ets-administration/request-allocation"
+          >
+            Change
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+  <div class="govuk-grid-column-full">
+    <img
+      src="/assets/images/icon-file-download.png"
+      style="vertical-align: middle; margin-right: 10px"
+      alt="download"
+    />
+    <a
+      class="govuk-link"
+      (click)="downloadAllocationFile.emit()"
+      [routerLink]="[]"
+      >Download an excel with allocation request details
+    </a>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      (click)="submitRequest.emit()"
+      type="button"
+      id="submit"
+    >
+      Submit request
+    </button>
+  </div>
+</div>

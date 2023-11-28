@@ -1,0 +1,27 @@
+<div class="type-ahead govuk-form-group">
+  <label class="govuk-label" [attr.for]="id" [attr.id]="labelId">
+    {{ label }}
+  </label>
+  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+    {{ hint }}
+  </span>
+  <input
+    class="govuk-input"
+    [attr.id]="id"
+    [attr.name]="id"
+    type="text"
+    [placeholder]="placeHolder"
+    [formControl]="formControl"
+    [ngbTypeahead]="search"
+    [resultTemplate]="resultTemplate"
+    [inputFormatter]="inputFormatter"
+    (selectItem)="onSelect($event)"
+  />
+  <span
+    tabindex="0"
+    *ngIf="IsSelect"
+    class="dropdown-icon"
+    (keypress)="toggle$.next(true)"
+    (click)="toggle$.next(true)"
+  ></span>
+</div>

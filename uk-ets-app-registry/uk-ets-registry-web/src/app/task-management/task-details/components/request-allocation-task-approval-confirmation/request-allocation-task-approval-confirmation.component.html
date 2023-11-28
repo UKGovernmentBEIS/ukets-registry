@@ -1,0 +1,54 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-7">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">
+        You have approved the proposed allocation
+      </h1>
+      <div class="govuk-panel__body">
+        <div>
+          The request ID is
+          <strong>{{ taskCompleteResponse?.requestIdentifier }}</strong>
+        </div>
+      </div>
+      <hr class="govuk-section-break govuk-section-break--m" />
+      <div class="govuk-panel__body">
+        The allocation is scheduled to begin after
+        {{
+          taskCompleteResponse?.executionTime
+            | concatDateTime
+              : taskCompleteResponse?.executionDate
+              : taskCompleteResponse?.executionTime
+            | gdsTime
+        }}
+        on
+        {{
+          taskCompleteResponse?.executionDate
+            | concatDateTime
+              : taskCompleteResponse?.executionDate
+              : taskCompleteResponse?.executionTime
+            | gdsDateShort
+        }}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      The allocation will complete at the specified date and time.
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        routerLink="/task-list"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >Back to the task list</a
+      >
+    </p>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-dashboard-notifications-container></app-dashboard-notifications-container>
+  </div>
+  <div class="govuk-grid-column-full">
+    <h1
+      class="govuk-heading-xl"
+      *ngIf="(isAuthenticated$ | async) && loggedInUser$ | async as user"
+    >
+      Welcome
+      {{
+        user.knownAs && user.knownAs[0].length > 0
+          ? user.knownAs[0]
+          : user.firstName + ' ' + user.lastName
+      }}
+    </h1>
+    <hr
+      class="
+        govuk-section-break govuk-section-break--m govuk-section-break--visible
+      "
+      *ngIf="isAuthenticated$ | async"
+    />
+    <span
+      *ngIf="
+        'urn:uk-ets-registry-api:page:dashboard:alerts:read' | protect | async
+      "
+    >
+      <app-alerts-container></app-alerts-container>
+    </span>
+    <span
+      *ngIf="
+        'urn:uk-ets-registry-api:system-administration:write' | protect | async
+      "
+    >
+      <button
+        *ngIf="systemAdministrationEnabled"
+        class="govuk-button"
+        (click)="reset()"
+        data-module="govuk-button"
+      >
+        Reset Database
+      </button>
+    </span>
+
+    <div
+      *ngIf="
+        'urn:uk-ets-registry-api:page:dashboard:registryActivationCodeLink:view'
+          | protect
+          | async
+      "
+    >
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <p>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Warning</span>
+            We have sent a Registry activation code to your work email address.
+            Once you receive the email, please use the link below to activate
+            your access to the Registry.
+            <br />
+            <a class="govuk-link" [routerLink]="routerLinks.REGISTRY_ACTIVATION"
+              >Enter your Registry activation code</a
+            >
+          </strong>
+        </p>
+      </div>
+      <details
+        class="govuk-details govuk-warning-text__text"
+        data-module="govuk-details"
+      >
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            I have not received my Registry activation code
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          <a
+            class="govuk-link"
+            [routerLink]="routerLinks.REQUEST_ACTIVATION_CODE"
+            >Request a new registry activation code</a
+          >
+        </div>
+      </details>
+    </div>
+  </div>
+</div>

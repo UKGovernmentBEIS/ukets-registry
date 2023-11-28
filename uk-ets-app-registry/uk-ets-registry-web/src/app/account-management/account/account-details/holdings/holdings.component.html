@@ -1,0 +1,97 @@
+<div *ngIf="accountHoldingsResult">
+  <app-holdings-summary
+    id="details-holdings-summary"
+    [accountHoldingsResult]="accountHoldingsResult"
+    [hideComplianceInfo]="true"
+  ></app-holdings-summary>
+  <table class="govuk-table" aria-describedby="Account holdings">
+    <caption
+      *ngIf="actionForAnyAdmin | protect | async"
+      class="govuk-table__caption"
+    >
+      Click on the unit to view more details.
+    </caption>
+    <thead class="govuk-table__head govuk-th-align-right">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header govuk-!-width-one-half">
+          Unit type
+        </th>
+        <th
+          *ngIf="AccountTypeMap[account.accountType]?.isKyoto"
+          scope="col"
+          class="govuk-table__header holdings-th-width-19"
+        >
+          Original CP
+        </th>
+        <th
+          *ngIf="AccountTypeMap[account.accountType]?.isKyoto"
+          scope="col"
+          class="govuk-table__header holdings-th-width-22"
+        >
+          Applicable CP
+        </th>
+        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+          Available quantity
+        </th>
+        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+          Reserved quantity
+        </th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr
+        *ngFor="let holding of accountHoldingsResult.items"
+        class="govuk-table__row"
+      >
+        <ng-template #unitType>
+          {{ holding | unitTypeSopRender }}
+        </ng-template>
+
+        <th scope="row" class="govuk-table__header">
+          <a
+            *ngIf="
+              isKyotoProtocolUnit(holding.type) ||
+              ('urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin'
+                | protect
+                | async) === true
+            "
+            [routerLink]="[]"
+            (keypress)="goTodetails(holding)"
+            (click)="goTodetails(holding)"
+            class="disabled"
+          >
+            <ng-container *ngTemplateOutlet="unitType"></ng-container>
+          </a>
+          <span
+            *ngIf="
+              !isKyotoProtocolUnit(holding.type) &&
+              ('urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin'
+                | protect
+                | async) === false
+            "
+          >
+            <ng-container *ngTemplateOutlet="unitType"></ng-container>
+          </span>
+        </th>
+        <td
+          *ngIf="AccountTypeMap[account.accountType]?.isKyoto"
+          class="govuk-table__cell govuk-table__cell--numeric"
+        >
+          {{ commitmentPeriod[holding.originalPeriod] }}
+        </td>
+        <td
+          *ngIf="AccountTypeMap[account.accountType]?.isKyoto"
+          class="govuk-table__cell govuk-table__cell--numeric"
+        >
+          {{ commitmentPeriod[holding.applicablePeriod] }}
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {{ holding.availableQuantity | number }}
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {{ holding.reservedQuantity | number }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

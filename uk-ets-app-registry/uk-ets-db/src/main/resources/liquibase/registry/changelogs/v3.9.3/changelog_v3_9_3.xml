@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="fragkise" id="3_9_3_FORCE_RERUN_RUNNING_BALANCE_MIGRATOR" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='RUNNING_BALANCE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>Force the allocation classification migrator to run again</comment>
+        <sql>
+            delete from transaction_account_balance;
+            delete from account_balance_history;
+            delete from migrator_history where migrator_name = 'RUNNING_BALANCE_MIGRATOR';
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_9_3_ADD_COLUMN_LAST_UPDATED_TO_TRANSACTION_ACCOUNT_BALANCE" author="fragkise" context="migrate">
+        <comment>Adds time to the Account Balance Snapshot</comment>
+        <sql>
+            --------------------------------------------------------
+            --  Alter TRANSACTION_ACCOUNT_BALANCE
+            -------------------------------------------------------          
+            alter table "transaction_account_balance" add column  "last_updated" timestamp not null;
+            comment on column "transaction_account_balance"."last_updated" is 'The date when the transaction status and balance was last updated.';
+        </sql>
+
+        <rollback>
+            <sql>
+                 alter table "transaction_account_balance" drop column  "last_updated";
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

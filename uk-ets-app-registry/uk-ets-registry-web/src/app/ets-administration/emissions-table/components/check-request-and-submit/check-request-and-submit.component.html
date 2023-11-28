@@ -1,0 +1,65 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Check the request and submit</h1>
+  </div>
+  <div class="govuk-grid-column-full">
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        The checksum in the filename must be the same as the original file
+      </strong>
+    </div>
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">Uploaded file</dt>
+        <dd class="govuk-summary-list__key govuk-body-m"></dd>
+        <dd class="govuk-summary-list__key govuk-body-m"></dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateBack('emissions-table')"
+            id="back"
+          >
+            Change
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row--no-border">
+        <dt class="govuk-summary-list__value">
+          {{ fileHeader.fileName }}
+        </dt>
+      </div>
+    </dl>
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <div class="govuk-form-group">
+        <h2 class="govuk-heading-m">
+          Enter the code shown in the authenticator app
+        </h2>
+        <app-form-control-text
+          [class]="'govuk-input--width-10'"
+          [validationErrorMessage]="validationErrorMessage.otpCode"
+          [hint]="'Enter the 6-digit code'"
+          [label]="'Enter the 6-digit code'"
+          [showLabel]="false"
+          controlName="otpCode"
+          [autocomplete]="'off'"
+          #otpTextControl
+        ></app-form-control-text>
+      </div>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="Submit"
+        id="continue"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

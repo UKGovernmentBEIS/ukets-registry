@@ -1,0 +1,89 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"> Update exclusion status </span>
+
+    <div class="govuk-heading-l">Check the update and confirm</div>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Year to update the operator exclusion status
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ year }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateTo(routePathForYearSelection)"
+          >
+            Change <span class="govuk-visually-hidden"> Year</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Exclusion of the operator</dt>
+        <dd class="govuk-summary-list__value">
+          {{ exclusionStatus ? 'Yes ' : 'No ' }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateTo(routePathForExclusionStatus)"
+          >
+            Change <span class="govuk-visually-hidden"> Exclusion status</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>
+<ng-container>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-heading-m">
+        <strong>{{ title }}</strong>
+      </p>
+    </div>
+  </div>
+</ng-container>
+<app-summary-list
+  *ngIf="isInstallation"
+  [class]="
+    'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
+  "
+  [lines]="{
+    'Installation name': installation.name,
+    'Installation ID': installation.identifier,
+    'Permit ID': installation.permit?.id
+  }"
+></app-summary-list>
+<app-summary-list
+  *ngIf="isAircraft"
+  [class]="
+    'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
+  "
+  [lines]="{
+    'Aircraft Operator ID': aircraftOperator.identifier,
+    'Monitoring plan ID': aircraftOperator.monitoringPlan?.id
+  }"
+></app-summary-list>
+
+<div class="govuk-grid-row govuk-!-margin-top-6">
+  <div class="govuk-grid-column-full">
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="onSubmit()"
+      type="button"
+      id="submit"
+    >
+      Submit
+    </button>
+  </div>
+</div>

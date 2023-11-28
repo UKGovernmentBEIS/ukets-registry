@@ -1,0 +1,124 @@
+<dl class="govuk-summary-list" [class]="class">
+  <div *ngIf="title" class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-body-l">
+      {{ title }}
+    </dt>
+  </div>
+  <ng-container *ngIf="summaryListItems">
+    <ng-container
+      *ngFor="let item of summaryListItems; let idx = index; let first = first"
+    >
+      <div
+        class="govuk-summary-list__row"
+        [ngClass]="
+          item.key.class?.includes('govuk-summary-list--no-border')
+            ? item.key.class
+            : ''
+        "
+      >
+        <dt class="govuk-summary-list__key" [class]="item.key.class">
+          <span [attr.id]="idx > 1 ? keytoId(item.key.label) : ''">{{
+            item.key.label
+          }}</span>
+          <!-- Accessibility addition - reference point for non updated values -->
+          <span
+            class="govuk-visually-hidden forcibly-hide"
+            *ngIf="first"
+            [attr.id]="privateKey + '_na'"
+            [attr.aria-hidden]="true"
+          >
+            Not updated</span
+          >
+        </dt>
+        <ng-container *ngIf="!isArray(item.value); else arrayTemplate">
+          <dd class="govuk-summary-list__value" [class]="item.value.class">
+            <a
+              *ngIf="item.value.url; else plainText"
+              [routerLink]="item.value.url"
+              skipLocationChange="true"
+            >
+              {{ item.value.label }}</a
+            >
+            <ng-template #plainText>
+              <span>{{ item.value.label }}</span>
+            </ng-template>
+          </dd>
+        </ng-container>
+        <ng-template #arrayTemplate>
+          <ng-container *ngFor="let elem of item.value; let i = index">
+            <dd class="govuk-summary-list__value" [class]="elem.class || ''">
+              <a *ngIf="elem.url; else plainText" [routerLink]="elem.url">
+                {{ elem.label }}</a
+              >
+              <ng-template #plainText>
+                <h3
+                  [attr.aria-labelledby]="keytoId(item.key.label)"
+                  class="govuk-visually-hidden forcibly-hide"
+                >
+                  <ng-container *ngIf="i > 0">updated </ng-container>
+                  {{ item.key.label }}
+                </h3>
+                <span
+                  [attr.aria-labelledby]="keytoId(item.key.label)"
+                  [class]="elem.innerStyle || ''"
+                  >{{ elem.label }}
+                  <span
+                    [attr.aria-labelledby]="privateKey + '_na'"
+                    *ngIf="idx >= 1 && !elem.label"
+                  ></span>
+                </span>
+              </ng-template>
+            </dd>
+          </ng-container>
+        </ng-template>
+        <dd
+          *ngIf="item.action && item.action.visible"
+          class="govuk-summary-list__actions"
+          [class]="item.action.class"
+        >
+          <a
+            class="govuk-link"
+            [routerLink]="item.action.url"
+            (click)="navigateTo(item.action.clickEvent)"
+            skipLocationChange="true"
+          >
+            {{ item.action.label
+            }}<span
+              *ngIf="item.action?.visuallyHidden"
+              class="govuk-visually-hidden"
+            >
+              {{ item.action.visuallyHidden }}</span
+            >
+            <span class="govuk-visually-hidden">
+              {{ item.key.label | lowercase }}
+            </span>
+          </a>
+        </dd>
+      </div>
+      <ng-container *ngIf="item.projection">
+        <ng-content class="item.projection"></ng-content>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="!summaryListItems">
+    <div
+      *ngFor="let item of lines | keyvalue: originalOrder"
+      class="govuk-summary-list__row"
+    >
+      <dt class="govuk-summary-list__key">
+        {{ item.key }}
+      </dt>
+      <dd class="govuk-summary-list__value">
+        <a
+          *ngIf="hasLink(item.key); else plainText"
+          [routerLink]="getLink(item.key)"
+          [skipLocationChange]="skipLocationChange"
+          title="{{ item.key + ': ' + item.value }}"
+        >
+          {{ item.value }}</a
+        >
+        <ng-template #plainText>{{ item.value }}</ng-template>
+      </dd>
+    </div>
+  </ng-container>
+</dl>

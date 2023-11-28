@@ -1,0 +1,830 @@
+{
+  "users": [
+    {
+      "username": "system-admin",
+      "enabled": true,
+      "email": "system-admin@trasys.gr",
+      "firstName": "Administrator",
+      "lastName": "System",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK873533391953"],
+        "alsoKnownAs": ["UK ETS System Administrator"],
+        "buildingAndStreet": ["system-admin building and street"],
+        "buildingAndStreetOptional": [
+          "system-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "system-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": ["system-admin work building and street"],
+        "workBuildingAndStreetOptional": [
+          "system-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "system-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["system-admin@trasys.gr"],
+        "workEmailAddressConfirmation": ["system-admin@trasys.gr"],
+        "workPhoneNumber": ["2109006431"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["9/5/1985"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": [
+          "system-administrator",
+          "senior-registry-administrator"
+        ],
+        "account": ["view-profile"],
+        "realm-management": ["realm-admin"]
+      }
+    },
+    {
+      "username": "uk-ets-admin",
+      "enabled": true,
+      "email": "uk-ets-admin@trasys.gr",
+      "firstName": "Administrator",
+      "lastName": "UK ETS Realm",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK694094547713"],
+        "alsoKnownAs": ["UK ETS Registry Administrator"],
+        "buildingAndStreet": ["uk-ets-admin building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": ["uk-ets-admin work building and street"],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-admin@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-admin@trasys.gr"],
+        "workPhoneNumber": ["2109006431"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["24/1/1985"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["senior-registry-administrator"],
+        "account": ["view-profile"],
+        "realm-management": ["realm-admin"]
+      }
+    },
+    {
+      "username": "uk-ets-senior-admin",
+      "enabled": true,
+      "email": "uk-ets-senior-admin@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Senior",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK802061511788"],
+        "alsoKnownAs": ["UK ETS Senior Registry Administrator"],
+        "buildingAndStreet": ["uk-ets-senior-admin building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-senior-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-senior-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "uk-ets-senior-admin work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-senior-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-senior-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-senior-admin@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-senior-admin@trasys.gr"],
+        "workPhoneNumber": ["2106612273"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["6/29/1970"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["senior-registry-administrator"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "uk-ets-junior-admin",
+      "enabled": true,
+      "email": "uk-ets-junior-admin@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Junior",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK498099973231"],
+        "alsoKnownAs": ["UK ETS Junior Registry Administrator"],
+        "buildingAndStreet": ["uk-ets-junior-admin building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-junior-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-junior-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "uk-ets-junior-admin work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-junior-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-junior-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-junior-admin@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-junior-admin@trasys.gr"],
+        "workPhoneNumber": ["2106069452"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["3/4/1976"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["junior-registry-administrator"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "uk-ets-junior-admin_1",
+      "enabled": true,
+      "email": "uk-ets-junior-admin_1@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Junior 1",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK566848116026"],
+        "alsoKnownAs": ["UK ETS Junior 1 Registry Administrator"],
+        "buildingAndStreet": ["uk-ets-junior-admin_1 building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-junior-admin_1 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-junior-admin_1 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "uk-ets-junior-admin_1 work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-junior-admin_1 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-junior-admin_1 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-junior-admin_1@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-junior-admin_1@trasys.gr"],
+        "workPhoneNumber": ["2109896134"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["11/5/1970"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["junior-registry-administrator"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "uk-ets-junior-admin_2",
+      "enabled": true,
+      "email": "uk-ets-junior-admin_2@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Junior 2",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK791916189158"],
+        "alsoKnownAs": ["UK ETS Junior 2 Registry Administrator"],
+        "buildingAndStreet": ["uk-ets-junior-admin_2 building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-junior-admin_2 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-junior-admin_2 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "uk-ets-junior-admin_2 work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-junior-admin_2 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-junior-admin_2 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-junior-admin_2@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-junior-admin_2@trasys.gr"],
+        "workPhoneNumber": ["2108065789"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["2/6/1988"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["junior-registry-administrator"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "uk-ets-readonly-admin",
+      "enabled": true,
+      "email": "uk-ets-readonly-admin@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Read Only",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK758296034143"],
+        "alsoKnownAs": ["UK ETS Read Only Registry Administrator"],
+        "buildingAndStreet": ["uk-ets-readonly-admin building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-readonly-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-readonly-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "uk-ets-readonly-admin work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-readonly-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-readonly-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-readonly-admin@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-readonly-admin@trasys.gr"],
+        "workPhoneNumber": ["2109006431"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["7/26/1980"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["readonly-administrator"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "authorized-representative_1",
+      "enabled": true,
+      "email": "authorized-representative_1@trasys.gr",
+      "firstName": "Representative 1",
+      "lastName": "Authorized",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK405681794859"],
+        "alsoKnownAs": ["UK ETS Authorized Representative 1"],
+        "buildingAndStreet": [
+          "authorized-representative_1 building and street"
+        ],
+        "buildingAndStreetOptional": [
+          "authorized-representative_1 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "authorized-representative_1 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "authorized-representative_1 work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "authorized-representative_1 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "authorized-representative_1 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["authorized-representative_1@trasys.gr"],
+        "workEmailAddressConfirmation": [
+          "authorized-representative_1@trasys.gr"
+        ],
+        "workPhoneNumber": ["2109006431"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["8/31/1980"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["authorized-representative"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "authorized-representative_2",
+      "enabled": true,
+      "email": "authorized-representative_2@trasys.gr",
+      "firstName": "Representative 2",
+      "lastName": "Authorized",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK588332110438"],
+        "alsoKnownAs": ["UK ETS Authorized Representative 2"],
+        "buildingAndStreet": [
+          "authorized-representative_2 building and street"
+        ],
+        "buildingAndStreetOptional": [
+          "authorized-representative_2 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "authorized-representative_2 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "authorized-representative_2 work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "authorized-representative_2 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "authorized-representative_2 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["authorized-representative_2@trasys.gr"],
+        "workEmailAddressConfirmation": [
+          "authorized-representative_2@trasys.gr"
+        ],
+        "workPhoneNumber": ["2109806455"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["11/12/1983"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["authorized-representative"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "verifier_1",
+      "enabled": true,
+      "email": "verifier_1@trasys.gr",
+      "firstName": "Representative 1 of Verifier",
+      "lastName": "Authorized",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK600543316240"],
+        "buildingAndStreet": ["verifier_1 building and street"],
+        "buildingAndStreetOptional": [
+          "verifier_1 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "verifier_1 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": ["verifier_1 work building and street"],
+        "workBuildingAndStreetOptional": [
+          "verifier_1 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "verifier_1 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["verifier_1@trasys.gr"],
+        "workEmailAddressConfirmation": ["verifier_1@trasys.gr"],
+        "workPhoneNumber": ["2109806466"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["2/28/1981"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["verifier"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "verifier_2",
+      "enabled": true,
+      "email": "verifier_2@trasys.gr",
+      "firstName": "Representative 2 of Verifier",
+      "lastName": "Authorized",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK661201404082"],
+        "buildingAndStreet": ["verifier_2 building and street"],
+        "buildingAndStreetOptional": [
+          "verifier_2 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "verifier_2 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": ["verifier_2 work building and street"],
+        "workBuildingAndStreetOptional": [
+          "verifier_2 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "verifier_2 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["verifier_2@trasys.gr"],
+        "workEmailAddressConfirmation": ["verifier_2@trasys.gr"],
+        "workPhoneNumber": ["2106006555"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["2/1/1982"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["verifier"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "registered_user",
+      "enabled": true,
+      "email": "registered_user@trasys.gr",
+      "firstName": "User",
+      "lastName": "Registered",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK602104496149"],
+        "alsoKnownAs": ["UK ETS registered user"],
+        "buildingAndStreet": ["registered_user building and street"],
+        "buildingAndStreetOptional": [
+          "registered_user building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "registered_user building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["REGISTERED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": ["registered_user work building and street"],
+        "workBuildingAndStreetOptional": [
+          "registered_user work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "registered_user work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["registered_user@trasys.gr"],
+        "workEmailAddressConfirmation": ["registered_user@trasys.gr"],
+        "workPhoneNumber": ["2106008263"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["3/14/1991"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "validated_user",
+      "enabled": true,
+      "email": "validated_user@trasys.gr",
+      "firstName": "User",
+      "lastName": "Validated",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK40282084687"],
+        "alsoKnownAs": ["UK ETS validated user"],
+        "buildingAndStreet": ["validated_user building and street"],
+        "buildingAndStreetOptional": [
+          "validated_user building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "validated_user building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["VALIDATED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": ["validated_user work building and street"],
+        "workBuildingAndStreetOptional": [
+          "validated_user work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "validated_user work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["validated_user@trasys.gr"],
+        "workEmailAddressConfirmation": ["validated_user@trasys.gr"],
+        "workPhoneNumber": ["21066188543"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["4/24/1972"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "enrolled_user",
+      "enabled": true,
+      "email": "enrolled_user@trasys.gr",
+      "firstName": "User",
+      "lastName": "Enrolled",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK813935774586"],
+        "alsoKnownAs": ["UK ETS enrolled user"],
+        "buildingAndStreet": ["enrolled_user building and street"],
+        "buildingAndStreetOptional": [
+          "enrolled_user building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "enrolled_user building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": ["enrolled_user work building and street"],
+        "workBuildingAndStreetOptional": [
+          "enrolled_user work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "enrolled_user work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["enrolled_user@trasys.gr"],
+        "workEmailAddressConfirmation": ["enrolled_user@trasys.gr"],
+        "workPhoneNumber": ["21066188543"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["05/24/1972"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "uk-ets-authority_1",
+      "enabled": true,
+      "email": "uk-ets-authority_1@trasys.gr",
+      "firstName": "User",
+      "lastName": "Authority 1",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK802061111111"],
+        "alsoKnownAs": ["UK ETS Authority User 1"],
+        "buildingAndStreet": ["uk-ets-authority_1 building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-authority_1 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-authority_1 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "uk-ets-authority_1 work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-authority_1 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-authority_1 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-authority_1@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-authority_1@trasys.gr"],
+        "workPhoneNumber": ["2106612273"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["6/29/1970"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["authority-user", "authorized-representative"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "uk-ets-authority_2",
+      "enabled": true,
+      "email": "uk-ets-authority_2@trasys.gr",
+      "firstName": "User",
+      "lastName": "Authority 2",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK802061111112"],
+        "alsoKnownAs": ["UK ETS Authority User 2"],
+        "buildingAndStreet": ["uk-ets-authority_2 building and street"],
+        "buildingAndStreetOptional": [
+          "uk-ets-authority_2 building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "uk-ets-authority_2 building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15232"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "uk-ets-authority_2 work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "uk-ets-authority_2 work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "uk-ets-authority_2 work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["uk-ets-authority_2@trasys.gr"],
+        "workEmailAddressConfirmation": ["uk-ets-authority_2@trasys.gr"],
+        "workPhoneNumber": ["2106612272"],
+        "workPostCode": ["15232"],
+        "workTownOrCity": ["ATHENS"],
+        "birthDate": ["6/29/1970"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test_dummy_password"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["authority-user", "authorized-representative"],
+        "account": ["view-profile"]
+      }
+    }
+  ]
+}

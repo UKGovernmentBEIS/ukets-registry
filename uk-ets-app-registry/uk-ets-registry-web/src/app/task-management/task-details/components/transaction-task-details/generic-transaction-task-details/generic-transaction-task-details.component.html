@@ -1,0 +1,171 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-account-summary
+      header="Transferring account"
+      [accountInfo]="transactionTaskDetails.transferringAccount"
+      [isTransactionReversal]="isTransactionReversal"
+    >
+    </app-account-summary>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">Transaction type</dt>
+      </div>
+      <div
+        *ngIf="transactionTaskDetails.transactionType"
+        class="govuk-summary-list__row govuk-summary-list__row--no-border"
+      >
+        <dd class="govuk-summary-list__value">
+          <!--          use trType.label pipe-->
+          {{ transactionTaskDetails.transactionType?.description }}
+        </dd>
+      </div>
+    </dl>
+    <app-transaction-connection-summary
+      *ngIf="transactionTaskDetails.transactionConnectionSummary"
+      [transactionConnectionSummary]="
+        transactionTaskDetails.transactionConnectionSummary
+      "
+    >
+    </app-transaction-connection-summary>
+    <ng-container *ngIf="showAllocationYear()">
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">
+            {{ showAllocationYear() }}
+          </dt>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dd class="govuk-summary-list__value">
+            {{
+              transactionTaskDetails.allocationDetails
+                | transactionAtrributes: 'AllocationYear'
+            }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+    <ng-container *ngIf="showAllocationType()">
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">Allocation type</dt>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dd class="govuk-summary-list__value">
+            {{
+              transactionTaskDetails.allocationDetails
+                | transactionAtrributes: 'AllocationType'
+            }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+    <ng-container *ngIf="transactionTaskDetails?.itlNotification">
+      <app-itl-notification-summary
+        [itlNotification]="transactionTaskDetails?.itlNotification"
+      ></app-itl-notification-summary>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        transactionTaskDetails.trType !== 'ExcessAllocation';
+        else excessAllocationBlock
+      "
+    >
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">
+            Unit types and quantity to transfer
+          </dt>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <app-transaction-quantity-table
+              *ngIf="transactionTaskDetails.transactionBlocks"
+              [transactionBlocks]="transactionTaskDetails.transactionBlocks"
+              [isEtsTransaction]="isEtsTransaction"
+            ></app-transaction-quantity-table>
+          </div>
+        </div>
+      </dl>
+      <app-account-summary
+        header="Acquiring account"
+        [tip]="transactionTaskDetails.acquiringAccount | trustedAccount"
+        [accountInfo]="transactionTaskDetails.acquiringAccount"
+        [hideTip]="trTypeValues[transactionTaskDetails.trType].hideTip"
+        [hideAccountHolderName]="true"
+        [hideAccountNumber]="
+          trTypeValues[transactionTaskDetails.trType].hideAccountNumber
+        "
+        [showAccountNameInsteadOfNumber]="
+          trTypeValues[transactionTaskDetails.trType]
+            .showAccountNameInsteadOfNumber
+        "
+        [showDescription]="
+          trTypeValues[transactionTaskDetails.trType]
+            .showAcquiringDescription ||
+          transactionTaskDetails.acquiringAccount?.trusted ||
+          trTypeValues[transactionTaskDetails.trType].isCentralTransfer
+        "
+        [isTaskBased]="true"
+      >
+      </app-account-summary>
+      <app-transaction-signing-details
+        [transactionId]="
+          transactionTaskDetails.transactionIdentifiers.join(',')
+        "
+        [isTaskBased]="true"
+      >
+      </app-transaction-signing-details>
+    </ng-container>
+
+    <ng-template #excessAllocationBlock>
+      <app-check-allocation-details
+        [isTaskBased]="true"
+        [transactionBlocks]="setTransactionBlocks()"
+        [transferringAccountInfo]="transactionTaskDetails.transferringAccount"
+        [acquiringAccountInfo]="transactionTaskDetails.acquiringAccount"
+        [proposedTransactionType]="transactionTaskDetails.transactionType"
+        [natQuantity]="transactionTaskDetails.natQuantity"
+        [nerQuantity]="transactionTaskDetails.nerQuantity"
+        [nerAcquiringAccountInfo]="transactionTaskDetails.nerAcquiringAccount"
+        [natAcquiringAccountInfo]="transactionTaskDetails.natAcquiringAccount"
+        [natReturnTransactionIdentifier]="
+          transactionTaskDetails.natTransactionIdentifier
+        "
+        [nerReturnTransactionIdentifier]="
+          transactionTaskDetails.nerTransactionIdentifier
+        "
+        [allocationType]="
+          transactionTaskDetails.transactionIdentifiers.length === 1
+            ? (transactionTaskDetails.allocationDetails
+              | transactionAtrributes: 'AllocationType')
+            : 'NAT_AND_NER'
+        "
+        [singleTransactionIdentifier]="
+          transactionTaskDetails.transactionIdentifiers.length === 1
+            ? transactionTaskDetails.transactionIdentifiers[0]
+            : ''
+        "
+      >
+      </app-check-allocation-details>
+    </ng-template>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">
+          Transaction reference
+        </dt>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <app-transaction-reference
+            [reference]="transactionTaskDetails.reference"
+          ></app-transaction-reference>
+          <app-transaction-reference-warning
+            *ngIf="transactionTaskDetails.reference"
+          ></app-transaction-reference-warning>
+        </div>
+      </div>
+    </dl>
+  </div>
+</div>

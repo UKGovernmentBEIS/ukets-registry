@@ -1,0 +1,27 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <a
+      routerLink="{{ link }}"
+      class="section-title govuk-!-font-weight-bold govuk-heading-m govuk-!-margin-bottom-3"
+      >{{ title }}</a
+    >
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <p class="govuk-body" [innerHTML]="summary"></p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="section-from">
+      <p class="govuk-body-s">From: {{ from }}</p>
+    </div>
+    <div>
+      <p class="govuk-body-s">Updated: {{ updated }}</p>
+    </div>
+  </div>
+</div>
+<hr
+  class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
+/>

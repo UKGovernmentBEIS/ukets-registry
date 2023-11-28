@@ -1,0 +1,251 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr
+      class="
+        govuk-section-break govuk-section-break--visible
+        govuk-!-margin-bottom-4
+      "
+    />
+  </div>
+  <div class="govuk-grid-row">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">Recipient details</dt>
+        <dd class="govuk-summary-list__value"></dd>
+      </div>
+      <ng-container
+        *ngIf="taskDetails.taskType == requestType.AH_REQUESTED_DOCUMENT_UPLOAD"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Recipient</dt>
+          <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+            {{ taskDetails.claimantName }}
+          </dd>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="taskDetails.taskType == requestType.AR_REQUESTED_DOCUMENT_UPLOAD"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Recipient</dt>
+          <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+            {{ taskDetails.recipient }}
+          </dd>
+        </div>
+      </ng-container>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reason for Assignment</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          {{ taskDetails.reasonForAssignment }}
+        </dd>
+      </div>
+    </dl>
+    <ng-container
+      *ngIf="taskDetails.taskType == requestType.AH_REQUESTED_DOCUMENT_UPLOAD"
+    >
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">Account details</dt>
+          <dd class="govuk-summary-list__value"></dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Account Holder Name</dt>
+          <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+            {{ taskDetails.accountHolderName }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            *ngIf="taskDetails && taskDetails.accountFullIdentifier"
+          >
+            Account Number
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="taskDetails && taskDetails.accountFullIdentifier"
+          >
+            {{ taskDetails.accountFullIdentifier }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            *ngIf="taskDetails && taskDetails.accountName"
+          >
+            Account Name
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="taskDetails && taskDetails.accountName"
+          >
+            {{ taskDetails.accountName }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+  </div>
+  <div
+    class="govuk-grid-row"
+    *ngIf="taskDetails.requestStatus === 'SUBMITTED_NOT_YET_APPROVED'"
+  >
+    <h2 class="govuk-heading-m">Upload the requested documents</h2>
+
+    <p class="govuk-body">
+      Only upload templates or documents that have been requested by the
+      Registry Administrator or National Administrator.
+    </p>
+    <p class="govuk-body">
+      More information about how and when to authenticate documents can be found
+      in the
+      <a
+        class="govuk-link"
+        target="_self"
+        href="{{ environment.documentGuidePath }}{{
+          environment.documentGuideFilename
+        }}"
+        download="{{ environment.documentGuideFilename }}"
+        >document guide</a
+      >
+    </p>
+
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text"
+          >I need to download a template</span
+        >
+      </summary>
+      <div class="govuk-details__text">
+        <ng-container *ngFor="let templateFile of taskDetails.referenceFiles">
+          <p>
+            <a
+              class="govuk-link"
+              (click)="onDownloadTemplateFile(templateFile)"
+              [routerLink]="[]"
+              >{{ templateFile.name }}</a
+            >
+          </p>
+        </ng-container>
+
+        <p class="govuk-body govuk-!-margin-bottom-3">
+          After you have completed, signed and uploaded your documents, the
+          Registry Administrator or National Administrator will review your
+          application and contact you about the next stages of the process.
+        </p>
+
+        <p class="govuk-body-m">
+          For more information or help with uploading your documents,
+          <a
+            href="mailto:{{ serviceDeskEmail }}"
+            class="govuk-link"
+            rel="noreferrer noopener"
+            target="_blank"
+            >contact the UK Registry helpdesk</a
+          >
+        </p>
+      </div>
+    </details>
+    <app-requested-documents-form-container
+      [comment]="taskDetails.comment"
+      [documentNames]="taskDetails.documentNames"
+      [requestStatus]="taskDetails.requestStatus"
+      [claimantURID]="taskDetails.claimantURID"
+      [difference]="taskDetails.difference"
+      [uploadedFiles]="taskDetails.uploadedFiles"
+    >
+    </app-requested-documents-form-container>
+  </div>
+  <div
+    class="govuk-grid-row"
+    *ngIf="
+      taskDetails.uploadedFiles &&
+      taskDetails.uploadedFiles.length > 0 &&
+      taskDetails.taskStatus === 'COMPLETED'
+    "
+  >
+    <p class="govuk-body-l govuk-!-font-weight-bold">
+      Download the requested documents
+    </p>
+    <dl class="govuk-summary-list">
+      <div
+        class="govuk-summary-list__row"
+        *ngFor="let file of taskDetails.uploadedFiles"
+      >
+        <dt class="govuk-summary-list__key govuk-!-padding-bottom-5">
+          <span class="govuk-heading-s">
+            {{ file | documentName: taskDetails.difference }}
+          </span>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+              <div class="inline-block img-container">
+                <img
+                  src="/assets/images/icon-file-download.png"
+                  style="vertical-align: middle; margin-right: 10px"
+                  alt="download"
+                />
+              </div>
+              <div class="inline-block">
+                <a
+                  class="govuk-link govuk-link--no-visited-state"
+                  (click)="onDownloadFile(file)"
+                  [routerLink]="[]"
+                  >{{ file.fileName }}
+                </a>
+                <div *ngIf="file.createdOn" class="file-date">
+                  Uploaded on:
+                  <span class="date">{{ file.createdOn | gdsDateTime }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </dt>
+      </div>
+    </dl>
+  </div>
+  <div
+    class="govuk-grid-row"
+    *ngIf="
+      taskDetails.requestStatus !== 'SUBMITTED_NOT_YET_APPROVED' &&
+      taskDetails.comment
+    "
+  >
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__value">
+          <span class="govuk-!-font-weight-bold"
+            >Tell us why you cannot upload the requested documents or add any
+            other comments here</span
+          >
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.comment }}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <div
+    class="govuk-grid-row"
+    *ngIf="
+      (taskDetails.taskType === RequestType.AH_REQUESTED_DOCUMENT_UPLOAD ||
+        taskDetails.taskType === RequestType.AR_REQUESTED_DOCUMENT_UPLOAD) &&
+      taskDetails.taskStatus !== 'COMPLETED' &&
+      taskDetails.currentUserClaimant &&
+      taskActionsVisibility &&
+      checkIfCanOnlyComplete(taskDetails.taskType)
+    "
+  >
+    <p class="govuk-body hint">
+      This task will not be completed until you click on the button below
+    </p>
+    <div>
+      <button
+        (click)="proceedWith(TaskOutcome.APPROVED)"
+        class="govuk-button"
+        data-module="govuk-button"
+      >
+        Complete task
+      </button>
+    </div>
+  </div>
+</div>

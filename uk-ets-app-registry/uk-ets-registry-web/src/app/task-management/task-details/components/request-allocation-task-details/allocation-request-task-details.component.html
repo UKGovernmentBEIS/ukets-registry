@@ -1,0 +1,231 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr
+      class="
+        govuk-section-break govuk-section-break--visible
+        govuk-!-margin-bottom-4
+      "
+    />
+  </div>
+  <div class="govuk-grid-row">
+    <h2 class="govuk-heading-m">Allocation overview</h2>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Year</dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.allocationOverview.year }}
+        </dd>
+      </div>
+
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="taskDetails.allocationOverview.category"
+      >
+        <dt class="govuk-summary-list__key">Allocation Category</dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.allocationOverview.category | allocationCategory }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Total allowances to allocate</dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.allocationOverview.totalQuantity | number }} allowances
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Transferring account</dt>
+        <dd
+          *ngIf="
+            taskDetails.natAccountName != null &&
+            taskDetails.natAccountName != undefined &&
+            taskDetails.natAccountName
+          "
+          class="govuk-summary-list__value"
+        >
+          {{ taskDetails.natAccountName }}
+        </dd>
+        <dd
+          *ngIf="
+            taskDetails.nerAccountName != null &&
+            taskDetails.nerAccountName != undefined &&
+            taskDetails.nerAccountName
+          "
+          class="govuk-summary-list__value"
+        >
+          {{ taskDetails.nerAccountName }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Current allowance holdings</dt>
+        <dd
+          *ngIf="
+            taskDetails.currentHoldings != null &&
+            taskDetails.currentHoldings != undefined &&
+            taskDetails.currentHoldings
+          "
+          class="govuk-summary-list__value"
+        >
+          {{ taskDetails.currentHoldings | number }} allowances
+        </dd>
+        <dd
+          *ngIf="
+            taskDetails.nerCurrentHoldings != null &&
+            taskDetails.nerCurrentHoldings != undefined &&
+            taskDetails.nerCurrentHoldings
+          "
+          class="govuk-summary-list__value"
+        >
+          {{ taskDetails.nerCurrentHoldings | number }} allowances
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Excluded {{ typeLabel }}</dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.allocationOverview.total.excludedAccounts | number }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Withheld {{ typeLabel }}</dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.allocationOverview.total.withheldAccounts | number }}
+        </dd>
+      </div>
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="
+          taskDetails.allocationOverview.total.transferPendingAccounts !==
+          undefined
+        "
+      >
+        <dt class="govuk-summary-list__key">
+          Transfer pending accounts ({{ typeLabel }})
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            taskDetails.allocationOverview.total.transferPendingAccounts
+              | number
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Fully suspended accounts ({{ typeLabel }})
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            taskDetails.allocationOverview.total.closedAndFullySuspendedAccounts
+              | number
+          }}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div
+      class="govuk-warning-text"
+      *ngIf="
+        (taskDetails.allocationOverview.rows['NAT']?.quantity || 0) +
+          (taskDetails.allocationOverview.rows['NAVAT']?.quantity || 0) >
+        taskDetails.currentHoldings
+      "
+    >
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        There are not enough allowances available in the
+        {{ taskDetails.natAccountName }} for this proposal
+      </strong>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div
+      class="govuk-warning-text"
+      *ngIf="
+        (taskDetails.allocationOverview.rows['NER']?.quantity || 0) >
+        taskDetails.nerCurrentHoldings
+      "
+    >
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        There are not enough allowances available in the
+        {{ taskDetails.nerAccountName }} for this proposal
+      </strong>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div
+      class="govuk-warning-text"
+      *ngIf="taskDetails.allocationOverview.totalQuantity <= 0"
+    >
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        No entries in the allocation table require allocation for
+        {{ taskDetails.allocationOverview.year }}. This proposal should be
+        rejected.
+      </strong>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <h2 class="govuk-heading-m">Allocation details</h2>
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Allocation type</th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            # Accounts
+          </th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            Total quantity
+          </th>
+        </tr>
+      </thead>
+
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row" *ngFor="let allocationType of types">
+          <th scope="row" class="govuk-table__header">
+            {{ getLabel(allocationType) }}
+          </th>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {{
+              taskDetails.allocationOverview.rows[allocationType].accounts
+                | number
+            }}
+          </td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {{
+              taskDetails.allocationOverview.rows[allocationType].quantity
+                | number
+            }}
+          </td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Total</th>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {{ taskDetails.allocationOverview.total.accounts | number }}
+          </td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {{ taskDetails.allocationOverview.total.quantity | number }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-bottom-7">
+    <a class="govuk-link" (click)="onDownloadFile()" [routerLink]="[]"
+      >Download an excel with these details
+    </a>
+  </div>
+</div>

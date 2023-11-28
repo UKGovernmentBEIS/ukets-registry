@@ -1,0 +1,85 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="
+    (updateMode ? 'Request to update ' : 'Add ') +
+    'the' +
+    AccountTypeMap[accountType].label +
+    'details'
+  "
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl"
+      >{{ updateMode ? 'Request to update ' : 'Add ' }}the
+      {{ AccountTypeMap[accountType].label }} details</span
+    >
+    <h1 class="govuk-heading-xl">
+      {{ updateMode ? 'Update ' : 'Enter ' }}the account details
+    </h1>
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="_accountDetails"
+    >
+      <div class="govuk-fieldset" role="group">
+        <div class="govuk-form-group">
+          <h2 class="govuk-heading-s">Account type</h2>
+          <p class="govuk-body">{{ AccountTypeMap[accountType].label }}</p>
+        </div>
+        <div class="govuk-form-group">
+          <app-form-control-text
+            [label]="'Account name'"
+            [validationErrorMessage]="validationErrorMessage.name"
+            [maxlength]="256"
+            controlName="name"
+            [hint]="getAccountNameHintText()"
+          ></app-form-control-text>
+        </div>
+
+        <ng-container *ngIf="showSalesContact">
+          <fieldset class="govuk-fieldset" role="group">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              Sales Contact Details
+            </legend>
+            <span class="govuk-hint"
+              >This information will be used for sales purposes and will be
+              public for anyone</span
+            >
+            <h2 class="govuk-heading-s">Sales contact email</h2>
+            <app-form-control-email
+              label="Email address (optional)"
+              [maxlength]="256"
+              controlName="salesContactDetails.emailAddress.emailAddress"
+            ></app-form-control-email>
+            <app-form-control-email
+              label="Confirm email address"
+              [maxlength]="256"
+              [validationErrorMessage]="
+                validationErrorMessage.emailConfirmation
+              "
+              controlName="salesContactDetails.emailAddress.emailAddressConfirmation"
+            ></app-form-control-email>
+
+            <h2 class="govuk-heading-s">Sales contact phone</h2>
+
+            <app-uk-phone-select
+              [phoneInfo]="_salesPhoneInfo"
+              [showErrors]="showErrors"
+              [countryCodes]="countryCodes"
+              [validationErrorMessages]="validationMessages.salesPhone"
+              formControlName="salesPhone"
+            ></app-uk-phone-select>
+          </fieldset>
+        </ng-container>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+@import '_variables';
+
+.holdings-th-width-19 {
+  width: 19%;
+}
+
+.holdings-th-width-22 {
+  width: 22%;
+}
+
+.govuk-th-align-right {
+  th:not(:first-child) {
+    text-align: right;
+  }
+}

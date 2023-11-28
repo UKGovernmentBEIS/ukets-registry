@@ -1,0 +1,90 @@
+<ng-container [formGroup]="nestedForm">
+  <div
+    class="govuk-date-input"
+    [id]="compositeFormGroupId"
+    [class.govuk-form-group--error]="this.showErrors && formControl.invalid"
+  >
+    <div class="govuk-form-group">
+      <div class="govuk-form-group">
+        <span class="govuk-label">
+          {{ label }}
+        </span>
+        <span class="govuk-hint">
+          {{ hint }}
+        </span>
+        <span
+          *ngIf="this.showErrors && formControl.invalid"
+          id="permit-date-error"
+          class="govuk-error-message"
+          role="alert"
+          [attr.aria-describedby]="compositeFormGroupId"
+        >
+          <span class="govuk-visually-hidden">Error:</span>
+          <span *ngFor="let errorCode of getObjectKeys(formControl.errors)">
+            {{
+              validationErrorMessages[errorCode] ||
+                formControl.errors[errorCode]
+            }}
+          </span>
+        </span>
+        <select
+          class="govuk-select govuk-!-margin-right-1"
+          [class.govuk-select--error]="
+            this.showErrors &&
+            (dayControl.invalid || (formControl.invalid && this.required))
+          "
+          formControlName="day"
+          type="text"
+          [required]="required"
+          [attr.aria-invalid]="formControl.dirty && formControl.invalid"
+        >
+          <option *ngIf="placeHolder" value="" disabled selected hidden>
+            {{ placeHolder }}
+          </option>
+          <option *ngFor="let option of dayOptions" [ngValue]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <select
+          class="govuk-select govuk-!-margin-right-1"
+          [class.govuk-select--error]="
+            this.showErrors &&
+            (monthControl.invalid || (formControl.invalid && this.required))
+          "
+          formControlName="month"
+          type="text"
+          [required]="required"
+          [attr.aria-invalid]="formControl.dirty && formControl.invalid"
+          (change)="checkMonthChange($event.target.value)"
+        >
+          <option *ngIf="placeHolder" value="" disabled selected hidden>
+            {{ placeHolder }}
+          </option>
+          <option *ngFor="let option of monthOptions" [ngValue]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <ng-container *ngIf="showYear">
+          <select
+            class="govuk-select govuk-!-margin-right-1"
+            [class.govuk-select--error]="
+              this.showErrors &&
+              (yearControl.invalid || (formControl.invalid && this.required))
+            "
+            formControlName="year"
+            type="text"
+            [required]="showYear && required"
+            [attr.aria-invalid]="formControl.dirty && formControl.invalid"
+          >
+            <option *ngIf="placeHolder" value="" disabled selected hidden>
+              {{ placeHolder }}
+            </option>
+            <option *ngFor="let option of yearOptions" [ngValue]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</ng-container>

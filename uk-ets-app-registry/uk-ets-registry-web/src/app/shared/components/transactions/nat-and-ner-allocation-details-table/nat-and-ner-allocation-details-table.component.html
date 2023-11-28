@@ -1,0 +1,80 @@
+<!--<div class="govuk-grid-row">-->
+<div>
+  <p class="govuk-body">
+    This table outlines how your return of excess allocation will be split
+    between the <strong> New Entrants Reserve (NER)</strong> and
+    <strong>Nation Allocation Table (NAT)</strong> accounts (if applicable).
+    Allowances will be preferentially returned to the NER, and then subsequently
+    the NAT (if applicable).
+  </p>
+  <br />
+</div>
+<div>
+  <table class="govuk-table">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell"><strong>Allocation Details</strong></td>
+      <td class="govuk-table__cell"><strong>NER</strong></td>
+      <td class="govuk-table__cell"><strong>NAT</strong></td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th class="govuk-table__cell">
+        <strong>Quantity to transfer</strong>
+      </th>
+      <td class="govuk-table__cell">
+        <span class="remaining-allocation"> {{ nerAmount }}</span>
+      </td>
+      <td class="govuk-table__cell">
+        <span class="remaining-allocation"> {{ natAmount }} </span>
+      </td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell no-border">
+        <strong>Acquiring account name</strong>
+      </td>
+      <td class="govuk-table__cell no-border">
+        {{ nerAcquiringAccountInfo.accountName }}
+      </td>
+      <td class="govuk-table__cell no-border">
+        {{ natAcquiringAccountInfo.accountName }}
+      </td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-summary-list__key"></td>
+      <td class="govuk-summary-list__key">
+        <div class="govuk-inset-text" style="margin-top: 0; margin-bottom: 0">
+          {{ nerAcquiringAccountInfo | trustedAccount }}
+        </div>
+      </td>
+      <td class="govuk-summary-list__key">
+        <div class="govuk-inset-text" style="margin-top: 0; margin-bottom: 0">
+          {{ natAcquiringAccountInfo | trustedAccount }}
+        </div>
+      </td>
+    </tr>
+
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell"><strong> Transaction ID</strong></td>
+      <td class="govuk-table__cell">
+        {{ nerTransactionIdentifier }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ natTransactionIdentifier }}
+      </td>
+    </tr>
+  </table>
+</div>
+<!--</div>-->
+
+<!--TO BE RE-ADDED-->
+<div
+  class="govuk-warning-text withheld-warning"
+  *ngIf="totalOverAllocatedQuantity - natAmount - nerAmount > 0"
+>
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <div class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    After this return has been completed, you will still have
+    {{ totalOverAllocatedQuantity - natAmount - nerAmount }}
+    allowance(s) that will need to be returned as part of a separate request.
+  </div>
+</div>

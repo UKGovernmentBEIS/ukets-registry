@@ -1,0 +1,126 @@
+<app-summary-list
+  [class]="'govuk-summary-list govuk-summary-list--no-border'"
+  [summaryListItems]="getSectionDetailsSummaryListItems()"
+></app-summary-list>
+<dl class="govuk-summary-list govuk-!-margin-bottom-1">
+  <div class="govuk-summary-list__row govuk-summary-list--no-border">
+    <dt class="govuk-summary-list__key govuk-body-l">
+      Report publication details
+    </dt>
+  </div>
+</dl>
+<div class="govuk-warning-text" *ngIf="isFrequencyDisabled">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    The automated report generation has been stopped.<br />
+    You must update the current report manually or set a new report generation
+    schedule.
+  </strong>
+</div>
+<app-summary-list
+  [class]="'govuk-summary-list govuk-summary-list--no-border'"
+  [summaryListItems]="getPublicationDetailsSummaryListItems()"
+></app-summary-list>
+<ng-container>
+  <button
+    id="updateDetails"
+    class="govuk-button govuk-button--secondary"
+    [routerLink]="['update-publication-details']"
+  >
+    Update details
+  </button>
+</ng-container>
+<h2 class="govuk-heading-m govuk-!-margin-top-9">Published files</h2>
+<ng-container>
+  <button
+    id="uploadNewFile"
+    class="govuk-button govuk-button--secondary"
+    [routerLink]="['upload-publication-file']"
+  >
+    Upload new file
+  </button>
+</ng-container>
+<table
+  aria-describedby="publication-history-table"
+  appSortableTable
+  (sorting)="onSorting($event)"
+  class="govuk-table"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'fileName'"
+        [sortDirection]="
+          sortParameters?.sortField === 'fileName'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        File
+      </th>
+      <th
+        *ngIf="this.section?.displayType === 'ONE_FILE_PER_YEAR'"
+        scope="col"
+        appSortableColumn
+        [sortField]="'applicableForYear'"
+        [sortDirection]="
+          sortParameters?.sortField === 'applicableForYear'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Year
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'publishedOn'"
+        [sortDirection]="
+          sortParameters?.sortField === 'publishedOn'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Last published on
+      </th>
+      <th scope="col" class="govuk-table__header">Actions</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let entry of publicationHistory" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a [routerLink]="[]" (click)="onDownload(entry.id)" class="govuk-link">
+          {{ entry.fileName }}
+        </a>
+      </td>
+      <td
+        *ngIf="this.section?.displayType === 'ONE_FILE_PER_YEAR'"
+        class="govuk-table__cell"
+      >
+        {{ entry.applicableForYear }}
+      </td>
+      <td class="govuk-table__cell">
+        {{
+          entry.publishedOn | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00' | gdsDateTime
+        }}
+      </td>
+      <td class="govuk-table__cell">
+        <a
+          class="govuk-link"
+          (click)="onUnpublish(entry)"
+          [routerLink]="'unpublish-file'"
+          >Unpublish</a
+        >
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span
+  *ngIf="!publicationHistory || !publicationHistory.length"
+  class="govuk-caption-m govuk-!-margin-bottom-5"
+>
+  No published files in the section.
+</span>

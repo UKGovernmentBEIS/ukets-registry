@@ -1,0 +1,53 @@
+<div
+  class="govuk-error-summary"
+  #errorsummary
+  aria-labelledby="error-summary-title"
+  role="alert"
+  tabindex="-1"
+  data-module="govuk-error-summary"
+  [ngStyle]="
+    _errorSummary.errors.length > 0
+      ? {
+          display: 'block'
+        }
+      : {
+          display: 'none'
+        }
+  "
+>
+  <h2 class="govuk-error-summary__title" id="error-summary-title">
+    There is a problem
+  </h2>
+  <div class="govuk-error-summary__body">
+    <ul
+      class="govuk-list govuk-error-summary__list"
+      *ngIf="_errorSummary.errors.length > 0"
+    >
+      <li *ngFor="let error of _errorSummary.errors">
+        <a
+          *ngIf="error.componentId && error.errorMessage !== ''"
+          [routerLink]="[]"
+          (click)="onClick(error)"
+          >{{ error.errorMessage }}
+        </a>
+
+        <div
+          class="govuk-error-message str-break-line"
+          *ngIf="!error.componentId"
+        >
+          {{ error.errorMessage }}
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div *ngIf="_goBackToErrorBasedPath" class="govuk-grid-columns-two-thirds">
+  <a
+    class="govuk-link"
+    [routerLink]="[]"
+    (click)="navigateToAccountDetails($event)"
+  >
+    {{ getNavigationMessageBasedOnPath(_goBackToErrorBasedPath) }}
+  </a>
+</div>

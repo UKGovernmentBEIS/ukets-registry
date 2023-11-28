@@ -1,0 +1,24 @@
+<nav>
+  <ul
+    id="navigation"
+    class="govuk-header__navigation"
+    aria-label="Top Level Navigation"
+  >
+    <ng-container *ngFor="let menuItem of navMenu?.menuItems">
+      <li
+        class="govuk-header__navigation-item"
+        [class.govuk-header__navigation-item--active]="
+          activeMenuItem === menuItem.activeMenuItem
+        "
+      >
+        <a
+          [routerLink]="[]"
+          class="govuk-header__link govuk-header__link--custom"
+          (click)="onClick(menuItem)"
+        >
+          {{ menuItem.label }}
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+</nav>

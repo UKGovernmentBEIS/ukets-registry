@@ -1,0 +1,139 @@
+<table class="govuk-table">
+  <caption [hidden]="true">
+    Trusted account table
+  </caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Account</th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="
+          trustedAccountListType === trustedAccountListTypes.SAME_ACCOUNT_HOLDER
+        "
+      >
+        Account name
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="
+          trustedAccountListType !== trustedAccountListTypes.SAME_ACCOUNT_HOLDER
+        "
+      >
+        Description
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="
+          trustedAccountListType === trustedAccountListTypes.OTHERS_ACTIVATED &&
+          hasChangeDescription
+        "
+      ></th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="
+          trustedAccountListType === trustedAccountListTypes.OTHERS_PENDING
+        "
+      >
+        Status
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="
+          trustedAccountListType === trustedAccountListTypes.OTHERS_PENDING
+        "
+      >
+        Activation date
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let trustedAccount of trustedAccounts" class="govuk-table__row">
+      <td class="govuk-table__cell" style="white-space: nowrap">
+        {{ trustedAccount.accountFullIdentifier }}
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="
+          trustedAccountListType === trustedAccountListTypes.SAME_ACCOUNT_HOLDER
+        "
+      >
+        {{ trustedAccount.name }}
+      </td>
+      <td
+        class="govuk-table__cell"
+        style="word-break: break-word"
+        *ngIf="
+          trustedAccountListType !== trustedAccountListTypes.SAME_ACCOUNT_HOLDER
+        "
+        [innerHTML]="trustedAccount.description"
+      ></td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="
+          ('urn:uk-ets-registry-api:trusted-accounts-update-description:write'
+            | protect
+            | async) &&
+          trustedAccountListType === trustedAccountListTypes.OTHERS_ACTIVATED &&
+          hasChangeDescription
+        "
+      >
+        <a
+          class="govuk-link govuk-body govuk-!-font-size-19"
+          [routerLink]="['trusted-account-list', 'change-description']"
+          skipLocationChange
+          (click)="
+            loadTrustedAccountUpdateDescription(
+              trustedAccount.accountFullIdentifier
+            )
+          "
+          (keyup)="
+            loadTrustedAccountUpdateDescription(
+              trustedAccount.accountFullIdentifier
+            )
+          "
+          >Change</a
+        >
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="
+          trustedAccountListType === trustedAccountListTypes.OTHERS_PENDING
+        "
+      >
+        <app-govuk-tag
+          [color]="trustedAccountStatusMap[trustedAccount.status].color"
+        >
+          {{ trustedAccountStatusMap[trustedAccount.status].label }}
+        </app-govuk-tag>
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="
+          trustedAccountListType === trustedAccountListTypes.OTHERS_PENDING
+        "
+      >
+        <ng-container *ngIf="trustedAccount.activationDate">
+          {{
+            trustedAccount.activationDate
+              | concatDateTime
+                : trustedAccount.activationDate
+                : trustedAccount.activationTime
+              | gdsDateShort
+          }},
+          {{
+            trustedAccount.activationTime
+              | concatDateTime
+                : trustedAccount.activationDate
+                : trustedAccount.activationTime
+              | gdsTime
+          }}
+        </ng-container>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet id="3_8_0_ADD_TABLE_BALANCE_PER_TRANSACTION_AND_ACCOUNT" author="fragkise" context="migrate">
+        <comment>Initial creation of Balance per Transaction and Account</comment>
+        <sql>
+            --------------------------------------------------------
+            --  Table TRANSACTION_ACCOUNT_BALANCE
+            --------------------------------------------------------
+
+            CREATE SEQUENCE transaction_account_balance_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "transaction_account_balance" (
+            "id" BIGINT NOT NULL,
+            "transferring_account_identifier" BIGINT,
+            "acquiring_account_identifier" BIGINT,
+            "transaction_identifier" VARCHAR(256) NOT NULL,
+            "transferring_account_balance" BIGINT DEFAULT 0,
+            "transferring_balance_unit_type" VARCHAR(255),
+            "acquiring_account_balance" BIGINT DEFAULT 0,
+            "acquiring_balance_unit_type" VARCHAR(255)
+            );
+
+            ALTER TABLE "transaction_account_balance" ADD CONSTRAINT "pk_trns_accnt_bal" PRIMARY KEY ("id");
+
+            CREATE UNIQUE INDEX "trns_accnt_bal_identifier_idx" ON "transaction_account_balance" ("transaction_identifier");
+
+            COMMENT ON TABLE "transaction_account_balance"  IS 'Stores the balance per transaction and account';
+            COMMENT ON COLUMN "transaction_account_balance"."id" IS 'The unique id';
+            COMMENT ON COLUMN "transaction_account_balance"."transferring_account_identifier" IS 'The unique transferring account identifier';
+            COMMENT ON COLUMN "transaction_account_balance"."acquiring_account_identifier" IS 'The unique acquiring account identifier';
+            COMMENT ON COLUMN "transaction_account_balance"."transaction_identifier" IS 'The unique transaction identifier';
+            COMMENT ON COLUMN "transaction_account_balance"."transferring_account_balance" IS 'The transferring account remaining balance after transaction completion';
+            COMMENT ON COLUMN "transaction_account_balance"."transferring_balance_unit_type" is 'Unit type of the available unit in transferring account balance (i.e. AAU, MULTIPLE etc.)';
+            COMMENT ON COLUMN "transaction_account_balance"."acquiring_account_balance" IS 'The acquiring account remaining balance after transaction completion';
+            COMMENT ON COLUMN "transaction_account_balance"."acquiring_balance_unit_type" is 'Unit type of the available unit in acquiring account balance (i.e. AAU, MULTIPLE etc.)';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "transaction_account_balance" CASCADE;
+                DROP SEQUENCE IF EXISTS transaction_account_balance_seq;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="3_8_0_ADD_TABLE_ACCOUNT_BALANCE_HISTORY" author="fragkise" context="migrate">
+        <comment>Migration of Balance per Transaction and Account</comment>
+        <sql>
+            --------------------------------------------------------
+            --  Table ACCOUNT_BALANCE_HISTORY
+            -------------------------------------------------------
+
+            CREATE SEQUENCE account_balance_history_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "account_balance_history" (
+            "id" BIGINT NOT NULL,
+            "account_identifier" BIGINT NOT NULL,
+            "transaction_identifier" varchar(256) NOT NULL,
+            "balance" BIGINT NOT NULL DEFAULT 0,
+            "unit_type" VARCHAR(255)
+            );
+
+            ALTER TABLE "account_balance_history" ADD CONSTRAINT "pk_accnt_bal" PRIMARY KEY ("id");
+
+            CREATE UNIQUE INDEX "unq_acc_identifier" ON "account_balance_history" ("account_identifier");
+
+            COMMENT ON TABLE "account_balance_history"  IS 'Stores the intermediate balance per account during migration';
+            COMMENT ON COLUMN "account_balance_history"."id" IS 'The unique id';
+            COMMENT ON COLUMN "account_balance_history"."account_identifier" IS 'The unique account identifier';
+            COMMENT ON COLUMN "account_balance_history"."transaction_identifier" IS 'The last processed transaction identifier';
+            COMMENT ON COLUMN "account_balance_history"."balance" IS 'The temp balance of the account after finalization of the transaction in the same row';
+            COMMENT ON COLUMN "account_balance_history"."unit_type" is 'Unit type of the available unit balance (i.e. AAU, MULTIPLE etc.)';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "account_balance_history" CASCADE;
+                DROP SEQUENCE IF EXISTS account_balance_history_seq;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="3_8_0_MIGRATE_EXISTING_ACCOUNTS_WITH_ACCOUNT_OWNERSHIP" author="piliotid" context="migrate">
+        <sql>
+            -- migration for existing accounts that does not have account_ownership link
+            insert into account_ownership(id, account_id, account_holder_id, status, date_of_ownership)
+            select nextval('account_ownership_seq'), a.id, a.account_holder_id, 'ACTIVE', now()
+            from account a inner join account_holder ah on ah.id = a.account_holder_id
+            where a.id not in (select account_id from account_ownership);
+
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

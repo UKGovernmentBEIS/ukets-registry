@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+	<changeSet id="0_6_0_ADD_PARTY_HOLDING_ACCOUNTS_2" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where kyoto_account_type = 'PARTY_HOLDING_ACCOUNT' and registry_account_type = 'NONE' and account_name like 'Party Holding %'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds some party holding accounts, 3 per commitment period, for being able to test KP Issuance</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1000,
+			'Party Holding 1',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			1,
+			'GB',
+			94,
+			'GB-100-1000-1-94',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1001,
+			'Party Holding 2',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			1,
+			'GB',
+			89,
+			'GB-100-1001-1-89',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1002,
+			'Party Holding 3',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			1,
+			'GB',
+			84,
+			'GB-100-1002-1-84',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1003,
+			'Party Holding 4',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			2,
+			'GB',
+			76,
+			'GB-100-1003-2-76',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1004,
+			'Party Holding 5',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			2,
+			'GB',
+			71,
+			'GB-100-1004-2-71',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1005,
+			'Party Holding 6',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			2,
+			'GB',
+			66,
+			'GB-100-1005-2-66',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1006,
+			'Party Holding 7',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			3,
+			'GB',
+			58,
+			'GB-100-1006-3-58',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1007,
+			'Party Holding 8',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			3,
+			'GB',
+			53,
+			'GB-100-1007-3-53',
+			'Party Holding Account'
+			);
+
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label
+			)
+			values
+			(
+			nextval('account_seq'),
+			1008,
+			'Party Holding 9',
+			'NONE',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			3,
+			'GB',
+			48,
+			'GB-100-1008-3-48',
+			'Party Holding Account'
+			);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_6_0_ADD_DISCLOSED_NAMES" author="fragkise" context="migrate">
+		<comment>Adds default values for DISCLOSED_NAME</comment>
+		<sql>
+			update users set disclosed_name=concat(first_name,' ',last_name);
+			update users set disclosed_name='Registry administrator' where id in (-1,-2,-3,-4,-12,-13);
+		</sql>
+	</changeSet>
+	
+</databaseChangeLog>
+

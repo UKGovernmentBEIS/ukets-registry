@@ -1,0 +1,20 @@
+<ng-container
+  *ngIf="(accountHolderContactInfo$ | async).primaryContact as primaryContact"
+>
+  <app-account-holder-contact-summary
+    [accountHolderContact]="primaryContact"
+    [contactType]="primaryType"
+    [contactCountry]="primaryContactAddressCountry$ | async"
+  >
+  </app-account-holder-contact-summary>
+  <app-account-holder-contact-summary
+    *ngIf="
+      (accountHolderContactInfo$ | async)
+        .alternativeContact as alternativeContact
+    "
+    [accountHolderContact]="alternativeContact"
+    [contactType]="alternativeType"
+    [contactCountry]="alternativeContactAddressCountry$ | async"
+  >
+  </app-account-holder-contact-summary>
+</ng-container>

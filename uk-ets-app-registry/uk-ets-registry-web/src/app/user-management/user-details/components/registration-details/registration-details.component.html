@@ -1,0 +1,127 @@
+<div class="govuk-grid-row" *ngIf="user">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-summary-list__key govuk-heading-m">
+      Registration details
+    </h2>
+  </div>
+
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-top-5
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">User ID</dt>
+      <dd class="govuk-summary-list__value">
+        {{ user.attributes.urid }}
+      </dd>
+    </div>
+
+    <div
+      *ngIf="
+        user.userRoles &&
+        user.userRoles.length > 0 &&
+        currentViewMode === viewMode.USER_DETAILS &&
+        isVisible
+      "
+      class="govuk-summary-list__row"
+    >
+      <dt class="govuk-summary-list__key">
+        User Role{{ user.userRoles.length > 1 ? 's' : '' }}
+      </dt>
+      <div *ngFor="let userRole of user.userRoles">
+        <dd class="govuk-summary-list__value">
+          {{
+            (userRole.includes('_') ? userRole.split('_').join(' ') : userRole)
+              | titlecase
+          }}
+        </dd>
+      </div>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Status</dt>
+      <dd class="govuk-summary-list__value">
+        <app-govuk-tag [color]="userStatusMap[user.attributes.state[0]].color">
+          {{ userStatusMap[user.attributes.state[0]].label }}
+        </app-govuk-tag>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Email address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ user.email }}
+        <div
+          *ngIf="
+            currentViewMode === viewMode.MY_PROFILE ||
+            (currentViewMode === viewMode.USER_DETAILS && isVisible)
+          "
+          class="govuk-!-margin-top-2"
+        >
+          <a
+            [routerLink]="[]"
+            class="govuk-link govuk-link--no-visited-state"
+            (click)="onClickEmailChange()"
+            (keyup)="(onClickEmailChange)"
+          >
+            {{ getEmailMessage() }}
+          </a>
+        </div>
+      </dd>
+    </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="currentViewMode === viewMode.MY_PROFILE"
+    >
+      <dt class="govuk-summary-list__key">Password</dt>
+      <dd class="govuk-summary-list__value">
+        <a
+          [routerLink]="[]"
+          class="govuk-link govuk-link--no-visited-state"
+          (click)="onClickPasswordChange()"
+          (keyup)="(onClickPasswordChange)"
+          >Change your password</a
+        >
+      </dd>
+    </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="currentViewMode === viewMode.MY_PROFILE"
+    >
+      <dt class="govuk-summary-list__key">Two factor authentication</dt>
+      <dd class="govuk-summary-list__value">
+        <a
+          [routerLink]="[]"
+          class="govuk-link govuk-link--no-visited-state"
+          (click)="onClickChangeToken()"
+          (keyup)="(onClickChangeToken)"
+          >Change two factor authentication</a
+        >
+      </dd>
+    </div>
+
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="currentViewMode === viewMode.USER_DETAILS"
+    >
+      <dt class="govuk-summary-list__key">Registry activation code</dt>
+      <dd class="govuk-summary-list__value">
+        <div *ngIf="enrolmentKeyDetails && enrolmentKeyDetails.enrolmentKey">
+          {{ enrolmentKeyDetails.enrolmentKey }} ( expires on
+          {{ enrolmentKeyDetails.enrolmentKeyDateExpired | date: 'dd/M/yyyy' }}
+          )
+        </div>
+      </dd>
+    </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="currentViewMode === viewMode.USER_DETAILS"
+    >
+      <dt class="govuk-summary-list__key">Memorable phrase</dt>
+      <dd class="govuk-summary-list__value">
+        {{ user.attributes.memorablePhrase }}
+      </dd>
+    </div>
+  </dl>
+</div>

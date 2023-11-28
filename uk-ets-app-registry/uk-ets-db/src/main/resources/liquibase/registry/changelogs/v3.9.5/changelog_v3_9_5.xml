@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <changeSet author="fragkise" id="3_9_5_POPULATE_EU_ETS_DATA_TRANSACTION_UNIT_TYPE" context="migrate">
+        <comment>Populate unit type at transaction level for migrated data</comment>
+        <sql>
+			update
+			    transaction t set
+			    unit_type = (
+			    select
+			        case
+			            when count(distinct tb.unit_type) = 1 then (select distinct tb2.unit_type from transaction_block tb2 where tb2.transaction_id=tb.transaction_id)
+			            else 'MULTIPLE'
+			            end
+			        from
+			            transaction_block tb
+			            where tb.transaction_id = t.id
+			            group by tb.transaction_id)
+			where
+			    t.unit_type is null
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

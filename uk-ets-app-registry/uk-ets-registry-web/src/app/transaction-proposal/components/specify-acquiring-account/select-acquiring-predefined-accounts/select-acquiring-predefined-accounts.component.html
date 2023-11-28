@@ -1,0 +1,27 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-title-proposal-transaction-type
+      [proposalTransactionType]="transactionType"
+    ></app-title-proposal-transaction-type>
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <div class="govuk-fieldset">
+        <app-uk-radio-input
+          controlName="centralAccount"
+          [formRadioGroupInfo]="formRadioGroupInfo"
+          [validationErrorMessage]="this.validationErrorMessage.centralAccount"
+        >
+        </app-uk-radio-input>
+      </div>
+      <div class="govuk-!-margin-top-4 govuk-!-margin-bottom-10">
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

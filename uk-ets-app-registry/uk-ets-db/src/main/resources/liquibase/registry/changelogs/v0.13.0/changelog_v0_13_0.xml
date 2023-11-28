@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_13_0_DELETE_APPROVED_REQUEST_EMAIL_CHANGE_TASKS" author="kkaravitis" context="migrate">
+        <comment>Delete the approved email change request tasks</comment>
+        <sql>
+            delete from task where type = 'REQUESTED_EMAIL_CHANGE' and status = 'APPROVED'
+        </sql>
+    </changeSet>
+</databaseChangeLog>

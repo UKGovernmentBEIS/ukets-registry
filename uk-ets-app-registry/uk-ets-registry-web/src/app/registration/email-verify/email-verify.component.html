@@ -1,0 +1,25 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Check your email'"></div>
+<div class="govuk-grid-row" aria-live="polite">
+  <div class="govuk-grid-column-two-thirds">
+    <div *ngIf="registered">
+      <h1 class="govuk-heading-l">Check your email</h1>
+      <p class="govuk-body">
+        We have sent a verification email to
+        <span class="govuk-!-font-weight-bold">
+          {{ submittedEmail }}
+        </span>
+      </p>
+
+      <h2 class="govuk-heading-m">What happens next</h2>
+      <p class="govuk-body">
+        Confirm your work email address by clicking the link in the email.
+      </p>
+
+      <p>
+        <app-email-verify-not-received-email
+          [serviceDeskWeb]="serviceDeskWeb$ | async"
+        ></app-email-verify-not-received-email>
+      </p>
+    </div>
+  </div>
+</div>

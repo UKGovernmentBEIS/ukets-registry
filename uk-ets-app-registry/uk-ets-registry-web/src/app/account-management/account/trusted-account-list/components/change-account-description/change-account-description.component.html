@@ -1,0 +1,36 @@
+<form [formGroup]="formGroup">
+  <h1 class="govuk-heading-xl">Change account description</h1>
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Account ID</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountFullIdentifier }}
+      </dd>
+    </div>
+  </dl>
+  <app-form-comment-area
+    [label]="'Description'"
+    [maxlength]="256"
+    [rows]="3"
+    controlName="description"
+  ></app-form-comment-area>
+  <button
+    (click)="onContinue()"
+    data-prevent-double-click="true"
+    class="govuk-button submit-form"
+    data-module="govuk-button"
+    id="continue"
+  >
+    Continue
+  </button>
+  <div>
+    <a
+      [routerLink]="[]"
+      class="govuk-link govuk-link--no-visited-state"
+      (click)="onCancel()"
+      (keyup)="(onCancel)"
+      skipLocationChange
+      >Cancel</a
+    >
+  </div>
+</form>

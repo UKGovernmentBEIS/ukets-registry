@@ -1,0 +1,40 @@
+<dialog
+  #modal
+  cdkTrapFocus
+  class="govuk-timeout-warning dialog fixed"
+  role="dialog"
+  aria-live="polite"
+  aria-labelledby="dialog-title"
+  aria-describedby="at-timer"
+  id="timeout-dialog"
+  (keydown)="onKeyDown($event)"
+>
+  <h1 id="dialog-title" class="govuk-heading-l">Your session will end soon</h1>
+  <div class="govuk-body">
+    <div class="timer" aria-hidden="true" aria-relevant="additions">
+      You will be automatically signed out of the Registry if you do not respond
+      in
+      {{ offset | secondsToMinutes }}. Your progress will not be saved. Select
+      Continue to stay signed in.
+    </div>
+    <div class="at-timer govuk-visually-hidden" role="status" id="at-timer">
+      We will reset your application if you do not respond in
+      {{ offset | secondsToMinutes }}. We do this to keep your information
+      secure.
+    </div>
+  </div>
+  <button
+    class="govuk-button dialog-button js-dialog-close"
+    (click)="extend.emit()"
+    id="continue"
+  >
+    Continue
+  </button>
+  <button
+    class="govuk-button govuk-button--secondary"
+    (click)="logout.emit()"
+    id="sign-out"
+  >
+    Sign out
+  </button>
+</dialog>

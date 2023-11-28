@@ -1,0 +1,49 @@
+<span
+  *ngIf="installation == null"
+  class="govuk-caption-m govuk-!-margin-bottom-5"
+>
+  No installation is linked to this account.
+</span>
+<ng-container *ngIf="hasOperatorUpdatePendingApproval">
+  <div class="govuk-warning-text">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      There are update requests pending approval
+    </strong>
+  </div>
+</ng-container>
+<app-summary-list
+  [class]="
+    'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
+  "
+  [lines]="{
+    'Installation name': installation.name,
+    'Installation ID': installation.identifier,
+    'Installation activity type': activityTypes[installation.activityType],
+    'Permit ID': installation.permit ? installation.permit.id : '',
+    Regulator: regulators[installation.regulator],
+    'First year of verified emission submission': installation.firstYear,
+    'Last year of verified emission submission': installation.lastYear
+  }"
+></app-summary-list>
+<div class="govuk-button-group">
+  <div *ngIf="canRequestUpdate">
+    <button
+      (click)="goToRequestUpdate()"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+      data-module="govuk-button"
+    >
+      Request Update
+    </button>
+    <button
+      id="goToTransferAccountButtonId"
+      *ngIf="canRequestAccountTransfer"
+      (click)="goToRequestTransferAccount()"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+      data-module="govuk-button"
+    >
+      Request Account Transfer
+    </button>
+  </div>
+</div>

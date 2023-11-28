@@ -1,0 +1,45 @@
+<div class="govuk-warning-text withheld-warning" *ngIf="withheld">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    There are years with a withheld status. <br />
+    You can see the justification in the
+    <a
+      [routerLink]="[]"
+      (keypress)="navToHistoryAndComments()"
+      (click)="navToHistoryAndComments()"
+      >history and comments</a
+    >
+  </strong>
+</div>
+
+<div class="govuk-warning-text overallocated-warning" *ngIf="overAllocated">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    You have overallocated allowances
+  </strong>
+</div>
+
+<div
+  class="govuk-warning-text pending-excess-warning"
+  *ngIf="pendingExcessAllocation"
+>
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    There are transactions for return of excess allocation pending approval.
+  </strong>
+</div>
+
+<div
+  class="govuk-warning-text allocation-after-last-year"
+  *ngIf="allocationsAfterLastYear"
+>
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    The operator has received allocations for years after their Last Year of
+    Verified Emissions.
+  </strong>
+</div>

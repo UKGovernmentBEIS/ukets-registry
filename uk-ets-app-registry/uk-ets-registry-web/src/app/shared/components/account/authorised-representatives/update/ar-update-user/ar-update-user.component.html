@@ -1,0 +1,82 @@
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-body-l">User</dt>
+    <dd class="govuk-summary-list__actions">
+      <a
+        *ngIf="displayedChangeLink"
+        class="govuk-link"
+        [routerLink]="[]"
+        (click)="onChangeClicked()"
+      >
+        Change<span class="govuk-visually-hidden"> user</span>
+      </a>
+    </dd>
+  </div>
+  <div
+    *ngIf="computeActionMessage"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dd class="govuk-summary-list__value">
+      <strong>{{ computeActionMessage() }}</strong>
+    </dd>
+  </div>
+</dl>
+<div [ngSwitch]="updateType">
+  <app-shared-authorised-representative-table
+    *ngSwitchCase="updateTypes.ADD"
+    [authorisedReps]="[newUser]"
+    [displayNameLink]="true"
+    [displayUridLink]="true"
+    [displayedColumns]="displayedColumnsForAr"
+    [showRequestDocumentButton]="isTaskDetailsPage"
+    [taskNotYetApproved]="taskNotYetApproved"
+    [currentUserClaimant]="currentUserClaimant"
+    [updateType]="this.updateType"
+    (requestDocumentEmitter)="onUserRequestDocuments($event)"
+  ></app-shared-authorised-representative-table>
+  <app-shared-authorised-representative-table
+    *ngSwitchCase="updateTypes.REPLACE"
+    [authorisedReps]="[currentUser]"
+    [displayNameLink]="true"
+    [displayUridLink]="true"
+    [displayedColumns]="displayedColumnsForAr"
+  ></app-shared-authorised-representative-table>
+  <app-shared-authorised-representative-table
+    *ngSwitchCase="
+      updateType === updateTypes.REMOVE ||
+      updateType === updateTypes.CHANGE_ACCESS_RIGHTS ||
+      updateType === updateTypes.SUSPEND ||
+      updateType === updateTypes.RESTORE
+        ? updateType
+        : ''
+    "
+    [authorisedReps]="[currentUser]"
+    [displayNameLink]="true"
+    [displayUridLink]="true"
+    [displayedColumns]="displayedColumnsForAr"
+  ></app-shared-authorised-representative-table>
+
+  <!-- Replacing user information -->
+
+  <ng-container *ngSwitchCase="updateTypes.REPLACE">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row govuk-summary-list__row--no-border">
+        <dd class="govuk-summary-list__value">
+          <strong>with the one below</strong>
+        </dd>
+      </div>
+    </dl>
+    <app-shared-authorised-representative-table
+      [authorisedReps]="[newUser]"
+      [displayNameLink]="true"
+      [displayUridLink]="true"
+      [displayedColumns]="displayedColumnsForAr"
+      [highlightUsers]="true"
+      [showRequestDocumentButton]="isTaskDetailsPage"
+      [taskNotYetApproved]="taskNotYetApproved"
+      [currentUserClaimant]="currentUserClaimant"
+      [updateType]="this.updateType"
+      (requestDocumentEmitter)="onUserRequestDocuments($event)"
+    ></app-shared-authorised-representative-table>
+  </ng-container>
+</div>

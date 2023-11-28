@@ -1,0 +1,63 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="(operatorCompleted ? 'View ' : 'Check ') + 'your answers'"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">
+        {{ 'Add the ' + operatorTypeMap[this.operator.type] + ' Information' }}
+      </span>
+      {{ operatorCompleted ? 'View ' : 'Check ' }}
+      your answers
+    </h1>
+    <ng-container [ngSwitch]="operator.type">
+      <app-overview-installation
+        *ngSwitchCase="type.INSTALLATION"
+        [installation]="operator"
+        [operatorCompleted]="operatorCompleted"
+      ></app-overview-installation>
+      <app-overview-installation-transfer
+        *ngSwitchCase="type.INSTALLATION_TRANSFER"
+        [installationToBeTransferred]="installationToBeTransferred"
+        [installationTransfer]="operator"
+        [operatorCompleted]="operatorCompleted"
+      ></app-overview-installation-transfer>
+      <app-overview-aircraft-operator
+        *ngSwitchCase="type.AIRCRAFT_OPERATOR"
+        [aircraftOperator]="operator"
+        [operatorCompleted]="operatorCompleted"
+      ></app-overview-aircraft-operator>
+    </ng-container>
+    <div class="govuk-form-group">
+      <button
+        *ngIf="operatorCompleted"
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="button"
+        (click)="editEmitter.emit(operator.type)"
+      >
+        Edit
+      </button>
+      <button
+        *ngIf="!operatorCompleted.valueOf()"
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="button"
+        (click)="applyEmitter.emit()"
+        id="continue"
+      >
+        Continue
+      </button>
+      <button
+        *ngIf="operatorCompleted"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        type="button"
+        (click)="deleteEmitter.emit()"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

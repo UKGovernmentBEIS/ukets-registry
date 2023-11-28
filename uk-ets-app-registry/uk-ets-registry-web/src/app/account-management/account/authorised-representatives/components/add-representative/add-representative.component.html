@@ -1,0 +1,39 @@
+<form [formGroup]="formGroup" (submit)="onSubmit()">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="showErrors"
+        [id]="'arselection-label'"
+      >
+        <fieldset class="govuk-fieldset" aria-describedby="ar-selection-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <span class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl"
+                >Request to update the authorised representatives list</span
+              >
+              Add representative
+            </span>
+          </legend>
+
+          <app-uk-select-authorised-representative
+            formControlName="selectAr"
+            [authorisedRepresentatives]="authorisedRepresentatives"
+            [showErrors]="false"
+            hint="User ID"
+            hintClass="govuk-heading-s"
+          >
+          </app-uk-select-authorised-representative>
+        </fieldset>
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

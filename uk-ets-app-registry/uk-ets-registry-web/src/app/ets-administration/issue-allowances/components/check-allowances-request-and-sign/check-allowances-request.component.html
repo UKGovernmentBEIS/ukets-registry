@@ -1,0 +1,110 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"> Propose to issue UK allowances </span>
+
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">Check and sign the proposal</h1>
+    </legend>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__value">
+          <span class="govuk-heading-m"
+            >Quantity to issue for {{ getActiveYear() }}
+          </span>
+        </dt>
+        <dt class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            routerLink="/ets-administration/issue-allowances"
+          >
+            Change<span class="govuk-visually-hidden"> name</span>
+          </a>
+        </dt>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <p><strong>Acquiring account</strong></p>
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+          <p>
+            {{ acquiringAccountInfo?.fullIdentifier }} -
+            {{ acquiringAccountInfo?.accountName }}
+          </p>
+        </div>
+      </div>
+      <div *ngIf="quantityYearWarning()" class="govuk-grid-column-full">
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Warning</span>
+            The quantity to issue is more than the amount remaining for the year
+          </strong>
+        </div>
+      </div>
+
+      <div *ngIf="quantityPhaseWarning()" class="govuk-grid-column-full">
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Warning</span>
+            The quantity to issue is more than the amount remaining for the
+            phase.
+          </strong>
+        </div>
+      </div>
+    </dl>
+    <div class="govuk-grid-row"></div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-allowance-transaction-quantity-table
+          [transactionBlockSummaries]="transactionBlockSummaries"
+          [isEditable]="false"
+          [activeYear]="getActiveYear()"
+        >
+        </app-allowance-transaction-quantity-table>
+      </div>
+    </div>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__value">
+          <span class="govuk-heading-m">Transaction reference </span>
+        </dt>
+        <dt class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            routerLink="/ets-administration/issue-allowances/set-transaction-reference"
+          >
+            Change<span class="govuk-visually-hidden"> name</span>
+          </a>
+        </dt>
+      </div>
+    </dl>
+    <div class="govuk-summary-list__row">
+      <app-transaction-reference [reference]="transactionReference">
+      </app-transaction-reference>
+    </div>
+
+    <app-transaction-signing-details
+      [transactionId]="transactionId"
+    ></app-transaction-signing-details>
+    <app-sign-request-form
+      (otpCode)="setOtpCode($event)"
+    ></app-sign-request-form>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          (click)="submit()"
+          type="button"
+          id="submit"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

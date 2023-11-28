@@ -1,0 +1,36 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">
+      Enter the email address associated with your UK Registry account
+    </h1>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      We'll send you an emergency access link. The link will expire after
+      {{ emailExpiration }} minutes.
+    </p>
+    <p class="govuk-body">
+      You must click the link in the email to continue with this request.
+    </p>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <div class="govuk-form-group">
+        <app-form-control-email
+          [label]="'Email address'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.email"
+          controlName="email"
+        ></app-form-control-email>
+      </div>
+
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="submit"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

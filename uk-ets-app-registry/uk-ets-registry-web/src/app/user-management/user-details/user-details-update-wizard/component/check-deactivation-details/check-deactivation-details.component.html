@@ -1,0 +1,73 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Request to update the user details'"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Request to update the user details</span>
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">
+          Check the update and confirm
+        </h1>
+      </legend>
+    </fieldset>
+    <div
+      class="govuk-warning-text"
+      *ngIf="arInAccounts !== undefined && arInAccounts.length > 0"
+    >
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        User is associated with one or more accounts.
+      </strong>
+    </div>
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        <ng-container *ngIf="isLoggedInUserSameAsDeactivated; else other">
+          When you submit this request, you will be automatically signed out by
+          the system and you will no longer have access to the Registry.
+        </ng-container>
+        <ng-template #other>
+          When you submit this request, the user will no longer have access to
+          the Registry.
+        </ng-template>
+      </strong>
+    </div>
+    <div class="govuk-body">
+      <h2 class="govuk-heading-m">Type of update</h2>
+      <hr
+        class="
+          govuk-section-break
+          govuk-section-break--m
+          govuk-section-break--visible
+          govuk-!-margin-bottom-2
+        "
+      />
+      <p class="govuk-hint">
+        {{ this.userUpdateDetailsType | userDetailsUpdateType }}
+      </p>
+    </div>
+    <app-user-deactivation-summary
+      [countries]="countries"
+      [comment]="comment"
+      [isWizardOrientedFlag]="true"
+      [userDetails]="userDetails"
+      [enrolmentKeyDetails]="enrolmentKeyDetails"
+      [routePathForDeactivationComment]="routePathForDeactivationComment"
+      (navigateToEmitter)="navigateTo($event)"
+    >
+    </app-user-deactivation-summary>
+    <button
+      id="submit"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="onSubmit()"
+    >
+      Submit
+    </button>
+  </div>
+</div>

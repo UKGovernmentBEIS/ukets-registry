@@ -1,0 +1,54 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">
+      Enter your registry activation code
+    </h1>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <form (ngSubmit)="enrol()" [formGroup]="formGroup">
+          <app-uk-activation-code-input
+            [maxlength]="4"
+            hint="Enter the 20-character code exactly as it appears in the email"
+            formControlInput1="activationCodeInput1"
+            formControlInput2="activationCodeInput2"
+            formControlInput3="activationCodeInput3"
+            formControlInput4="activationCodeInput4"
+            formControlInput5="activationCodeInput5"
+          ></app-uk-activation-code-input>
+          <details class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text">
+                There's a problem with my code
+              </span>
+            </summary>
+            <div class="govuk-details__text">
+              <a
+                class="govuk-link"
+                [routerLink]="routerLinks.REQUEST_ACTIVATION_CODE"
+                >Request a new registry activation code</a
+              >
+            </div>
+          </details>
+          <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+              <span class="govuk-warning-text__assistive">Warning</span>
+              After you successfully enter your activation code you will be
+              automatically signed out of the Registry. You'll need to sign in
+              again to continue using the Registry.
+            </strong>
+          </div>
+          <button
+            class="govuk-button"
+            data-module="govuk-button"
+            type="submit"
+            id="continue"
+          >
+            Continue
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

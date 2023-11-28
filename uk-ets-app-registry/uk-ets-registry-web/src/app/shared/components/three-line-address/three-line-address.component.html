@@ -1,0 +1,11 @@
+<div>
+  {{ line1 }}
+  <ng-container *ngIf="line2 || line3">
+    <br />
+    {{ line2 }}
+  </ng-container>
+  <ng-container *ngIf="line3">
+    <br />
+    {{ line3 }}
+  </ng-container>
+</div>

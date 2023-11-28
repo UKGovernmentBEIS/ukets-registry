@@ -1,0 +1,10 @@
+{
+  "name": "UK ETS Registry",
+  "theme": "bootstrap",
+  "jsonFile": "reports/tests/e2e/cucumber_report.json",
+  "output": "reports/tests/e2e/output/cucumber_report.html",
+  "reportSuiteAsScenarios": true,
+  "scenarioTimestamp": true,
+  "launchReport": true,
+  "metadata": {}
+}

@@ -1,0 +1,98 @@
+<ng-container [formGroup]="nestedForm">
+  <div
+    class="govuk-date-input"
+    [id]="compositeFormGroupId"
+    [class.govuk-form-group--error]="this.showErrors && formControl.invalid"
+  >
+    <div class="govuk-form-group">
+      <div class="govuk-form-group">
+        <span class="govuk-label">
+          {{ label }}
+        </span>
+        <span class="govuk-hint">
+          {{ hint }}
+        </span>
+        <span
+          *ngIf="this.showErrors && formControl.invalid"
+          id="permit-date-error"
+          class="govuk-error-message"
+          role="alert"
+          [attr.aria-describedby]="compositeFormGroupId"
+        >
+          <span class="govuk-visually-hidden">Error:</span>
+          <span *ngFor="let errorCode of getObjectKeys(formControl.errors)">
+            {{
+              validationErrorMessages[errorCode] ||
+                formControl.errors[errorCode]
+            }}
+          </span>
+        </span>
+
+        <div class="govuk-date-input__item">
+          <label class="govuk-label govuk-date-input__label" for="permit-day">
+            Day
+          </label>
+          <input
+            class="govuk-input govuk-date-input__input govuk-input--width-2"
+            [class.govuk-input--error]="
+              this.showErrors &&
+              (dayControl.invalid || (formControl.invalid && this.required))
+            "
+            id="permit-day"
+            name="permit-day"
+            [autocomplete]="'on'"
+            formControlName="day"
+            type="text"
+            maxlength="2"
+          />
+        </div>
+        <div class="govuk-date-input__item">
+          <div class="govuk-form-group">
+            <label
+              class="govuk-label govuk-date-input__label"
+              for="permit-month"
+            >
+              Month
+            </label>
+            <input
+              class="govuk-input govuk-date-input__input govuk-input--width-2"
+              [class.govuk-input--error]="
+                this.showErrors &&
+                (monthControl.invalid || (formControl.invalid && this.required))
+              "
+              id="permit-month"
+              name="permit-month"
+              [autocomplete]="'on'"
+              formControlName="month"
+              type="text"
+              maxlength="2"
+            />
+          </div>
+        </div>
+        <div class="govuk-date-input__item">
+          <div class="govuk-form-group">
+            <label
+              class="govuk-label govuk-date-input__label"
+              for="permit-year"
+            >
+              Year
+            </label>
+            <input
+              class="govuk-input govuk-date-input__input govuk-input--width-4"
+              [class.govuk-input--error]="
+                this.showErrors &&
+                (yearControl.invalid || (formControl.invalid && this.required))
+              "
+              id="permit-year"
+              name="permit-year"
+              formControlName="year"
+              [autocomplete]="'on'"
+              type="text"
+              maxlength="4"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

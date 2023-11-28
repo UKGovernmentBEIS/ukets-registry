@@ -1,0 +1,162 @@
+{
+  "users": [
+    {
+      "username": "beis-uk-ets-senior-admin",
+      "enabled": true,
+      "email": "beis-uk-ets-senior-admin@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Senior",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK717757214330"],
+        "alsoKnownAs": ["BEIS UK ETS Senior Registry Administrator"],
+        "buildingAndStreet": ["beis-uk-ets-senior-admin building and street"],
+        "buildingAndStreetOptional": [
+          "beis-uk-ets-senior-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "beis-uk-ets-senior-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "beis-uk-ets-senior-admin work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "beis-uk-ets-senior-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "beis-uk-ets-senior-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["beis-uk-ets-senior-admin@trasys.gr"],
+        "workEmailAddressConfirmation": ["beis-uk-ets-senior-admin@trasys.gr"],
+        "workPhoneNumber": ["2106612273"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "yearOfBirth": ["1970"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "beis-uk-ets-senior-admin"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["senior-registry-administrator"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "beis-uk-ets-junior-admin",
+      "enabled": true,
+      "email": "beis-uk-ets-junior-admin@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Junior",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK534785515784"],
+        "alsoKnownAs": ["BEIS UK ETS Junior Registry Administrator"],
+        "buildingAndStreet": ["beis-uk-ets-junior-admin building and street"],
+        "buildingAndStreetOptional": [
+          "beis-uk-ets-junior-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "beis-uk-ets-junior-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "beis-uk-ets-junior-admin work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "beis-uk-ets-junior-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "beis-uk-ets-junior-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["beis-uk-ets-junior-admin@trasys.gr"],
+        "workEmailAddressConfirmation": ["beis-uk-ets-junior-admin@trasys.gr"],
+        "workPhoneNumber": ["2106069452"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "yearOfBirth": ["1970"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "beis-uk-ets-junior-admin"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["junior-registry-administrator"],
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "beis-uk-ets-readonly-admin",
+      "enabled": true,
+      "email": "beis-uk-ets-readonly-admin@trasys.gr",
+      "firstName": "Registry Administrator",
+      "lastName": "Read Only",
+      "emailVerified": true,
+      "attributes": {
+        "urid": ["UK905249131421"],
+        "alsoKnownAs": ["BEIS UK ETS Read Only Registry Administrator"],
+        "buildingAndStreet": ["beis-uk-ets-readonly-admin building and street"],
+        "buildingAndStreetOptional": [
+          "beis-uk-ets-readonly-admin building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "beis-uk-ets-readonly-admin building and street optional 2"
+        ],
+        "country": ["GR"],
+        "countryOfBirth": ["GR"],
+        "postCode": ["15231"],
+        "state": ["ENROLLED"],
+        "townOrCity": ["ATHENS"],
+        "workBuildingAndStreet": [
+          "beis-uk-ets-readonly-admin work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "beis-uk-ets-readonly-admin work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "beis-uk-ets-readonly-admin work building and street optional 2"
+        ],
+        "workCountry": ["GR"],
+        "workCountryCode": ["30"],
+        "workEmailAddress": ["beis-uk-ets-readonly-admin@trasys.gr"],
+        "workEmailAddressConfirmation": [
+          "beis-uk-ets-readonly-admin@trasys.gr"
+        ],
+        "workPhoneNumber": ["2109006431"],
+        "workPostCode": ["15231"],
+        "workTownOrCity": ["ATHENS"],
+        "yearOfBirth": ["1980"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "beis-uk-ets-readonly-admin"
+        }
+      ],
+      "realmRoles": ["ets_user", "uma_authorization"],
+      "clientRoles": {
+        "uk-ets-registry-api": ["readonly-administrator"],
+        "account": ["view-profile"]
+      }
+    }
+  ]
+}

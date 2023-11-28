@@ -1,0 +1,29 @@
+
+<div
+  class="govuk-form-group"
+  [class.govuk-form-group--error]="showError()"
+  [attr.id]="key + '-label'"
+>
+      <span
+        *ngIf="showError()"
+        class="govuk-error-message"
+        [attr.id]="key + '-error-label'"
+      >
+        <span class="govuk-visually-hidden">Error:</span
+        >{{ validationErrorMessage }}
+      </span>
+  <div class="govuk-checkboxes">
+    <div class="govuk-checkboxes__item">
+      <input
+        type="checkbox"
+        class="govuk-checkboxes__input"
+        [formControl]="formControl"
+        [id]="key"
+        [name]="key"
+      />
+      <label class="govuk-label govuk-checkboxes__label" [for]="key">
+        {{ label }}
+      </label>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"> Issue KP Units </span>
+
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">Confirm and submit</h1>
+    </legend>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__value">
+          <span class="govuk-heading-m"
+            >Commitment period and acquiring account
+          </span>
+        </dt>
+        <dt class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="
+              navigateTo(
+                IssueKpUnitsRoutePathsModel['select-commitment-period']
+              )
+            "
+          >
+            Change<span class="govuk-visually-hidden"> name</span>
+          </a>
+        </dt>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <p><strong>Commitment period</strong></p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <p>{{ selectedCommitmentPeriod }}</p>
+        </div>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <p><strong>Acquiring account</strong></p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <p>
+            {{ selectedAcquiringAccount?.fullIdentifier }} -
+            {{ selectedAcquiringAccount?.accountName }}
+          </p>
+        </div>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__value">
+          <span class="govuk-heading-m">Units to issue </span>
+        </dt>
+        <dt class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateTo(IssueKpUnitsRoutePathsModel['select-units'])"
+            >Change<span class="govuk-visually-hidden"> name</span>
+          </a>
+        </dt>
+      </div>
+    </dl>
+    <app-issuance-transaction-summary-table
+      [unitType]="selectedRegistryLevel | unitTypeAndActivity"
+      [initialQuantity]="selectedRegistryLevel?.initialQuantity"
+      [consumedQuantity]="selectedRegistryLevel?.consumedQuantity"
+      [pendingQuantity]="selectedRegistryLevel?.pendingQuantity"
+      [remainingQuantity]="selectedRegistryLevel | remainingQuantity"
+      [selectedQuantity]="selectedQuantity"
+    >
+    </app-issuance-transaction-summary-table>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__value">
+          <span class="govuk-heading-m">Transaction reference </span>
+        </dt>
+        <dt class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="
+              navigateTo(
+                IssueKpUnitsRoutePathsModel['set-transaction-reference']
+              )
+            "
+          >
+            Change<span class="govuk-visually-hidden"> name</span>
+          </a>
+        </dt>
+      </div>
+    </dl>
+    <div class="govuk-summary-list__row">
+      <app-transaction-reference [reference]="transactionReference">
+      </app-transaction-reference>
+    </div>
+
+    <app-transaction-signing-details
+      [transactionId]="transactionId"
+    ></app-transaction-signing-details>
+    <app-sign-request-form (otpCode)="setOtpCode($event)">
+    </app-sign-request-form>
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      (click)="submit()"
+      type="button"
+      id="submit"
+    >
+      Submit
+    </button>
+  </div>
+</div>

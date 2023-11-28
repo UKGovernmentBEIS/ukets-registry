@@ -1,0 +1,35 @@
+<div
+  class="govuk-form-group"
+  [id]="compositeFormGroupId"
+  [class.govuk-form-group--error]="this.showErrors && formControl.invalid"
+>
+  <span
+    *ngIf="this.showErrors && formControl.invalid"
+    id="event-name-error"
+    class="govuk-error-message"
+    role="alert"
+    [attr.aria-describedby]="compositeFormGroupId"
+  >
+    <span class="govuk-visually-hidden">Error:</span>
+    <span *ngFor="let errorCode of getObjectKeys(formControl.errors)">
+      {{ validationErrorMessages[errorCode] || errorCode }}
+    </span>
+  </span>
+  <span class="govuk-hint" *ngIf="!this.showErrors && !isInProgress">
+    {{ hint }}
+  </span>
+  <span class="govuk-hint" *ngIf="isInProgress">
+    File processing in progress.. {{ fileProgress }}%
+  </span>
+  <input
+    #fileInput
+    (click)="onClick()"
+    [class.govuk-input--error]="this.showErrors && formControl.invalid"
+    class="govuk-file-upload"
+    [disabled]="disableAllForms"
+    [id]="controlName"
+    [name]="controlName"
+    type="file"
+    [accept]="fileType"
+  />
+</div>

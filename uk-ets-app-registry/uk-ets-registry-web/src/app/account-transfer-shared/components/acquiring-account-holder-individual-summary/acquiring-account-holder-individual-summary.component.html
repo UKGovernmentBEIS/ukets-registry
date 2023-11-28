@@ -1,0 +1,146 @@
+<ng-container
+  *ngIf="acquiringAccountHolder?.type === accountHolderTypes.INDIVIDUAL"
+>
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <h2 class="govuk-summary-list__key">Individual's details</h2>
+    </div>
+  </dl>
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-9
+    "
+    *ngIf="acquiringAccountHolder.details"
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">First and middle names</dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          (acquiringAccountHolder | individual).details
+            | individualFirstAndMiddleNames
+        }}
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Last name</dt>
+      <dd class="govuk-summary-list__value">
+        {{ (acquiringAccountHolder | individual).details.lastName }}
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Country of birth</dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          (acquiringAccountHolder | individual)?.details?.countryOfBirth
+            | countryNameAsync
+            | async
+        }}
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Date of birth</dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          (acquiringAccountHolder | individual)?.details?.birthDate
+            | formatUkDate
+        }}
+      </dd>
+    </div>
+  </dl>
+
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <h2 class="govuk-summary-list__key">Individual's contact details</h2>
+    </div>
+  </dl>
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-9
+    "
+    *ngIf="acquiringAccountHolder.address"
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Home address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ (acquiringAccountHolder | individual).address.buildingAndStreet }}
+        <ng-container
+          *ngIf="
+            (acquiringAccountHolder | individual).address.buildingAndStreet2 ||
+            (acquiringAccountHolder | individual).address.buildingAndStreet3
+          "
+        >
+          <br />
+          {{ (acquiringAccountHolder | individual).address.buildingAndStreet2 }}
+        </ng-container>
+        <ng-container
+          *ngIf="
+            (acquiringAccountHolder | individual).address.buildingAndStreet3
+          "
+        >
+          <br />{{
+            (acquiringAccountHolder | individual).address.buildingAndStreet3
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="(acquiringAccountHolder | individual).address.townOrCity"
+        >
+          <br />{{
+            (acquiringAccountHolder | individual).address.townOrCity
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="(acquiringAccountHolder | individual).address.stateOrProvince"
+        >
+          <br />{{
+            (acquiringAccountHolder | individual).address.stateOrProvince
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="(acquiringAccountHolder | individual).address.country"
+        >
+          <br />{{
+            (acquiringAccountHolder | individual).address.country
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="(acquiringAccountHolder | individual).address.postCode"
+        >
+          <br />{{
+            (acquiringAccountHolder | individual).address.postCode
+          }}</ng-container
+        >
+      </dd>
+    </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="(acquiringAccountHolder | individual).phoneNumber?.phoneNumber1"
+    >
+      <dt class="govuk-summary-list__key">Phone number 1</dt>
+      <dd class="govuk-summary-list__value">
+        +{{ (acquiringAccountHolder | individual).phoneNumber.countryCode1
+        }}{{ (acquiringAccountHolder | individual).phoneNumber.phoneNumber1 }}
+      </dd>
+    </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="(acquiringAccountHolder | individual).phoneNumber?.phoneNumber2"
+    >
+      <dt class="govuk-summary-list__key">Phone number 2</dt>
+      <dd class="govuk-summary-list__value">
+        +{{ (acquiringAccountHolder | individual).phoneNumber.countryCode2
+        }}{{ (acquiringAccountHolder | individual).phoneNumber.phoneNumber2 }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Email address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ (acquiringAccountHolder | individual).emailAddress?.emailAddress }}
+      </dd>
+    </div>
+  </dl>
+</ng-container>

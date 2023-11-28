@@ -1,0 +1,299 @@
+<table class="govuk-table" aria-describedby="allocation summary table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Year</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Entitlement
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Allocated
+      </th>
+      <th
+        scope="col"
+        class="
+          govuk-table__header govuk-table__header--numeric
+          cell-border-left
+        "
+      >
+        Remaining to be allocated
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        To be returned
+      </th>
+      <th scope="col" class="govuk-table__header cell-border-left">
+        Withhold status
+      </th>
+      <th scope="col" class="govuk-table__header">Exclusion status</th>
+      <th scope="col" class="govuk-table__header"></th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <ng-container
+      *ngFor="
+        let groupedAllocation of allocation.groupedAllocations;
+        let i = index
+      "
+    >
+      <tr class="govuk-table__row annual-allocation">
+        <td class="govuk-table__cell annual-allocation">
+          <details
+            [attr.closed]="detailsOpen[i]"
+            class="govuk-details details-margins"
+            data-module="govuk-details"
+          >
+            <summary (click)="toggleDetails(i)" class="govuk-details__summary">
+              <span class="govuk-details__summary-text align-span-to-center">
+                <strong>{{
+                  groupedAllocation.summedAnnualAllocationNatAndNer.year
+                }}</strong>
+              </span>
+            </summary>
+          </details>
+        </td>
+        <td
+          class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
+        >
+          {{ groupedAllocation.summedAnnualAllocationNatAndNer.entitlement }}
+        </td>
+        <td
+          class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
+        >
+          {{ groupedAllocation.summedAnnualAllocationNatAndNer.allocated }}
+        </td>
+        <td
+          class="
+            govuk-table__cell govuk-table__cell--numeric
+            annual-allocation
+            cell-border-left
+          "
+        >
+          <div
+            class="remaining-col"
+            [ngClass]="{
+              'remaining-allocation under-allocated':
+                groupedAllocation.summedAnnualAllocationNatAndNer.remaining > 0
+            }"
+          >
+            {{
+              groupedAllocation.summedAnnualAllocationNatAndNer.remaining > 0
+                ? groupedAllocation.summedAnnualAllocationNatAndNer.remaining
+                : 0
+            }}
+          </div>
+        </td>
+        <td
+          class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
+        >
+          <div
+            class="remaining-col"
+            [ngClass]="{
+              'remaining-allocation over-allocated':
+                groupedAllocation.summedAnnualAllocationNatAndNer.remaining < 0
+            }"
+          >
+            {{
+              groupedAllocation.summedAnnualAllocationNatAndNer.remaining < 0
+                ? -groupedAllocation.summedAnnualAllocationNatAndNer.remaining
+                : 0
+            }}
+          </div>
+        </td>
+        <td class="govuk-table__cell annual-allocation cell-border-left">
+          {{
+            groupedAllocation.summedAnnualAllocationNatAndNer.status !==
+            allocationStatusAllowed
+              ? allocationStatusLabels[
+                  groupedAllocation.summedAnnualAllocationNatAndNer.status
+                ]?.label
+              : ''
+          }}
+        </td>
+        <td class="govuk-table__cell annual-allocation">
+          <ng-container
+            *ngIf="groupedAllocation.summedAnnualAllocationNatAndNer.excluded"
+          >
+            <app-govuk-tag [color]="'blue'"> EXCLUDED </app-govuk-tag>
+          </ng-container>
+        </td>
+        <td class="govuk-table__cell annual-allocation">
+          <button
+            *ngIf="
+              canRequestTransaction &&
+              groupedAllocation.summedAnnualAllocationNatAndNer
+                .eligibleForReturn
+            "
+            class="govuk-button govuk-button--secondary annual-allocation"
+            data-module="govuk-button"
+            (click)="
+              goToReturnExcessTransaction(
+                groupedAllocation.natAnnualAllocation,
+                groupedAllocation.nerAnnualAllocation
+              )
+            "
+          >
+            Return allowances
+          </button>
+        </td>
+      </tr>
+
+      <tr
+        *ngIf="detailsOpen[i]"
+        class="govuk-table__row annual-allocation ukets-background-light-grey"
+      >
+        <td
+          class="
+            govuk-table__cell
+            no-border-bottom
+            annual-allocation
+            center-align-text
+          "
+        >
+          <strong> NAT </strong>
+        </td>
+        <td
+          class="
+            govuk-table__cell
+            no-border-bottom
+            govuk-table__cell--numeric
+            annual-allocation
+          "
+        >
+          {{ groupedAllocation.natAnnualAllocation.entitlement }}
+        </td>
+        <td
+          class="
+            govuk-table__cell
+            no-border-bottom
+            govuk-table__cell--numeric
+            annual-allocation
+          "
+        >
+          {{ groupedAllocation.natAnnualAllocation.allocated }}
+        </td>
+        <td
+          class="
+            govuk-table__cell govuk-table__cell--numeric
+            no-border-bottom
+            annual-allocation
+            cell-border-left
+          "
+        >
+          <div
+            class="remaining-col"
+            [ngClass]="{
+              'remaining-allocation under-allocated':
+                groupedAllocation.natAnnualAllocation.remaining > 0
+            }"
+          >
+            {{
+              groupedAllocation.natAnnualAllocation.remaining > 0
+                ? groupedAllocation.natAnnualAllocation.remaining
+                : 0
+            }}
+          </div>
+        </td>
+        <td
+          class="
+            govuk-table__cell
+            no-border-bottom
+            govuk-table__cell--numeric
+            annual-allocation
+          "
+        >
+          <div class="remaining-col">
+            {{
+              groupedAllocation.natAnnualAllocation.remaining < 0
+                ? -groupedAllocation.natAnnualAllocation.remaining
+                : 0
+            }}
+          </div>
+        </td>
+        <td
+          class="
+            govuk-table__cell
+            no-border-bottom
+            annual-allocation
+            cell-border-left
+          "
+        ></td>
+        <td class="govuk-table__cell no-border-bottom annual-allocation"></td>
+        <td class="govuk-table__cell no-border-bottom annual-allocation"></td>
+      </tr>
+
+      <tr
+        *ngIf="detailsOpen[i]"
+        class="govuk-table__row annual-allocation ukets-background-light-grey"
+      >
+        <td class="govuk-table__cell annual-allocation center-align-text">
+          <strong> NER </strong>
+        </td>
+        <td
+          class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
+        >
+          {{ groupedAllocation.nerAnnualAllocation.entitlement }}
+        </td>
+        <td
+          class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
+        >
+          {{ groupedAllocation.nerAnnualAllocation.allocated }}
+        </td>
+        <td
+          class="
+            govuk-table__cell govuk-table__cell--numeric
+            annual-allocation
+            cell-border-left
+          "
+        >
+          <div
+            class="remaining-col"
+            [ngClass]="{
+              'remaining-allocation under-allocated':
+                groupedAllocation.nerAnnualAllocation.remaining > 0
+            }"
+          >
+            {{
+              groupedAllocation.nerAnnualAllocation.remaining > 0
+                ? groupedAllocation.nerAnnualAllocation.remaining
+                : 0
+            }}
+          </div>
+        </td>
+        <td
+          class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
+        >
+          <div class="remaining-col">
+            {{
+              groupedAllocation.nerAnnualAllocation.remaining < 0
+                ? -groupedAllocation.nerAnnualAllocation.remaining
+                : 0
+            }}
+          </div>
+        </td>
+        <td class="govuk-table__cell annual-allocation cell-border-left"></td>
+        <td class="govuk-table__cell annual-allocation"></td>
+        <td class="govuk-table__cell annual-allocation"></td>
+      </tr>
+    </ng-container>
+
+    <tr class="govuk-table__row total-allocation">
+      <td class="govuk-table__cell">
+        <strong>Total in phase</strong>
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ isNaNOrZeroReturnEmpty(allocation.totals.entitlement) }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ isNaNOrZeroReturnEmpty(allocation.totals.allocated) }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric cell-border-left">
+        {{ getRemainingToBeAllocated(allocation.groupedAllocations) }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ getRemainingToBeReturned(allocation.groupedAllocations) }}
+      </td>
+      <td class="govuk-table__cell cell-border-left"></td>
+      <td class="govuk-table__cell"></td>
+      <td class="govuk-table__cell"></td>
+    </tr>
+  </tbody>
+</table>

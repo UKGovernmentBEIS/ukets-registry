@@ -1,0 +1,193 @@
+<table class="govuk-table" aria-describedby="auth-rep-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.NAME)"
+      >
+        Name
+      </th>
+
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_ID)"
+      >
+        User ID
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.ACCESS_RIGHTS)"
+      >
+        Permissions
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.WORK_CONTACT)"
+      >
+        Contact details
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.AR_STATUS)"
+      >
+        AR status
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_STATUS)"
+      >
+        User status
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngFor="let customColumn of customColumns"
+      >
+        {{ customColumn.columnName }}
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr
+      *ngFor="let authorisedRep of authorisedReps; let i = index"
+      class="govuk-table__row"
+      [class.panel-change-notification]="highlightUsers"
+    >
+      <td
+        class="govuk-table__cell"
+        [class.highlighted-row]="highlightUsers"
+        *ngIf="displayedColumns.includes(authRepTableColumns.NAME)"
+      >
+        <a
+          *ngIf="
+            ('urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async) &&
+            displayNameLink
+          "
+          class="govuk-link govuk-link--no-visited-state"
+          [routerLink]="
+            accountId != null
+              ? ['/account/' + accountId + '/user/' + authorisedRep.urid]
+              : ['/user-details/' + authorisedRep.urid]
+          "
+        >
+          {{ authorisedRep | arDisplayName }}</a
+        >
+        <span
+          *ngIf="
+            ('urn:uk-ets-registry-api:actionForNonAdmin' | protect | async) ||
+            !displayNameLink
+          "
+        >
+          {{ authorisedRep | arDisplayName }}
+        </span>
+      </td>
+      <td
+        class="govuk-table__cell"
+        [class.highlighted-row]="highlightUsers"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_ID)"
+      >
+        <a
+          *ngIf="
+            ('urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async) &&
+            displayUridLink
+          "
+          class="govuk-link govuk-link--no-visited-state"
+          [routerLink]="
+            accountId != null
+              ? ['/account/' + accountId + '/user/' + authorisedRep.urid]
+              : ['/user-details/' + authorisedRep.urid]
+          "
+        >
+          {{ authorisedRep.urid }}</a
+        >
+        <span
+          *ngIf="
+            ('urn:uk-ets-registry-api:actionForNonAdmin' | protect | async) ||
+            !displayUridLink
+          "
+        >
+          {{ authorisedRep.urid }}
+        </span>
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="displayedColumns.includes(authRepTableColumns.ACCESS_RIGHTS)"
+      >
+        {{ authorisedRep.right | accessRights }}
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="displayedColumns.includes(authRepTableColumns.WORK_CONTACT)"
+      >
+        <app-shared-authorised-representative-contact
+          [contact]="authorisedRep.contact"
+          [firstName]="authorisedRep.user.firstName"
+          [lastName]="authorisedRep.user.lastName"
+        ></app-shared-authorised-representative-contact>
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="displayedColumns.includes(authRepTableColumns.AR_STATUS)"
+      >
+        <ng-container *ngIf="authorisedRep?.state; else empty">
+          <app-govuk-tag
+            [color]="accountAccessStateMap[authorisedRep.state].color"
+          >
+            {{ accountAccessStateMap[authorisedRep?.state]?.label }}
+          </app-govuk-tag>
+        </ng-container>
+        <ng-template #empty></ng-template>
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_STATUS)"
+      >
+        <app-govuk-tag
+          [color]="userStatusMap[authorisedRep.user.status]?.color"
+        >
+          {{ userStatusMap[authorisedRep.user.status]?.label }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell" *ngFor="let customColumn of customColumns">
+        {{ customColumn.columnValues[i] }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ng-container
+  *ngIf="
+    taskNotYetApproved &&
+    currentUserClaimant &&
+    showRequestDocumentButton &&
+    authorisedReps.length > 0
+  "
+>
+  <button
+    class="govuk-button govuk-button--secondary"
+    data-module="govuk-button"
+    (click)="
+      onUserRequestDocuments(
+        authorisedReps[0].user.firstName +
+          ' ' +
+          authorisedReps[0].user.lastName,
+        authorisedReps[0].urid
+      )
+    "
+    (keypress)="
+      onUserRequestDocuments(
+        authorisedReps[0].user.firstName +
+          ' ' +
+          authorisedReps[0].user.lastName,
+        authorisedReps[0].urid
+      )
+    "
+  >
+    Request documents
+  </button>
+</ng-container>

@@ -1,0 +1,27 @@
+$col-min: 1;
+$col-max: 6;
+
+.govuk-grid-row {
+  display: flex;
+  flex-wrap: wrap;
+
+  .govuk-grid-column-one-third {
+    float: none;
+    width: auto;
+    flex: 0 0 33.3333%;
+  }
+
+  @for $i from $col-min through $col-max {
+    .order#{$i} {
+      order: #{$i};
+    }
+  }
+}
+
+@media (max-width: 40.0625em) {
+  .govuk-grid-row {
+    .govuk-grid-column-one-third {
+      flex: 0 0 100%;
+    }
+  }
+}

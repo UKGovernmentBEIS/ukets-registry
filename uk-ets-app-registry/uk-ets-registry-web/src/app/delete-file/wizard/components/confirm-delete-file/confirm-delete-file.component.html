@@ -1,0 +1,24 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl">Delete document</span>
+        Are you sure you want to delete "{{ this.file?.name }}" ?
+      </h1>
+    </legend>
+    <hr class="govuk-section-break govuk-section-break--m" />
+    <div class="govuk-form-group">
+      <p class="govuk-body">
+        The document will be removed permanently.<br />
+        Please confirm that you want to delete the related document.
+      </p>
+    </div>
+    <button
+      (click)="onDelete()"
+      class="govuk-button govuk-button--warning"
+      data-module="govuk-button"
+    >
+      Delete
+    </button>
+  </div>
+</div>

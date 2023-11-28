@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="0_3_0_TABLE_TASK" author="pougouniasn" context="migrate">
+
+		<comment>Initial creation of Task</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table TASK
+			--------------------------------------------------------
+
+			CREATE SEQUENCE task_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "task"
+			(
+			"id" bigint,
+			"request_id" bigint constraint fk_tsk_req references request,
+			"account_id" bigint constraint fk_tsk_accnt references account,
+			"transaction_identifier" varchar(256),
+			"claimed_by" bigint constraint fk_tsk_clb_usrs references users,
+			"claimed_date" date,
+			"created_by" bigint constraint fk_tsk_crb_usrs references users,
+			"created_date" date,
+			"status" varchar(256),
+			"outcome" varchar(256),
+			"type" varchar(256),
+			constraint "pk_task" primary key("id")
+			);
+
+			create index "idx_fk_tsk_req" on "task"("request_id");
+			create index "idx_fk_tsk_accnt" on "task"("account_id");
+			create index "fk_tsk_clb_usrs" on "task"("claimed_by");
+			create index "fk_tsk_crb_usrs" on "task"("created_by");
+
+			COMMENT ON TABLE "task" IS 'Represents a task';
+			COMMENT ON COLUMN "task"."id" IS 'The primary key';
+			COMMENT ON COLUMN "task"."request_id" IS 'The request id (FK)';
+			COMMENT ON COLUMN "task"."account_id" IS 'The account id (FK)';
+			COMMENT ON COLUMN "task"."transaction_identifier" IS 'The transaction identifier';
+			COMMENT ON COLUMN "task"."claimed_by" IS 'The current claimant';
+			COMMENT ON COLUMN "task"."claimed_date" IS 'When the current claimant claimed this task';
+			COMMENT ON COLUMN "task"."created_by" IS 'The initiator';
+			COMMENT ON COLUMN "task"."created_date" IS 'When this task was created';
+			COMMENT ON COLUMN "task"."status" IS 'The status (UNCLAIMED, CLAIMED, COMPLETED)';
+			COMMENT ON COLUMN "task"."outcome" IS 'The outcome (APPROVED, REJECTED)';
+			COMMENT ON COLUMN "task"."type" IS 'The task type (e.g. ACCOUNT_OPENING_REQUEST)';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "task" CASCADE;
+				DROP SEQUENCE IF EXISTS task_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_3_0_REVIEW_ACTIONS" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions of Sprint 2 data model</comment>
+		<sql>
+			alter table compliant_entity
+			add column regulator varchar(256) default null;
+
+			comment on column compliant_entity.regulator is 'The regulator (EA, NRW, SEPA, DAERA, BEIS_OPRED, GIBRALTAR).';
+
+			alter table contact
+			rename column country_code_1 to phone_number_1_country;
+
+			alter table contact
+			rename column country_code_2 to phone_number_2_country;
+
+			alter table installation
+			alter column permit_entry_into_force_date type date;
+
+			alter table installation
+			alter column permit_expiry_date type date;
+
+			alter table installation
+			alter column permit_revocation_date type date;
+
+			alter table aircraft_operator
+			alter column monitoring_plan_expiry_date type date;
+
+			alter table aircraft_operator
+			alter column monitoring_plan_first_year_app type date;
+
+			COMMENT ON TABLE "legal_representative"  IS 'A legal representative';
+			COMMENT ON COLUMN "legal_representative"."id" IS 'The primary key';
+			COMMENT ON COLUMN "legal_representative"."first_name" IS 'The first name';
+			COMMENT ON COLUMN "legal_representative"."last_name" IS 'The last name';
+			COMMENT ON COLUMN "legal_representative"."also_known_as" IS 'Also known as';
+			COMMENT ON COLUMN "legal_representative"."birth_year" IS 'The birth year';
+			COMMENT ON COLUMN "legal_representative"."contact_id" IS 'Foreign key to contact';
+			COMMENT ON COLUMN "legal_representative"."account_holder_id" IS 'Foreign key to account holder';
+		</sql>
+
+	</changeSet>
+
+
+	<changeSet id="0_3_0_REVIEW_ACTIONS_2" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions of Sprint 2 data model</comment>
+		<sql>
+			alter table account_access
+			rename column "right" to access_right;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_3_0_REVIEW_ACTIONS_REMOVE_UNUSED_FIELDS" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions of Sprint 2 data model</comment>
+		<sql>
+			alter table account
+			add column billing_address_same_as_account_holder_address boolean default false;
+
+			alter table account
+			drop column if exists esd_year;
+
+			alter table account
+			drop column if exists esd_member_state;
+
+			alter table account
+			drop column if exists verifier_account_id;
+
+			alter table installation
+			drop column permit_revocation_date;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_3_0_REVIEW_ACTIONS_ENUMERATE_COMMENTS" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions of Sprint 2 data model</comment>
+		<sql>
+			COMMENT ON COLUMN "account"."status" IS 'The administration status: REQUESTED, REPLACED, REMOVED, ACTIVE, REJECTED';
+			COMMENT ON COLUMN "account"."account_status" IS 'The business status: OPEN, BLOCKED, SUSPENDED, TRANSFER_PENDING, CLOSED';
+			COMMENT ON COLUMN "account"."kyoto_account_type" IS 'The Kyoto account type: FORMER_OPERATOR_HOLDING_ACCOUNT, PARTY_HOLDING_ACCOUNT, PERSON_HOLDING_ACCOUNT, CANCELLATION_ACCOUNT, RETIREMENT_ACCOUNT, ETS_AAU_DEPOSIT_ACCOUNT, NET_SOURCE_CANCELLATION_ACCOUNT, NON_COMPLIANCE_CANCELLATION_ACCOUNT, VOLUNTARY_CANCELLATION_ACCOUNT, MANDATORY_CANCELLATION_ACCOUNT, ART37TER_CANCELLATION_ACCOUNT, AMBITION_INCREASE_CANCELLATION_ACCOUNT, TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY, LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY, LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE, LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT, PREVIOUS_PERIOD_SURPLUS_RESERVE_ACCOUNT';
+			COMMENT ON COLUMN "account"."registry_account_type" IS 'The Registry account type: UK_TOTAL_QUANTITY_ACCOUNT, UK_AVIATION_TOTAL_QUANTITY_ACCOUNT, UK_AUCTION_ACCOUNT, UK_ALLOCATION_ACCOUNT, UK_NEW_ENTRANTS_RESERVE_ACCOUNT, UK_AVIATION_ALLOCATION_ACCOUNT, UK_DELETION_ACCOUNT, UK_SURRENDER_ACCOUNT, UK_SUPPLY_ADJUSTMENT_MECHANISM_ACCOUNT, UK_AUCTION_DELIVERY_ACCOUNT, OPERATOR_HOLDING_ACCOUNT, AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, NATIONAL_HOLDING_ACCOUNT, TRADING_ACCOUNT';
+
+			COMMENT ON COLUMN "account_access"."state" IS 'The state: ACTIVE, SUSPENDED, REMOVED, REQUESTED, REJECTED';
+			COMMENT ON COLUMN "account_access"."access_right" IS 'The access right: INITIATE_AND_APPROVE, APPROVE, INITIATE, READ_ONLY';
+			COMMENT ON COLUMN "account_access"."type" IS 'The access type: AUTHORISED_REPRESENTATIVE, VERIFIER';
+
+
+			COMMENT ON COLUMN "account_holder"."status" IS 'The account holder status: REQUESTED, REPLACED, REMOVED, ACTIVE, REJECTED';
+			COMMENT ON COLUMN "account_holder"."type" IS 'The account holder type: NATURAL_PERSON, LEGAL_ENTITY, GOVERNMENT';
+
+			COMMENT ON COLUMN "aircraft_operator"."permit_status" IS 'The permit status: ACTIVE, REVOKED';
+			COMMENT ON COLUMN "installation"."permit_status" IS 'The permit status: ACTIVE, REVOKED';
+
+			COMMENT ON COLUMN "compliant_entity"."regulator" IS 'The regulator: EA, NRW, SEPA, DAERA, BEIS_OPRED, GIBRALTAR';
+			COMMENT ON COLUMN "compliant_entity"."status" IS 'The status: REQUESTED, REPLACED, REMOVED, ACTIVE, REJECTED';
+
+			COMMENT ON COLUMN "request"."current_state" IS 'The current state: SUBMITTED_NOT_YET_APPROVED, APPROVED, REJECTED, EUTL_REJECTED, EUTL_APPROVED, EUTL_APPROVAL_PENDING, USER_APPROVAL_PENDING, USER_APPROVED, USER_REJECTED, MEMBER_STATE_APPROVAL_PENDING, MEMBER_STATE_APPROVED, MEMBER_STATE_REJECTED, NOT_SUBMITTED';
+			COMMENT ON COLUMN "request"."type" IS 'The type: ACCOUNT_CLAIM_REQUEST, ACCOUNT_CLOSURE_REQUEST, ACCOUNT_OPENING_REQUEST, ACCOUNT_EXCLUSION_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_ADDITION_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_REMOVAL_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_REPLACEMENT_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_UPDATE_REQUEST, ACCOUNT_HOLDER_UPDATE_REQUEST, ACCOUNT_NAME_REQUEST, ADD_TRUSTED_ACCOUNT_REQUEST, ADMINISTRATION_ROLES_UPDATE_REQUEST, AIRCRAFT_OPERATOR_UPDATE_REQUEST, ALLOCATION_SETTINGS_APPROVAL_REQUEST, AP_UPDATE_REQUEST, APPOINT_VERIFIER_REQUEST, APPROVE_EMISSIONS_REQUEST, AT_UPDATE_REQUEST, BASE_LIST_MODIFICATION_REQUEST, BUSINESS_DETAILS_UPDATE_REQUEST, BW_LIST_MODIFICATION_REQUEST, CONTACT_PERSON_UPDATE_REQUEST, DELETE_TRUSTED_ACCOUNT_REQUEST, ESD_ALLOCATION_REQUEST, ESD_ALLOCATIONS_XML_REQUEST, ESD_COMPLIANCE_DATES_UPDATE_REQUEST, ESD_EMISSIONS_XML_REQUEST, ESD_ENTITLEMENTS_TRANSACTION_REQUEST, ESD_ENTITLEMENTS_XML_REQUEST, ESD_PARAMETERS_UPDATE_REQUEST, ESD_SG_LIST_MODIFICATION_REQUEST, ESD_SUSPEND_RESTORE_REQUEST, ICE_XML_REQUEST, INSTALLATION_UPDATE_REQUEST, NAT_UPDATE, NAVAT_UPDATE, PERSONAL_DETAILS_UPDATE_REQUEST, REGISTRY_ATTRIBUTE_UPDATE_REQUEST, ROLES_PERMISSIONS_CONFIGURATION_REQUEST, SEND_ENROLMENT_KEY_REQUEST, TRANSACTION_REQUEST, TRUSTED_ACCOUNT_REQUEST, UNENROLMENT_REQUEST, UNIT_BLOCK_SUSPEND_RESTORE_REQUEST ';
+
+			COMMENT ON COLUMN "request_state"."state" IS 'The state: SUBMITTED_NOT_YET_APPROVED, APPROVED, REJECTED, EUTL_REJECTED, EUTL_APPROVED, EUTL_APPROVAL_PENDING, USER_APPROVAL_PENDING, USER_APPROVED, USER_REJECTED, MEMBER_STATE_APPROVAL_PENDING, MEMBER_STATE_APPROVED, MEMBER_STATE_REJECTED, NOT_SUBMITTED';
+
+			COMMENT ON COLUMN "users"."state" IS 'The state: REGISTERED, VALIDATED, ENROLLED, UNENROLLEMENT_PENDING, UNENROLLED';
+			COMMENT ON COLUMN "users"."previous_state" IS 'The previous state: REGISTERED, VALIDATED, ENROLLED, UNENROLLEMENT_PENDING, UNENROLLED';
+		</sql>
+
+	</changeSet>	<changeSet id="0_3_0_REVIEW_ACTIONS_ENUMERATE_COMMENTS" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions of Sprint 2 data model</comment>
+		<sql>
+			COMMENT ON COLUMN "account"."status" IS 'The administration status: REQUESTED, REPLACED, REMOVED, ACTIVE, REJECTED';
+			COMMENT ON COLUMN "account"."account_status" IS 'The business status: OPEN, BLOCKED, SUSPENDED, TRANSFER_PENDING, CLOSED';
+			COMMENT ON COLUMN "account"."kyoto_account_type" IS 'The Kyoto account type: FORMER_OPERATOR_HOLDING_ACCOUNT, PARTY_HOLDING_ACCOUNT, PERSON_HOLDING_ACCOUNT, CANCELLATION_ACCOUNT, RETIREMENT_ACCOUNT, ETS_AAU_DEPOSIT_ACCOUNT, NET_SOURCE_CANCELLATION_ACCOUNT, NON_COMPLIANCE_CANCELLATION_ACCOUNT, VOLUNTARY_CANCELLATION_ACCOUNT, MANDATORY_CANCELLATION_ACCOUNT, ART37TER_CANCELLATION_ACCOUNT, AMBITION_INCREASE_CANCELLATION_ACCOUNT, TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY, LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY, LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE, LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT, PREVIOUS_PERIOD_SURPLUS_RESERVE_ACCOUNT';
+			COMMENT ON COLUMN "account"."registry_account_type" IS 'The Registry account type: UK_TOTAL_QUANTITY_ACCOUNT, UK_AVIATION_TOTAL_QUANTITY_ACCOUNT, UK_AUCTION_ACCOUNT, UK_ALLOCATION_ACCOUNT, UK_NEW_ENTRANTS_RESERVE_ACCOUNT, UK_AVIATION_ALLOCATION_ACCOUNT, UK_DELETION_ACCOUNT, UK_SURRENDER_ACCOUNT, UK_SUPPLY_ADJUSTMENT_MECHANISM_ACCOUNT, UK_AUCTION_DELIVERY_ACCOUNT, OPERATOR_HOLDING_ACCOUNT, AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, NATIONAL_HOLDING_ACCOUNT, TRADING_ACCOUNT';
+
+			COMMENT ON COLUMN "account_access"."state" IS 'The state: ACTIVE, SUSPENDED, REMOVED, REQUESTED, REJECTED';
+			COMMENT ON COLUMN "account_access"."access_right" IS 'The access right: INITIATE_AND_APPROVE, APPROVE, INITIATE, READ_ONLY';
+			COMMENT ON COLUMN "account_access"."type" IS 'The access type: AUTHORISED_REPRESENTATIVE, VERIFIER';
+
+
+			COMMENT ON COLUMN "account_holder"."status" IS 'The account holder status: REQUESTED, REPLACED, REMOVED, ACTIVE, REJECTED';
+			COMMENT ON COLUMN "account_holder"."type" IS 'The account holder type: NATURAL_PERSON, LEGAL_ENTITY, GOVERNMENT';
+
+			COMMENT ON COLUMN "aircraft_operator"."permit_status" IS 'The permit status: ACTIVE, REVOKED';
+			COMMENT ON COLUMN "installation"."permit_status" IS 'The permit status: ACTIVE, REVOKED';
+
+			COMMENT ON COLUMN "compliant_entity"."regulator" IS 'The regulator: EA, NRW, SEPA, DAERA, BEIS_OPRED, GIBRALTAR';
+			COMMENT ON COLUMN "compliant_entity"."status" IS 'The status: REQUESTED, REPLACED, REMOVED, ACTIVE, REJECTED';
+
+			COMMENT ON COLUMN "request"."current_state" IS 'The current state: SUBMITTED_NOT_YET_APPROVED, APPROVED, REJECTED, EUTL_REJECTED, EUTL_APPROVED, EUTL_APPROVAL_PENDING, USER_APPROVAL_PENDING, USER_APPROVED, USER_REJECTED, MEMBER_STATE_APPROVAL_PENDING, MEMBER_STATE_APPROVED, MEMBER_STATE_REJECTED, NOT_SUBMITTED';
+			COMMENT ON COLUMN "request"."type" IS 'The type: ACCOUNT_CLAIM_REQUEST, ACCOUNT_CLOSURE_REQUEST, ACCOUNT_OPENING_REQUEST, ACCOUNT_EXCLUSION_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_ADDITION_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_REMOVAL_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_REPLACEMENT_REQUEST, ACCOUNT_HOLDER_REPRESENTATIVE_UPDATE_REQUEST, ACCOUNT_HOLDER_UPDATE_REQUEST, ACCOUNT_NAME_REQUEST, ADD_TRUSTED_ACCOUNT_REQUEST, ADMINISTRATION_ROLES_UPDATE_REQUEST, AIRCRAFT_OPERATOR_UPDATE_REQUEST, ALLOCATION_SETTINGS_APPROVAL_REQUEST, AP_UPDATE_REQUEST, APPOINT_VERIFIER_REQUEST, APPROVE_EMISSIONS_REQUEST, AT_UPDATE_REQUEST, BASE_LIST_MODIFICATION_REQUEST, BUSINESS_DETAILS_UPDATE_REQUEST, BW_LIST_MODIFICATION_REQUEST, CONTACT_PERSON_UPDATE_REQUEST, DELETE_TRUSTED_ACCOUNT_REQUEST, ESD_ALLOCATION_REQUEST, ESD_ALLOCATIONS_XML_REQUEST, ESD_COMPLIANCE_DATES_UPDATE_REQUEST, ESD_EMISSIONS_XML_REQUEST, ESD_ENTITLEMENTS_TRANSACTION_REQUEST, ESD_ENTITLEMENTS_XML_REQUEST, ESD_PARAMETERS_UPDATE_REQUEST, ESD_SG_LIST_MODIFICATION_REQUEST, ESD_SUSPEND_RESTORE_REQUEST, ICE_XML_REQUEST, INSTALLATION_UPDATE_REQUEST, NAT_UPDATE, NAVAT_UPDATE, PERSONAL_DETAILS_UPDATE_REQUEST, REGISTRY_ATTRIBUTE_UPDATE_REQUEST, ROLES_PERMISSIONS_CONFIGURATION_REQUEST, SEND_ENROLMENT_KEY_REQUEST, TRANSACTION_REQUEST, TRUSTED_ACCOUNT_REQUEST, UNENROLMENT_REQUEST, UNIT_BLOCK_SUSPEND_RESTORE_REQUEST ';
+
+			COMMENT ON COLUMN "request_state"."state" IS 'The state: SUBMITTED_NOT_YET_APPROVED, APPROVED, REJECTED, EUTL_REJECTED, EUTL_APPROVED, EUTL_APPROVAL_PENDING, USER_APPROVAL_PENDING, USER_APPROVED, USER_REJECTED, MEMBER_STATE_APPROVAL_PENDING, MEMBER_STATE_APPROVED, MEMBER_STATE_REJECTED, NOT_SUBMITTED';
+
+			COMMENT ON COLUMN "users"."state" IS 'The state: REGISTERED, VALIDATED, ENROLLED, UNENROLLEMENT_PENDING, UNENROLLED';
+			COMMENT ON COLUMN "users"."previous_state" IS 'The previous state: REGISTERED, VALIDATED, ENROLLED, UNENROLLEMENT_PENDING, UNENROLLED';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_3_0_REVIEW_ACTIONS_RESTART_SEQUENCES" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions of Sprint 2 data model</comment>
+		<sql>
+			ALTER SEQUENCE request_seq RESTART WITH 1000000;
+			ALTER SEQUENCE account_holder_identifier_seq RESTART WITH 1000000;
+			ALTER SEQUENCE compliant_entity_identifier_seq RESTART WITH 1000000;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_3_0_REVIEW_ACTIONS_ACCOUNT_ADD_BILLING_ADDRESS" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions of Sprint 2 data model</comment>
+		<sql>
+			alter table account
+			add column contact_id bigint;
+
+			alter table account add constraint "fk_acc_cnt" foreign key ("contact_id")
+			references "contact" ("id");
+
+			comment on column "account"."contact_id" is 'foreign key to contact';
+			create index "acc_coid_idx" on "account" ("contact_id");
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_3_0_CHANGED_ACCOUNT_HOLDER_ADDITION" author="pougouniasn" context="migrate">
+
+		<comment>Adds a column to account</comment>
+		<sql>
+			alter table account
+			add column changed_account_holder_id bigint default null;
+
+			comment on column account.changed_account_holder_id is 'Changed account holder ID.';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_3_0_CHANGED_COMPLIANT_ENTITY_REGULATOR_ADDITION" author="pougouniasn" context="migrate">
+
+		<comment>Adds a column to compliant_entity</comment>
+		<sql>
+			alter table compliant_entity
+			add column changed_regulator varchar(256) default null;
+
+			comment on column compliant_entity.changed_regulator is 'Changed regulator.';
+		</sql>
+
+	</changeSet>
+</databaseChangeLog>

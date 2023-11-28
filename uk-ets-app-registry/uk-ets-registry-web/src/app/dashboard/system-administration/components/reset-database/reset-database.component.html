@@ -1,0 +1,25 @@
+<span *ngIf="resetDatabaseResult$ | async as result">
+  <h2 class="govuk-heading-l">Reset Database results</h2>
+  <dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Users</dt>
+      <dd class="govuk-summary-list__value">
+        <p class="govuk-body">
+          {{ result.usersResult.usersDeleted }} users deleted
+        </p>
+        <p class="govuk-body">
+          {{ result.usersResult.usersCreated }} users created
+        </p>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Accounts</dt>
+      <dd class="govuk-summary-list__value">
+        <p class="govuk-body">
+          {{ result.accountsResult.sampleAccountsCreated }} Sample Accounts
+          created
+        </p>
+      </dd>
+    </div>
+  </dl>
+</span>

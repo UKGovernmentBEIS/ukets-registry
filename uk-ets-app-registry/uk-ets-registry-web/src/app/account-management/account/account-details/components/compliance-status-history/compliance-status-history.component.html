@@ -1,0 +1,64 @@
+<h2 class="govuk-heading-m">Surrender status history</h2>
+<p *ngIf="history?.complianceStatusHistory == null" class="govuk-body">
+  No surrender status yet.
+</p>
+<p *ngIf="history?.complianceStatusHistory != null" class="govuk-body">
+  Captured every year on 30 April, 11:59 pm
+</p>
+<table
+  *ngIf="history?.complianceStatusHistory != null"
+  class="govuk-table"
+  id="compliance-history-table"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+        Year
+      </th>
+      <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+        Status
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header govuk-!-width-two-quarters"
+      ></th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr
+      class="govuk-table__row"
+      *ngFor="let e of history?.complianceStatusHistory"
+    >
+      <td class="govuk-table__cell">{{ e.year }}</td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag
+          [color]="
+            complianceStatusMap[e.status ? e.status : 'NOT_APPLICABLE'].color
+          "
+        >
+          {{
+            complianceStatusMap[e.status ? e.status : 'NOT_APPLICABLE'].label
+          }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell">
+        <ng-container *ngIf="e.year == history?.lastYearOfVerifiedEmissions">
+          <svg
+            class="hmcts-banner__icon"
+            fill="blue"
+            role="presentation"
+            focusable="false"
+            viewBox="0 0 25 25"
+            height="26"
+            width="26"
+          >
+            <path
+              d="M13.7,18.5h-2.4v-2.4h2.4V18.5z M12.5,13.7c-0.7,0-1.2-0.5-1.2-1.2V7.7c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v4.8 C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z"
+            />
+          </svg>
+          Final Reporting Year
+        </ng-container>
+      </td>
+    </tr>
+  </tbody>
+</table>

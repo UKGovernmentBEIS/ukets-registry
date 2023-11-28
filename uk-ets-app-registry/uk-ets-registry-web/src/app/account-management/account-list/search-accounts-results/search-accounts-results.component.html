@@ -1,0 +1,153 @@
+<span class="sr-only"
+  >Header buttons in the following table can be used to sort the data.</span
+>
+
+<table
+  appSortableTable
+  (sorting)="onSorting($event)"
+  class="govuk-table"
+  aria-describedby="Account search results table"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'accountId'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountId'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Account
+      </th>
+      <ng-container
+        *ngIf="isAdmin; then th_accountHolderName; else th_accountName"
+      >
+      </ng-container>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'accountType'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountType'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Account type
+      </th>
+      <ng-container
+        *ngIf="isAdmin; then th_accountName; else th_accountHolderName"
+      >
+      </ng-container>
+
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'accountStatus'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountStatus'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Account status
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'complianceStatus'"
+        [sortDirection]="
+          sortParameters?.sortField === 'complianceStatus'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Surrender status
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'balance'"
+        [sortDirection]="
+          sortParameters?.sortField === 'balance'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Balance
+      </th>
+      <ng-template #th_accountName>
+        <th
+          scope="col"
+          appSortableColumn
+          [sortField]="'accountName'"
+          [sortDirection]="
+            sortParameters?.sortField === 'accountName'
+              ? sortParameters.sortDirection
+              : null
+          "
+        >
+          Account name
+        </th>
+      </ng-template>
+      <ng-template #th_accountHolderName>
+        <th
+          scope="col"
+          appSortableColumn
+          [sortField]="'accountHolderName'"
+          [sortDirection]="
+            sortParameters?.sortField === 'accountHolderName'
+              ? sortParameters.sortDirection
+              : null
+          "
+        >
+          Account Holder name
+        </th>
+      </ng-template>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let account of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a
+          [routerLink]="[]"
+          (click)="goToDetailsAndChangeLocationState(account.accountId, $event)"
+          class="disabled"
+          >{{ account.fullAccountNo }}</a
+        >
+      </td>
+      <ng-container
+        *ngIf="isAdmin; then td_accountHolderName; else td_accountName"
+      >
+      </ng-container>
+      <td class="govuk-table__cell">{{ account.accountType }}</td>
+      <ng-container
+        *ngIf="isAdmin; then td_accountName; else td_accountHolderName"
+      >
+      </ng-container>
+      <td class="govuk-table__cell">
+        {{ accountStatusMap[account.accountStatus].label }}
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag
+          *ngIf="!!account.complianceStatus"
+          [color]="complianceStatusMap[account.complianceStatus].color"
+        >
+          {{ complianceStatusMap[account.complianceStatus].label }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell">
+        {{ formatBalance(account.balance) | number }}
+      </td>
+      <ng-template #td_accountName>
+        <td class="govuk-table__cell">{{ account.accountName }}</td>
+      </ng-template>
+      <ng-template #td_accountHolderName>
+        <td class="govuk-table__cell">{{ account.accountHolderName }}</td>
+      </ng-template>
+    </tr>
+  </tbody>
+</table>

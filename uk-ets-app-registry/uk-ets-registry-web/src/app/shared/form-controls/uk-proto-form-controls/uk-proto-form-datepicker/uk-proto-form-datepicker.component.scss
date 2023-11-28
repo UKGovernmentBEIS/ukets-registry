@@ -1,0 +1,119 @@
+@import '_variables';
+
+$today-border-width: 2px;
+$dot-height: 3px;
+$dot-width: 3px;
+$dot-bottom: 4px;
+
+:host ::ng-deep .dropdown-menu {
+  .bg-primary {
+    background: govuk-colour('black');
+    border-radius: 0;
+  }
+  .text-white {
+    color: govuk-colour('white');
+  }
+}
+
+:host ::ng-deep .ngb-dp-content {
+  font-family: 'GDS Transport', arial, sans-serif;
+  font-size: 0.8rem;
+  border-radius: 0;
+}
+
+.icon-calendar {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.relative {
+  position: relative;
+}
+
+.govuk-d-block {
+  display: block;
+}
+
+.govuk-text-grey {
+  color: govuk-tint(govuk-colour('dark-grey'), 25);
+}
+
+.govuk-form-group {
+  &.d-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    label {
+      margin-right: 0.25em;
+    }
+
+    input {
+      min-width: 180px;
+    }
+  }
+}
+
+.link-container {
+  padding-bottom: 10px;
+  text-align: center;
+
+  .govuk-link {
+    color: govuk-colour('blue');
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.selected-date {
+  background-color: govuk-colour('yellow');
+}
+
+.today-date {
+  $inset-border: inset 0px 0px (-$today-border-width) 0px govuk-colour('black');
+  -webkit-box-shadow: $inset-border;
+  -moz-box-shadow: $inset-border;
+  box-shadow: $inset-border;
+
+  /* dot */
+  .date-text:before {
+    transform: translateX(-50%);
+    border-radius: 100%;
+    position: absolute;
+    background: govuk-colour('black');
+    bottom: $dot-bottom;
+    height: $dot-height;
+    content: '';
+    width: $dot-width;
+    left: 50%;
+  }
+}
+
+.ngb-dp-day {
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+}
+
+.ngb-dp-day:not(.selected-date):hover {
+  background-color: rgba(govuk-colour('light-blue'), 0.25);
+}
+
+.date-text {
+  text-align: center;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  background: transparent;
+  display: inline-block;
+  position: relative;
+}

@@ -1,0 +1,61 @@
+<div *ngIf="confirmation.tokenExpired; else success">
+  <h1 class="govuk-heading-l">The email verification link has expired.</h1>
+  <ul class="govuk-list">
+    <li>
+      <a
+        class="govuk-link"
+        [routerLink]="[]"
+        (keypress)="restartEmailChange()"
+        (click)="restartEmailChange()"
+      >
+        Restart your request to change your email address
+      </a>
+    </li>
+  </ul>
+</div>
+
+<ng-template #success>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Email address update request successfully submitted
+        </h1>
+        <div class="govuk-panel__body">
+          Request ID<br /><strong>{{ confirmation.requestId }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-m">What happens next</h1>
+      <p class="govuk-body">
+        Until your request is approved you should
+        <a
+          class="govuk-link"
+          [routerLink]="[]"
+          (click)="onSignIn()"
+          (keypress)="onSignIn()"
+          id="sign-in"
+          >sign in to the UK Registry</a
+        >
+        using your current email address.
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        <a
+          class="govuk-link"
+          [routerLink]="[]"
+          (click)="onClickBack()"
+          (keypress)="onClickBack()"
+          id="back"
+          >Back to my profile</a
+        >
+      </p>
+    </div>
+  </div>
+</ng-template>

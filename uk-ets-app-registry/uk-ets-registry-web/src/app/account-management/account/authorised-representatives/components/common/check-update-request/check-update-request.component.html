@@ -1,0 +1,84 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">
+      Request to update the authorised representatives
+    </span>
+    <h1 class="govuk-heading-xl">Check the update request and confirm</h1>
+
+    <div
+      class="govuk-warning-text"
+      *ngIf="updateType === updateTypes.CHANGE_ACCESS_RIGHTS"
+    >
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        This change will only apply to future requests.
+      </strong>
+    </div>
+    <div class="govuk-warning-text" *ngIf="validationErrorMessage?.message">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        {{ validationErrorMessage?.message }}
+      </strong>
+    </div>
+  </div>
+  <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+    <div class="govuk-grid-column-full">
+      <app-ar-update-type
+        [updateType]="updateType"
+        [displayChangeLink]="true"
+        (clickChange)="
+          onChangeClicked(
+            authorisedRepresentativesRoutePaths.SELECT_UPDATE_TYPE
+          )
+        "
+      ></app-ar-update-type>
+      <app-ar-update-user
+        [updateType]="updateType"
+        [currentUser]="
+          updateType === updateTypes.ADD || updateType === updateTypes.REPLACE
+            ? existingAr
+            : selectedArFromTable
+        "
+        [newUser]="newAr"
+        [displayedChangeLink]="true"
+        (clickChange)="onChangeClicked(computeChangeUserLink())"
+      >
+      </app-ar-update-user>
+      <app-ar-update-access-rights
+        *ngIf="
+          updateType === updateTypes.ADD ||
+          updateType === updateTypes.REPLACE ||
+          updateType === updateTypes.CHANGE_ACCESS_RIGHTS
+        "
+        [updateType]="updateType"
+        [accessRights]="newAccessRights"
+        [displayedChangeLink]="true"
+        (clickChange)="
+          onChangeClicked(
+            authorisedRepresentativesRoutePaths.SELECT_ACCESS_RIGHTS
+          )
+        "
+      >
+      </app-ar-update-access-rights>
+      <app-form-comment-area
+        *ngIf="this.isForSuspensionOrRestoreOfAr()"
+        controlName="comment"
+        [label]="'Enter some comments'"
+        [hint]="''"
+        [validationErrorMessage]="validationErrorMessage.comment"
+      >
+      </app-form-comment-area>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button submit-form"
+        data-module="govuk-button"
+        type="submit"
+        id="submit"
+      >
+        Submit request
+      </button>
+    </div>
+  </form>
+</div>

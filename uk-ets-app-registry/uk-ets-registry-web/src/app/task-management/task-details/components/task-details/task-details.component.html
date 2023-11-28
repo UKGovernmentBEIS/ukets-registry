@@ -1,0 +1,322 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full" *ngIf="taskDetails">
+    <ng-container
+      *ngIf="
+        isAdmin && taskDetails.parentTask && taskDetails.parentTask.requestId
+      "
+    >
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <p class="govuk-body govuk-!-font-weight-bold">
+            Associated subtask of
+            <a
+              (click)="openDetail.emit(taskDetails.parentTask.requestId)"
+              class="govuk-link govuk-link--no-visited-state"
+              [routerLink]="[]"
+              >{{ requestTypeMap[taskDetails.parentTask['taskType']].label }} -
+              Request ID: {{ taskDetails.parentTask.requestId }}</a
+            >
+          </p>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container
+      *ngIf="taskDetails.subTasks && taskDetails.subTasks.length > 0"
+    >
+      <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text"> Associated subtasks </span>
+        </summary>
+        <div class="govuk-details__text">
+          <table
+            class="govuk-table"
+            aria-describedby="Associated subtasks table"
+          >
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Request ID</th>
+                <th scope="col" class="govuk-table__header">Task name</th>
+                <th scope="col" class="govuk-table__header">Status</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <tr
+                *ngFor="let subtask of taskDetails.subTasks"
+                class="govuk-table__row"
+              >
+                <td class="govuk-table__cell">
+                  <a
+                    (click)="openDetail.emit(subtask.requestId)"
+                    [routerLink]="[]"
+                    class="disabled"
+                    >{{ subtask.requestId }}</a
+                  >
+                </td>
+                <td class="govuk-table__cell">
+                  {{ getTaskTypeLabel(subtask?.taskType) }}
+                </td>
+                <td class="govuk-table__cell">
+                  <app-govuk-tag
+                    [color]="taskStatusMap[subtask.taskStatus].color"
+                  >
+                    {{ taskStatusMap[subtask.taskStatus].label }}
+                  </app-govuk-tag>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </ng-container>
+    <h1
+      class="govuk-heading-m"
+      *ngIf="
+        taskDetails.requestStatus === 'SUBMITTED_NOT_YET_APPROVED' &&
+        taskDetails.claimantURID === loggedInUser?.urid
+      "
+    >
+      {{ taskDetails.taskType | taskTypeBeforeApprovalLabel }}
+    </h1>
+    <div
+      class="govuk-warning-text"
+      *ngIf="
+        (taskDetails.taskType === requestTypes.AR_REQUESTED_DOCUMENT_UPLOAD ||
+          taskDetails.taskType === requestTypes.AH_REQUESTED_DOCUMENT_UPLOAD) &&
+        taskDetails.taskStatus !== 'COMPLETED' &&
+        taskDetails.uploadedFiles.length > 0
+      "
+    >
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        Some documents have been uploaded but the task has not been completed.
+      </strong>
+    </div>
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <p class="govuk-body">
+          <a
+            *ngIf="taskDetails?.requestId"
+            class="govuk-link"
+            [routerLink]="['/task-details/history', taskDetails.requestId]"
+            skipLocationChange
+            >History and comments</a
+          >
+        </p>
+      </legend>
+    </fieldset>
+    <ng-container [ngSwitch]="taskDetails.taskType">
+      <app-account-opening-task-details-container
+        *ngSwitchCase="requestTypes.ACCOUNT_OPENING_REQUEST"
+        [taskDetails]="taskDetails"
+      ></app-account-opening-task-details-container>
+      <app-account-opening-task-details-container
+        *ngSwitchCase="
+          requestTypes.ACCOUNT_OPENING_INSTALLATION_TRANSFER_REQUEST
+        "
+        [taskDetails]="taskDetails"
+      ></app-account-opening-task-details-container>
+      <app-enrolment-letter-task-details
+        *ngSwitchCase="requestTypes.PRINT_ENROLMENT_LETTER_REQUEST"
+        [taskDetails]="taskDetails"
+        (downloadFile)="downloadFile()"
+      ></app-enrolment-letter-task-details>
+      <app-transaction-task-details
+        *ngSwitchCase="requestTypes.TRANSACTION_REQUEST"
+        [transactionTaskDetails]="taskDetails"
+        [isEtsTransaction]="isEtsTransaction"
+        [isTransactionReversal]="isTransactionReversal"
+      ></app-transaction-task-details>
+      <!--  ngSwitchCase does not work with multiple values so the following to load the same component e.g
+     requestTypes.ADD_TRUSTED_ACCOUNT_REQUEST || requestTypes.DELETE_TRUSTED_ACCOUNT_REQUEST -->
+      <app-trusted-account-request-task-details
+        *ngSwitchCase="requestTypes.ADD_TRUSTED_ACCOUNT_REQUEST"
+        [trustedAccountTaskDetails]="taskDetails"
+      ></app-trusted-account-request-task-details>
+      <app-trusted-account-request-task-details
+        *ngSwitchCase="requestTypes.DELETE_TRUSTED_ACCOUNT_REQUEST"
+        [trustedAccountTaskDetails]="taskDetails"
+      ></app-trusted-account-request-task-details>
+      <app-transaction-rules-update-task-details
+        *ngSwitchCase="requestTypes.TRANSACTION_RULES_UPDATE_REQUEST"
+        [transactionRuleUpdateTaskDetails]="taskDetails"
+      >
+      </app-transaction-rules-update-task-details>
+      <app-operator-update-task-details
+        *ngSwitchCase="requestTypes.INSTALLATION_OPERATOR_UPDATE_REQUEST"
+        [operatorUpdateTaskDetails]="taskDetails"
+      >
+      </app-operator-update-task-details>
+      <app-operator-update-task-details
+        *ngSwitchCase="requestTypes.AIRCRAFT_OPERATOR_UPDATE_REQUEST"
+        [operatorUpdateTaskDetails]="taskDetails"
+      >
+      </app-operator-update-task-details>
+
+      <!-- Task Update Authorise Representative -->
+      <ng-container
+        *ngSwitchCase="requestTypes.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST"
+      >
+        <ng-container *ngTemplateOutlet="arUpdateTemplate"></ng-container>
+      </ng-container>
+      <ng-container
+        *ngSwitchCase="requestTypes.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST"
+      >
+        <ng-container *ngTemplateOutlet="arUpdateTemplate"></ng-container>
+      </ng-container>
+      <ng-container
+        *ngSwitchCase="
+          requestTypes.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST
+        "
+      >
+        <ng-container *ngTemplateOutlet="arUpdateTemplate"></ng-container>
+      </ng-container>
+      <ng-container
+        *ngSwitchCase="requestTypes.AUTHORIZED_REPRESENTATIVE_SUSPEND_REQUEST"
+      >
+        <ng-container *ngTemplateOutlet="arUpdateTemplate"></ng-container>
+      </ng-container>
+      <ng-container
+        *ngSwitchCase="requestTypes.AUTHORIZED_REPRESENTATIVE_RESTORE_REQUEST"
+      >
+        <ng-container *ngTemplateOutlet="arUpdateTemplate"></ng-container>
+      </ng-container>
+      <ng-container
+        *ngSwitchCase="
+          requestTypes.AUTHORIZED_REPRESENTATIVE_UPDATE_ACCESS_RIGHTS_REQUEST
+        "
+      >
+        <ng-container *ngTemplateOutlet="arUpdateTemplate"></ng-container>
+      </ng-container>
+
+      <ng-template #arUpdateTemplate>
+        <app-authorise-representatives-update-task-details-container
+          [taskDetails]="taskDetails"
+          (requestDocumentEmitter)="
+            onAccountHolderOrUserRequestDocuments($event)
+          "
+        ></app-authorise-representatives-update-task-details-container>
+      </ng-template>
+
+      <app-allocation-table-upload-task-details
+        *ngSwitchCase="requestTypes.ALLOCATION_TABLE_UPLOAD_REQUEST"
+        [taskDetails]="taskDetails"
+        (downloadFile)="downloadFile()"
+      >
+      </app-allocation-table-upload-task-details>
+
+      <app-allocation-request-task-details
+        *ngSwitchCase="requestTypes.ALLOCATION_REQUEST"
+        [taskDetails]="taskDetails"
+        (downloadAllocationFile)="downloadFile()"
+      ></app-allocation-request-task-details>
+
+      <app-emissions-table-upload-task-details
+        *ngSwitchCase="requestTypes.EMISSIONS_TABLE_UPLOAD_REQUEST"
+        [taskDetails]="taskDetails"
+        (downloadFile)="downloadFile()"
+      >
+      </app-emissions-table-upload-task-details>
+
+      <app-requested-documents-task-details
+        *ngSwitchCase="requestTypes.AH_REQUESTED_DOCUMENT_UPLOAD"
+        [taskDetails]="taskDetails"
+        [configuration]="configuration"
+        [loggedInUser]="loggedInUser"
+        [taskActionsVisibility]="true"
+        (downloadTemplateFile)="downloadTemplate($event)"
+        (downloadRequestDocumentFile)="downloadRequestDocument($event)"
+        (userDecision)="onUserDecisionForTask($event)"
+      ></app-requested-documents-task-details>
+
+      <app-requested-documents-task-details
+        *ngSwitchCase="requestTypes.AR_REQUESTED_DOCUMENT_UPLOAD"
+        [taskDetails]="taskDetails"
+        [configuration]="configuration"
+        [taskActionsVisibility]="true"
+        (downloadTemplateFile)="downloadTemplate($event)"
+        (downloadRequestDocumentFile)="downloadRequestDocument($event)"
+        (userDecision)="onUserDecisionForTask($event)"
+      ></app-requested-documents-task-details>
+      <app-account-holder-update-details-container
+        *ngSwitchCase="requestTypes.ACCOUNT_HOLDER_UPDATE_DETAILS"
+        [taskDetails]="taskDetails"
+        (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
+      >
+      </app-account-holder-update-details-container>
+      <app-account-holder-contact-update-details-container
+        *ngSwitchCase="requestTypes.ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS"
+        [taskDetails]="taskDetails"
+      >
+      </app-account-holder-contact-update-details-container>
+      <app-account-holder-contact-update-details-container
+        *ngSwitchCase="
+          requestTypes.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD
+        "
+        [taskDetails]="taskDetails"
+      >
+      </app-account-holder-contact-update-details-container>
+      <app-account-holder-contact-update-details-container
+        *ngSwitchCase="
+          requestTypes.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE
+        "
+        [taskDetails]="taskDetails"
+      >
+      </app-account-holder-contact-update-details-container>
+      <app-account-holder-contact-update-details-container
+        *ngSwitchCase="
+          requestTypes.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE
+        "
+        [taskDetails]="taskDetails"
+      >
+      </app-account-holder-contact-update-details-container>
+
+      <app-change-token-task-details
+        *ngSwitchCase="requestTypes.CHANGE_TOKEN"
+        [taskDetails]="taskDetails"
+        [isAdmin]="isAdmin"
+      ></app-change-token-task-details>
+
+      <app-lost-token-task-details
+        *ngSwitchCase="requestTypes.LOST_TOKEN"
+        [taskDetails]="taskDetails"
+        [isAdmin]="isAdmin"
+      ></app-lost-token-task-details>
+
+      <app-lost-token-task-details
+        *ngSwitchCase="requestTypes.LOST_PASSWORD_AND_TOKEN"
+        [taskDetails]="taskDetails"
+        [isAdmin]="isAdmin"
+      ></app-lost-token-task-details>
+
+      <app-email-change-task-details
+        *ngSwitchCase="requestTypes.REQUESTED_EMAIL_CHANGE"
+        [taskDetails]="taskDetails"
+        [isAdmin]="isAdmin"
+      >
+      </app-email-change-task-details>
+
+      <app-account-transfer-task-details
+        *ngSwitchCase="requestTypes.ACCOUNT_TRANSFER"
+        [taskDetails]="taskDetails"
+        (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
+      ></app-account-transfer-task-details>
+
+      <app-account-closure-task-details
+        *ngSwitchCase="requestTypes.ACCOUNT_CLOSURE_REQUEST"
+        [taskDetails]="taskDetails"
+      ></app-account-closure-task-details>
+
+      <app-user-details-update-task-details
+        *ngSwitchCase="requestTypes.USER_DETAILS_UPDATE_REQUEST"
+        [userDetailsUpdateTaskDetails]="taskDetails"
+        (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
+      ></app-user-details-update-task-details>
+      <app-user-deactivation-task-details
+        *ngSwitchCase="requestTypes.USER_DEACTIVATION_REQUEST"
+        [userDeactivationTaskDetails]="taskDetails"
+      ></app-user-deactivation-task-details>
+    </ng-container>
+    <app-back-to-top></app-back-to-top>
+  </div>
+</div>

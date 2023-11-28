@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_23_0_RENAME_BLOCKED_STATUSES_TO_NEW_VALUES" author="koukoulakisg" context="migrate">
+        <comment>Update BLOCKED and BLOCKED_BY_ADMINISTRATOR to new account statuses.</comment>
+        <sql>
+            update account ac
+            set account_status = temp.new_val
+            from (values
+            ('BLOCKED_BY_ADMINISTRATOR', 'SOME_TRANSACTIONS_RESTRICTED'),
+            ('BLOCKED', 'ALL_TRANSACTIONS_RESTRICTED'))
+            as temp(old_val, new_val)
+            where temp.old_val = ac.account_status;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_23_0_ADD_EMISSIONS_ENTRY_TABLE" author="fragkise" context="migrate">
+        <comment>Adds new table for emissions entry</comment>
+        <sql>
+
+            create sequence emissions_entry_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1
+            no cycle;
+
+            create table emissions_entry
+            (
+            id bigint not null,
+            filename varchar(255),
+            compliant_entity_id bigint not null,
+            year bigint not null,
+            emissions bigint,
+            primary key (id),
+            unique (filename, compliant_entity_id,year)
+            );
+
+            create unique index "emissions_entry_idx1" on "emissions_entry" ("filename", "compliant_entity_id", "year");
+        </sql>
+        <rollback>
+            drop table emissions_entry cascade;
+            drop sequence emissions_entry_seq;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
