@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0_5_0_UNIQUE_ACCOUNT_IDENTIFIER" author="fragkise" context="migrate">
+
+        <comment>Introduces unique constraint for account identifiers</comment>
+        <sql>
+            create unique index "idx_acc_identifier" on "account" ("identifier");
+        </sql>
+
+        <rollback>
+            drop index if exists idx_acc_identifier;
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

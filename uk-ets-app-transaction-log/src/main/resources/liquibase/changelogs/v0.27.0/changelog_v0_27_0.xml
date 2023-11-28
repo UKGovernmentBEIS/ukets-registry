@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0_27_0_UPDATE_UK_MARKET_STABILITY_RESERVE_ACCOUNT" author="georgopoulosp" context="migrate">
+        <comment>
+            Updates the account name of the Market Stability Reserve Account to Market Stability Mechanism Account.
+        </comment>
+        <sql>
+            update account set account_name = 'UK Market Stability Mechanism Account'
+            where account_name = 'UK Market Stability Reserve Account';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_27_0_ACCOUNT_AND_UNIT_BLOCK_CONSTRAINTS_AND_INDEXES_CHANGES" author="nakoup" context="migrate">
+        <comment>
+            Adds a constraint and removes indexes on account table and renames a column on unit_block table
+        </comment>
+        <sql>
+            alter table "account" add constraint "acc_full_identifier_ukey" unique ("full_identifier");
+
+            drop index if exists acc_reco_idx;
+            drop index if exists acc_copeco_idx;
+
+            alter table unit_block rename column "account_id" to account_identifier;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

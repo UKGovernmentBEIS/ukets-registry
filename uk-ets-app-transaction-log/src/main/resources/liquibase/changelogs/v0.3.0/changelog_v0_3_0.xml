@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+	<changeSet id="0_12_0_RECONCILIATION_TABLE" author="pougouniasn" context="migrate">
+		<comment>Introduces the table for ETS reconciliations</comment>
+		<sql>
+			create sequence reconciliation_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create sequence reconciliation_identifier_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 10000 cache 1 no cycle;
+
+			create table "reconciliation"
+			("id" bigint,
+			"identifier" bigint not null,
+			"status" varchar(255) not null,
+			"created" timestamp not null,
+			"updated" timestamp,
+			"data" text not null,
+			constraint "pk_reconciliation" primary key("id"));
+
+			comment on table "reconciliation" is 'Represents a reconciliation.';
+
+			comment on column "reconciliation"."id" is 'The primary key.';
+			comment on column "reconciliation"."identifier" is 'The unique business identifier.';
+			comment on column "reconciliation"."status" is 'The reconciliation status (INITIATED, INCONSISTENT, COMPLETED).';
+			comment on column "reconciliation"."created" is 'When this reconciliation was created.';
+			comment on column "reconciliation"."updated" is 'When this reconciliation was last updated.';
+			comment on column "reconciliation"."data" is 'The data calculated during this reconciliation.';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_12_0_RECONCILIATION_FAILED_ENTRY_TABLE" author="pougouniasn" context="migrate">
+		<comment>Introduces the table for ETS reconciliation failed entries</comment>
+		<sql>
+			create sequence reconciliation_failed_entry_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "reconciliation_failed_entry"
+			("id" bigint,
+			"reconciliation_id" bigint not null,
+			"account_identifier" bigint not null,
+			"unit_type" varchar(50) not null,
+			"quantity_registry" bigint not null,
+			"quantity_transaction_log" bigint not null,
+			constraint "pk_reconciliation_failed_entry" primary key("id"));
+
+			alter table "reconciliation_failed_entry" add constraint "fk_rec_fai_ent_rec" foreign key ("reconciliation_id") references "reconciliation" ("id");
+
+			comment on table "reconciliation_failed_entry" is 'Represents an entry which failed during a reconciliation.';
+
+			comment on column "reconciliation_failed_entry"."id" is 'The primary key.';
+			comment on column "reconciliation_failed_entry"."reconciliation_id" is 'Foreign key to the reconciliation table.';
+			comment on column "reconciliation_failed_entry"."account_identifier" is 'The account unique business identifier.';
+			comment on column "reconciliation_failed_entry"."unit_type" is 'The unit type used for calculating this reconciliation entry (e.g. UK Allowances).';
+			comment on column "reconciliation_failed_entry"."quantity_registry" is 'The quantity calculated for this reconciliation entry in the Registry.';
+			comment on column "reconciliation_failed_entry"."quantity_transaction_log" is 'The quantity calculated for this reconciliation entry in the Transaction Log.';
+
+			create index "rec_fai_ent_idx1" on "reconciliation_failed_entry" ("reconciliation_id");
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_12_0_RECONCILIATION_HISTORY" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for ETS reconciliation history</comment>
+		<sql>
+			create sequence reconciliation_history_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "reconciliation_history"
+			("id" bigint,
+			"status" varchar(255) not null,
+			"date" timestamp not null,
+			"reconciliation_id" bigint not null,
+
+			constraint "pk_reconciliation_history" primary key("id"));
+
+			alter table "reconciliation_history" add constraint "fk_rec_his_rec" foreign key ("reconciliation_id") references "reconciliation" ("id");
+
+			comment on table "reconciliation_history" is 'Stores the various statuses of a reconciliation.';
+			comment on column "reconciliation_history"."id" is 'The primary key';
+			comment on column "reconciliation_history"."status" is 'The reconciliation status (INITIATED, INCONSISTENT, COMPLETED).';
+			comment on column "reconciliation_history"."date" is 'When the status changed.';
+			comment on column "reconciliation_history"."reconciliation_id" is 'Foreign key to the reconciliation.';
+
+			create index "rec_his_idx1" on "reconciliation_history" ("reconciliation_id");
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_12_0_MAINTENANCE" author="pougouniasn" context="migrate">
+
+		<comment>Removes a redundant column from unit block.</comment>
+		<sql>
+			alter table unit_block drop column reserved_for_transaction;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_12_0_PHASE_YEARS" author="pougouniasn" context="migrate">
+
+		<comment>Adds years to the allocation phase.</comment>
+		<sql>
+			alter table allocation_phase add column first_year integer;
+			alter table allocation_phase add column last_year integer;
+
+			comment on column "allocation_phase"."first_year" is 'The first year of this allocation phase, e.g. 2021.';
+			comment on column "allocation_phase"."last_year" is 'The last year of this allocation phase, e.g. 2030.';
+
+			update allocation_phase set first_year = 2021, last_year = 2030 where code = 1;
+		</sql>
+
+	</changeSet>
+
+</databaseChangeLog>

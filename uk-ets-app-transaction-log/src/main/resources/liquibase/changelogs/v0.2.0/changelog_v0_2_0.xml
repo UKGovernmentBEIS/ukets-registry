@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+	<changeSet id="0_2_0_TABLE_UNIT_BLOCK" author="fragkise" context="migrate">
+
+		<comment>Introduces the table for unit blocks</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Unit Block
+			--------------------------------------------------------
+			create sequence unit_block_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "unit_block"
+			("id" bigint,
+			"start_block" bigint not null,
+			"end_block" bigint not null,
+			"unit_type" varchar(255) not null,
+			"account_id" bigint not null,
+			"reserved_for_transaction" varchar(255),
+			"acquisition_date" timestamp,
+			"last_modified_date" timestamp,
+			"year" integer,
+
+			constraint "pk_unit_block" primary key("id"));
+
+			alter table "unit_block" add constraint "fk_uni_blo_acc" foreign key ("account_id")
+			references "account" ("id");
+
+			comment on table "unit_block" is 'Stores information about a unit block.';
+			comment on column "unit_block"."id" is 'The primary key';
+			comment on column "unit_block"."start_block" is 'The start serial number of the unit block';
+			comment on column "unit_block"."end_block" is 'The end serial number of the unit block';
+			comment on column "unit_block"."unit_type" is 'The unit type: NON_KYOTO, AAU, RMU, ERU_FROM_AAU, ERU_FROM_RMU, CER, TCER, LCER.';
+			comment on column "unit_block"."account_id" is 'Foreign key to the account that currently holds this unit block.';
+			comment on column "unit_block"."reserved_for_transaction" is 'The transaction unique business identifier which has reserved the unit block.';
+			comment on column "unit_block"."acquisition_date" is 'When the unit block was acquired by the account.';
+			comment on column "unit_block"."last_modified_date" is 'When the unit block was last modified.';
+            comment on column "unit_block"."year" is 'The year of the block (e.g. the issuance year, the year in commitment period etc.)';			
+			
+			create index "unit_block_idx1" on "unit_block" ("reserved_for_transaction");
+			create index "unit_block_idx2" on "unit_block" ("unit_type", "reserved_for_transaction");
+			create index "unit_block_idx3" on "unit_block" ("account_id");
+
+			create unique index "unit_block_idx6" on "unit_block" ("start_block");
+			create unique index "unit_block_idx7" on "unit_block" ("end_block");
+			create unique index "unit_block_idx8" on "unit_block" ("start_block", "end_block");
+
+			alter table "unit_block" add constraint "unit_block_con1" unique ("start_block", "end_block");
+			alter table "unit_block" add constraint "unit_block_con2" unique ("start_block");
+			alter table "unit_block" add constraint "unit_block_con3" unique ("end_block");
+		</sql>
+
+		<rollback>
+			drop sequence if exists unit_block_seq;
+			drop table if exists unit_block;
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_TABLE_TRANSACTION" author="fragkise" context="migrate">
+
+		<comment>Introduces the table for transactions</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Transaction
+			--------------------------------------------------------
+
+			create sequence transaction_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+			create sequence transaction_identifier_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 100000 cache 1 no cycle;
+
+			create table "transaction"
+			("id" bigint,
+			"identifier" varchar(255) not null,
+			"type" varchar(255) not null,
+			"status" varchar(255) not null,
+			"quantity" bigint not null,
+
+			"acquiring_account_identifier" bigint not null,
+			"acquiring_account_type" varchar(255) not null,
+			"acquiring_account_full_identifier" varchar(255) not null,
+
+			"transferring_account_identifier" bigint not null,
+			"transferring_account_type" varchar(255) not null,
+			"transferring_account_full_identifier" varchar(255) not null,
+
+			"started" timestamp,
+			"last_updated" timestamp not null,
+ 			"unit_type" varchar(255),
+ 			"execution_date" timestamp,
+ 			
+			constraint "pk_transaction" primary key("id")
+
+			);
+
+			comment on table "transaction" is 'Stores information about a transaction.';
+
+			comment on column "transaction"."id" is 'The primary key.';
+			comment on column "transaction"."identifier" is 'The transaction unique business identifier, e.g. GB40140.';
+			comment on column "transaction"."type" is 'The transaction type, e.g. IssueOfAAUsAndRMUs, InternalTransfer, ExternalTransfer etc.';
+			comment on column "transaction"."status" is 'The current status of the transaction: PROPOSED, CHECKED_NO_DISCREPANCY, CHECKED_DISCREPANCY, COMPLETED, TERMINATED, REJECTED, CANCELLED, ACCEPTED, STL_CHECKED_NO_DISCREPANCY, STL_CHECKED_DISCREPANCY, REVERSED, UNDONE, CORRECTED, DELAYED, DELAYED_CANCELLED';
+			comment on column "transaction"."quantity" is 'The total quantity transferred in the context of this transaction.';
+
+			comment on column "transaction"."acquiring_account_identifier" is 'Acquiring account: The unique account business identifier, e.g. 10455.';
+			comment on column "transaction"."acquiring_account_type" is 'Acquiring account: The Kyoto account type, e.g. PARTY_HOLDING_ACCOUNT.';
+			comment on column "transaction"."acquiring_account_full_identifier" is 'Acquiring account: The full account identifier, e.g. GB-100-10455-0-61, JP-100-23213 etc.';
+
+			comment on column "transaction"."transferring_account_identifier" is 'Transferring account: The unique account business identifier, e.g. 10944.';
+			comment on column "transaction"."transferring_account_type" is 'Transferring account: The Kyoto account type, e.g. PARTY_HOLDING_ACCOUNT.';
+			comment on column "transaction"."transferring_account_full_identifier" is 'Transferring account: The full account identifier, e.g. GB-100-10944-0-41.';
+
+			comment on column "transaction"."started" is 'The date when the transaction started.';
+			comment on column "transaction"."last_updated" is 'The date when the transaction status was last updated.';
+			comment on column "transaction"."unit_type" is 'Multiple, if various unit types are involved in this transaction; A specific unit type otherwise.';
+			comment on column "transaction"."execution_date" is 'The estimated time for transaction execution taking into account the business delay, bank holidays and weekends where applicable.';
+
+			create unique index "idx_tra_identifier" on "transaction" ("identifier");
+
+		</sql>
+
+		<rollback>
+			drop sequence if exists transaction_seq;
+			drop sequence if exists transaction_identifier_seq;
+			drop table if exists "transaction";
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_TABLE_TRANSACTION_BLOCK" author="fragkise" context="migrate">
+
+		<comment>Introduces the table for transaction blocks</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Transaction Block
+			--------------------------------------------------------
+
+			create sequence transaction_block_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "transaction_block"
+			("id" bigint,
+			"start_block" bigint not null,
+			"end_block" bigint not null,
+			"unit_type" varchar(255) not null,
+			"transaction_id" bigint not null,
+			 "year" integer,
+			            
+			constraint "pk_transaction_block" primary key("id"));
+			alter table "transaction_block" add constraint "fk_tra_blo_tra" foreign key ("transaction_id") references "transaction" ("id");
+
+			comment on table "transaction_block" is 'Stores the exact unit blocks that participate in the transaction.';
+			comment on column "transaction_block"."id" is 'The primary key';
+			comment on column "transaction_block"."start_block" is 'The start serial number of the unit block';
+			comment on column "transaction_block"."end_block" is 'The end serial number of the unit block';
+			comment on column "transaction_block"."unit_type" is 'The unit type: NON_KYOTO, AAU, RMU, ERU_FROM_AAU, ERU_FROM_RMU, CER, TCER, LCER.';
+			comment on column "transaction_block"."transaction_id" is 'The transaction where these blocks belong to (foreign key)';
+            comment on column transaction_block.year is 'The year of the block (e.g. the issuance year, the year in commitment period etc.)';
+			
+			create index "tra_blo_idx3" on "transaction_block" ("transaction_id");
+			create index "tra_blo_idx4" on "transaction_block" ( "start_block");
+		</sql>
+
+		<rollback>
+			drop sequence if exists transaction_block_seq;
+			drop table if exists transaction_block;
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_TRANSACTION_HISTORY" author="fragkise" context="migrate">
+
+		<comment>Introduces the table for transaction history</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Transaction History
+			--------------------------------------------------------
+
+			create sequence transaction_history_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "transaction_history"
+			("id" bigint,
+			"status" varchar(255) not null,
+			"date" timestamp not null,
+			"transaction_id" bigint not null,
+
+			constraint "pk_transaction_history" primary key("id"));
+
+			alter table "transaction_history" add constraint "fk_tra_his_tra" foreign key ("transaction_id") references "transaction" ("id");
+
+			comment on table "transaction_history" is 'Stores the various statuses of the transaction.';
+			comment on column "transaction_history"."id" is 'The primary key';
+			comment on column "transaction_history"."status" is 'The transaction status: PROPOSED, CHECKED_NO_DISCREPANCY, CHECKED_DISCREPANCY, COMPLETED, TERMINATED, REJECTED, CANCELLED, ACCEPTED, STL_CHECKED_NO_DISCREPANCY, STL_CHECKED_DISCREPANCY, REVERSED, UNDONE, CORRECTED, DELAYED, DELAYED_CANCELLED';
+			comment on column "transaction_history"."date" is 'When the transaction status changed.';
+			comment on column "transaction_history"."transaction_id" is 'The transaction (foreign key).';
+
+			create index "tra_his_idx1" on "transaction_history" ("transaction_id");
+		</sql>
+
+		<rollback>
+			drop sequence if exists transaction_history_seq;
+			drop table if exists transaction_history;
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_2_0_TABLE_TRANSACTION_RESPONSE" author="fragkise" context="migrate">
+		<comment>Introduces table "Transaction Response"</comment>
+		<sql>
+			create sequence transaction_response_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "transaction_response"
+			("id" bigint,
+			"error_code" bigint,
+			"transaction_id" bigint not null,
+            "transaction_block_id" int8 NULL,
+            "details" varchar(2000) NULL,
+            "date_occurred" timestamp NOT NULL,
+
+			constraint "pk_transaction_response" primary key("id"));
+
+			alter table "transaction_response" add constraint "fk_tra_res_tra" foreign key ("transaction_id")
+			references "transaction" ("id");
+
+			comment on table "transaction_response" is 'Stores error codes related to transactions, either returned by ITL or due to business check errors just before the transaction finalisation.';
+			comment ON COLUMN "transaction_response"."id" is 'The primary key';
+			comment ON COLUMN "transaction_response"."error_code" is 'The error code';
+			comment ON COLUMN "transaction_response"."transaction_id" is 'Foreign key to transactions.';
+            comment ON COLUMN "transaction_response"."transaction_block_id" IS 'Foreign key to transaction block.';
+            comment ON COLUMN "transaction_response"."details" IS 'The description of the error that occurred during the transaction.';
+            comment ON COLUMN "transaction_response"."date_occurred" IS 'the date that the error occurred.';
+            
+            alter table "transaction_response" add CONSTRAINT fk_tra_res_tra_block FOREIGN KEY (transaction_block_id) REFERENCES transaction_block(id);
+		</sql>
+		
+		<rollback>
+			drop sequence if exists transaction_response_seq;
+			drop table if exists transaction_response;
+		</rollback>
+	</changeSet>
+
+
+	<changeSet id="0_2_0_TABLE_UNIBLOCK_ACCOUNT_IDENTIFER_CONSTRAINT" author="fragkise" context="migrate">
+		<comment>Introduces table "Transaction Response"</comment>
+		<sql>
+			alter table "unit_block" drop constraint "fk_uni_blo_acc";
+		</sql>
+		
+		<rollback>
+			alter table "unit_block" add constraint "fk_uni_blo_acc" foreign key ("account_id") references "account" ("id");
+		</rollback>
+	</changeSet>
+</databaseChangeLog>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+	<changeSet id="0_1_0_TABLE_ACCOUNT" author="fragkise"
+		context="migrate">
+
+		<comment>Initial creation of Account</comment>
+		<sql>
+			CREATE SEQUENCE account_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+			CREATE SEQUENCE account_identifier_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "account" (
+			"id" BIGINT NOT NULL,
+			"identifier" BIGINT NOT NULL,
+			"account_name"
+			VARCHAR(1024) NOT NULL,
+			"commitment_period_code" INT NOT NULL,
+			"full_identifier" VARCHAR(50) default NULL,
+			"check_digits" INT DEFAULT
+			-1 NOT NULL,
+			"opening_date" TIMESTAMP NOT NULL);
+
+			ALTER TABLE "account" ADD CONSTRAINT "pk_accnt" PRIMARY KEY ("id");
+
+			CREATE INDEX "acc_copeco_idx" ON "account" ("commitment_period_code");
+			CREATE INDEX "idx_acc_full_identifier" on "account"("full_identifier");
+
+			COMMENT ON TABLE "account" IS 'Represents an account';
+			COMMENT ON COLUMN "account"."id" IS 'The account id';
+			COMMENT ON COLUMN "account"."identifier" IS 'A unique account identifier';
+			COMMENT ON COLUMN "account"."account_name" IS 'The name of the account';
+			COMMENT ON COLUMN "account"."commitment_period_code" IS 'The commitment period';
+			COMMENT ON COLUMN "account"."full_identifier" is 'The combination of registry code, kyoto account type code, identifier and check_digits of the account';
+			COMMENT ON COLUMN "account"."check_digits" IS '2 check digits calculated according to a modulo 97,10 scheme as defined in ISO 7064:2002';
+			COMMENT ON COLUMN "account"."opening_date" IS 'The date that the account was opened';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "account" CASCADE;
+				DROP SEQUENCE IF EXISTS account_seq;
+				DROP SEQUENCE IF EXISTS account_identifier_seq;
+			</sql>
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_10_0_TABLE_ALLOCATION_PHASE"
+		author="fragkise" context="migrate">
+		<comment>Introduces the table for allocation phases</comment>
+		<sql>
+			create sequence allocation_phase_seq minvalue 0 maxvalue
+			999999999999999999
+			increment by 1 start with 1 cache 1 no cycle;
+
+			create table "allocation_phase"
+			("id" bigint,
+			"code" integer,
+			"initial_phase_cap" bigint,
+			"consumed_phase_cap" bigint,
+			"pending_phase_cap" bigint,
+			constraint "pk_allocation_phase" primary
+			key("id"));
+
+			comment on table "allocation_phase" is 'Represents an
+			allocation phase, e.g.
+			Phase 1 (2021-2030).';
+
+			comment on column "allocation_phase"."id" is 'The primary key.';
+			comment on column "allocation_phase"."code" is 'The code.';
+			comment on column "allocation_phase"."initial_phase_cap" is 'The initial phase cap.';
+			comment on column "allocation_phase"."consumed_phase_cap" is 'The consumed phase cap.';
+			comment on column "allocation_phase"."pending_phase_cap" is 'The pending phase cap.';
+		</sql>
+
+		<rollback>
+			<sql>
+				DROP TABLE IF EXISTS "allocation_phase" CASCADE;
+				DROP SEQUENCE IF
+				EXISTS allocation_phase_seq;
+			</sql>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="0_10_0_POPULATE_FIRST_ALLOCATION_PERIOD"
+		author="fragkise" context="migrate">
+		<comment>Populates data about the first allocation period (2021-2030)</comment>
+		<sql>
+			insert into allocation_phase (id, code,initial_phase_cap,consumed_phase_cap, pending_phase_cap)
+			values (nextval('allocation_phase_seq'), 1, 1000000, 0, 0);
+		</sql>
+
+		<rollback>
+			<sql>
+				DELETE FROM allocation_phase;
+			</sql>
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>

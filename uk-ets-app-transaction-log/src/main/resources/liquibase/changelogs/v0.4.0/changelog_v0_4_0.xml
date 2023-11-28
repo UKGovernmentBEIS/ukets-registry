@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+	<changeSet id="0_4_0_ADD_TOTAL_QUANTITY_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where account_name = 'UK Total Quantity Account'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds a UK Total Quantity account to the transaction log</comment>
+
+		<sql>
+			insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+			values
+			(
+			nextval('account_seq'),
+			1010,
+			'UK Total Quantity Account',
+			0,
+			'UK-100-1010-0-47',
+			47,
+			now());
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_4_0_ADD_AUCTION_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where account_name = 'UK Auction Account'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds the auction account to the transaction log</comment>
+
+		<sql>
+			insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+			values
+			(
+			nextval('account_seq'),
+			1011,
+			'UK Auction Account',
+			0,
+			'UK-100-1011-0-42',
+			42,
+			now());
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_4_0_ADD_ALLOCATION_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where account_name = 'UK Allocation Account'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds the allocation account to the transaction log</comment>
+
+		<sql>
+			insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+			values
+			(
+			nextval('account_seq'),
+			1012,
+			'UK Allocation Account',
+			0,
+			'UK-100-1012-0-37',
+			37,
+			now());
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_4_0_ADD_NEW_ENTRANTS_RESERVE_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where account_name = 'UK New Entrants Reserve Account'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds the new entrants reserve account to the transaction log</comment>
+
+		<sql>
+			insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+			values
+			(
+			nextval('account_seq'),
+			1013,
+			'UK New Entrants Reserve Account',
+			0,
+			'UK-100-1013-0-32',
+			32,
+			now());
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_4_0_ADD_MARKET_STABILITY_RESERVE_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where account_name = 'UK Market Stability Reserve Account'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds the market stability reserve account to the transaction log</comment>
+
+		<sql>
+			insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+			values
+			(
+			nextval('account_seq'),
+			1014,
+			'UK Market Stability Reserve Account',
+			0,
+			'UK-100-1014-0-27',
+			27,
+			now());
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_4_0_ADD_GENERAL_HOLDING_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where account_name = 'UK General Holding Account'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds the general holding account to the transaction log</comment>
+
+		<sql>
+			insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+			values
+			(
+			nextval('account_seq'),
+			1015,
+			'UK General Holding Account',
+			0,
+			'UK-100-1015-0-22',
+			22,
+			now());
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_4_0_ADD_AUCTION_DELIVERY_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from account where account_name = 'UK Auction Delivery Account'</sqlCheck>
+		</preConditions>
+
+		<comment>Adds the auction delivery account to the transaction log</comment>
+
+		<sql>
+			insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+			values
+			(
+			nextval('account_seq'),
+			1016,
+			'UK Auction Delivery Account',
+			0,
+			'UK-100-1016-0-17',
+			17,
+			now());
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_4_0_UPDATE_CENTRAL_ACCOUNT_IDENTIFIERS" author="pougouniasn" context="migrate">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="7">select count(*) from account</sqlCheck>
+		</preConditions>
+		<comment>Updates the ETS Central account identifiers</comment>
+		<sql>
+			update account set identifier = 10000000, check_digits = 61, full_identifier = 'UK-100-10000000-0-61' where identifier = 1010;
+			update account set identifier = 10000001, check_digits = 56, full_identifier = 'UK-100-10000001-0-56' where identifier = 1011;
+			update account set identifier = 10000002, check_digits = 51, full_identifier = 'UK-100-10000002-0-51' where identifier = 1012;
+			update account set identifier = 10000003, check_digits = 46, full_identifier = 'UK-100-10000003-0-46' where identifier = 1013;
+			update account set identifier = 10000004, check_digits = 41, full_identifier = 'UK-100-10000004-0-41' where identifier = 1014;
+			update account set identifier = 10000005, check_digits = 36, full_identifier = 'UK-100-10000005-0-36' where identifier = 1015;
+			update account set identifier = 10000006, check_digits = 31, full_identifier = 'UK-100-10000006-0-31' where identifier = 1016;
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>

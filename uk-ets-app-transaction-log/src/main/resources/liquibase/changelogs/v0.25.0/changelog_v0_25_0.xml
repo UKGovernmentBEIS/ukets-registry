@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0_25_0_ADD_UK_DELETION_ACCOUNT" author="koukoulakisg" context="migrate">
+
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">select count(*) from account where identifier = 10000007</sqlCheck>
+        </preConditions>
+
+        <comment>Adds the UK Deletion account to the transaction log</comment>
+
+        <sql>
+            insert into account (id, identifier, account_name, commitment_period_code, full_identifier, check_digits, opening_date)
+            values (nextval('account_seq'),10000007,'UK Deletion Account',0,'UK-100-10000007-0-66',66,now());
+        </sql>
+        
+        <rollback>
+            <sql>
+                delete from account where identifier=10000007;
+            </sql>
+        </rollback>
+    </changeSet>
+    <changeSet id="0_25_0_UPDATE_UK_DELETION_ACCOUNT_CHECK_DIGITS" author="koukoulakisg" context="migrate">
+
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="1">select count(*) from account where identifier = 10000007</sqlCheck>
+        </preConditions>
+
+        <comment>Updates the UK ETS deletion account check digits</comment>
+
+        <sql>
+            update account set check_digits = 26, full_identifier = 'UK-100-10000007-0-26' where identifier = 10000007;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
