@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+	
+	<changeSet id="0_26_0_ADD_CRITERIA_COLUMN" author="apostolouk" context="migrate">
+
+        <comment>Adds criteria column in reports table.</comment>
+
+	    <sql>
+			alter table report add column criteria TEXT;
+
+			comment on column report.criteria is 'The criteria that were used to generate this report';
+	    </sql>
+	    <rollback>
+	        alter table report drop column criteria;
+	    </rollback>
+
+    </changeSet>
+</databaseChangeLog>

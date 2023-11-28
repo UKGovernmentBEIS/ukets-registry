@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0_1_0_ADD_REQUESTING_ROLE_COLUMN" author="apostolouk" context="migrate">
+
+        <comment>Adds requesting_role column in reports table.</comment>
+
+	    <sql>
+			alter table report add column requesting_role varchar(255) null;
+
+			comment on column report.requesting_role is 'The role of the user that submitted the request, can be administrator, authority or null';
+	    </sql>
+	    <rollback>
+	        alter table report drop column requesting_role;
+	    </rollback>
+
+    </changeSet>
+	
+	
+    <changeSet id="0_1_0_ADD_REQUESTING_ROLE_FOR_EXISTING_ENTRIES" author="apostolouk" context="migrate">
+
+        <comment>Fills in requesting_role values for the existing entries that will be migrated.</comment>
+
+	    <sql>
+	        update report set requesting_role = 'administrator';
+	    </sql>
+
+    </changeSet>
+</databaseChangeLog>

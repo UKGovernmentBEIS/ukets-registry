@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0_1_0_TABLE_REPORT" author="atrifyllis">
+
+        <comment>Initial creation of Report table</comment>
+
+        <sqlFile path="table_report.sql" relativeToChangelogFile="true"/>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "report" CASCADE;
+                DROP SEQUENCE IF EXISTS report_seq;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="0_1_0_TABLE_SHEDLOCK" author="atrifyllis">
+
+        <comment>Initial creation of shedlock table</comment>
+
+        <sqlFile path="table_shedlock.sql" relativeToChangelogFile="true"/>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "shedlock" CASCADE;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

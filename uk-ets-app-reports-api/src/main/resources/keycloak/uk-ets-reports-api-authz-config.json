@@ -1,0 +1,52 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [{
+    "name": "Reporting Resource",
+    "ownerManagedAccess": false,
+    "displayName": "Reporting Resource",
+    "attributes": {},
+    "uris": [
+      "/api-reports/reports.request",
+      "/api-reports/reports.list",
+      "/api-reports/reports.download",
+      "/api-reports/reports.list.eligible-types"
+    ],
+    "scopes": [{
+      "name": "urn:uk-ets-reports-api:anyReportingAction"
+    }]
+  },
+  {
+    "name": "Actuator endpoints",
+    "ownerManagedAccess": false,
+    "displayName": "Actuator endpoints",
+    "attributes": {},
+    "uris": ["/api-reports/actuator/*"]
+  }],
+  "policies": [{
+    "name": "Reports User Policy",
+    "description": "Defines that only Reports Users can access reports",
+    "type": "role",
+    "logic": "POSITIVE",
+    "decisionStrategy": "UNANIMOUS",
+    "config": {
+      "roles": "[{\"id\":\"uk-ets-reports-api/reports-user\",\"required\":true}]"
+    }
+  },
+  {
+    "name": "Any Reports Action Scope Permission",
+    "description": "Any Reports Action Scope Permission",
+    "type": "scope",
+    "logic": "POSITIVE",
+    "decisionStrategy": "UNANIMOUS",
+    "config": {
+      "scopes": "[\"urn:uk-ets-reports-api:anyReportingAction\"]",
+      "applyPolicies": "[\"Reports User Policy\"]"
+    }
+  }
+  ],
+  "scopes": [{
+    "name": "urn:uk-ets-reports-api:anyReportingAction"
+  }],
+  "decisionStrategy": "UNANIMOUS"
+}
