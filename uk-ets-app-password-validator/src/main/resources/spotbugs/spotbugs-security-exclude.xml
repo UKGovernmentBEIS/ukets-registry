@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<Match>
+		<Class
+			name="uk.gov.ets.password.validator.api.service.PasswordValidatorService" />
+		<Bug pattern="WEAK_MESSAGE_DIGEST_SHA1" />
+	</Match>
+	<Match>
+		<Class name="~.*\.*Controller" />
+		<Bug pattern="SPRING_ENDPOINT" />
+	</Match>
+</FindBugsFilter>
