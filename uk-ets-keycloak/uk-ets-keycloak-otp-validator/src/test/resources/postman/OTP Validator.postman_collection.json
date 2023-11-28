@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "a467de91-d17d-4815-809c-941d6aaf8a12",
+		"name": "OTP Validator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Access Token with OTP",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "uk-ets-authority_1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "uk-ets-authority_1@trasys.gr",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "uk-ets-authority_1@trasys.gr",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "uk-ets-authority_1",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "uk-ets-web-app",
+							"type": "text"
+						},
+						{
+							"key": "totp",
+							"value": "596711",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8091/auth/realms/uk-ets/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"auth",
+						"realms",
+						"uk-ets",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				},
+				"description": "A request to obtain an access token for a user that has setup 2FA"
+			},
+			"response": []
+		},
+		{
+			"name": "Validate OTP",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIzUGpmUldGUVcwdlU5akw2bW1Pd3hGWktmbk9kWkoxUnl4M2NYbDFFRHBFIn0.eyJleHAiOjE2MDA5MzE4NDYsImlhdCI6MTYwMDkzMTU0NiwianRpIjoiZDI4NGUxNTUtODZkMi00NDdjLWFlZDktNDMyYzNiNDcyZDViIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDkxL2F1dGgvcmVhbG1zL3VrLWV0cyIsImF1ZCI6WyJ1ay1ldHMtcmVnaXN0cnktYXBpIiwiYWNjb3VudCJdLCJzdWIiOiIyNGI1NTFkYS1iNzAzLTRiYTUtODBiYi1mNWU4ZDA1MTgzOGEiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ1ay1ldHMtd2ViLWFwcCIsInNlc3Npb25fc3RhdGUiOiI4NzRjMTc0Mi0zMGY1LTRhYmQtODYyNS05YjE1ODAwM2U1YjMiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NDIwMCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidW1hX2F1dGhvcml6YXRpb24iLCJldHNfdXNlciJdfSwicmVzb3VyY2VfYWNjZXNzIjp7InVrLWV0cy1yZWdpc3RyeS1hcGkiOnsicm9sZXMiOlsiYXV0aG9yaXplZC1yZXByZXNlbnRhdGl2ZSIsImF1dGhvcml0eS11c2VyIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlVzZXIgQXV0aG9yaXR5IDEiLCJzdGF0ZSI6IkVOUk9MTEVEIiwicHJlZmVycmVkX3VzZXJuYW1lIjoidWstZXRzLWF1dGhvcml0eV8xQHRyYXN5cy5nciIsImdpdmVuX25hbWUiOiJVc2VyIiwiZmFtaWx5X25hbWUiOiJBdXRob3JpdHkgMSIsImVtYWlsIjoidWstZXRzLWF1dGhvcml0eV8xQHRyYXN5cy5nciIsInVyaWQiOiJVSzgwMjA2MTExMTExMSJ9.LP7eixrhEgdbEhOYYEhWPWMmOHq7ppsvIknvILY27m1VbjdCbn7EVkMoELWNSI3nZXCCl-LWpV93tQpXVMrOButuy5hYd4CVXPfCaMzt4azBmpz7kF4iQYqjkJErRAs0JQAj9ylXOHv8yDFJz31a10f1fQSbEjUhsoM7FFTzdI4awcs8fmpc04EEuYFrSoVVYS9TclvEtn77e1bWakORA1zmfOZkctMq98NV7AFRjR8YZJxSZRMWJkbGJ_-D-PMAQ_c-N0tH4opSL7MeU3OhzaAKbVs8y4sdFbzyZ8FqlRXTyHnTL6c7frekr42BEoBsHoiVHzkIWYvnEBm6h0iFrA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "otp",
+							"value": "195146",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8091/auth/realms/uk-ets/otp-validator",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"auth",
+						"realms",
+						"uk-ets",
+						"otp-validator"
+					]
+				},
+				"description": "A request to validate and otp"
+			},
+			"response": []
+		},
+		{
+			"name": "Validate OTP No Bearer",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "otp",
+							"value": "994131",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "uk-ets-authority_1@trasys.gr",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8091/auth/realms/uk-ets/otp-validator/nobearer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8091",
+					"path": [
+						"auth",
+						"realms",
+						"uk-ets",
+						"otp-validator",
+						"nobearer"
+					]
+				},
+				"description": "A request to validate and otp"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

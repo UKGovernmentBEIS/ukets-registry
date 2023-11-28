@@ -1,0 +1,97 @@
+{
+  "clientId": "uk-ets-ui-logs-api",
+  "baseUrl": "UI_LOGS_BASE_URL",
+  "surrogateAuthRequired": false,
+  "enabled": true,
+  "alwaysDisplayInConsole": false,
+  "clientAuthenticatorType": "client-secret",
+  "secret": "61c1a106-6a49-4e83-bf5b-55a53044c1a5",
+  "redirectUris": [
+    "http://localhost:4200/"
+  ],
+  "webOrigins": [
+    "*"
+  ],
+  "protocolMappers": [
+    {
+      "id": "4a7d3fda-9e34-4c84-9c15-c0e688ee7042",
+      "name": "Client IP Address",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientAddress",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientAddress",
+        "jsonType.label": "String"
+      }
+    },
+    {
+      "id": "49dcb643-9028-4b47-bf65-b79166c712d5",
+      "name": "Client Host",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientHost",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientHost",
+        "jsonType.label": "String"
+      }
+    },
+    {
+      "id": "2a33e53c-d650-4164-b14f-769e939b4836",
+      "name": "Client ID",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientId",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientId",
+        "jsonType.label": "String"
+      }
+    }
+  ],
+  "notBefore": 0,
+  "bearerOnly": false,
+  "consentRequired": false,
+  "standardFlowEnabled": true,
+  "implicitFlowEnabled": false,
+  "directAccessGrantsEnabled": false,
+  "serviceAccountsEnabled": true,
+  "authorizationServicesEnabled": true,
+  "publicClient": false,
+  "frontchannelLogout": false,
+  "protocol": "openid-connect",
+  "attributes": {},
+  "authenticationFlowBindingOverrides": {},
+  "fullScopeAllowed": true,
+  "nodeReRegistrationTimeout": -1,
+  "defaultClientScopes": [
+    "web-origins",
+    "role_list",
+    "profile",
+    "roles",
+    "email"
+  ],
+  "optionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ],
+  "authorizationSettings": {
+    "allowRemoteResourceManagement": true,
+    "policyEnforcementMode": "PERMISSIVE",
+    "resources": [],
+    "policies": [],
+    "scopes": [],
+    "decisionStrategy": "UNANIMOUS"
+  },
+  "defaultRoles": [
+  ]
+}

@@ -1,0 +1,19 @@
+{
+	"policies": [
+		{
+			"name": "Registered User Policy",
+			"fileName": "only-registered-policy.js",
+			"description": "Defines that registered users can do something"
+		},
+		{
+			"name": "Validated User Policy",
+			"fileName": "only-validated-policy.js",
+			"description": "Defines that validated users can do something"
+		},
+		{
+			"name": "Enrolled User Policy",
+			"fileName": "only-enrolled-policy.js",
+			"description": "Defines that enrolled users can do something"
+		}
+	]
+}

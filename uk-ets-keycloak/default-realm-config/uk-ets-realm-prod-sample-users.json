@@ -1,0 +1,94 @@
+{
+  "users": [
+    {
+      "username": "registration-api-user",
+      "enabled": true,
+      "email": "registration-api-user@trasys.gr",
+      "firstName": "Registration api user",
+      "lastName": "UK ETS Realm",
+      "emailVerified": true,
+      "attributes": {
+        "urid": [
+          "UK694094547712"
+        ],
+        "alsoKnownAs": [
+          "Registration API User"
+        ],
+        "buildingAndStreet": [
+          "UK694094547713 building and street"
+        ],
+        "buildingAndStreetOptional": [
+          "registration-api-user building and street optional"
+        ],
+        "buildingAndStreetOptional2": [
+          "registration-api-user building and street optional 2"
+        ],
+        "country": [
+          "GR"
+        ],
+        "countryOfBirth": [
+          "GR"
+        ],
+        "postCode": [
+          "15231"
+        ],
+        "state": [
+          "ENROLLED"
+        ],
+        "townOrCity": [
+          "ATHENS"
+        ],
+        "workBuildingAndStreet": [
+          "registration-api-user work building and street"
+        ],
+        "workBuildingAndStreetOptional": [
+          "registration-api-user work building and street optional"
+        ],
+        "workBuildingAndStreetOptional2": [
+          "registration-api-user work building and street optional 2"
+        ],
+        "workCountry": [
+          "GR"
+        ],
+        "workCountryCode": [
+          "30"
+        ],
+        "workEmailAddress": [
+          "registration-api-user@trasys.gr"
+        ],
+        "workEmailAddressConfirmation": [
+          "registration-api-user@trasys.gr"
+        ],
+        "workPhoneNumber": [
+          "2109006431"
+        ],
+        "workPostCode": [
+          "15231"
+        ],
+        "workTownOrCity": [
+          "ATHENS"
+        ],
+        "birthDate": [
+          "24/1/1985"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "REGISTRATION_API_USER_PASSWORD"
+        }
+      ],
+      "realmRoles": [
+        "ets_user",
+        "uma_authorization"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "query-users",
+          "view-users"
+        ]
+      }
+    }
+  ]
+}

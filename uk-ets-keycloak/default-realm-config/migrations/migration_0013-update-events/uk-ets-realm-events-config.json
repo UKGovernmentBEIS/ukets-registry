@@ -1,0 +1,10 @@
+{
+  "eventsEnabled": true,
+  "eventsListeners": [
+    "email",
+    "event-producer"
+  ],
+  "eventsExpiration": 86400,
+  "adminEventsDetailsEnabled": true,
+  "adminEventsEnabled": true
+}

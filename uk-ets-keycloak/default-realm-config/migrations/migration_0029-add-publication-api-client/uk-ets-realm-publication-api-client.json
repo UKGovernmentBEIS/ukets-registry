@@ -1,0 +1,112 @@
+{
+  "clientId": "uk-ets-publication-api",
+  "baseUrl": "PUBLICATION_API_BASE_URL",
+  "surrogateAuthRequired": false,
+  "enabled": true,
+  "alwaysDisplayInConsole": false,
+  "clientAuthenticatorType": "client-secret",
+  "secret": "2bd7ee7f-8a5e-4913-acc1-6afc07556d0e",
+  "redirectUris": [
+    "http://localhost:4200/"
+  ],
+  "webOrigins": [
+    "*"
+  ],
+  "protocolMappers": [
+    {
+      "id": "1648a46c-f607-4cb1-b117-f07e8d3e9c5e",
+      "name": "Client IP Address",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientAddress",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientAddress",
+        "jsonType.label": "String"
+      }
+    },
+    {
+      "id": "811a2539-4b42-47ea-bebe-83009edffea1",
+      "name": "Client Host",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientHost",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientHost",
+        "jsonType.label": "String"
+      }
+    },
+    {
+      "id": "0bd2bb5d-8d27-45b9-96d9-0677d6747391",
+      "name": "Client ID",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usersessionmodel-note-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.session.note": "clientId",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "clientId",
+        "jsonType.label": "String"
+      }
+    },
+        {
+      "id": "13cfb1cf-b1ab-482e-92f7-bb0cebb5c0bc",
+      "name": "urid",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usermodel-attribute-mapper",
+      "consentRequired": false,
+      "config": {
+        "userinfo.token.claim": "true",
+        "user.attribute": "urid",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "urid",
+        "jsonType.label": "String"
+      }
+    }
+  ],
+  "notBefore": 0,
+  "bearerOnly": false,
+  "consentRequired": false,
+  "standardFlowEnabled": true,
+  "implicitFlowEnabled": false,
+  "directAccessGrantsEnabled": false,
+  "serviceAccountsEnabled": true,
+  "authorizationServicesEnabled": true,
+  "publicClient": false,
+  "frontchannelLogout": false,
+  "protocol": "openid-connect",
+  "attributes": {},
+  "authenticationFlowBindingOverrides": {},
+  "fullScopeAllowed": true,
+  "nodeReRegistrationTimeout": -1,
+  "defaultClientScopes": [
+    "web-origins",
+    "role_list",
+    "profile",
+    "roles",
+    "email"
+  ],
+  "optionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ],
+  "authorizationSettings": {
+    "allowRemoteResourceManagement": true,
+    "policyEnforcementMode": "PERMISSIVE",
+    "resources": [],
+    "policies": [],
+    "scopes": [],
+    "decisionStrategy": "UNANIMOUS"
+  },
+  "defaultRoles": [
+  ]
+}

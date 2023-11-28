@@ -1,0 +1,9 @@
+{
+  "eventsEnabled": true,
+  "eventsListeners": [
+    "event-producer"
+  ],
+  "eventsExpiration": 86400,
+  "adminEventsDetailsEnabled": true,
+  "adminEventsEnabled": true
+}

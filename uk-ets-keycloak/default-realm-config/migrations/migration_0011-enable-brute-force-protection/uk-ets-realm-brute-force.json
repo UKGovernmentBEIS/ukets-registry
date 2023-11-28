@@ -1,0 +1,10 @@
+{
+  "bruteForceProtected": "true",
+  "permanentLockout": "false",
+  "failureFactor": "5",
+  "quickLoginCheckMilliSeconds": "1000",
+  "maxFailureWaitSeconds": "900",
+  "minimumQuickLoginWaitSeconds": "60",
+  "waitIncrementSeconds": "900",
+  "maxDeltaTimeSeconds": "43200"
+}

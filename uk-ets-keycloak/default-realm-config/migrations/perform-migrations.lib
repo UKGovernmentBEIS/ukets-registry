@@ -1,0 +1,76 @@
+# Helper script for performing all keycloak config migrations.
+
+# --------- IMPORTS: ---------------------------------------------------------------------------------------------------
+MIGRATION_SCRIPT_PATH="$(dirname "$0")/migrations"
+# shellcheck source=./helpers.lib
+source "$MIGRATION_SCRIPT_PATH/helpers.lib"
+# ----------------------------------------------------------------------------------------------------------------------
+
+function performMigrations() {
+  MIGRATION_NUMBERS=()
+
+  for DIR in "$BASE_FILE_PATH"/migrations/*/; do # list directories
+
+    DIR=${DIR%*/}                    # remove the trailing "/"
+    MIGRATION_FOLDER_NAME=${DIR##*/} # print everything after the final "/"
+
+    if [[ ! $MIGRATION_FOLDER_NAME == migration_* ]]; then
+      echo "Migration scripts should be in a directory named 'migration_<migration number>-<migration description>'."
+      echo "$MIGRATION_FOLDER_NAME does not follow the convention so it is not considered as a migration"
+      continue
+    fi
+
+    # extract the migration number (first cut removes the 'migration' string, second cut extracts the number
+    MIGRATION_NUMBER=$(echo "$MIGRATION_FOLDER_NAME" | cut -d'_' -f 2 | cut -d'-' -f 1)
+
+    # check if migration number follows the correct pattern
+    if [[ ! $MIGRATION_NUMBER =~ ^[0-9]{4}$ ]]; then
+      echo "The migration number: '$MIGRATION_NUMBER' does not follow the four digit pattern. Migration failed."
+      exit 2
+    fi
+
+    # check if migration number is a duplicate
+    if containsElement "$MIGRATION_NUMBER" "${MIGRATION_NUMBERS[@]}"; then
+      echo "Migration number '$MIGRATION_NUMBER' has already been defined. This is a duplicate."
+      echo "Please correct the numbering for the migration: $MIGRATION_FOLDER_NAME"
+      exit 2
+    fi
+    MIGRATION_NUMBERS+=("$MIGRATION_NUMBER")
+
+    echo "----------------------------------------------------------------------------------------------------"
+    echo "Running Migration $MIGRATION_FOLDER_NAME"
+    STORED_MIGRATION_VALUE=$(getMigrationValueByKey "$MIGRATION_FOLDER_NAME")
+
+   if [ -z "$STORED_MIGRATION_VALUE" ]; then
+
+      MIGRATION_FILE="$BASE_FILE_PATH/migrations/$MIGRATION_FOLDER_NAME/migrate.sh"
+      # make sure that a file called migrate.sh exists inside the migration directory
+      if [ ! -f "$MIGRATION_FILE" ]; then
+        echo "File $MIGRATION_FILE nto found. Migration failed."
+        exit 2
+      fi
+      # this is were the actual migration script runs.
+      # sourcing the file allows it to re-use variables form parent script if needed (like $BASE_FILE_PATH).
+      # shellcheck disable=SC1090
+      source "$BASE_FILE_PATH/migrations/$MIGRATION_FOLDER_NAME/migrate.sh"
+      setMigrationDateByKey "$MIGRATION_FOLDER_NAME"
+    else
+      echo "Migration $MIGRATION_FOLDER_NAME already applied at: $STORED_MIGRATION_VALUE"
+    fi
+
+  done
+}
+
+# checks if a a string is contained inside an array
+containsElement() {
+  local seeking=$1
+  shift
+  local in=1
+  for element; do
+    if [[ $element == "$seeking" ]]; then
+      in=0
+      break
+    fi
+  done
+  return $in
+}

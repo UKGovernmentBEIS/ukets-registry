@@ -1,0 +1,3 @@
+{
+  "passwordPolicy": "uk-ets-password-policy(http://PASSWORD_VALIDATOR:8096/api-password-validate) and hashIterations(100000)"
+}

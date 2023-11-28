@@ -1,0 +1,62 @@
+= Keycloak Migrations
+
+The purpose of the implemented solution is to provide the developers a mechanism for versioning changes in Keycloak
+configuration. This enables us to have an easy way to check what version the Keycloak configuration is in any
+environment in any given time. Also, it makes easier to understand what has changed in Keycloak configuration and when.
+
+== How it works
+
+The solution has been implemented as a series of bash scripts which in turn perform a series of REST calls to the
+Keycloak REST endpoints.
+The entry point of the migrations is the file link:perform-migrations.lib[perform-migrations.lib].
+This script is responsible for parsing all migration scripts, performing some validation checks and running the actual
+scripts. This script and all migrations scripts use various helper functions in link:helpers.lib[helpers.lib] script.
+
+Every migration is stored inside a separate directory inside the migrations folder. By convention every migration
+has an incremental number in the name of its directory so that the script can run them in order of creation.
+
+Before running every migration the scripts checks if the migration has already run. To do that it needs to retrieve
+the migration key from the custom Keycloak database table `uk_ets_migration` using our custom REST endpoint.
+If it finds the key it does not execute the migration. If it does not find the key, it looks for a script with the name
+`migrate.sh`  inside the migration's directory and executes it. As long as the migration is successful, it writes the
+migration key in Keycloak database. If the migration fails, **all subsequent migrations are not executed**.
+
+== Steps to create a new migration
+
+. Create the migration directory following the naming convention: `migration_<XXXX>-<description>`
+where `<XXXX>` = incremental migration number and `<description>` = a short text describing what the migration does.
+
+. Create a `migrate.sh` file inside the migration directory. Check for previous migrations for sample files.
+
+. Write the actual migration script. You need to find which REST endpoint you need to call for updating the part of
+Keycloak configuration involved in the migration. This is not always trivial. A starting point is the Keycloak
+https://www.keycloak.org/docs-api/11.0/rest-api/index.html[Administration REST API] document.
++
+TIP: If you can't find the exact endpoint and/or operation one way is to start from Keycloak admin console, perform the
+operation from the UI (if this operation is available in the UI of course) and check in the browser's console network tab
+to find out exactly what the request URL and/or request parameters are.
+
+. Add relevant json files inside the migration directory. (Most REST endpoints will required data in json form for
+the configuration update).
+
+. run the link:../../_buildme.sh[_buildme.sh] script to rebuild Keycloak docker image and deploy it. You can check
+the Keycloak logs to see if the new migration has been executed or if any errors occurred.
+
+== Local development
+
+Building the image and re-creating the docker container after every change is time-consuming. To speed-up the feedback
+cycle there is a script called link:../local-testing.sh[local-testing.sh] which you can run directly from your local
+machine. It will execute the migrations in the running container.
+
+For this to work, you need to have installed in your local machine https://stedolan.github.io/jq/download/[jq],
+a command-line JSON processor.
+
+TIP: To install this JSON processor in Windows, simply rename `jq-win64.exe` to `jq.exe` and append the container
+directory to the `Path` system variable.
+
+TIP: If you want to execute a migration that has already been executed, delete the row from `uk_ets_migration` Keycloak
+database table which contains the migration key.
+
+CAUTION: This script is only for development, so it is imperative to test at least once by building and re-creating the
+container. Don't forget to delete the migration key from the Keycloak database before re-creating the container.
+

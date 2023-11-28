@@ -1,0 +1,17 @@
+{
+  "smtpServer": {
+    "replyToDisplayName": "",
+    "starttls": "KEYCLOAK_MAIL_TLS",
+    "auth": "KEYCLOAK_MAIL_AUTH",
+    "port": "KEYCLOAK_MAIL_PORT",
+    "host": "KEYCLOAK_MAIL_HOST",
+    "replyTo": "",
+    "from": "KEYCLOAK_MAIL_FROM",
+    "fromDisplayName": "",
+    "envelopeFrom": "",
+    "ssl": "KEYCLOAK_MAIL_SSL",
+    "user": "KEYCLOAK_MAIL_USER",
+    "password": "KEYCLOAK_MAIL_PASSWORD"
+  },
+  "emailTheme": "uk-ets-theme"
+}

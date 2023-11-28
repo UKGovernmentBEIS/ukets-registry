@@ -1,0 +1,286 @@
+# Contains common functions used in migrations.
+
+if [ -z "$URL" ]; then
+  URL="localhost:8080"
+fi
+if [ -z "$REALM_NAME" ]; then
+  REALM_NAME=$(cat /opt/keycloak/tools/uk-ets-realm-base.json | jq -r '.realm')
+fi
+if [ -z "$BASE_REALM_URL" ]; then
+  BASE_REALM_URL="http://$URL/auth/admin/realms/$REALM_NAME"
+fi
+if [ -z "$BASE_FILE_PATH" ]; then
+  BASE_FILE_PATH="/opt/keycloak/tools"
+fi
+
+if [ -z "$BASE_MASTER_REALM_URL" ]; then
+  BASE_MASTER_REALM_URL="http://$URL/auth/realms/master"
+fi
+
+function getAccessToken() {
+  ACCESS_TOKEN=$(
+    curl -sL -H "application/x-www-form-urlencoded" -d "grant_type=password" -d "client_id=admin-cli" \
+    -d "username=$KEYCLOAK_ADMIN" -d "password=$KEYCLOAK_ADMIN_PASSWORD" "$BASE_MASTER_REALM_URL/protocol/openid-connect/token" | jq -r '.access_token'
+  )
+  echo "$ACCESS_TOKEN"
+}
+
+function getMigrationValueByKey() {
+  KEY=$1
+  ACCESS_TOKEN=$(getAccessToken)
+  MIGRATION=$(
+    curl -s -H 'Accept: application/json' -H 'Content-Type: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_MASTER_REALM_URL}/migration-manager?key=${KEY}"
+  )
+  echo "$MIGRATION" | jq '.migrationDate'
+}
+
+function setMigrationDateByKey() {
+  KEY=$1
+  echo "setting migration key: $KEY"
+  ACCESS_TOKEN=$(getAccessToken)
+  MIGRATION_REQUEST="{\"key\": \"$KEY\"}"
+  HTTP_CODE=$(
+    curl -s --request POST --output /dev/null -d "$MIGRATION_REQUEST" -H 'Accept: application/json' -H 'Content-Type: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_MASTER_REALM_URL}/migration-manager" --write-out "%{http_code}\n"
+  )
+  if [[ $HTTP_CODE -eq 200 ]]; then
+    echo "Migration Key was set successfully"
+  else
+    echo "Migration Key was not set successfully, exiting..."
+    exit 2
+  fi
+}
+
+# 1. revert flow binding temporarily to 'browser'
+# 2. find id of 'UK ETS browser' flow and delete it.
+# 3. copy 'browser' flow to new 'UK ETS browser' flow.
+function deleteExistingFlowAndCopy() {
+  HTTP_CODE=$(
+    curl -s -XPUT -H 'Accept: application/json' -H 'Content-Type: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_REALM_URL}" -d "{\"realm\": \"uk-ets\", \"browserFlow\": \"browser\"}" --write-out "%{http_code}\n"
+  )
+  if [[ $HTTP_CODE -eq 204 ]]; then
+    echo "reverted back to browser flow temporarily"
+  else
+    echo "reverting back to browser flow failed, exiting..."
+    exit 2
+  fi
+
+  UK_ETS_FLOW_ID=$(
+    curl -s -H 'Accept: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_REALM_URL}/authentication/flows" | jq -r '.[] | select(.alias=="UK ETS browser") | .id'
+  )
+  echo $UK_ETS_FLOW_ID
+
+  HTTP_CODE=$(
+    curl -s -XDELETE -H 'Accept: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_REALM_URL}/authentication/flows/${UK_ETS_FLOW_ID}" --write-out "%{http_code}\n"
+  )
+
+  if [[ $HTTP_CODE -eq 204 ]]; then
+    echo "Previous Uk Ets flow deleted successfully"
+  else
+    echo "Previous Uk Ets flow was not deleted successfully, exiting..."
+    exit 2
+  fi
+
+  ACCESS_TOKEN=$(getAccessToken)
+  HTTP_CODE=$(
+    curl -s -XPOST --output /dev/null -H 'Accept: application/json' -H 'Content-Type: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_REALM_URL}/authentication/flows/browser/copy" -d @"$BASE_FILE_PATH"/migrations/migration_0010-configure-authentication/uk-ets-realm-copy-browser-flow.json --write-out "%{http_code}\n"
+  )
+
+  if [[ $HTTP_CODE -eq 201 ]]; then
+    echo "copy of existing flow action successfully"
+  else
+    echo "copy of existing flow action was not configured successfully, exiting..."
+    exit 2
+  fi
+}
+
+# Updates file with required environmental variables
+function parseUserFile() {
+  TEMP_USERS_FILE=$1
+  INITIAL_USERS_FILE=$2
+  if [ "${REGISTRATION_API_USER_PASSWORD:+set}" != set ]; then
+    echo "Environmental variable REGISTRATION_API_USER_PASSWORD is required. Realm creation aborted."
+    exit 2
+  fi
+  if
+    ! sed -e "s/REGISTRATION_API_USER_PASSWORD/$(echo $REGISTRATION_API_USER_PASSWORD | sed 's/[^a-zA-Z 0-9]/\\&/g')/g" \
+    "${INITIAL_USERS_FILE}" >"${TEMP_USERS_FILE}"
+  then
+    echo "Failed to update ${INITIAL_USERS_FILE} file with environment specific values"
+    exit 2
+  fi
+  escapeJsonSpecialChars "$TEMP_USERS_FILE"
+}
+
+# Parses file to escape json special characters
+# TODO: for the moment only backslash is escaped. We must imporve this to include e.g. double quotes in json values
+function escapeJsonSpecialChars() {
+  TEMP_FILE_NAME=$1
+  sed 's/[\]/\\&/g' "$TEMP_FILE_NAME" >/tmp/jsonEscaped.tmp && mv /tmp/jsonEscaped.tmp "$TEMP_FILE_NAME"
+}
+
+function getClientIdentifierByClientId() {
+  ACCESS_TOKEN=$(getAccessToken)
+
+  IDENTIFIER=$(
+    curl -s -X GET "${BASE_REALM_URL}/clients" \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer $ACCESS_TOKEN" | jq --arg CLIENT_ID "$1" '.[] | select(.clientId == $CLIENT_ID) | .id'
+  )
+
+  IDENTIFIER=$(sed -e 's/^"//' -e 's/"$//' <<<"$IDENTIFIER")
+  echo "$IDENTIFIER"
+}
+
+function getSystemAccountUserIdByClientId() {
+  ACCESS_TOKEN=$(getAccessToken)
+
+  IDENTIFIER=$(
+    curl -s -X GET "${BASE_REALM_URL}/clients/$1/service-account-user" \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer $ACCESS_TOKEN" | jq --arg CLIENT_ID "$1" '.id'
+  )
+
+  IDENTIFIER=$(sed -e 's/^"//' -e 's/"$//' <<<"$IDENTIFIER")
+  echo "$IDENTIFIER"
+}
+
+# For every role in file, first find its id then add it to the user's client roles
+function setClientRolesByUserIdAndClientId() {
+  USER_ID=$1
+  CLIENT_ID=$2
+  FILE_PATH=$3
+  UPDATED_ROLES_FILE=$BASE_FILE_PATH/migrations/temp_updated_roles.json
+
+  cp "$BASE_FILE_PATH/migrations/$FILE_PATH" $UPDATED_ROLES_FILE
+
+  # the sed at the end removes CRLF characters
+  for roleName in $(cat "$BASE_FILE_PATH/migrations/$FILE_PATH" | jq -r '.[].name' | sed 's/\\[tn]//g'); do
+
+    ACCESS_TOKEN=$(getAccessToken)
+    ROLE_ID=$(
+      curl -s -X GET "${BASE_REALM_URL}/clients/$CLIENT_ID/roles/$roleName" \
+      -H "Accept: application/json" \
+      -H "Authorization: Bearer $ACCESS_TOKEN" | jq -r '.id'
+    )
+    if [ -z "$ROLE_ID" ]; then
+      echo "Role not found exiting..."
+      exit 2
+    fi
+
+    # the following jq assignment starts from the array , selects the specific role name
+    # and appends to the role object the property id (with value the retrieved id)
+    # the mv is needed because we cannot edit in-place the file we are reading
+    cat $UPDATED_ROLES_FILE | jq --arg ROLE_NAME "$roleName" --arg ROLE_ID "$ROLE_ID" \
+    '(.[] | select(.name == $ROLE_NAME).id) |= $ROLE_ID' >"$UPDATED_ROLES_FILE.tmp" && mv "$UPDATED_ROLES_FILE.tmp" "$UPDATED_ROLES_FILE"
+
+  done
+
+  ACCESS_TOKEN=$(getAccessToken)
+  HTTP_CODE=$(
+    curl -s --request POST --output /dev/null -H 'Accept: application/json' -H 'Content-Type: application/json' \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_REALM_URL}/users/$USER_ID/role-mappings/clients/$CLIENT_ID" -d @"$UPDATED_ROLES_FILE" --write-out "%{http_code}\n"
+  )
+
+  rm $UPDATED_ROLES_FILE
+
+  echo "$HTTP_CODE"
+}
+
+function getClientRoleByName() {
+  ACCESS_TOKEN=$(getAccessToken)
+
+  IDENTIFIER=$(
+    curl -s -X GET "${BASE_REALM_URL}/clients/$1/roles/$2" \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer $ACCESS_TOKEN" | jq '.id'
+  )
+
+  echo "$IDENTIFIER"
+}
+
+function addRoleToClient() {
+  ACCESS_TOKEN=$(getAccessToken)
+  HTTP_CODE=$(
+    curl -s --request POST --output /dev/null -H 'Accept: application/json' -H 'Content-Type: application/json' \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${BASE_REALM_URL}/clients/$1/roles" -d "{\"name\": \"$2\"}" --write-out "%{http_code}\n"
+  )
+  echo "$HTTP_CODE"
+}
+
+function getUsersInRoleName() {
+  ACCESS_TOKEN=$(getAccessToken)
+  # the sed at the end removes all CRLF characters
+  IDENTIFIERS=$(
+    curl -s -X GET "${BASE_REALM_URL}/clients/$1/roles/$2/users" \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer $ACCESS_TOKEN" | jq -r '.[] | .id' | sed 's/\\[tn]//g'
+  )
+
+  echo "$IDENTIFIERS"
+}
+
+# add specified role to all specified users
+function addRoleToUsers() {
+  ROLE=$1
+  USER_IDS=$2
+  CLIENT_ID=$3
+
+  for userId in $USER_IDS; do
+    ACCESS_TOKEN=$(getAccessToken)
+
+    HTTP_CODE=$(
+      curl -s --request POST --output /dev/null -H 'Accept: application/json' -H 'Content-Type: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+      "${BASE_REALM_URL}/users/$userId/role-mappings/clients/$CLIENT_ID" -d "$ROLE" --write-out "%{http_code}\n"
+    )
+    if [[ $HTTP_CODE -eq 204 ]]; then
+      echo "Role was set successfully to user: $userId"
+    else
+      echo "Role was not set successfully, exiting..."
+      exit 2
+    fi
+
+  done
+}
+
+# find mapper by client id and mapper name
+function getMapperByClientIdAndMapperName() {
+  CLIENT_ID=$1
+  CLIENT_MAPPERS_URL="${BASE_REALM_URL}/clients/${CLIENT_ID}/protocol-mappers/models/"
+
+  ACCESS_TOKEN=$(getAccessToken)
+  IDENTIFIER=$(
+    curl -s -X GET "${CLIENT_MAPPERS_URL}" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" | jq --arg AUDIENCE_MAPPER_NAME "$2" '.[] | select(.name == $AUDIENCE_MAPPER_NAME) | .id'
+  )
+
+  IDENTIFIER=$(sed -e 's/^"//' -e 's/"$//' <<<"$IDENTIFIER")
+  echo "$IDENTIFIER"
+}
+
+# find Audience Mapper(s) by client id
+function deleteMappersByClientIdAndMapperId() {
+  CLIENT_ID=$1
+  AUDIENCE_MAPPER_IDENTIFIER=$2
+
+  ACCESS_TOKEN=$(getAccessToken)
+  CLIENT_MAPPERS_URL="${BASE_REALM_URL}/clients/${CLIENT_ID}/protocol-mappers/models/${AUDIENCE_MAPPER_IDENTIFIER}"
+
+
+  ACCESS_TOKEN=$(getAccessToken)
+  HTTP_CODE=$(
+    curl -s -XDELETE -H 'Accept: application/json' -H 'Content-Type: application/json' -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "${CLIENT_MAPPERS_URL}/" \
+    --write-out "%{http_code}\n"
+  )
+
+  echo "$HTTP_CODE"
+}

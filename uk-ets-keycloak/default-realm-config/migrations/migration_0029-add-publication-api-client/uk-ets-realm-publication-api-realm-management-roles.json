@@ -1,0 +1,17 @@
+[
+  {
+    "name": "view-clients"
+  },
+  {
+    "name": "view-users"
+  },
+  {
+    "name": "manage-authorization"
+  },
+  {
+    "name": "manage-users"
+  },
+  {
+    "name": "manage-clients"
+  }
+]

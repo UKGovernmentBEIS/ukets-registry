@@ -1,0 +1,15 @@
+{
+	"protocol": "openid-connect",
+	"config": {
+		"id.token.claim": "true",
+		"access.token.claim": "true",
+		"userinfo.token.claim": "true",
+		"multivalued": "",
+		"aggregate.attrs": "",
+		"user.attribute": "urid",
+		"claim.name": "urid",
+		"jsonType.label": "String"
+	},
+	"name": "urid mapper",
+	"protocolMapper": "oidc-usermodel-attribute-mapper"
+}

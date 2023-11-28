@@ -1,0 +1,367 @@
+{
+  "realm": "uk-ets",
+  "enabled": true,
+  "userManagedAccessAllowed": "true",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "sslRequired": "external",
+  "requiredCredentials": ["password"],
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA256",
+  "otpPolicyInitialCounter": 0,
+  "otpPolicyDigits": 6,
+  "otpPolicyLookAheadWindow": 1,
+  "otpPolicyPeriod": 30,
+  "otpSupportedApplications": ["FreeOTP"],
+  "smtpServer": {
+    "replyToDisplayName": "",
+    "starttls": "",
+    "auth": "",
+    "port": "1025",
+    "host": "localhost",
+    "replyTo": "",
+    "from": "no-reply@trasys.gr",
+    "fromDisplayName": "keycloak-ukets-dev",
+    "envelopeFrom": "keycloak-ukets-dev@trasys.gr",
+    "ssl": ""
+  },
+  "loginTheme": "uk-ets-theme",
+  "emailTheme": "uk-ets-theme",
+  "users": [
+    {
+      "username": "service-account-uk-ets-registry-api",
+      "enabled": true,
+      "email": "service-account-uk-ets-registry-api@placeholder.org",
+      "serviceAccountClientId": "uk-ets-registry-api",
+      "clientRoles": {
+        "realm-management": [
+          "view-clients",
+          "view-users",
+          "manage-authorization",
+          "manage-users",
+          "manage-clients"
+        ],
+        "uk-ets-registry-api": ["uma_protection"]
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "ets_user",
+        "description": "ETS User privileges"
+      }
+    ],
+    "client": {
+      "uk-ets-registry-api": [
+        {
+          "name": "system-administrator",
+          "description": "A role for system administration actions",
+          "composite": false,
+          "clientRole": true,
+          "attributes": {}
+        },
+        {
+          "name": "authority-user",
+          "description": "A role for authority user actions",
+          "composite": false,
+          "clientRole": true,
+          "attributes": {}
+        },
+        {
+          "name": "senior-registry-administrator",
+          "composite": false,
+          "clientRole": true,
+          "attributes": {}
+        },
+        {
+          "name": "junior-registry-administrator",
+          "composite": false,
+          "clientRole": true,
+          "attributes": {}
+        },
+        {
+          "name": "readonly-administrator",
+          "composite": false,
+          "clientRole": true,
+          "attributes": {}
+        },
+        {
+          "name": "verifier",
+          "composite": false,
+          "clientRole": true,
+          "attributes": {}
+        },
+        {
+          "name": "authorized-representative",
+          "composite": false,
+          "clientRole": true,
+          "attributes": {}
+        }
+      ]
+    }
+  },
+  "defaultRoles": ["offline_access", "ets_user"],
+  "clients": [
+    {
+      "clientId": "uk-ets-web-app",
+      "enabled": true,
+      "adminUrl": "http://localhost:4200",
+      "baseUrl": "http://localhost:4200",
+      "publicClient": true,
+      "consentRequired": false,
+      "fullScopeAllowed": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["*"],
+      "protocolMappers": [
+        {
+          "id": "fc18ce7e-a6bb-4b4d-bc82-171c0e30c40f",
+          "name": "User state mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "state",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "state",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "id": "4d5c027a-2b2f-49c1-8733-f70567c9a9a5",
+          "name": "User urid mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "urid",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "urid",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "fd917c94-2a77-4154-939a-87c970a51d74",
+          "name": "Audience for uk-ets-registry-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "uk-ets-registry-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    },
+    {
+      "clientId": "uk-ets-registry-api",
+      "secret": "4eeda6c4-0a5c-427d-9ec9-743b18d5976f",
+      "enabled": true,
+      "baseUrl": "http://localhost:8080/api-registry",
+      "authorizationServicesEnabled": true,
+      "redirectUris": ["http://localhost:4200/"],
+      "webOrigins": ["*"],
+      "protocolMappers": [
+        {
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "authorizationSettings": {
+        "allowRemoteResourceManagement": true,
+        "policyEnforcementMode": "PERMISSIVE"
+      }
+    }
+  ],
+  "attributes": {
+    "bruteForceProtected": "true",
+    "permanentLockout": "false",
+    "failureFactor": "5",
+    "quickLoginCheckMilliSeconds": "1000",
+    "maxFailureWaitSeconds": "900",
+    "minimumQuickLoginWaitSeconds": "60",
+    "waitIncrementSeconds": "900",
+    "maxDeltaTimeSeconds": "43200"
+  },
+  "requiredActions": [
+    {
+      "alias": "UPDATE_PASSWORD",
+      "name": "Update Password",
+      "providerId": "UPDATE_PASSWORD",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 10,
+      "config": {}
+    },
+    {
+      "alias": "CONFIGURE_TOTP",
+      "name": "Configure OTP",
+      "providerId": "CONFIGURE_TOTP",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 20,
+      "config": {}
+    },
+    {
+      "alias": "terms_and_conditions",
+      "name": "Terms and Conditions",
+      "providerId": "terms_and_conditions",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 30,
+      "config": {}
+    },
+    {
+      "alias": "UPDATE_PROFILE",
+      "name": "Update Profile",
+      "providerId": "UPDATE_PROFILE",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 40,
+      "config": {}
+    },
+    {
+      "alias": "VERIFY_EMAIL",
+      "name": "Verify Email",
+      "providerId": "VERIFY_EMAIL",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 50,
+      "config": {}
+    },
+    {
+      "alias": "update_user_locale",
+      "name": "Update User Locale",
+      "providerId": "update_user_locale",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 1000,
+      "config": {}
+    },
+    {
+      "alias": "last-login-date-recorder",
+      "name": "UK ETS User Last login date recorder",
+      "providerId": "last-login-date-recorder",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 1001,
+      "config": {}
+    }
+  ],
+  "eventsListeners": [
+    "jboss-logging",
+    "email"
+  ],
+  "enabledEventTypes": [
+    "UPDATE_CONSENT_ERROR",
+    "SEND_RESET_PASSWORD",
+    "GRANT_CONSENT",
+    "UPDATE_TOTP",
+    "REMOVE_TOTP",
+    "REVOKE_GRANT",
+    "LOGIN_ERROR",
+    "CLIENT_LOGIN",
+    "RESET_PASSWORD_ERROR",
+    "IMPERSONATE_ERROR",
+    "CODE_TO_TOKEN_ERROR",
+    "CUSTOM_REQUIRED_ACTION",
+    "RESTART_AUTHENTICATION",
+    "UPDATE_PROFILE_ERROR",
+    "IMPERSONATE",
+    "LOGIN",
+    "UPDATE_PASSWORD_ERROR",
+    "CLIENT_INITIATED_ACCOUNT_LINKING",
+    "TOKEN_EXCHANGE",
+    "REGISTER",
+    "LOGOUT",
+    "CLIENT_REGISTER",
+    "IDENTITY_PROVIDER_LINK_ACCOUNT",
+    "UPDATE_PASSWORD",
+    "FEDERATED_IDENTITY_LINK_ERROR",
+    "CLIENT_DELETE",
+    "IDENTITY_PROVIDER_FIRST_LOGIN",
+    "VERIFY_EMAIL",
+    "CLIENT_DELETE_ERROR",
+    "CLIENT_LOGIN_ERROR",
+    "RESTART_AUTHENTICATION_ERROR",
+    "REMOVE_FEDERATED_IDENTITY_ERROR",
+    "EXECUTE_ACTIONS",
+    "TOKEN_EXCHANGE_ERROR",
+    "PERMISSION_TOKEN",
+    "SEND_IDENTITY_PROVIDER_LINK_ERROR",
+    "EXECUTE_ACTION_TOKEN_ERROR",
+    "SEND_VERIFY_EMAIL",
+    "EXECUTE_ACTIONS_ERROR",
+    "REMOVE_FEDERATED_IDENTITY",
+    "IDENTITY_PROVIDER_POST_LOGIN",
+    "IDENTITY_PROVIDER_LINK_ACCOUNT_ERROR",
+    "UPDATE_EMAIL",
+    "REGISTER_ERROR",
+    "REVOKE_GRANT_ERROR",
+    "LOGOUT_ERROR",
+    "UPDATE_EMAIL_ERROR",
+    "EXECUTE_ACTION_TOKEN",
+    "CLIENT_UPDATE_ERROR",
+    "UPDATE_PROFILE",
+    "FEDERATED_IDENTITY_LINK",
+    "CLIENT_REGISTER_ERROR",
+    "SEND_VERIFY_EMAIL_ERROR",
+    "SEND_IDENTITY_PROVIDER_LINK",
+    "RESET_PASSWORD",
+    "CLIENT_INITIATED_ACCOUNT_LINKING_ERROR",
+    "UPDATE_CONSENT",
+    "REMOVE_TOTP_ERROR",
+    "VERIFY_EMAIL_ERROR",
+    "SEND_RESET_PASSWORD_ERROR",
+    "CLIENT_UPDATE",
+    "IDENTITY_PROVIDER_POST_LOGIN_ERROR",
+    "CUSTOM_REQUIRED_ACTION_ERROR",
+    "UPDATE_TOTP_ERROR",
+    "CODE_TO_TOKEN",
+    "GRANT_CONSENT_ERROR",
+    "IDENTITY_PROVIDER_FIRST_LOGIN_ERROR"
+  ]
+}

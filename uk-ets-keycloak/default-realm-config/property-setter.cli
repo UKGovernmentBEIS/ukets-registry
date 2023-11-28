@@ -1,0 +1,5 @@
+/system-property=BASE_URL:add(value="${BASE_URL}")
+
+/system-property=KEYCLOAK_MAIL_HOST:add(value="${KEYCLOAK_MAIL_HOST}")
+/system-property=KEYCLOAK_MAIL_PORT:add(value="${KEYCLOAK_MAIL_PORT}")
+/system-property=KEYCLOAK_MAIL_FROM:add(value="${KEYCLOAK_MAIL_FROM}")

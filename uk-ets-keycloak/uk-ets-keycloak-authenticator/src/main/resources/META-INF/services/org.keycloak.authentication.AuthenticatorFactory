@@ -1,0 +1,2 @@
+gov.uk.ets.keycloak.authentication.authenticators.browser.UkEtsAuthenticatorFactory
+gov.uk.ets.keycloak.authentication.authenticators.session.limit.UserSessionLimitAuthenticatorFactory

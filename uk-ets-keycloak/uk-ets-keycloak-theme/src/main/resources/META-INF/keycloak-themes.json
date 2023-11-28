@@ -1,0 +1,11 @@
+{
+	"themes": [
+		{
+			"name": "uk-ets-theme",
+			"types": [
+				"login",
+				"email"
+			]
+		}
+	]
+}
