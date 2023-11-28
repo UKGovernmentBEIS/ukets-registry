@@ -1,0 +1,21 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <app-uk-radio-input
+        controlName="exclusionStatusYears"
+        [formRadioGroupInfo]="formRadioGroupInfo"
+        [validationErrorMessage]="
+          this.validationErrorMessage.exclusionStatusYears
+        "
+      ></app-uk-radio-input>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,103 @@
+<div class="govuk-grid-row" *ngIf="user">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-summary-list__key govuk-heading-m">Personal details</h2>
+  </div>
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-top-5
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">First and middle names</dt>
+      <dd class="govuk-summary-list__value">
+        {{ user.firstName }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Last name</dt>
+      <dd class="govuk-summary-list__value">
+        {{ user.lastName }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Known as</dt>
+      <dd class="govuk-summary-list__value">
+        {{ user.attributes.alsoKnownAs }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row" *ngIf="!hideHomeAddress">
+      <dt class="govuk-summary-list__key">Home address</dt>
+      <dd class="govuk-summary-list__value">
+        <app-shared-three-line-address
+          [line1]="
+            user.attributes.buildingAndStreet
+              ? user.attributes.buildingAndStreet[0]
+              : ''
+          "
+          [line2]="
+            user.attributes.buildingAndStreetOptional
+              ? user.attributes.buildingAndStreetOptional[0]
+              : ''
+          "
+          [line3]="
+            user.attributes.buildingAndStreetOptional2
+              ? user.attributes.buildingAndStreetOptional2[0]
+              : ''
+          "
+        ></app-shared-three-line-address>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row" *ngIf="!hideHomeAddress">
+      <dt class="govuk-summary-list__key">Town or city</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container
+          *ngIf="user.attributes.townOrCity; else elseBlockTownOrCity"
+        >
+          {{ user.attributes.townOrCity[0] | titlecase }}
+        </ng-container>
+        <ng-template #elseBlockTownOrCity></ng-template>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row" *ngIf="!hideHomeAddress">
+      <dt class="govuk-summary-list__key">State or Province</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="user.attributes.stateOrProvince">
+          {{ user.attributes.stateOrProvince[0] }}
+        </ng-container>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row" *ngIf="!hideHomeAddress">
+      <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="user.attributes.postCode">
+          {{ user.attributes.postCode }}
+        </ng-container>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row" *ngIf="!hideHomeAddress">
+      <dt class="govuk-summary-list__key">Country</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="user.attributes.country">
+          {{ user.attributes.country[0] | countryNameAsync | async }}
+        </ng-container>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Date of birth</dt>
+      <dd class="govuk-summary-list__value">
+        <div *ngIf="user.attributes.birthDate">
+          {{ user.attributes.birthDate[0] | dateOfBirth | formatUkDate }}
+        </div>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Country of birth</dt>
+      <dd class="govuk-summary-list__value">
+        <div *ngIf="user.attributes.countryOfBirth">
+          {{ user.attributes.countryOfBirth[0] | countryNameAsync | async }}
+        </div>
+      </dd>
+    </div>
+  </dl>
+</div>

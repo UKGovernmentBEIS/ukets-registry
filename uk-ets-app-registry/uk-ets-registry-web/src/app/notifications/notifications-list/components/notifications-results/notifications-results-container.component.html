@@ -1,0 +1,59 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span
+      class="
+        govuk-heading-xl govuk-grid-column-one-third govuk-!-padding-left-0
+      "
+      >Notifications</span
+    >
+    <div style="float: right">
+      <button
+        *ngIf="isSeniorAdmin$ | async"
+        (click)="goToNewNotification()"
+        [routerLink]="[]"
+        class="govuk-button"
+        data-module="govuk-button"
+      >
+        New notification
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-show-hide-toggle-button
+          [displayable]="true"
+          [condition]="hideCriteria$ | async"
+          [trueStateLabel]="'Show filters'"
+          [falseStateLabel]="'Hide filters'"
+          (toggle)="hideShowCriteria($event)"
+        ></app-show-hide-toggle-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-search-notifications-form-component
+  *ngIf="sortParameters$ | async as sortParameters"
+  [ngStyle]="{ display: (hideCriteria$ | async) ? 'none' : 'block' }"
+  [filtersDescriptor]="this.filtersDescriptor"
+  [storedCriteria]="storedCriteria$ | async"
+  (search)="onSearchNotifications($event, sortParameters)"
+  (submitClick)="onSubmitClick()"
+></app-search-notifications-form-component>
+
+<app-notifications-results
+  [pagination]="pagination$ | async"
+  [isSeniorAdmin]="isSeniorAdmin$ | async"
+  [results]="results$ | async"
+  [sortParameters]="sortParameters$ | async"
+  (newNotificationEmitter)="goToNewNotification()"
+  (sort)="onSort($event)"
+  (pageParametersEmitter)="searchNotifications($event)"
+></app-notifications-results>
+
+<app-empty-search-results *ngIf="(results$ | async)?.length === 0">
+</app-empty-search-results>

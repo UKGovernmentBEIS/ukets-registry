@@ -1,0 +1,211 @@
+<ng-container
+  *ngIf="'urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async"
+>
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Account Holder ID</dt>
+      <dd
+        class="govuk-summary-list__value"
+        *ngIf="accountHolder"
+        id="account-holder-id"
+      >
+        {{ accountHolder.id }}
+      </dd>
+    </div>
+  </dl>
+</ng-container>
+<ng-container *ngIf="accountHolder.type === accountHolderTypes.INDIVIDUAL">
+  <ng-container *ngIf="(accountHolder | individual).details as details">
+    <h3 class="govuk-heading-m">Individual's details</h3>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">First and middle names</dt>
+        <dd class="govuk-summary-list__value">
+          {{ details | individualFirstAndMiddleNames }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Last name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ details.lastName }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country of birth</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            sharedUtil.getCountryNameFromCountryCode(
+              countries,
+              details.countryOfBirth
+            )
+          }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          I confirm that the account holder is aged 18 or over
+        </dt>
+        <dd class="govuk-summary-list__value">Yes</dd>
+      </div>
+    </dl>
+  </ng-container>
+  <ng-container *ngIf="(accountHolder | individual).address as address">
+    <h3 class="govuk-heading-m">Individual's contact details</h3>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Residential address</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-three-line-address
+            [line1]="address.buildingAndStreet"
+            [line2]="address.buildingAndStreet2"
+            [line3]="address.buildingAndStreet3"
+          ></app-shared-three-line-address>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Town or city</dt>
+        <dd class="govuk-summary-list__value">
+          {{ address.townOrCity }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">State or Province</dt>
+        <dd class="govuk-summary-list__value">
+          {{ address.stateOrProvince }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+        <dd class="govuk-summary-list__value">
+          {{ address.postCode }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            sharedUtil.getCountryNameFromCountryCode(countries, address.country)
+          }}
+        </dd>
+      </div>
+      <ng-container
+        *ngIf="(accountHolder | individual).phoneNumber as phoneNumber"
+      >
+        <div class="govuk-summary-list__row" *ngIf="phoneNumber.phoneNumber1">
+          <dt class="govuk-summary-list__key">Phone number 1</dt>
+          <dd class="govuk-summary-list__value">
+            <app-shared-phone-number
+              [countryCode]="phoneNumber.countryCode1"
+              [phoneNumber]="phoneNumber.phoneNumber1"
+            ></app-shared-phone-number>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngIf="phoneNumber.phoneNumber2">
+          <dt class="govuk-summary-list__key">Phone number 2</dt>
+          <dd class="govuk-summary-list__value">
+            <app-shared-phone-number
+              [countryCode]="phoneNumber.countryCode2"
+              [phoneNumber]="phoneNumber.phoneNumber2"
+            ></app-shared-phone-number>
+          </dd>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="(accountHolder | individual).emailAddress as emailAddress"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Email address</dt>
+          <dd class="govuk-summary-list__value">
+            {{ emailAddress.emailAddress }}
+          </dd>
+        </div>
+      </ng-container>
+    </dl>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="accountHolder.type === accountHolderTypes.ORGANISATION">
+  <ng-container *ngIf="(accountHolder | organisation).details as details">
+    <h3 class="govuk-heading-m">Organisation details</h3>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ details.name }}
+        </dd>
+      </div>
+      <div *ngIf="details.registrationNumber" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Registration number</dt>
+        <dd class="govuk-summary-list__value">
+          {{ details.registrationNumber }}
+        </dd>
+      </div>
+      <div
+        *ngIf="details.noRegistrationNumJustification"
+        class="govuk-summary-list__row"
+      >
+        <dt class="govuk-summary-list__key">
+          Reason for not providing a Registration number
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ details.noRegistrationNumJustification }}
+        </dd>
+      </div>
+    </dl>
+  </ng-container>
+  <ng-container *ngIf="(accountHolder | organisation).address as address">
+    <h3 class="govuk-heading-m">Organisation address</h3>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Address</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-three-line-address
+            [line1]="address.buildingAndStreet"
+            [line2]="address.buildingAndStreet2"
+            [line3]="address.buildingAndStreet3"
+          ></app-shared-three-line-address>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Town or city</dt>
+        <dd class="govuk-summary-list__value">
+          {{ address.townOrCity }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">State or Province</dt>
+        <dd class="govuk-summary-list__value">
+          {{ address.stateOrProvince }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+        <dd class="govuk-summary-list__value">
+          {{ address.postCode }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            sharedUtil.getCountryNameFromCountryCode(countries, address.country)
+          }}
+        </dd>
+      </div>
+    </dl>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="accountHolder.type === accountHolderTypes.GOVERNMENT">
+  <ng-container *ngIf="(accountHolder | government).details as details">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ details.name }}
+        </dd>
+      </div>
+    </dl>
+  </ng-container>
+</ng-container>

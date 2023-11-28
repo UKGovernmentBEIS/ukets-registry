@@ -1,0 +1,33 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Upload new file'"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Upload new file</span>
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">Check your answers</h1>
+      </legend>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          Once submitted, the uploaded report will replace any other report for
+          the same year on the public report page.
+        </strong>
+      </div>
+      <app-summary-list
+        [class]="'govuk-summary-list--no-border'"
+        [summaryListItems]="publicationFileItems"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+    </fieldset>
+    <button
+      id="submit"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="submitChanges()"
+    >
+      Submit
+    </button>
+  </div>
+</div>

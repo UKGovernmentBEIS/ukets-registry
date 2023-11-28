@@ -1,0 +1,54 @@
+<div *ngIf="alerts?.length > 1 && !!alerts[1] && alerts[0]">
+  <div
+    class="govuk-warning-text govuk-warning-text-custom"
+    *ngIf="
+      alerts[0].searchResponseResults &&
+      alerts[0].searchResponseResults?.length > 0
+    "
+  >
+    <span
+      class="govuk-warning-text__icon govuk-warning-text__icon-custom"
+      aria-hidden="true"
+      >!</span
+    >
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      There are ITL notification(s) that need your attention.
+    </strong>
+  </div>
+  <div
+    class="govuk-warning-text govuk-warning-text-custom"
+    *ngIf="alerts[0].reconciliationDTO"
+  >
+    <span
+      class="govuk-warning-text__icon govuk-warning-text__icon-custom"
+      aria-hidden="true"
+      >!</span
+    >
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      UKETS Reconciliation process with ID "{{
+        alerts[0].reconciliationDTO.identifier
+      }}" initiated on
+      {{ alerts[0].reconciliationDTO.created | gdsDateTime }} is in status
+      {{ alerts[0].reconciliationDTO.status }}.
+    </strong>
+  </div>
+  <div
+    class="govuk-warning-text govuk-warning-text-custom"
+    *ngIf="alerts[0].itlReconcileDTO"
+  >
+    <span
+      class="govuk-warning-text__icon govuk-warning-text__icon-custom"
+      aria-hidden="true"
+      >!</span
+    >
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      ITL Reconciliation process with ID "{{
+        alerts[0].itlReconcileDTO.identifier
+      }}" initiated on {{ alerts[0].itlReconcileDTO.created | gdsDateTime }} is
+      in status {{ alerts[0].itlReconcileDTO.status }}.
+    </strong>
+  </div>
+</div>

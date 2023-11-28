@@ -1,0 +1,83 @@
+<div class="govuk-grid-row">
+  <div
+    class="govuk-grid-column-two-thirds"
+    *ngIf="user$ | async as user"
+    aria-live="polite"
+  >
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">Your user ID</h1>
+      <div class="govuk-panel__body">
+        <strong id="user-id" class="user-id">{{ user.urid }}</strong>
+      </div>
+    </div>
+
+    <div class="govuk-warning-text govuk-warning-text-custom">
+      <span
+        class="govuk-warning-text__icon govuk-warning-text__icon-custom-5"
+        aria-hidden="true"
+        >!</span
+      >
+      <div class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        You must record your user ID and keep it in a safe place. We will not
+        send this information to you by email.
+      </div>
+    </div>
+
+    <details data-module="govuk-details" class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          When will I need my user ID?
+        </span>
+      </summary>
+      <div class="govuk-details__text govuk-details__text-custom">
+        <hr class="govuk-section-break govuk-section-break" />
+        <p class="govuk-body">You will need your user ID if you:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>forget your password</li>
+          <li>want to change your password</li>
+          <li>are nominated as an authorised representative for an account</li>
+        </ul>
+      </div>
+      <div class="govuk-details__text govuk-details__text-custom">
+        When you sign in to the Registry for the first time, you'll be asked to
+        set up two-factor authentication using the FreeOTP Authenticator app.
+      </div>
+      <div class="govuk-details__text govuk-details__text-custom">
+        You'll be able to view guidance on how to download and use the app.
+      </div>
+    </details>
+    <button class="govuk-button" data-module="govuk-button" (click)="login()">
+      Sign in
+    </button>
+    <h2 class="govuk-heading-m">What happens next</h2>
+    <p class="govuk-body">
+      You currently have limited access to the UK Emissions Trading Registry.
+      You can:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>request to open a registry account</li>
+      <li>change your password</li>
+      <li>change your personal details</li>
+      <li>change your work details</li>
+    </ul>
+    <p class="govuk-body">
+      An enrolled registry user can nominate you as an authorised representative
+      for a registry account if you have given them your user ID.
+    </p>
+    <p class="govuk-body">
+      You'll receive a Registry activation code by email if your registration is
+      approved by a registry administrator. The approval process can take up to
+      10 days.
+    </p>
+    <p class="govuk-body">
+      You must use your Registry activation code to activate your Registry
+      Sign-in within 2 months from the date of the email. If you lose your code,
+      or it expires before you have activated your Registry Sign-in, you must
+      <a class="govuk-link" [routerLink]="[]" (click)="login()" id="sign-in"
+        >sign in to the registry</a
+      >
+      and request a new code.
+    </p>
+  </div>
+</div>

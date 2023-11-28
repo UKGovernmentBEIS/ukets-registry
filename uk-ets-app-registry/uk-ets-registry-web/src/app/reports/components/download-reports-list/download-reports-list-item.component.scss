@@ -1,0 +1,18 @@
+@import '_variables';
+
+.download-icon {
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: grey;
+  text-decoration: none;
+}
+
+.error {
+  color: $govuk-error-colour;
+  font-weight: bold;
+}

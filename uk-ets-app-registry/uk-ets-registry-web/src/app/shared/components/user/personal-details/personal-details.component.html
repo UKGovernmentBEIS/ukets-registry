@@ -1,0 +1,148 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Your details'"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" aria-live="polite">
+    <span class="govuk-caption-xl">{{ caption }}</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">{{ heading }}</h1>
+    <p class="govuk-body" *ngIf="!isRequestUpdateProcess">
+      We will use this information to confirm your identity
+    </p>
+    <p class="govuk-body" *ngIf="isRequestUpdateProcess">
+      If no changes are needed for the details on this page, select Continue
+    </p>
+    <form
+      (ngSubmit)="onSubmit()"
+      [formGroup]="formGroup"
+      [appConnectForm]="user"
+    >
+      <fieldset class="govuk-fieldset" aria-live="polite">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h2 class="govuk-fieldset__heading">
+            {{
+              isRequestUpdateProcess
+                ? isMyProfilePage
+                  ? 'Your name'
+                  : 'Name'
+                : 'Your name'
+            }}
+          </h2>
+        </legend>
+        <p class="govuk-body" *ngIf="!isRequestUpdateProcess">
+          Enter your full name as it appears on a legal document, for example a
+          birth certificate or passport
+        </p>
+        <app-form-control-text
+          [label]="'First and middle names'"
+          [hint]="'Given names'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.firstName"
+          controlName="firstName"
+          [autocomplete]="'given-name'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Last name'"
+          [hint]="'Family name'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.lastName"
+          controlName="lastName"
+          [autocomplete]="'family-name'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Also known as (optional)'"
+          [hint]="getKnownAsHintText()"
+          [maxlength]="256"
+          controlName="alsoKnownAs"
+          [autocomplete]="'nickname'"
+        ></app-form-control-text>
+      </fieldset>
+      <fieldset
+        class="govuk-fieldset"
+        aria-live="polite"
+        *ngIf="!isRequestUpdateProcess"
+      >
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h2 class="govuk-fieldset__heading">Your home address</h2>
+        </legend>
+        <app-form-control-text
+          [label]="'Address Line 1'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.buildingAndStreet"
+          controlName="buildingAndStreet"
+          [autocomplete]="'address-line1'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Address line 2 (optional)'"
+          [maxlength]="256"
+          controlName="buildingAndStreetOptional"
+          [autocomplete]="'address-line2'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Address line 3 (optional)'"
+          [maxlength]="256"
+          controlName="buildingAndStreetOptional2"
+          [autocomplete]="'address-line3'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Town or city'"
+          [validationErrorMessage]="validationErrorMessage.townOrCity"
+          [maxlength]="256"
+          controlName="townOrCity"
+          [autocomplete]="'address-level2'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'State or Province (optional)'"
+          [maxlength]="256"
+          controlName="stateOrProvince"
+          [autocomplete]="'state-or-province'"
+        ></app-form-control-text>
+        <app-form-control-select
+          controlName="country"
+          [options]="countrySelectOptions()"
+          [validationErrorMessage]="validationErrorMessage.country"
+          [label]="'Country'"
+        ></app-form-control-select>
+        <app-form-control-text
+          [label]="'Postal Code or ZIP (optional, if outside UK)'"
+          [class]="'govuk-input--width-10'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.postCode"
+          controlName="postCode"
+          [autocomplete]="'postal-code'"
+        ></app-form-control-text>
+      </fieldset>
+      <fieldset class="govuk-fieldset" aria-live="polite">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h2 class="govuk-fieldset__heading">
+            {{
+              isRequestUpdateProcess
+                ? 'Country and date of birth'
+                : 'Your country and date of birth'
+            }}
+          </h2>
+        </legend>
+        <app-form-control-select
+          controlName="countryOfBirth"
+          [options]="countrySelectOptions()"
+          [validationErrorMessage]="validationErrorMessage.countryOfBirth"
+          [label]="'Country of birth'"
+        ></app-form-control-select>
+        <app-uk-date-control
+          [minAge]="18"
+          [maxAge]="100"
+          [label]="'Date of birth'"
+          [hint]="'For example, 31 3 1980'"
+          [showErrors]="showErrors"
+          formControlName="birthDate"
+          [validationErrorMessages]="validationMessages.birthDate"
+        ></app-uk-date-control>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

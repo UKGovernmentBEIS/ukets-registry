@@ -1,0 +1,131 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-7">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">
+        {{
+          businessCheckResult?.requestIdentifier
+            ? 'You have submitted a transaction proposal'
+            : 'You have approved the proposed transaction'
+        }}
+      </h1>
+      <div class="govuk-panel__body">
+        <div>
+          {{
+            businessCheckResult?.requestIdentifier ? 'The request ID is' : ''
+          }}
+          <strong>{{ businessCheckResult?.requestIdentifier }}</strong>
+        </div>
+        <div
+          *ngIf="
+            enrichedReturnExcessAllocationTransactionSummaryForSigning ===
+              undefined ||
+              enrichedReturnExcessAllocationTransactionSummaryForSigning?.natReturnTransactionIdentifier ===
+                null ||
+              (enrichedReturnExcessAllocationTransactionSummaryForSigning?.natReturnTransactionIdentifier ===
+                undefined &&
+                enrichedReturnExcessAllocationTransactionSummaryForSigning?.nerReturnTransactionIdentifier ===
+                  null) ||
+              enrichedReturnExcessAllocationTransactionSummaryForSigning?.nerReturnTransactionIdentifier ===
+                undefined;
+            else elseBlock
+          "
+        >
+          The transaction ID is
+          <strong>{{ businessCheckResult?.transactionIdentifier }}</strong>
+        </div>
+        <ng-template #elseBlock>
+          <div>
+            <br />
+            The transaction IDs are
+            <strong>
+              {{
+                enrichedReturnExcessAllocationTransactionSummaryForSigning.nerReturnTransactionIdentifier
+              }}
+              (NER)
+            </strong>
+            <br />
+            and
+            <strong>
+              {{
+                enrichedReturnExcessAllocationTransactionSummaryForSigning.natReturnTransactionIdentifier
+              }}
+              (NAT)
+            </strong>
+          </div>
+        </ng-template>
+      </div>
+      <hr class="govuk-section-break govuk-section-break--m" />
+      <div class="govuk-panel__body">
+        <div *ngIf="!businessCheckResult?.approvalRequired">
+          The transaction will complete on
+          {{
+            businessCheckResult?.executionDate
+              | concatDateTime
+                : businessCheckResult?.executionDate
+                : businessCheckResult?.executionTime
+              | gdsDateShort
+          }}, at approximately
+          {{
+            businessCheckResult?.executionTime
+              | concatDateTime
+                : businessCheckResult?.executionDate
+                : businessCheckResult?.executionTime
+              | gdsTime
+          }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">What happens next</h2>
+    <p *ngIf="businessCheckResult?.approvalRequired" class="govuk-body">
+      <ng-container *ngIf="account.governmentAccount">
+        <span *ngIf="!trTypeValues[transactionType].isETSTransaction">
+          The Registry Administrator
+        </span>
+        <span *ngIf="trTypeValues[transactionType].isETSTransaction">
+          An authority
+        </span>
+        must approve this proposal before the transaction can be executed
+      </ng-container>
+      <ng-container *ngIf="!account.governmentAccount">
+        <span
+          *ngIf="!trTypeValues[transactionType].isKPTransactionOnlyForAdmin"
+        >
+          <ng-container *ngIf="isAdmin"
+            >The Registry Administrator</ng-container
+          >
+          <ng-container *ngIf="!isAdmin"
+            >An authorised representative</ng-container
+          >
+        </span>
+        <span *ngIf="trTypeValues[transactionType].isKPTransactionOnlyForAdmin">
+          The Registry Administrator
+        </span>
+        must approve this proposal before the transaction can be executed
+      </ng-container>
+    </p>
+    <p *ngIf="!businessCheckResult?.approvalRequired" class="govuk-body">
+      The transaction should complete at the date and time stated above. <br />
+      Review the transaction details to check its status.
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="backToDetails()"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >{{
+          trTypeValues[transactionType]?.isTransactionReversed
+            ? 'Back to transaction details'
+            : 'Back to account details'
+        }}</a
+      >
+    </p>
+  </div>
+</div>

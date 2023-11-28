@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="karmenisa" id="3_10_0_RENAME_TEMPLATE_5_NAME_ON_FILE_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM files WHERE file_name ='Template 5 - Combined PC and LOA.pdf';
+            </sqlCheck>
+        </preConditions>
+        <comment>Updates the Template 5 to the new name according to UKETS-7120</comment>
+        <sql>
+           update
+               files
+           set
+               file_name = 'Template 5 - Combined Primary Contact and Letter of Authority Declaration.pdf'
+           where
+               file_name ='Template 5 - Combined PC and LOA.pdf';
+        </sql>
+    </changeSet>
+
+    <changeSet author="karmenisa" id="3_10_0_RENAME_TEMPLATE_5_NAME_ON_REFERENCE_FILES_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM reference_files WHERE document_name ='Template 5 - Combined PC and LOA.pdf';
+            </sqlCheck>
+        </preConditions>
+        <comment>Updates the Template 5 to the new name according to UKETS-7120</comment>
+        <sql>
+            update
+                reference_files
+            set
+                document_name = 'Template 5 - Combined Primary Contact and Letter of Authority Declaration.pdf'
+            where
+                document_name ='Template 5 - Combined PC and LOA.pdf';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

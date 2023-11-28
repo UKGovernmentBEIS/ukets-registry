@@ -1,0 +1,53 @@
+<div
+  class="govuk-character-count"
+  data-module="govuk-character-count"
+  [attr.data-maxlength]="maxlength"
+>
+  <div class="govuk-form-group" [class.govuk-form-group--error]="showError()">
+    <label
+      class="govuk-label"
+      [attr.for]="id"
+      [attr.id]="labelId"
+      [ngClass]="{ 'sr-only': srOnlyLabel === true }"
+    >
+      {{ label }}
+    </label>
+    <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+      {{ hint }}
+    </span>
+    <ng-container *ngIf="showError()">
+      <span
+        *ngIf="showError()"
+        id="event-name-error"
+        class="govuk-error-message"
+        role="alert"
+        [attr.aria-describedby]="labelId"
+      >
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ validationErrorMessage }}
+      </span>
+    </ng-container>
+    <textarea
+      class="govuk-textarea"
+      [class.govuk-input--error]="showError()"
+      [ngClass]="class"
+      [formControl]="formControl"
+      [attr.id]="id"
+      [attr.name]="id"
+      [attr.rows]="rows"
+      type="text"
+      [maxlength]="maxlength"
+      [required]="hasRequiredField(formControl)"
+      [readonly]="readonly"
+      [attr.aria-invalid]="showError()"
+      [attr.aria-describedby]="describedBy()"
+    ></textarea>
+  </div>
+  <span
+    [attr.id]="infoId"
+    class="govuk-hint govuk-character-count__message"
+    aria-live="polite"
+  >
+    You have {{ remainingChars$ | async }} characters remaining
+  </span>
+</div>

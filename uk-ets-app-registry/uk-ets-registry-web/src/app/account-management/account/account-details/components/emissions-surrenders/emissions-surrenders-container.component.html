@@ -1,0 +1,89 @@
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text"> Help with surrenders </span>
+  </summary>
+  <div class="govuk-details__text">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body govuk-!-margin-bottom-3">
+          If you need help with your UK ETS surrender obligation, you can
+          <a
+            class="govuk-link"
+            [routerLink]="['/guidance/surrender-obligation']"
+          >
+            view the guidance here </a
+          >.
+        </p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<app-compliance-overview
+  id="overview-emissions-surrenders-summary"
+  [accountType]="accountType"
+  [compliantEntityIdentifier]="compliantEntityIdentifier"
+  [complianceOverviewResult]="complianceOverviewResult$ | async"
+  [isAdmin]="isAdmin"
+></app-compliance-overview>
+
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Help with current surrender status
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <ul class="govuk-list govuk-list--bullet">
+          <li>
+            A: The number of allowances surrendered is greater than or equal to
+            verified emissions
+          </li>
+          <li>
+            B: The number of allowances surrendered is lower than verified
+            emissions
+          </li>
+          <li>C: Verified emissions were not entered</li>
+          <li>
+            Error: There was an error in the dynamic surrender status
+            calculation. Send an email to
+            <a
+              class="govuk-link"
+              href="mailto:{{ etsRegistryHelpEmail$ | async }}"
+              >etregistryhelp@environment-agency.gov.uk</a
+            >
+            to report this error
+          </li>
+          <li>
+            Excluded: Operator is excluded from reporting obligations during
+            this year
+          </li>
+          <li>
+            Not currently applicable: The emissions reporting period has not
+            started for this operator
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</details>
+
+<app-emissions-reporting-period
+  [title]="getEmissionsReportingTitle()"
+  [helpMessageTitle]="getEmissionsReportingHelpMessageTitle()"
+  [verifiedEmissionsResult]="verifiedEmissionsResult$ | async"
+  [canRequestUpdateExclusionStatus]="canRequestUpdateExclusionStatus"
+>
+</app-emissions-reporting-period>
+
+<app-compliance-status-history [history]="complianceStatusHistory$ | async">
+</app-compliance-status-history>
+
+<ng-container *ngIf="isAdmin">
+  <h2 class="govuk-heading-m">Surrender history and comments</h2>
+  <app-domain-events
+    [domainEvents]="complianceHistoryComments$ | async"
+  ></app-domain-events>
+</ng-container>

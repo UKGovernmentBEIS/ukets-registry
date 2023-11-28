@@ -1,0 +1,29 @@
+/* ==========================================================================
+#MAIN WIZARD
+========================================================================== */
+.disabled,
+:host ::ng-deep .transaction-rules-link.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: grey;
+  text-decoration: none;
+}
+
+@media (min-width: 40.0525em) {
+  .right-aligned {
+    float: right;
+  }
+}
+
+.govuk-summary-list {
+  display: block;
+}
+
+.govuk-summary-list__row {
+  display: block;
+}
+
+.govuk-summary-list__value:last-child {
+  padding-right: 0;
+  width: 1%;
+}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="0_15_0_ALTER_PHONE_COUNTRY_NUMBER_SIZE_IN_CONTACT_TABLE" author="georgopoulosp" context="migrate">
+		<comment>Update the column size of phone country number 1 and 2 in contact table.</comment>
+		<sql>
+			alter table contact alter column phone_number_1_country type varchar(10);
+			alter table contact alter column phone_number_2_country type varchar(10);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_15_0_UPDATE_EXISTING_PHONE_COUNTRY_CODES_IN_CONTACT_TABLE" author="georgopoulosp" context="migrate">
+		<comment>Update the phone codes.</comment>
+		<sql>
+			update contact set phone_number_1_country = 'UK (44)' where phone_number_1_country = '44';
+			update contact set phone_number_2_country = 'UK (44)' where phone_number_2_country = '44';
+
+			update contact set phone_number_1_country = 'GR (30)' where phone_number_1_country = '30';
+			update contact set phone_number_2_country = 'GR (30)' where phone_number_2_country = '30';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_15_0_CREATE_ACCEPT_MESSAGE_TABLE"
+		author="fragkise" context="migrate">
+		<comment>Create a table for keeping messages send and received from ITL.</comment>
+		<sql>
+			create sequence accept_message_log_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+			--------------------------------------------------------
+			-- Table accept_message_log
+			--------------------------------------------------------
+			create table "accept_message_log"
+			(
+			id bigint not null,
+			source varchar(255) not null,
+			destination varchar(255) not null,
+			message_datetime timestamp not null,
+			message_content varchar(2000) not null,
+			status_datetime timestamp not null,
+			status_description varchar(2000) not null,
+			constraint "pk_accept_message_log" primary key("id")
+			);
+
+			comment on table "accept_message_log" is 'Stores messages send and received from ITL.';
+			comment on column "accept_message_log"."id" is 'the primary key';
+		</sql>
+
+		<rollback>
+			<sql>
+				drop table if exists "accept_message_log" cascade;
+				drop sequence if exists "accept_message_log_seq";
+			</sql>
+		</rollback>
+	</changeSet>
+</databaseChangeLog>

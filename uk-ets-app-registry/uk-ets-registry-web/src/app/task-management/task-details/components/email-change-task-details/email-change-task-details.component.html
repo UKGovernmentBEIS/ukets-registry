@@ -1,0 +1,45 @@
+<hr class="govuk-section-break govuk-section-break--visible" />
+
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-body-l">User details</dt>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Email address</dt>
+    <dd class="govuk-summary-list__value">
+      {{ taskDetails.userCurrentEmail }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">New email address</dt>
+    <dd class="govuk-summary-list__value focused-text">
+      {{ taskDetails.userNewEmail }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">User ID</dt>
+    <dd class="govuk-summary-list__value">
+      <a
+        *ngIf="isAdmin; else plainText"
+        class="govuk-link"
+        [routerLink]="'/user-details/' + taskDetails.userUrid"
+        >{{ taskDetails.userUrid }}</a
+      >
+      <ng-template #plainText>
+        {{ taskDetails.userUrid }}
+      </ng-template>
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">First and middle names</dt>
+    <dd class="govuk-summary-list__value">
+      {{ taskDetails.userFirstName }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last name</dt>
+    <dd class="govuk-summary-list__value">
+      {{ taskDetails.userLastName }}
+    </dd>
+  </div>
+</dl>

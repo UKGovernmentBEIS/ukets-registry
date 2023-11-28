@@ -1,0 +1,19 @@
+<button
+  *ngIf="displayable"
+  (click)="onClaim()"
+  [disabled]="disabled"
+  data-prevent-double-click="true"
+  class="claim-button govuk-button"
+  data-module="govuk-button"
+>
+  Claim
+</button>
+<button
+  *ngIf="displayable"
+  (click)="onAssign()"
+  [disabled]="disabled"
+  class="assign-button govuk-button govuk-button--secondary govuk-!-margin-left-2"
+  data-module="govuk-button"
+>
+  Assign
+</button>

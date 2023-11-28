@@ -1,0 +1,97 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-visually-hidden">
+      Header buttons in the following table can be used to sort the data.
+    </span>
+
+    <table appSortableTable (sorting)="sort.emit($event)" class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th
+            scope="col"
+            appSortableColumn
+            sortField="notificationIdentifier"
+            [sortDirection]="
+              sortParameters?.sortField === 'notificationIdentifier'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Notification ID
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            sortField="type"
+            [sortDirection]="
+              sortParameters?.sortField === 'type'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Type
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            sortField="receivedOn"
+            [sortDirection]="
+              sortParameters?.sortField === 'receivedOn'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Received on
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            sortField="lastUpdateOn"
+            [sortDirection]="
+              sortParameters?.sortField === 'lastUpdateOn'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Last update on
+          </th>
+          <th
+            scope="col"
+            appSortableColumn
+            sortField="status"
+            [sortDirection]="
+              sortParameters?.sortField === 'status'
+                ? sortParameters.sortDirection
+                : null
+            "
+          >
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr *ngFor="let notice of notices" class="govuk-table__row">
+          <td class="govuk-table__cell">
+            <a [routerLink]="[notice?.notificationIdentifier]">{{
+              notice?.notificationIdentifier
+            }}</a>
+          </td>
+          <td class="govuk-table__cell">
+            {{ noticeTypeMap[notice?.type] }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ notice?.receivedOn | gdsDateTimeShort }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ notice?.lastUpdateOn | gdsDateTimeShort }}
+          </td>
+          <td class="govuk-table__cell">
+            <app-govuk-tag [color]="noticeStatusMap[notice?.status].color">
+              {{ noticeStatusMap[notice?.status].label }}
+            </app-govuk-tag>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

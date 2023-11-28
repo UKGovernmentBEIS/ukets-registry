@@ -1,0 +1,226 @@
+<span class="sr-only"
+  >Header buttons in the following table can be used to sort the data.</span
+>
+
+<table appSortableTable (sorting)="sort.emit($event)" class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'transactionId'"
+        [sortDirection]="
+          sortParameters?.sortField === 'transactionId'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Transaction
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'units'"
+        [sortDirection]="
+          sortParameters?.sortField === 'units'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Units
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'transferringAccount'"
+        [sortDirection]="
+          sortParameters?.sortField === 'transferringAccount'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        From
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'acquiringAccount'"
+        [sortDirection]="
+          sortParameters?.sortField === 'acquiringAccount'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        To
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'lastUpdated'"
+        [sortDirection]="
+          sortParameters?.sortField === 'lastUpdated'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Last Updated
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'status'"
+        [sortDirection]="
+          sortParameters?.sortField === 'status'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Status
+      </th>
+      <th
+        *ngIf="showRunningBalances"
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'runningBalance.quantity'"
+        [sortDirection]="
+          sortParameters?.sortField === 'runningBalance.quantity'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Running Balance
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let transaction of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a
+          [routerLink]="[]"
+          class="disabled"
+          (click)="navigateToTransaction(transaction.id, $event)"
+        >
+          {{ transaction.id }}</a
+        >
+        <br />
+        {{ transaction.type | apiEnumTypes: ApiEnumTypes.TransactionType }}
+        <div *ngIf="transaction.reversedByIdentifier">
+          Reversed By
+          <a
+            [routerLink]="[]"
+            class="disabled"
+            (click)="
+              navigateToTransaction(transaction.reversedByIdentifier, $event)
+            "
+          >
+            {{ transaction.reversedByIdentifier }}</a
+          >
+        </div>
+        <div *ngIf="transaction.reversesIdentifier">
+          Original:
+          <a
+            [routerLink]="[]"
+            class="disabled"
+            (click)="
+              navigateToTransaction(transaction.reversesIdentifier, $event)
+            "
+          >
+            {{ transaction.reversesIdentifier }}</a
+          >
+        </div>
+      </td>
+      <td class="govuk-table__cell units-cell">
+        {{ transaction.units.quantity | number }}<br />
+        {{ transaction.units.type }}
+      </td>
+      <td class="govuk-table__cell">
+        <div
+          *ngIf="
+            !transaction.transferringAccount.externalAccount &&
+              transaction.transferringAccount.userHasAccess;
+            else elseBlockTransferringAccount
+          "
+        >
+          <div
+            *ngIf="
+              !(
+                transaction.transferringAccount.accountStatus === 'SUSPENDED' &&
+                !isAdmin
+              );
+              else elseBlockTransferringAccount
+            "
+          >
+            <a
+              [routerLink]="[]"
+              (click)="
+                goToAccountDetailsAndChangeLocationState(
+                  transaction.transferringAccount.ukRegistryIdentifier,
+                  $event
+                )
+              "
+              class="disabled"
+            >
+              {{ transaction.transferringAccount.title }}
+            </a>
+          </div>
+        </div>
+        <ng-template #elseBlockTransferringAccount>{{
+          transaction.transferringAccount.title
+        }}</ng-template>
+      </td>
+      <td class="govuk-table__cell">
+        <div
+          *ngIf="
+            !transaction.acquiringAccount.externalAccount &&
+              transaction.acquiringAccount.userHasAccess;
+            else elseBlockAcquiringAccount
+          "
+        >
+          <div
+            *ngIf="
+              !(
+                transaction.acquiringAccount.accountStatus === 'SUSPENDED' &&
+                !isAdmin
+              );
+              else elseBlockAcquiringAccount
+            "
+          >
+            <a
+              [routerLink]="[]"
+              (click)="
+                goToAccountDetailsAndChangeLocationState(
+                  transaction.acquiringAccount.ukRegistryIdentifier,
+                  $event
+                )
+              "
+              class="disabled"
+            >
+              {{ transaction.acquiringAccount.title }}
+            </a>
+          </div>
+        </div>
+        <ng-template #elseBlockAcquiringAccount>
+          {{ transaction.acquiringAccount.title }}
+        </ng-template>
+      </td>
+      <td class="govuk-table__cell">
+        {{ transaction.lastUpdated | gdsDateTimeShort }}
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag [color]="transactionStatusMap[transaction.status].color">
+          {{ transactionStatusMap[transaction.status].label }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell" *ngIf="showRunningBalances">
+        {{ formatBalance(transaction.runningBalance) | number }}
+      </td>
+    </tr>
+  </tbody>
+</table>

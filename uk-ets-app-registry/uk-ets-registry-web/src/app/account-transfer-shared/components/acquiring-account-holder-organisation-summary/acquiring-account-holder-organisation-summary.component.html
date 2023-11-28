@@ -1,0 +1,120 @@
+<!-- A section for Organization type Account Holder -->
+
+<ng-container
+  *ngIf="acquiringAccountHolder?.type === accountHolderTypes.ORGANISATION"
+>
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <h2 class="govuk-summary-list__key">Organisation details</h2>
+    </div>
+  </dl>
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-9
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Name</dt>
+      <dd class="govuk-summary-list__value">
+        {{ acquiringAccountHolder.details.name }}
+      </dd>
+    </div>
+    <div
+      *ngIf="(acquiringAccountHolder | organisation).details.registrationNumber"
+      class="govuk-summary-list__row"
+    >
+      <dt class="govuk-summary-list__key">Registration number</dt>
+      <dd class="govuk-summary-list__value">
+        {{ (acquiringAccountHolder | organisation).details.registrationNumber }}
+      </dd>
+    </div>
+
+    <div
+      *ngIf="
+        (acquiringAccountHolder | organisation).details
+          .noRegistrationNumJustification
+      "
+      class="govuk-summary-list__row"
+    >
+      <dt class="govuk-summary-list__key">
+        Reason for not providing a Registration number
+      </dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          (acquiringAccountHolder | organisation).details
+            .noRegistrationNumJustification
+        }}
+      </dd>
+    </div>
+  </dl>
+
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <h2 class="govuk-summary-list__key">Organisation Address</h2>
+    </div>
+  </dl>
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-9
+    "
+    *ngIf="acquiringAccountHolder.address"
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ (acquiringAccountHolder | organisation).address.buildingAndStreet }}
+        <ng-container
+          *ngIf="
+            (acquiringAccountHolder | organisation).address.buildingAndStreet2
+          "
+        >
+          <br />
+          {{
+            (acquiringAccountHolder | organisation).address.buildingAndStreet2
+          }}
+        </ng-container>
+        <ng-container
+          *ngIf="
+            (acquiringAccountHolder | organisation).address.buildingAndStreet3
+          "
+        >
+          <br />{{
+            (acquiringAccountHolder | organisation).address.buildingAndStreet3
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="(acquiringAccountHolder | organisation).address.townOrCity"
+        >
+          <br />{{
+            (acquiringAccountHolder | organisation).address.townOrCity
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="
+            (acquiringAccountHolder | organisation).address.stateOrProvince
+          "
+        >
+          <br />{{
+            (acquiringAccountHolder | organisation).address.stateOrProvince
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="(acquiringAccountHolder | organisation).address.country"
+        >
+          <br />{{
+            (acquiringAccountHolder | organisation).address.country
+          }}</ng-container
+        >
+        <ng-container
+          *ngIf="(acquiringAccountHolder | organisation).address.postCode"
+        >
+          <br />{{
+            (acquiringAccountHolder | organisation).address.postCode
+          }}</ng-container
+        >
+      </dd>
+    </div>
+  </dl>
+</ng-container>

@@ -1,0 +1,122 @@
+<div appScreenReaderPageAnnounce [pageTitle]="header"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">{{ caption }}</span>
+    <h1 class="govuk-heading-xl">{{ header }}</h1>
+    <h2 *ngIf="isAHUpdateWizard" class="govuk-heading-l govuk-!-padding-top-6">
+      Update the individual's contact details
+    </h2>
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset" role="group">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h3 class="govuk-fieldset__heading">Their home address</h3>
+        </legend>
+
+        <app-form-control-text
+          [label]="'Address line 1'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.buildingAndStreet"
+          controlName="address.buildingAndStreet"
+          [autocomplete]="'address-line1'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Address line 2 (optional)'"
+          [maxlength]="256"
+          controlName="address.buildingAndStreet2"
+          [autocomplete]="'address-line2'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Address line 3 (optional)'"
+          [maxlength]="256"
+          controlName="address.buildingAndStreet3"
+          [autocomplete]="'address-line3'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Town or city'"
+          [validationErrorMessage]="validationErrorMessage.townOrCity"
+          [maxlength]="256"
+          controlName="address.townOrCity"
+          [autocomplete]="'address-level2'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'State or Province (optional)'"
+          [maxlength]="256"
+          controlName="address.stateOrProvince"
+          [autocomplete]="'state-or-province'"
+        ></app-form-control-text>
+        <app-form-control-select
+          controlName="address.country"
+          [options]="_countryOptions"
+          [label]="'Country'"
+        ></app-form-control-select>
+        <app-form-control-text
+          [label]="'Postal Code or ZIP (optional, if outside UK)'"
+          [class]="'govuk-input--width-10'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.postCode"
+          controlName="address.postCode"
+          [autocomplete]="'postal-code'"
+        ></app-form-control-text>
+      </fieldset>
+      <fieldset
+        aria-describedby="wrong-number-error"
+        class="govuk-fieldset"
+        role="group"
+      >
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h3 class="govuk-fieldset__heading">Phone number</h3>
+        </legend>
+        <app-uk-phone-select
+          [phoneInfo]="_phoneInfo1"
+          [showErrors]="showErrors"
+          [countryCodes]="countryCodes"
+          [phoneNumberLabel]="'Phone number 1'"
+          [validationErrorMessages]="validationMessages.phone1"
+          formControlName="phone1"
+        ></app-uk-phone-select>
+        <app-uk-phone-select
+          [phoneInfo]="_phoneInfo2"
+          [phoneNumberLabel]="'Phone number 2 (Optional)'"
+          [showErrors]="showErrors"
+          [countryCodes]="countryCodes"
+          formControlName="phone2"
+          [validationErrorMessages]="validationMessages.phone2"
+        ></app-uk-phone-select>
+      </fieldset>
+
+      <fieldset
+        aria-describedby="wrong-number-error"
+        class="govuk-fieldset"
+        role="group"
+      >
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h3 class="govuk-fieldset__heading">Email address</h3>
+        </legend>
+        <app-form-control-email
+          [label]="'Email address'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.emailAddress"
+          controlName="emailAddress.emailAddress"
+          [disableCopy]="true"
+        ></app-form-control-email>
+        <app-form-control-email
+          [label]="'Confirm their email address'"
+          [maxlength]="256"
+          [validationErrorMessage]="
+            validationErrorMessage.emailAddressConfirmation
+          "
+          controlName="emailAddress.emailAddressConfirmation"
+          [disableCopy]="true"
+        ></app-form-control-email>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

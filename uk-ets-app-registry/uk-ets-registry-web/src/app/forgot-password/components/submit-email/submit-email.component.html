@@ -1,0 +1,28 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <h1 class="govuk-heading-l">Reset my password</h1>
+      <p class="govuk-body">
+        We'll send you a link to reset your password. The link will expire after
+        {{ linkExpiration }} minutes.
+      </p>
+      <app-form-control-email
+        [label]="'Email address'"
+        [maxlength]="256"
+        [validationErrorMessage]="validationErrorMessage.email"
+        controlName="email"
+      ></app-form-control-email>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="Submit"
+        [disabled]="!cookiesAccepted"
+        id="submit"
+      >
+        Confirm
+      </button>
+    </form>
+    <app-back-to-top></app-back-to-top>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<div
+  class="type-ahead govuk-form-group"
+  [ngClass]="{ 'govuk-form-group--error': showError() }"
+>
+  <label
+    class="govuk-label"
+    [class.govuk-visually-hidden]="!showLabel"
+    [attr.for]="id"
+    [attr.id]="labelId"
+  >
+    {{ label }}
+  </label>
+  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+    {{ hint }}
+  </span>
+  <ng-container *ngIf="showError()">
+    <span
+      *ngIf="showError()"
+      id="event-name-error"
+      class="govuk-error-message"
+      role="alert"
+      [attr.aria-describedby]="labelId"
+    >
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ validationErrorMessage }}
+    </span>
+  </ng-container>
+
+  <input
+    class="govuk-input"
+    [class.govuk-input--error]="showError()"
+    [formControl]="formControl"
+    [attr.id]="id"
+    [attr.name]="id"
+    [placeholder]="placeHolder"
+    type="text"
+    [maxlength]="maxlength"
+    [required]="hasRequiredField(formControl)"
+    [readonly]="readonly"
+    [attr.aria-invalid]="showError()"
+    [appDisableControl]="disabled"
+    [ngbTypeahead]="search"
+    [resultTemplate]="resultTemplate"
+    [inputFormatter]="inputFormatter"
+    (selectItem)="onSelect($event)"
+  />
+</div>

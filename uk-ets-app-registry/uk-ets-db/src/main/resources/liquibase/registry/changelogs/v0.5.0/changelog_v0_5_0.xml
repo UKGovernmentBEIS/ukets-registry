@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+	<changeSet id="0_5_0_ADD_NO_REGISTRATION" author="gerasopouloss" context="migrate">
+
+		<comment>Adds a column to account holder</comment>
+		<sql>
+			alter table "account_holder"
+			add column "no_reg_justification" varchar(1024) default null;
+
+			comment on column "account_holder"."no_reg_justification" is 'Justification why the the Registration number is empty';
+		</sql>
+
+	</changeSet>
+	<changeSet id="0_5_0_ADD_COMPLIANCE_STATUS_AND_BALANCE" author="karavitisk" context="migrate">
+		<comment>Adds two new columns "Compliance Status" and "Balance" on Account</comment>
+		<sql>
+			alter table account
+			add column compliance_status varchar(40) default null,
+			add column balance bigint not null default 0;
+
+			comment on column account.compliance_status is 'The compliance status of account. It takes one of the predefined values: COMPLIANT, NEEDS_TO_ENTER_EMISSIONS, NEEDS_TO_SURRENDER, NOT_CALCULATED, EXCLUDED';
+			comment on column account.balance is 'The account balance. Default value is zero.';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_5_0_UPDATE_ACCOUNT_BALANCE" author="pougouniasn" context="migrate">
+		<comment>Allows null values in balance</comment>
+		<sql>
+			alter table account
+			alter column balance drop not null;
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_5_0_ADD_INDEXES_FOR_ACCOUNT_SEARCH" author="karavitisk" context="migrate">
+		<comment>Adds indexes for optimizing the account search</comment>
+		<sql>
+			create index "idx_acc_status" on "account"("account_status");
+			create index "idx_acc_kyoto_account_type" on "account"("kyoto_account_type");
+			create index "idx_acc_registry_account_type" on "account"("registry_account_type");
+			create index "idx_acc_compliance_status" on "account"("compliance_status");
+			create index "idx_cmp_entity_regulator" on "compliant_entity"("regulator");
+			create index "idx_ins_permit_identifier" on "installation"("permit_identifier");
+			create index "idx_air_monitoring_plan_identifier" on "aircraft_operator"("monitoring_plan_identifier");
+			create index "idx_acc_acs_type" on "account_access"("type");
+		</sql>
+	</changeSet>
+	<changeSet id="0_5_0_UPDATE_TASK_TABLE" author="chortism" context="migrate">
+		<comment>Implements the print enrolment letter task</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Modify table Task
+			--------------------------------------------------------
+			alter table task
+			alter column initiated_date type timestamp,
+			alter column claimed_date type timestamp,
+			alter column completed_date type timestamp,
+			drop constraint if exists fk_tsk_rfr_usrs,
+			add column if not exists user_id bigint constraint fk_tsk_rfr_usrs references users,
+			add column if not exists file bytea;
+
+			comment on column task.user_id is 'The user referred to in the task';
+			comment on column task.file is 'The file created by the task';
+		</sql>
+	</changeSet>
+	<changeSet id="0_5_0_ADD_FULL_ACCOUNT_IDENTIFIER_AND_ACCOUNT_TYPE_LABEL_COLUMNS_TO_ACCOUNT" author="karavitisk" context="migrate">
+		<comment>Adds new columns on account table.</comment>
+		<sql>
+			alter table account add column full_identifier varchar(50) default null;
+			update account set full_identifier = concat('UK-100-', identifier, '-', check_digits);
+			alter table public.account alter column full_identifier set not null;
+			comment on column account.full_identifier is 'The combination of registry code, kyoto account type code, identifier and check_digits of the account';
+
+			create index "idx_acc_full_identifier" on "account"("full_identifier");
+
+			alter table account add column type_label varchar(50) NOT NULL DEFAULT 'NONE';
+			alter table account alter column type_label drop default;
+			comment on column account.type_label is 'The account type label. The account type is defined by the combination of one kyoto account type and one registry account type';
+
+			create index "idx_acc_type_label" on "account"("type_label");
+		</sql>
+	</changeSet>
+	<changeSet id="0_5_0_TABLE_TRANSACTION" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for transactions</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Transaction
+			--------------------------------------------------------
+
+			create sequence transaction_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+			create sequence transaction_identifier_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 100000 cache 1 no cycle;
+
+			create table "transaction"
+			("id" bigint,
+			"identifier" varchar(255) not null,
+			"type" varchar(255) not null,
+			"status" varchar(255) not null,
+			"quantity" bigint not null,
+
+			"acquiring_account_identifier" bigint not null,
+			"acquiring_account_type" varchar(255) not null,
+			"acquiring_account_registry_code" varchar(255) not null,
+			"acquiring_account_administration_registry" varchar(255),
+			"acquiring_account_full_identifier" varchar(255) not null,
+
+			"transferring_account_identifier" bigint not null,
+			"transferring_account_type" varchar(255) not null,
+			"transferring_registry_code" varchar(255) not null,
+			"transferring_account_administration_registry" varchar(255),
+			"transferring_account_full_identifier" varchar(255) not null,
+
+			"migrated" boolean default false,
+			"started" timestamp,
+			"last_updated" timestamp not null,
+
+			constraint "pk_transaction" primary key("id")
+
+			);
+
+			comment on table "transaction" is 'Stores information about a transaction.';
+
+			comment on column "transaction"."id" is 'The primary key.';
+			comment on column "transaction"."identifier" is 'The transaction unique business identifier, e.g. GB40140.';
+			comment on column "transaction"."type" is 'The transaction type, e.g. IssueOfAAUsAndRMUs, InternalTransfer, ExternalTransfer etc.';
+			comment on column "transaction"."status" is 'The current status of the transaction: PROPOSED, CHECKED_NO_DISCREPANCY, CHECKED_DISCREPANCY, COMPLETED, TERMINATED, REJECTED, CANCELLED, ACCEPTED, STL_CHECKED_NO_DISCREPANCY, STL_CHECKED_DISCREPANCY, REVERSED, UNDONE, CORRECTED, DELAYED, DELAYED_CANCELLED';
+			comment on column "transaction"."quantity" is 'The total quantity transferred in the context of this transaction.';
+
+			comment on column "transaction"."acquiring_account_identifier" is 'Acquiring account: The unique account business identifier, e.g. 10455.';
+			comment on column "transaction"."acquiring_account_type" is 'Acquiring account: The Kyoto account type, e.g. PARTY_HOLDING_ACCOUNT.';
+			comment on column "transaction"."acquiring_account_registry_code" is 'Acquiring account: The registry code, e.g. GB, JP etc.';
+			comment on column "transaction"."acquiring_account_administration_registry" is 'Acquiring account: The administering registry; kept for migration purposes from the EU Registry.';
+			comment on column "transaction"."acquiring_account_full_identifier" is 'Acquiring account: The full account identifier, e.g. GB-100-10455-0-61, JP-100-23213 etc.';
+
+			comment on column "transaction"."transferring_account_identifier" is 'Transferring account: The unique account business identifier, e.g. 10944.';
+			comment on column "transaction"."transferring_account_type" is 'Transferring account: The Kyoto account type, e.g. PARTY_HOLDING_ACCOUNT.';
+			comment on column "transaction"."transferring_registry_code" is 'Transferring account: The registry code, e.g. GB.';
+			comment on column "transaction"."transferring_account_administration_registry" is 'Transferring account: The administering registry; kept for migration purposes from the EU Registry.';
+			comment on column "transaction"."transferring_account_full_identifier" is 'Transferring account: The full account identifier, e.g. GB-100-10944-0-41.';
+
+			comment on column "transaction"."migrated" is 'Indicates whether the transaction was migrated from EU Registry.';
+			comment on column "transaction"."started" is 'The date when the transaction started.';
+			comment on column "transaction"."last_updated" is 'The date when the transaction status was last updated.';
+
+			create unique index "idx_tra_identifier" on "transaction" ("identifier");
+
+		</sql>
+
+		<rollback>
+			drop sequence if exists transaction_seq;
+			drop sequence if exists transaction_identifier_seq;
+			drop table if exists "transaction";
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_TABLE_UNIT_BLOCK" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for unit blocks</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Unit Block
+			--------------------------------------------------------
+			create sequence unit_block_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "unit_block"
+			("id" bigint,
+			"start_block" bigint not null,
+			"end_block" bigint not null,
+			"unit_type" varchar(255) not null,
+			"originating_country_code" varchar(255) not null,
+			"original_period" varchar(255) not null,
+			"applicable_period" varchar(255) not null,
+			"account_id" bigint not null,
+			"reserved_for_transaction" varchar(255),
+			"acquisition_date" timestamp,
+			"environmental_activity" varchar(255),
+			"expiry_date" timestamp,
+			"last_modified_date" timestamp,
+
+			constraint "pk_unit_block" primary key("id"));
+
+			alter table "unit_block" add constraint "fk_uni_blo_acc" foreign key ("account_id")
+			references "account" ("id");
+
+			comment on table "unit_block" is 'Stores information about a unit block.';
+			comment on column "unit_block"."id" is 'The primary key';
+			comment on column "unit_block"."start_block" is 'The start serial number of the unit block';
+			comment on column "unit_block"."end_block" is 'The end serial number of the unit block';
+			comment on column "unit_block"."unit_type" is 'The unit type: NON_KYOTO, AAU, RMU, ERU_FROM_AAU, ERU_FROM_RMU, CER, TCER, LCER.';
+			comment on column "unit_block"."originating_country_code" is 'The originating country code.';
+			comment on column "unit_block"."original_period" is 'The original commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "unit_block"."applicable_period" is 'The applicable commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "unit_block"."environmental_activity" is 'The environmental LULUCF activity of RMU units: AFFORESTATION_AND_REFORESTATION, DEFORESTATION, FOREST_MANAGEMENT, CROPLAND_MANAGEMENT, GRAZING_LAND_MANAGEMENT, REVEGETATION, WETLAND_DRAINAGE_AND_REWETTING.';
+			comment on column "unit_block"."account_id" is 'Foreign key to the account that currently holds this unit block.';
+			comment on column "unit_block"."reserved_for_transaction" is 'The transaction unique business identifier which has reserved the unit block.';
+			comment on column "unit_block"."acquisition_date" is 'When the unit block was acquired by the account.';
+			comment on column "unit_block"."expiry_date" is 'When the unit block expires; applicable to lCER and tCER.';
+			comment on column "unit_block"."last_modified_date" is 'When the unit block was last modified.';
+
+			create index "unit_block_idx1" on "unit_block" ("reserved_for_transaction");
+			create index "unit_block_idx2" on "unit_block" ("unit_type", "reserved_for_transaction");
+			create index "unit_block_idx3" on "unit_block" ("account_id");
+			create index "unit_block_idx4" on "unit_block" ("applicable_period");
+			create index "unit_block_idx5" on "unit_block" ("original_period");
+
+			create unique index "unit_block_idx6" on "unit_block" ("originating_country_code", "start_block");
+			create unique index "unit_block_idx7" on "unit_block" ("originating_country_code", "end_block");
+			create unique index "unit_block_idx8" on "unit_block" ("originating_country_code", "start_block", "end_block");
+
+			alter table "unit_block" add constraint "unit_block_con1" unique ("originating_country_code", "start_block", "end_block");
+			alter table "unit_block" add constraint "unit_block_con2" unique ("originating_country_code", "start_block");
+			alter table "unit_block" add constraint "unit_block_con3" unique ("originating_country_code", "end_block");
+		</sql>
+
+		<rollback>
+			drop sequence if exists unit_block_seq;
+			drop table if exists unit_block;
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_TABLE_TRANSACTION_BLOCK" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for transaction blocks</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Transaction Block
+			--------------------------------------------------------
+
+			create sequence transaction_block_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "transaction_block"
+			("id" bigint,
+			"start_block" bigint not null,
+			"end_block" bigint not null,
+			"unit_type" varchar(255) not null,
+			"originating_country_code" varchar(255) not null,
+			"original_period" varchar(255) not null,
+			"applicable_period" varchar(255) not null,
+			"environmental_activity" varchar(255),
+			"expiry_date" timestamp,
+			"transaction_id" bigint not null,
+
+			constraint "pk_transaction_block" primary key("id"));
+			alter table "transaction_block" add constraint "fk_tra_blo_tra" foreign key ("transaction_id") references "transaction" ("id");
+
+			comment on table "transaction_block" is 'Stores the exact unit blocks that participate in the transaction.';
+			comment on column "transaction_block"."id" is 'The primary key';
+			comment on column "transaction_block"."start_block" is 'The start serial number of the unit block';
+			comment on column "transaction_block"."end_block" is 'The end serial number of the unit block';
+			comment on column "transaction_block"."unit_type" is 'The unit type: NON_KYOTO, AAU, RMU, ERU_FROM_AAU, ERU_FROM_RMU, CER, TCER, LCER.';
+			comment on column "transaction_block"."originating_country_code" is 'The originating country code: CP0, CP1, CP2, CP3.';
+			comment on column "transaction_block"."original_period" is 'The original commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "transaction_block"."applicable_period" is 'The applicable commitment period.';
+			comment on column "transaction_block"."environmental_activity" is 'The environmental LULUCF activity of RMU units: AFFORESTATION_AND_REFORESTATION, DEFORESTATION, FOREST_MANAGEMENT, CROPLAND_MANAGEMENT, GRAZING_LAND_MANAGEMENT, REVEGETATION, WETLAND_DRAINAGE_AND_REWETTING.';
+			comment on column "transaction_block"."expiry_date" is 'The expiry date.';
+			comment on column "transaction_block"."transaction_id" is 'The transaction where these blocks belong to (foreign key)';
+
+			create index "tra_blo_idx1" on "transaction_block" ("applicable_period");
+			create index "tra_blo_idx2" on "transaction_block" ("original_period");
+			create index "tra_blo_idx3" on "transaction_block" ("transaction_id");
+			create index "tra_blo_idx4" on "transaction_block" ("originating_country_code", "start_block");
+		</sql>
+
+		<rollback>
+			drop sequence if exists transaction_block_seq;
+			drop table if exists transaction_block;
+		</rollback>
+
+	</changeSet>
+
+
+	<changeSet id="0_5_0_TABLE_TRANSACTION_HISTORY" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for transaction history</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Transaction History
+			--------------------------------------------------------
+
+			create sequence transaction_history_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "transaction_history"
+			("id" bigint,
+			"status" varchar(255) not null,
+			"date" timestamp not null,
+			"transaction_id" bigint not null,
+
+			constraint "pk_transaction_history" primary key("id"));
+
+			alter table "transaction_history" add constraint "fk_tra_his_tra" foreign key ("transaction_id") references "transaction" ("id");
+
+			comment on table "transaction_history" is 'Stores the various statuses of the transaction.';
+			comment on column "transaction_history"."id" is 'The primary key';
+			comment on column "transaction_history"."status" is 'The transaction status: PROPOSED, CHECKED_NO_DISCREPANCY, CHECKED_DISCREPANCY, COMPLETED, TERMINATED, REJECTED, CANCELLED, ACCEPTED, STL_CHECKED_NO_DISCREPANCY, STL_CHECKED_DISCREPANCY, REVERSED, UNDONE, CORRECTED, DELAYED, DELAYED_CANCELLED';
+			comment on column "transaction_history"."date" is 'When the transaction status changed.';
+			comment on column "transaction_history"."transaction_id" is 'The transaction (foreign key).';
+
+			create index "tra_his_idx1" on "transaction_history" ("transaction_id");
+		</sql>
+
+		<rollback>
+			drop sequence if exists transaction_history_seq;
+			drop table if exists transaction_history;
+		</rollback>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_TABLE_ACCOUNT_TOTAL" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for account totals</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Account Total
+			--------------------------------------------------------
+
+			create sequence account_total_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "account_total"
+			("id" bigint,
+			"account_id" bigint not null,
+			"unit_type" varchar(255) not null,
+			"original_period" varchar(255) not null,
+			"applicable_period" varchar(255) not null,
+			"total_quantity" bigint not null,
+			"reserved_quantity" bigint not null,
+
+			constraint "pk_account_total" primary key("id"));
+			alter table "account_total" add constraint "fk_acc_tot_acc" foreign key ("account_id") references "account" ("id");
+
+			comment on table "account_total" is 'Stores the current holdings of an account.';
+
+			comment on column "account_total"."id" is 'The primary key.';
+			comment on column "account_total"."account_id" is 'Foreign key to the account.';
+			comment on column "account_total"."unit_type" is 'The unit type: NON_KYOTO, AAU, RMU, ERU_FROM_AAU, ERU_FROM_RMU, CER, TCER, LCER.';
+			comment on column "account_total"."original_period" is 'The original commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "account_total"."applicable_period" is 'The applicable commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "account_total"."total_quantity" is 'The total quantity held by the account.';
+			comment on column "account_total"."reserved_quantity" is 'The quantity which is currently reserved for transactions.';
+		</sql>
+
+	</changeSet>
+
+
+	<changeSet id="0_5_0_TABLE_REGISTRY_TOTAL" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for registry totals</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Table Registry Total
+			--------------------------------------------------------
+
+			create sequence registry_total_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "registry_total"
+			("id" bigint,
+			"unit_type" varchar(255) not null,
+			"original_period" varchar(255) not null,
+			"applicable_period" varchar(255) not null,
+			"total_quantity" bigint not null,
+			"reserved_quantity" bigint not null,
+			constraint "pk_registry_total" primary key("id"));
+
+			comment on table "registry_total" is 'Stores the current holdings of the registry.';
+
+			comment on column "registry_total"."id" is 'The primary key.';
+			comment on column "registry_total"."unit_type" is 'The unit type: NON_KYOTO, AAU, RMU, ERU_FROM_AAU, ERU_FROM_RMU, CER, TCER, LCER.';
+			comment on column "registry_total"."original_period" is 'The original commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "registry_total"."applicable_period" is 'The applicable commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "registry_total"."total_quantity" is 'The total quantity held by the registry.';
+			comment on column "registry_total"."reserved_quantity" is 'The quantity which is currently reserved for transactions.';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_TABLE_REGISTRY_LEVEL" author="pougouniasn" context="migrate">
+
+		<comment>Introduces the table for registry levels</comment>
+		<sql>
+
+			create sequence registry_level_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "registry_level"
+			("id" bigint,
+			"type" varchar(255),
+			"unit_type" varchar(255),
+			"commitment_period" varchar(255),
+			"environmental_activity" varchar(255),
+			"initial" bigint,
+			"consumed" bigint,
+			"pending" bigint,
+			constraint "pk_registry_level" primary key("id"));
+
+			comment on table "registry_level" is 'Holds levels, limits and entitlement for the registry.';
+
+			comment on column "registry_level"."id" is 'The primary key';
+			comment on column "registry_level"."id" is 'The type, e.g. ISSUANCE_KYOTO_LEVEL';
+			comment on column "registry_level"."unit_type" is 'The unit type: NON_KYOTO, AAU, RMU, ERU_FROM_AAU, ERU_FROM_RMU, CER, TCER, LCER.';
+			comment on column "registry_level"."commitment_period" is 'The original commitment period: CP0, CP1, CP2, CP3.';
+			comment on column "registry_level"."environmental_activity" is 'The environmental LULUCF activity of RMU units: AFFORESTATION_AND_REFORESTATION, DEFORESTATION, FOREST_MANAGEMENT, CROPLAND_MANAGEMENT, GRAZING_LAND_MANAGEMENT, REVEGETATION, WETLAND_DRAINAGE_AND_REWETTING.';
+			comment on column "registry_level"."initial" is 'The initial value (e.g. issuance limit).';
+			comment on column "registry_level"."consumed" is 'The consumed value (e.g. issued quantity).';
+			comment on column "registry_level"."pending" is 'The pending value (e.g. reserved issued units pending to be approved).';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_TABLE_TRANSACTION_SCHEMA_REVIEW" author="pougouniasn" context="migrate">
+
+		<comment>Implements review actions</comment>
+		<sql>
+			alter table "transaction"
+			drop column "acquiring_account_administration_registry";
+
+			alter table "transaction"
+			drop column "transferring_account_administration_registry";
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_SET_KP_ISSUANCE_LEVELS" author="pougouniasn" context="migrate">
+
+		<comment>Sets the initial levels for KP Issuance</comment>
+		<sql>
+			-- Commitment Period 1 / Phase II
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'AAU', 'CP1', null, 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP1', 'AFFORESTATION_AND_REFORESTATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP1', 'DEFORESTATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP1', 'FOREST_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP1', 'CROPLAND_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP1', 'GRAZING_LAND_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP1', 'REVEGETATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP1', 'WETLAND_DRAINAGE_AND_REWETTING', 0, 0, 0);
+
+
+			-- Commitment Period 2 / Phase III
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'AAU', 'CP2', null, 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP2', 'AFFORESTATION_AND_REFORESTATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP2', 'DEFORESTATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP2', 'FOREST_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP2', 'CROPLAND_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP2', 'GRAZING_LAND_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP2', 'REVEGETATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP2', 'WETLAND_DRAINAGE_AND_REWETTING', 0, 0, 0);
+
+
+			-- Commitment Period 3 / Phase IV
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'AAU', 'CP3', null, 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP3', 'AFFORESTATION_AND_REFORESTATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP3', 'DEFORESTATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP3', 'FOREST_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP3', 'CROPLAND_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP3', 'GRAZING_LAND_MANAGEMENT', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP3', 'REVEGETATION', 0, 0, 0);
+
+			insert into registry_level(id, type, unit_type, commitment_period, environmental_activity, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'ISSUANCE_KYOTO_LEVEL', 'RMU', 'CP3', 'WETLAND_DRAINAGE_AND_REWETTING', 0, 0, 0);
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_ADD_INDEXES_TO_REGISTRY_LEVEL" author="pougouniasn" context="migrate">
+
+		<comment>Adds search indexes to Registry Levels</comment>
+		<sql>
+			create index "registry_level_idx1" on "registry_level" ("type", "unit_type", "commitment_period");
+			create index "registry_level_idx2" on "registry_level" ("type", "unit_type", "commitment_period", "environmental_activity");
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_TABLE_HOLIDAY" author="pougouniasn" context="migrate">
+
+		<comment>Creates the table for holidays, for calculating properly the delays during transactions.</comment>
+		<sql>
+			create sequence holiday_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "holiday"
+			("id" bigint,
+			"working_off_day" date not null,
+			constraint "pk_holiday" primary key("id"));
+
+			comment on table "holiday" is 'Holds the holidays, i.e. the days off work.';
+
+			comment on column "holiday"."id" is 'The primary key.';
+			comment on column "holiday"."working_off_day" is 'A day off work, e.g. New Year’s Day, Early May bank holiday, Summer bank holidays etc.';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_TRANSACTION_ADD_COLUMN" author="pougouniasn" context="migrate">
+
+		<comment>Adds a column to transaction table</comment>
+		<sql>
+			alter table "transaction"
+			add column "unit_type" varchar(255);
+
+			comment on column "transaction"."unit_type" is 'Multiple, if various unit types are involved in this transaction; A specific unit type otherwise.';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_ISSUANCE_SEQUENCE" author="pougouniasn" context="migrate">
+
+		<comment>Adds a sequence for issuing units</comment>
+		<sql>
+			create sequence issuance_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 10000000000 cache 1 no cycle;
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_5_0_ALTER_ACCOUNT_ID_SEQ" author="pougouniasn" context="migrate">
+
+		<comment>Restarts the sequence of account business identifiers</comment>
+		<sql>
+			alter sequence account_identifier_seq restart with 10000000;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_5_0_ALTER_UNIT_BLOCK_FOREIGN_KEY" author="pougouniasn" context="migrate">
+
+		<comment>Restarts the sequence of account business identifiers</comment>
+		<sql>
+			alter table "unit_block" drop constraint "fk_uni_blo_acc";
+		</sql>
+
+	</changeSet>
+
+</databaseChangeLog>
+

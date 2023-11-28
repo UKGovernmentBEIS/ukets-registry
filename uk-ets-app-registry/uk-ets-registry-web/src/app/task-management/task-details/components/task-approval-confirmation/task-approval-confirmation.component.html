@@ -1,0 +1,41 @@
+<ng-container *ngIf="taskType === requestTypes.TRANSACTION_REQUEST">
+  <app-transaction-approval-confirmation
+    [transactionProposalCompleteResponse]="taskCompleteResponse"
+  ></app-transaction-approval-confirmation>
+</ng-container>
+<ng-container *ngIf="taskType === requestTypes.ALLOCATION_TABLE_UPLOAD_REQUEST">
+  <app-allocation-table-approval-confirmation
+    [taskCompleteResponse]="taskCompleteResponse"
+  ></app-allocation-table-approval-confirmation>
+</ng-container>
+
+<ng-container *ngIf="taskType === requestTypes.ALLOCATION_REQUEST">
+  <app-request-allocation-task-approval-confirmation
+    [taskCompleteResponse]="taskCompleteResponse"
+  ></app-request-allocation-task-approval-confirmation>
+</ng-container>
+
+<ng-container *ngIf="taskType === requestTypes.ACCOUNT_CLOSURE_REQUEST">
+  <app-account-closure-approval-confirmation
+    [taskCompleteResponse]="taskCompleteResponse"
+  ></app-account-closure-approval-confirmation>
+</ng-container>
+
+<ng-container
+  *ngIf="
+    taskType === requestTypes.CHANGE_TOKEN ||
+    taskType === requestTypes.LOST_TOKEN ||
+    taskType === requestTypes.REQUESTED_EMAIL_CHANGE ||
+    taskType === requestTypes.LOST_PASSWORD_AND_TOKEN ||
+    taskType === requestTypes.AIRCRAFT_OPERATOR_UPDATE_REQUEST ||
+    taskType === requestTypes.INSTALLATION_OPERATOR_UPDATE_REQUEST ||
+    taskType === requestTypes.ACCOUNT_TRANSFER ||
+    taskType === requestTypes.USER_DETAILS_UPDATE_REQUEST ||
+    taskType === requestTypes.USER_DEACTIVATION_REQUEST ||
+    taskType === requestTypes.EMISSIONS_TABLE_UPLOAD_REQUEST
+  "
+>
+  <app-generic-task-details-confirmation
+    [taskCompleteResponse]="taskCompleteResponse"
+  ></app-generic-task-details-confirmation>
+</ng-container>

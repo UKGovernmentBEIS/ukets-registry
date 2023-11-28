@@ -1,0 +1,141 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-form-group">
+      <div
+        appScreenReaderPageAnnounce
+        [pageTitle]="'Update the report publication details'"
+      ></div>
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl"> Update details </span>
+            Update the report publication details
+          </h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <app-form-control-select
+            controlName="publicationFrequency"
+            [validationErrorMessage]="
+              validationErrorMessage.publicationFrequency
+            "
+            [options]="publicationFrequencyOptions"
+            [label]="'Report publication frequency'"
+            [hint]="
+              'Specifies the frequency that the system generates a report.'
+            "
+            [readonly]="noReportType()"
+            (change)="checkFrequencyValue($event.target.value)"
+          ></app-form-control-select>
+        </div>
+      </div>
+      <ng-container *ngIf="!isFrequencyDisabled; else warningBlock">
+        <div *ngIf="isReccurenceEnabled" class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <app-form-control-text
+              controlName="recurrence"
+              [disabled]="isFrequencyDisabled && !isReccurenceEnabled"
+              [label]="'Recur every'"
+              [class]="'govuk-input--width-4'"
+              [showTextAfterInputElement]="'Days'"
+              [maxlength]="3"
+              [hint]="'The days are calendar days.'"
+              [validationErrorMessage]="validationErrorMessage.recurrence"
+            ></app-form-control-text>
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <app-form-control-datepicker
+              controlName="publicationDate"
+              [label]="'Publication start date'"
+              [hint]="'For example, 31/3/2020.'"
+              [validationErrorMessage]="validationErrorMessage.publicationDate"
+              [isDisabled]="isFrequencyDisabled"
+              [attrRole]="'group'"
+              [useDefaultAriaLabelledBy]="true"
+            ></app-form-control-datepicker>
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <app-form-control-select
+              controlName="publicationTime"
+              [options]="timeOptions"
+              [hint]="'The time selected is at your local time.'"
+              [label]="'Publication time'"
+              [readonly]="isFrequencyDisabled"
+              [validationErrorMessage]="validationErrorMessage.publicationTime"
+            ></app-form-control-select>
+          </div>
+        </div>
+        <ng-container *ngIf="hasGenerationDateTime">
+          <details class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text"
+                >Set cut-off day and time
+              </span>
+            </summary>
+            <div class="govuk-details__text">
+              <p class="govuk-body">
+                The cut-off day and time is the point at which we collect data.
+                They must be set after the completion of the relevant activities
+                to ensure valid outcomes.
+              </p>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                  <app-form-control-date-select
+                    formControlName="generationDate"
+                    [showErrors]="showErrors"
+                    [dateInput]="sectionDetails?.generationDate"
+                    [label]="'Cut-off day'"
+                    [required]="!isFrequencyDisabled"
+                    (nestedFormChangeEmitter)="populateFormControl($event)"
+                  >
+                  </app-form-control-date-select>
+                </div>
+              </div>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-third">
+                  <app-form-control-select
+                    controlName="generationTime"
+                    [options]="timeOptions"
+                    [hint]="'The time selected is at your local time.'"
+                    [label]="'Cut-off time'"
+                    [validationErrorMessage]="
+                      validationErrorMessage.generationTime
+                    "
+                    [readonly]="isFrequencyDisabled"
+                  ></app-form-control-select>
+                </div>
+              </div>
+            </div>
+          </details>
+        </ng-container>
+      </ng-container>
+      <ng-template #warningBlock>
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Warning</span>
+            The automated report generation and publication will stop.<br />
+            Any update of the report must be done manually.
+          </strong>
+        </div>
+      </ng-template>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Recalculate dynamic surrender status</span>
+    <h1 class="govuk-heading-xl">
+      Are you sure you want to recalculate the dynamic surrender status for the
+      Operator Holding Accounts and Aircraft Operator Holding Accounts ?
+    </h1>
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <p class="govuk-body govuk-!-font-size-19">
+      The status of accounts which are linked to an Installation or an Aircraft
+      Operator will not be recalculated.<br />
+      This action cannot be reversed.
+    </p>
+
+    <button
+      data-prevent-double-click="true"
+      class="govuk-button govuk-button--warning"
+      data-module="govuk-button"
+      id="continue"
+      (click)="startRecalculationComplianceStatusAllEntities()"
+    >
+      Recalculate
+    </button>
+  </div>
+</div>

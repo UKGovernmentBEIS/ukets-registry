@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_25_0_ADD_UK_DELETION_ACCOUNT" author="koukoulakisg" context="migrate">
+
+        <comment>Adds the UK deletion account to the registry</comment>
+        <sql>
+            insert into account
+            (
+                id,
+                identifier,
+                account_name,
+                registry_account_type,
+                kyoto_account_type,
+                account_status,
+                opening_date,
+                request_status,
+                commitment_period_code,
+                registry_code,
+                check_digits,
+                full_identifier,
+                type_label,
+                approval_second_ar_required,
+                transfers_outside_tal,
+                account_holder_id
+            )
+            values
+                (
+                    nextval('account_seq'),
+                    10000007,
+                    'UK Deletion Account',
+                    'UK_DELETION_ACCOUNT',
+                    'PARTY_HOLDING_ACCOUNT',
+                    'OPEN',
+                    now(),
+                    'ACTIVE',
+                    0,
+                    'UK',
+                    66,
+                    'UK-100-10000007-0-66',
+                    'ETS - UK Deletion Account',
+                    true,
+                    true,
+                    (select id from account_holder where name = 'UK ETS Authority')
+                );
+        </sql>
+    </changeSet>
+    <changeSet id="0_25_0_UPDATE_UK_DELETION_ACCOUNT_CHECK_DIGITS" author="koukoulakisg" context="migrate">
+
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="1">select count(*) from account where identifier = 10000007</sqlCheck>
+        </preConditions>
+
+        <comment>Updates the UK ETS deletion account check digits</comment>
+
+        <sql>
+            update account set check_digits = 26, full_identifier = 'UK-100-10000007-0-26' where identifier = 10000007;
+        </sql>
+    </changeSet>
+    <changeSet id="0_25_0_UPDATE_ACCOUNT_ACCESS_TO_SURRENDER_AND_DELETION_ACCOUNTS" author="koukoulakisg" context="migrate">
+
+        <comment>Updates the account access of UK Surrender and Deletion accounts to read only for the authority users</comment>
+
+        <sql>
+            update account_access
+            set access_right = 'READ_ONLY'
+            where account_id in (select account.id
+                                 from account
+                                 where account.registry_account_type in
+                                       ('UK_SURRENDER_ACCOUNT', 'UK_DELETION_ACCOUNT'))
+              and user_id in (select u.id
+                              from users u
+                                       join user_role_mapping urm on u.id = urm.user_id
+                                       join iam_user_role iur on urm.role_id = iur.id
+                              where iur.role_name = 'authority-user');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

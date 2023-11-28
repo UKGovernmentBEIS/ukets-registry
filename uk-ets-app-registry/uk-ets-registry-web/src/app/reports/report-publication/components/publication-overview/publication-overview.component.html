@@ -1,0 +1,55 @@
+<h2 class="govuk-heading-l">
+  {{ publicationOverviewHeader }}
+</h2>
+<table class="govuk-table" aria-describedby="publicationOverview-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Display order</th>
+      <th scope="col" class="govuk-table__header">Section title</th>
+      <th scope="col" class="govuk-table__header">Display type</th>
+      <th scope="col" class="govuk-table__header">Publication frequency</th>
+      <th scope="col" class="govuk-table__header">Publication start</th>
+      <th scope="col" class="govuk-table__header">Last report published</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let section of sections" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        {{ section.displayOrder }}
+      </td>
+      <td class="govuk-table__cell">
+        <a
+          [routerLink]="['section-details']"
+          (click)="onClick(section.id)"
+          class="govuk-link"
+        >
+          {{ section.title }}
+        </a>
+      </td>
+      <td class="govuk-table__cell">
+        {{ section.displayType ? displayTypeMap[section.displayType] : '-' }}
+      </td>
+      <td class="govuk-table__cell">
+        {{
+          section.publicationFrequency
+            ? publicationFrequencyMap[section.publicationFrequency]
+            : '-'
+        }}
+      </td>
+      <td class="govuk-table__cell">
+        {{
+          section.publicationStartDateTime
+            | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+            | gdsDateTime
+        }}
+      </td>
+      <td class="govuk-table__cell">
+        {{
+          section.lastReportPublished
+            | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+            | gdsDateTime
+        }}
+      </td>
+    </tr>
+  </tbody>
+</table>

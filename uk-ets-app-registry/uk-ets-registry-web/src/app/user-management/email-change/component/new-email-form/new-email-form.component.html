@@ -1,0 +1,47 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <h1 class="govuk-heading-xl">Change your email address</h1>
+      <h2 class="govuk-heading-m">1. Enter new email address</h2>
+      <p class="govuk-body">
+        This should be your work email. We'll send a link to confirm that you
+        have access to this address
+      </p>
+      <app-form-control-email
+        [label]="'New work email address'"
+        [maxlength]="256"
+        [validationErrorMessage]="validationErrorMessage.newEmail"
+        controlName="newEmail"
+        [disableCopy]="true"
+      ></app-form-control-email>
+      <app-form-control-email
+        [label]="'Confirm new work email address'"
+        [maxlength]="256"
+        [validationErrorMessage]="validationErrorMessage.newEmailConfirmation"
+        controlName="newEmailConfirmation"
+        [disableCopy]="true"
+      ></app-form-control-email>
+      <h2 class="govuk-heading-m">
+        2. Enter the code shown in the authenticator app
+      </h2>
+      <app-form-control-text
+        [class]="'govuk-input--width-10'"
+        [validationErrorMessage]="validationErrorMessage.otpCode"
+        [hint]="'Enter the 6-digit code'"
+        [label]="'Enter the 6-digit code'"
+        [showLabel]="false"
+        controlName="otpCode"
+        [autocomplete]="'off'"
+      ></app-form-control-text>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="Submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,142 @@
+<div appScreenReaderPageAnnounce [pageTitle]="header"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="accountHolder"
+    >
+      <div class="govuk-fieldset">
+        <div class="govuk-form-group">
+          <div class="govuk-fieldset">
+            <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-xl">{{ caption }}</span>
+                {{ header }}
+              </h1>
+            </div>
+          </div>
+        </div>
+        <h3
+          *ngIf="isAHUpdateWizard"
+          class="govuk-heading-l govuk-!-padding-top-4"
+        >
+          Update the organisation details
+        </h3>
+
+        <div class="govuk-fieldset" role="group">
+          <div formGroupName="details">
+            <app-form-control-text
+              [label]="'Name'"
+              [maxlength]="256"
+              [validationErrorMessage]="validationErrorMessage.name"
+              controlName="details.name"
+              [autocomplete]="'organization'"
+            ></app-form-control-text>
+          </div>
+        </div>
+
+        <div formGroupName="details" class="govuk-fieldset">
+          <div
+            formGroupName="regNum"
+            [class.govuk-form-group--error]="validationErrorMessage.regNum"
+            id="regNum-label"
+          >
+            <div class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <span class="govuk-fieldset__heading">
+                Company registration number
+              </span>
+            </div>
+            <p class="govuk-body">
+              The company registration number or equivalent, for example the
+              company number shown on the certificate of incorporation.
+            </p>
+
+            <ng-container *ngIf="validationErrorMessage.regNum">
+              <span
+                id="event-name-error"
+                class="govuk-error-message"
+                role="alert"
+              >
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ validationErrorMessage.regNum }}
+              </span>
+            </ng-container>
+
+            <!--    *********************        -->
+            <div class="govuk-radios govuk-radios--conditional">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="regNum"
+                  type="radio"
+                  [value]="regNumTypes.REGISTRATION_NUMBER"
+                  formControlName="regNumTypeRadio"
+                  (click)="selectRegNumType(regNumTypes.REGISTRATION_NUMBER)"
+                />
+                <label class="govuk-label govuk-radios__label" for="regNum">
+                  Registration number
+                </label>
+              </div>
+
+              <div
+                class="govuk-radios__conditional"
+                id="reg-num-conditional"
+                [class.govuk-radios__conditional--hidden]="
+                  regNumType !== regNumTypes.REGISTRATION_NUMBER
+                "
+              >
+                <app-form-control-text
+                  [maxlength]="256"
+                  controlName="details.regNum.registrationNumber"
+                  [label]="'Add registration number'"
+                  [showLabel]="false"
+                ></app-form-control-text>
+              </div>
+
+              <div class="govuk-radios__item govuk-!-margin-bottom-6">
+                <input
+                  class="govuk-radios__input"
+                  id="regNumReason"
+                  type="radio"
+                  [value]="regNumTypes.REGISTRATION_NUMBER_REASON"
+                  formControlName="regNumTypeRadio"
+                  (click)="
+                    selectRegNumType(regNumTypes.REGISTRATION_NUMBER_REASON)
+                  "
+                />
+                <label class="govuk-label govuk-radios__label" for="regNum">
+                  I do not have a registration number
+                </label>
+              </div>
+
+              <div
+                class="govuk-radios__conditional govuk-!-margin-bottom-6"
+                id="conditional-select-from-search"
+                [class.govuk-radios__conditional--hidden]="
+                  regNumType !== regNumTypes.REGISTRATION_NUMBER_REASON
+                "
+              >
+                <app-form-control-textarea
+                  [label]="'Tell us why you do not have a registration number'"
+                  class="govuk-!-margin-bottom-0"
+                  [maxlength]="256"
+                  controlName="details.regNum.noRegistrationNumJustification"
+                ></app-form-control-textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

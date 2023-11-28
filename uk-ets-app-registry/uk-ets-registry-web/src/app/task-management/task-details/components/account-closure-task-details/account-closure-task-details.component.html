@@ -1,0 +1,54 @@
+<hr class="govuk-section-break govuk-section-break--visible" />
+
+<h1 class="govuk-heading-m govuk-!-padding-top-5">Account details</h1>
+<app-account-closure-warnings
+  *ngIf="taskDetails.accountDetails.complianceStatus === 'B'"
+  [label]="surrenderDeficitLabel"
+>
+</app-account-closure-warnings>
+<app-account-closure-warnings
+  *ngIf="taskDetails.allocationClassification === 'OVER_ALLOCATED'"
+  [label]="overAllocatedLabel"
+>
+</app-account-closure-warnings>
+<app-account-closure-warnings
+  *ngIf="taskDetails.allocationClassification === 'UNDER_ALLOCATED'"
+  [label]="underAllocatedLabel"
+>
+</app-account-closure-warnings>
+<app-account-closure-warnings
+  *ngIf="taskDetails.allocationClassification === 'NOT_YET_ALLOCATED'"
+  [label]="unAllocatedLabel"
+>
+</app-account-closure-warnings>
+
+<div class="govuk-warning-text" *ngIf="taskDetails.noActiveAR">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    No active AR is linked to the account.
+  </strong>
+</div>
+
+<div class="govuk-warning-text" *ngIf="taskDetails.pendingAllocationTaskExists">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    There are outstanding allocation tasks for this account.
+  </strong>
+</div>
+
+<h1 class="govuk-heading-s">You will close the following account:</h1>
+
+<app-summary-list
+  [summaryListItems]="getSummaryListItems()"
+  [class]="'govuk-summary-list--no-border'"
+>
+</app-summary-list>
+
+<hr
+  class="
+    govuk-section-break govuk-section-break--visible
+    govuk-!-margin-bottom-6
+  "
+/>

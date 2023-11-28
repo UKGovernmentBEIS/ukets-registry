@@ -1,0 +1,95 @@
+<span class="sr-only"
+  >Header buttons in the following table can be used to sort the data.</span
+>
+
+<table appSortableTable (sorting)="sort.emit($event)" class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'messageId'"
+        [sortDirection]="
+          sortParameters?.sortField === 'messageId'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Message ID
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'from'"
+        [sortDirection]="
+          sortParameters?.sortField === 'from'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        From
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'to'"
+        [sortDirection]="
+          sortParameters?.sortField === 'to'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        To
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'messageDate'"
+        [sortDirection]="
+          sortParameters?.sortField === 'messageDate'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Message Date
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'content'"
+        [sortDirection]="
+          sortParameters?.sortField === 'content'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Content
+      </th>
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let message of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a
+          [routerLink]="[
+            '/kpadministration/itl-message-details',
+            message.messageId
+          ]"
+          class="disabled"
+          >{{ message.messageId }}</a
+        >
+      </td>
+      <td class="govuk-table__cell">
+        {{ message.from }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ message.to }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ message.messageDate | gdsDateTimeShort }}
+      </td>
+      <td class="govuk-table__cell">{{ message.content }}</td>
+    </tr>
+  </tbody>
+</table>

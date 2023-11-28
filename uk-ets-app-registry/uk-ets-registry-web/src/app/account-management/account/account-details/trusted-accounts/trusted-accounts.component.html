@@ -1,0 +1,53 @@
+<app-cancel-pending-activation-banner
+  *ngIf="isCancelPendingActivationSuccessDisplayed"
+  [selectedTrustedAccountDescription]="selectedTrustedAccountDescription"
+>
+</app-cancel-pending-activation-banner>
+<app-about-trusted-account-list
+  [informativeText]="true"
+></app-about-trusted-account-list>
+
+<app-show-hide-toggle-button
+  [displayable]="true"
+  [condition]="hideCriteria$ | async"
+  [trueStateLabel]="'Show filters'"
+  [falseStateLabel]="'Hide filters'"
+  (toggle)="showHideCriteria($event)"
+></app-show-hide-toggle-button>
+
+<app-search-trusted-accounts-form
+  [ngClass]="{ 'govuk-!-display-none': hideCriteria$ | async }"
+  *ngIf="sortParameters$ | async as sortParameters"
+  (search)="onSearchTrustedAccounts($event, sortParameters)"
+  (errorDetails)="onError($event)"
+>
+</app-search-trusted-accounts-form>
+
+<app-search-trusted-accounts-results
+  [results]="getTrustedAccounts()"
+  [accountFullId]="accountFullId"
+  (sort)="onSort($event)"
+  [sortParameters]="sortParameters$ | async"
+  [canRequestUpdate]="canRequestUpdate"
+  (trustedAccountFullIdentifierDescriptionUpdate)="
+    loadTrustedAccountUpdateDescription($event)
+  "
+></app-search-trusted-accounts-results>
+
+<div
+  class="govuk-grid-row"
+  *ngIf="(pagination$ | async)?.totalResults > pageTotals"
+>
+  <div class="govuk-grid-column-full">
+    <app-paginator
+      [pagination]="pagination$ | async"
+      [pageSizeOptions]="pageSizeOptions"
+      (selectFirstPage)="goToFirstPageOfResults($event)"
+      (selectLastPage)="goToLastPageOfResults($event)"
+      (selectNextPage)="goToNextPageOfResults($event)"
+      (selectPreviousPage)="goToPreviousPageOfResults($event)"
+      (changePageSize)="onChangePageSize($event)"
+    >
+    </app-paginator>
+  </div>
+</div>

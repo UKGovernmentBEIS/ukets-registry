@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_1_0_CREATE_INDEX_ON_INSTALATION_OWNERSHIP_ACCOUNT_ID" author="fragkise" context="migrate" failOnError="false">
+        <comment>Creates index on instalation_ownership account_id column.</comment>
+        <sql>
+            CREATE UNIQUE INDEX IF NOT EXISTS installation_ownership_account_id_idx ON installation_ownership (account_id);
+        </sql>
+        
+        <rollback>
+            <sql>
+                DROP INDEX IF EXISTS installation_ownership_account_id_idx;
+            </sql>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="4_1_0_CREATE_INDEX_ON_INSTALATION_OWNERSHIP_INSTALLATION_ID" author="fragkise" context="migrate" failOnError="false">
+        <comment>Creates index on instalation_ownership installation_id column.</comment>
+        <sql>
+            CREATE INDEX IF NOT EXISTS installation_ownership_installation_id_idx ON installation_ownership (installation_id);
+        </sql>
+        
+        <rollback>
+            <sql>
+                DROP INDEX IF EXISTS installation_ownership_installation_id_idx;
+            </sql>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet author="gourgiog" id="4_1_0_FORCE_RERUN_TASK_SEARCH_METADATA_MIGRATOR" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='TASK_SEARCH_METADATA_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>Force the task search migrator to run again only for print enrollment letter tasks.</comment>
+        <sql>
+            delete from migrator_history where migrator_name = 'TASK_SEARCH_METADATA_MIGRATOR';
+        </sql>
+    </changeSet>
+
+
+
+    <changeSet id="4_1_0_CREATE_TASK_AR_STATUS_TABLE_AND_INDEXES" author="gourgiog">
+
+        <!-- Create Sequence -->
+        <sql>
+            CREATE SEQUENCE IF NOT EXISTS task_ar_status_seq MINVALUE 0 MAXVALUE 999999999999999999
+            INCREMENT BY 1
+            START WITH 1
+            CACHE 1
+            NO CYCLE;
+        </sql>
+
+        <!-- Create Table -->
+        <sql>
+            CREATE TABLE IF NOT EXISTS task_ar_status (
+                                                          id BIGINT PRIMARY KEY,
+                                                          task_id BIGINT NOT NULL,
+                                                          user_id BIGINT NOT NULL,
+                                                          ar_status VARCHAR(255) NOT NULL,
+                CONSTRAINT fk_task FOREIGN KEY (task_id) REFERENCES task(id),
+                CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)
+                );
+        </sql>
+
+        <!-- Create Indexes -->
+        <sql>
+            CREATE INDEX idx_task_ar_status_task_user
+                ON task_ar_status(task_id, user_id);
+        </sql>
+
+        <!-- Rollback Statements -->
+        <rollback>
+            <sql>
+                DROP INDEX IF EXISTS idx_task_ar_status_task_user;
+            </sql>
+            <sql>
+                DROP SEQUENCE IF EXISTS task_ar_status_seq;
+            </sql>
+            <sql>
+                DROP TABLE IF EXISTS task_ar_status;
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

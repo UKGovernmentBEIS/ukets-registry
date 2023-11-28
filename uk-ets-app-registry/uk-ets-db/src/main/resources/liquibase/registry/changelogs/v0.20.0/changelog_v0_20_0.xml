@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_20_0_TABLE_TRANSACTION_CONNECTION" author="pougouniasn" context="migrate">
+        <comment>Introduces the table "Transaction Connection"</comment>
+        <sql>
+            create sequence transaction_connection_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "transaction_connection"
+            ("id" bigint,
+            "subject_transaction_id" bigint not null,
+            "object_transaction_id" bigint not null,
+            "type" varchar(255) not null,
+            "date" timestamp not null,
+
+            constraint "pk_transaction_connection" primary key("id"));
+
+            alter table "transaction_connection" add constraint "fk_tra_con_tra_sub" foreign key ("subject_transaction_id")
+            references "transaction" ("id");
+
+            alter table "transaction_connection" add constraint "fk_tra_con_tra_obj" foreign key ("object_transaction_id")
+            references "transaction" ("id");
+
+            comment on table "transaction_connection" is 'Stores messages exchanged with other systems during a transaction execution.';
+            comment on column "transaction_connection"."id" is 'The primary key.';
+            comment on column "transaction_connection"."subject_transaction_id" is 'The left part of the connection (acts as the subject).';
+            comment on column "transaction_connection"."object_transaction_id" is 'The right part of the connection (acts as the object).';
+            comment on column "transaction_connection"."type" is 'The type, e.g. REVERSES';
+            comment on column "transaction_connection"."date" is 'The timestamp.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_20_0_REMOVE_DIRECT_REFERENCE_TO_ORIGINAL_TRANSACTION" author="pougouniasn" context="migrate">
+
+        <comment>Removes the direct reference to the original transaction.</comment>
+        <sql>
+            alter table transaction drop column if exists original_identifier;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

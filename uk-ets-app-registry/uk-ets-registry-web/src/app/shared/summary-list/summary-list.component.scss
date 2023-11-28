@@ -1,0 +1,122 @@
+@import '_variables';
+
+.focused-text {
+  background-color: $yellow-tint-50;
+  border-left-style: solid;
+  border-left-width: 5px;
+  border-left-color: $yellow-highlight-border-colour;
+  margin-right: 90px;
+  padding: 4px;
+}
+
+.disabled {
+  color: grey;
+}
+
+.summary-list-change-notification {
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  border-left-style: solid;
+  border-left-width: 5px;
+  border-bottom: 1px solid govuk-colour('mid-grey');
+  margin: -7px 20px -4px 0;
+  padding: 7px;
+  text-align: left;
+  width: 100%;
+}
+
+.focused-text {
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  border-left-width: 5px;
+  margin-right: 90px;
+  padding: 7px;
+}
+
+.summary-list-change-header-font-weight {
+  font-weight: 700 !important;
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-summary-list__key.govuk-summary-list__key_custom,
+  .govuk-summary-list__value.govuk-summary-list__value_change_description {
+    width: 30%;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .govuk-summary-list-width-one-third__action,
+  .govuk-summary-list-width-one-third__key,
+  .govuk-summary-list-width-one-third__value,
+  .govuk-summary-list-width-one-third__value:last-child {
+    width: 33%;
+  }
+}
+
+.tag-red span {
+  color: #942514;
+  background: #f6d7d2;
+}
+
+.tag-turquoise span {
+  color: #10403c;
+  background: #bfe3e0;
+}
+
+.tag-grey span {
+  color: #383f43;
+  background: #eeefef;
+}
+
+.tag-blue span {
+  color: #144e81;
+  background: #d2e2f1;
+}
+
+.tag-purple span {
+  color: #3d2375;
+  background: #dbd5e9;
+}
+
+.tag-pink span {
+  color: #80224d;
+  background: #f7d7e6;
+}
+
+.tag-orange span {
+  color: #6e3619;
+  background: #fcd6c3;
+}
+
+.tag-yellow span {
+  color: #594d00;
+  background: #fff7bf;
+}
+
+.tag-green span {
+  color: #005a30;
+  background-color: #cce2d8;
+}
+
+.tag span {
+  display: inline-block;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  letter-spacing: 1px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: 'GDS Transport', arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 700;
+  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 1;
+  padding-top: 5px;
+  padding-right: 8px;
+  padding-bottom: 4px;
+  padding-left: 8px;
+}
+.forcibly-hide {
+  display: none !important;
+}

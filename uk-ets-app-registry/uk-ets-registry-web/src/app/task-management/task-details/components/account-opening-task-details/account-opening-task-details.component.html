@@ -1,0 +1,1003 @@
+<hr class="govuk-section-break govuk-section-break--visible" />
+
+<details
+  class="govuk-details"
+  data-module="govuk-details"
+  *ngIf="taskDetails.account.accountHolder"
+>
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Account Holder and Primary Contact(s)
+    </span>
+  </summary>
+
+  <ng-container
+    *ngIf="
+      isInstallationTransfer() &&
+      taskDetails.account.transferringAccountHolder !== undefined
+    "
+  >
+    <app-transferring-account-holder-task-details
+      [taskDetails]="taskDetails"
+      [installationTransfer]="isInstallationTransfer()"
+      [hasAccountHolderChanged]="hasAccountHolderChanged()"
+    >
+    </app-transferring-account-holder-task-details>
+  </ng-container>
+
+  <div class="govuk-details__text">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span
+            *ngIf="!isInstallationTransfer(); else elseBlock"
+            class="govuk-body-l"
+            [class.disabled]="hasAccountHolderChanged()"
+            >Account Holder</span
+          >
+          <ng-template #elseBlock>
+            <span
+              class="govuk-body-l"
+              [class.disabled]="hasAccountHolderChanged()"
+              >Acquiring Account Holder</span
+            >
+          </ng-template>
+        </dt>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt
+          *ngIf="isaccountHolderNew(); else existingAccountHolder"
+          class="govuk-summary-list__value"
+        >
+          <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+              <span class="govuk-warning-text__assistive">Warning</span>
+              New account holder
+            </strong>
+          </div>
+        </dt>
+        <ng-template #existingAccountHolder>
+          <dt class="govuk-summary-list__value">
+            <div
+              class="govuk-inset-text"
+              style="margin-top: 0; margin-bottom: 0"
+            >
+              Existing account holder
+            </div>
+          </dt>
+        </ng-template>
+        <dd
+          class="govuk-summary-list__actions"
+          *ngIf="taskDetails.currentUserClaimant && !isCompleted"
+        >
+          <button
+            class="govuk-button govuk-button--secondary"
+            (click)="onAccountHolderRequestDocuments()"
+            (keypress)="onAccountHolderRequestDocuments()"
+            data-module="govuk-button"
+          >
+            Request documents
+          </button>
+        </dd>
+      </div>
+      <div *ngIf="!isaccountHolderNew()" class="govuk-summary-list__row">
+        <dt
+          class="govuk-summary-list__key"
+          [class.disabled]="hasAccountHolderChanged()"
+        >
+          Account Holder ID
+        </dt>
+        <dd
+          class="govuk-summary-list__value"
+          [class.disabled]="hasAccountHolderChanged()"
+        >
+          {{ taskDetails.account.accountHolder.id }}
+        </dd>
+      </div>
+    </dl>
+    <ng-container
+      *ngIf="
+        taskDetails.account.accountHolder.type === accountHolderTypes.INDIVIDUAL
+      "
+    >
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <span
+              class="govuk-body-l"
+              [class.disabled]="hasAccountHolderChanged()"
+              >Personal Details</span
+            >
+          </dt>
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="taskDetails.account.accountHolder.details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Name
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).details
+                | individualFullName
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Country of birth
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).details
+                .countryOfBirth
+                | countryNameAsync
+                | async
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            I confirm that the account holder is aged 18 or over
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Yes
+          </dd>
+        </div>
+      </dl>
+
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <span
+              class="govuk-body-l"
+              [class.disabled]="hasAccountHolderChanged()"
+              >Address and contact details</span
+            >
+          </dt>
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="taskDetails.account.accountHolder.address"
+      >
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Residential address
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).address
+                .buildingAndStreet
+            }}
+            <ng-container
+              *ngIf="
+                (taskDetails.account.accountHolder | individual).address
+                  .buildingAndStreet2 ||
+                (taskDetails.account.accountHolder | individual).address
+                  .buildingAndStreet3
+              "
+            >
+              <br />
+              {{
+                (taskDetails.account.accountHolder | individual).address
+                  .buildingAndStreet2
+              }}
+            </ng-container>
+            <ng-container
+              *ngIf="
+                (taskDetails.account.accountHolder | individual).address
+                  .buildingAndStreet3
+              "
+            >
+              <br />{{
+                (taskDetails.account.accountHolder | individual).address
+                  .buildingAndStreet3
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Town or city
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).address
+                .townOrCity
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            State or Province
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).address
+                .stateOrProvince
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Country
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).address.country
+                | countryNameAsync
+                | async
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Postal Code or ZIP
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).address.postCode
+            }}
+          </dd>
+        </div>
+        <div
+          class="govuk-summary-list__row"
+          *ngIf="
+            (taskDetails.account.accountHolder | individual).phoneNumber
+              ?.phoneNumber1
+          "
+        >
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Phone number 1
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            +{{
+              (taskDetails.account.accountHolder | individual).phoneNumber
+                .countryCode1
+            }}{{
+              (taskDetails.account.accountHolder | individual).phoneNumber
+                .phoneNumber1
+            }}
+          </dd>
+        </div>
+        <div
+          class="govuk-summary-list__row"
+          *ngIf="
+            (taskDetails.account.accountHolder | individual).phoneNumber
+              ?.phoneNumber2
+          "
+        >
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Phone number 2
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            +{{
+              (taskDetails.account.accountHolder | individual).phoneNumber
+                .countryCode2
+            }}{{
+              (taskDetails.account.accountHolder | individual).phoneNumber
+                .phoneNumber2
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Email address
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | individual).emailAddress
+                ?.emailAddress
+            }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        taskDetails.account.accountHolder.type ===
+        accountHolderTypes.ORGANISATION
+      "
+    >
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <span
+              class="govuk-body-l"
+              [class.disabled]="hasAccountHolderChanged()"
+              >Organisation details</span
+            >
+          </dt>
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="taskDetails.account.accountHolder.details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Name
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{ taskDetails.account.accountHolder.details?.name }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Registration number
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | organisation).details
+                .registrationNumber
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Reason for not providing a Registration number
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | organisation).details
+                .noRegistrationNumJustification
+            }}
+          </dd>
+        </div>
+      </dl>
+
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            <span
+              class="govuk-body-l"
+              [class.disabled]="hasAccountHolderChanged()"
+              >Address and contact details</span
+            >
+          </dt>
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="taskDetails.account.accountHolder.address"
+      >
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Organisation address
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | organisation).address
+                .buildingAndStreet
+            }}
+            <ng-container
+              *ngIf="
+                (taskDetails.account.accountHolder | organisation).address
+                  .buildingAndStreet2
+              "
+            >
+              <br />
+              {{
+                (taskDetails.account.accountHolder | organisation).address
+                  .buildingAndStreet2
+              }}
+            </ng-container>
+            <ng-container
+              *ngIf="
+                (taskDetails.account.accountHolder | organisation).address
+                  .buildingAndStreet3
+              "
+            >
+              <br />{{
+                (taskDetails.account.accountHolder | organisation).address
+                  .buildingAndStreet3
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Town or city
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | organisation).address
+                .townOrCity
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            State or Province
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | organisation).address
+                .stateOrProvince
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Country
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | organisation).address.country
+                | countryNameAsync
+                | async
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            Postal Code or ZIP
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="hasAccountHolderChanged()"
+          >
+            {{
+              (taskDetails.account.accountHolder | organisation).address
+                .postCode
+            }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border"
+      [class.ukets-background-light-grey]="true"
+      *ngIf="canUpdateTask() || (isCompleted && hasAccountHolderChanged())"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <details
+            *ngIf="canUpdateTask()"
+            class="govuk-details"
+            data-module="govuk-details"
+          >
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text"
+                >Change account holder</span
+              >
+            </summary>
+            <div class="govuk-details__text">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="changed_account_holder">
+                  Enter account holder ID
+                </label>
+                <input
+                  class="govuk-input govuk-input--width-20"
+                  id="changed_account_holder"
+                  name="changed_account_holder"
+                  type="text"
+                  #changedAccountHolderInput
+                />
+              </div>
+              <button
+                class="govuk-button govuk-!-margin-right-1"
+                data-module="govuk-button"
+                (click)="onApplyAccountHolder(changedAccountHolderInput)"
+              >
+                Apply
+              </button>
+              <button
+                class="govuk-button govuk-button--warning"
+                data-module="govuk-button"
+                *ngIf="hasAccountHolderChanged()"
+                (click)="onAccountHolderReset()"
+              >
+                Reset
+              </button>
+            </div>
+          </details>
+        </dt>
+        <dd class="govuk-summary-list__value" *ngIf="hasAccountHolderChanged()">
+          <div class="govuk-body">
+            <strong> {{ taskDetails.account.changedAccountHolderId }} </strong>
+          </div>
+          <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+              <span class="govuk-warning-text__assistive">Warning</span>
+              Account Holder has changed
+            </strong>
+          </div>
+        </dd>
+      </div>
+    </dl>
+    <app-task-details-account-holder-contacts-details
+      [accountHolderChanged]="hasAccountHolderChanged()"
+      [taskDetails]="taskDetails"
+    >
+    </app-task-details-account-holder-contacts-details>
+  </div>
+</details>
+
+<details
+  class="govuk-details"
+  data-module="govuk-details"
+  *ngIf="taskDetails.account?.accountDetails as accountDetails"
+>
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text"> Account details </span>
+  </summary>
+  <div class="govuk-details__text">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-body-l">Account details</span>
+        </dt>
+      </div>
+    </dl>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Account type</dt>
+        <dd class="govuk-summary-list__value">
+          {{ accountTypeMap[this.taskDetails.account.accountType].label }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Account name</dt>
+        <dd class="govuk-summary-list__value">{{ accountDetails.name }}</dd>
+      </div>
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="accountDetails?.salesContactDetails?.emailAddress?.emailAddress"
+      >
+        <dt class="govuk-summary-list__key">Sales contact email</dt>
+        <dd class="govuk-summary-list__value">
+          {{ accountDetails?.salesContactDetails.emailAddress.emailAddress }}
+        </dd>
+      </div>
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="accountDetails?.salesContactDetails?.phoneNumber"
+      >
+        <dt class="govuk-summary-list__key">Sales contact phone</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-phone-number
+            [countryCode]="
+              accountDetails.salesContactDetails.phoneNumberCountryCode
+            "
+            [phoneNumber]="accountDetails.salesContactDetails.phoneNumber"
+          ></app-shared-phone-number>
+        </dd>
+      </div>
+    </dl>
+    <ng-container *ngIf="accountDetails.address?.buildingAndStreet">
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <span class="govuk-body-l">Billing details</span>
+          </dt>
+        </div>
+      </dl>
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Address</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountDetails.address.buildingAndStreet }}
+            <ng-container *ngIf="accountDetails.address.buildingAndStreet2">
+              <br />
+              {{ accountDetails.address.buildingAndStreet2 }}
+            </ng-container>
+            <ng-container *ngIf="accountDetails.address.buildingAndStreet3">
+              <br />{{
+                accountDetails.address.buildingAndStreet3
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Town or city</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountDetails.address.townOrCity }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">State or province</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountDetails.address.stateOrProvince }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountDetails.address.postCode }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Country</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountDetails.address.country | countryNameAsync | async }}
+          </dd>
+        </div>
+        <ng-container *ngIf="accountDetails.billingContactDetails">
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="accountDetails.billingContactDetails.sopCustomerId"
+          >
+            <dt class="govuk-summary-list__key">SOP Customer ID</dt>
+            <dd class="govuk-summary-list__value">
+              {{ accountDetails.billingContactDetails.sopCustomerId }}
+            </dd>
+          </div>
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="accountDetails.billingContactDetails.contactName"
+          >
+            <dt class="govuk-summary-list__key">Contact name</dt>
+            <dd class="govuk-summary-list__value">
+              {{ accountDetails.billingContactDetails.contactName }}
+            </dd>
+          </div>
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="accountDetails.billingContactDetails.phoneNumber"
+          >
+            <dt class="govuk-summary-list__key">Phone number</dt>
+            <dd class="govuk-summary-list__value">
+              <app-shared-phone-number
+                [countryCode]="
+                  accountDetails.billingContactDetails.phoneNumberCountryCode
+                "
+                [phoneNumber]="accountDetails.billingContactDetails.phoneNumber"
+              ></app-shared-phone-number>
+            </dd>
+          </div>
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="accountDetails.billingContactDetails.email"
+          >
+            <dt class="govuk-summary-list__key">E-mail address</dt>
+            <dd class="govuk-summary-list__value">
+              {{ accountDetails.billingContactDetails.email }}
+            </dd>
+          </div>
+        </ng-container>
+        <div
+          class="govuk-summary-list__row"
+          *ngIf="
+            accountDetails.billingEmail1 &&
+            !accountDetails.billingContactDetails
+          "
+        >
+          <dt class="govuk-summary-list__key">E-mail address</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountDetails.billingEmail1 }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+  </div>
+</details>
+
+<details
+  class="govuk-details"
+  data-module="govuk-details"
+  *ngIf="taskDetails.account.operator"
+>
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">{{
+      operatorTypeMap[this.taskDetails.account.operator.type]
+    }}</span>
+  </summary>
+  <div class="govuk-details__text">
+    <ng-container [ngSwitch]="taskDetails.account.operator.type">
+      <app-overview-installation
+        *ngSwitchCase="operatorType.INSTALLATION"
+        [installation]="taskDetails.account.operator"
+        [operatorCompleted]="true"
+        [regulatorChanged]="hasRegulatorChanged(taskDetails.account.operator)"
+      >
+        <ng-container
+          [ngTemplateOutlet]="regulatorForm"
+          [ngTemplateOutletContext]="{ operator: taskDetails.account.operator }"
+        ></ng-container>
+      </app-overview-installation>
+      <app-overview-aircraft-operator
+        *ngSwitchCase="operatorType.AIRCRAFT_OPERATOR"
+        [aircraftOperator]="taskDetails.account.operator"
+        [operatorCompleted]="true"
+        [regulatorChanged]="hasRegulatorChanged(taskDetails.account.operator)"
+      >
+        <ng-container
+          [ngTemplateOutlet]="regulatorForm"
+          [ngTemplateOutletContext]="{ operator: taskDetails.account.operator }"
+        ></ng-container>
+      </app-overview-aircraft-operator>
+      <app-overview-installation-transfer
+        *ngSwitchCase="operatorType.INSTALLATION_TRANSFER"
+        [installationToBeTransferred]="
+          taskDetails.account.installationToBeTransferred
+        "
+        [installationTransfer]="taskDetails.account.operator"
+        [operatorCompleted]="true"
+      >
+        <ng-container
+          [ngTemplateOutlet]="regulatorForm"
+          [ngTemplateOutletContext]="{ operator: taskDetails.account.operator }"
+        ></ng-container>
+      </app-overview-installation-transfer>
+    </ng-container>
+  </div>
+</details>
+<details
+  class="govuk-details"
+  data-module="govuk-details"
+  *ngIf="(taskDetails.account?.authorisedRepresentatives).length > 0"
+>
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text"
+      >List of authorised representatives</span
+    >
+  </summary>
+  <div class="govuk-details__text">
+    <details
+      class="govuk-details"
+      data-module="govuk-details"
+      *ngFor="
+        let ar of taskDetails.account.authorisedRepresentatives;
+        let i = index
+      "
+    >
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          {{ taskDetails.userDetails[i] | keycloakUserDisplayName }}
+        </span>
+      </summary>
+      <div class="govuk-details__text">
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Name</dt>
+            <dd class="govuk-summary-list__value">
+              {{ taskDetails.userDetails[i] | keycloakUserDisplayName }}
+            </dd>
+            <dd
+              class="govuk-summary-list__actions"
+              *ngIf="taskDetails.currentUserClaimant && !isCompleted"
+            >
+              <button
+                class="govuk-button govuk-button--secondary"
+                (click)="
+                  onUserRequestDocuments(
+                    ar.firstName + ' ' + ar.lastName,
+                    ar.urid
+                  )
+                "
+                (keypress)="
+                  onUserRequestDocuments(
+                    ar.firstName + ' ' + ar.lastName,
+                    ar.urid
+                  )
+                "
+                data-module="govuk-button"
+              >
+                Request documents
+              </button>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">User ID</dt>
+            <dd class="govuk-summary-list__value">
+              <a
+                class="govuk-link govuk-link--no-visited-state"
+                [routerLink]="[
+                  '/task-details/' + taskDetails.requestId + '/user/' + ar.urid
+                ]"
+                >{{ ar.urid }}</a
+              >
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Permissions</dt>
+            <dd class="govuk-summary-list__value">
+              {{ getAccessRightsText(ar) }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </details>
+  </div>
+</details>
+
+<ng-template #regulatorForm let-operator="operator">
+  <!--    TODO all the following methods should be moved to a child components. Did proceed with this due -->
+  <!--  because the client -->
+
+  <ng-container
+    *ngIf="canUpdateTask() || (isCompleted && hasRegulatorChanged(operator))"
+  >
+    <div
+      class="govuk-summary-list__row"
+      [class.ukets-background-light-grey]="true"
+    >
+      <dt class="govuk-summary-list__key">
+        <details
+          class="govuk-details"
+          data-module="govuk-details"
+          *ngIf="canUpdateTask()"
+        >
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">Change regulator</span>
+          </summary>
+          <div class="govuk-details__text">
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="installation-regulator">
+                Select from list
+              </label>
+              <select
+                class="govuk-select"
+                id="installation-regulator"
+                name="installation-regulator"
+                #changeRegulator
+              >
+                <option [value]="null">Please select</option>
+                <option
+                  *ngFor="let regulator of getRegulatorKeys()"
+                  [value]="regulators[regulator]"
+                >
+                  {{ getRegulatorText(regulator) }}
+                </option>
+              </select>
+            </div>
+            <button
+              class="govuk-button govuk-!-margin-right-1"
+              data-module="govuk-button"
+              (click)="onApplyRegulator(changeRegulator)"
+            >
+              Apply
+            </button>
+            <button
+              class="govuk-button govuk-button--warning"
+              data-module="govuk-button"
+              *ngIf="hasRegulatorChanged(operator)"
+              (click)="onRegulatorReset()"
+            >
+              Reset
+            </button>
+          </div>
+        </details>
+      </dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="hasRegulatorChanged(operator)">
+          <div class="govuk-body">
+            <strong>
+              {{ getRegulatorText(operator.changedRegulator) }}
+            </strong>
+          </div>
+          <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+              <span class="govuk-warning-text__assistive">Warning</span>
+              Regulator has changed
+            </strong>
+          </div>
+        </ng-container>
+      </dd>
+      <dd class="govuk-summary-list__actions"></dd>
+    </div>
+  </ng-container>
+</ng-template>

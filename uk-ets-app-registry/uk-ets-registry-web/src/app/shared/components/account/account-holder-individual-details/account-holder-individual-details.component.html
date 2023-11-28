@@ -1,0 +1,79 @@
+<div appScreenReaderPageAnnounce [pageTitle]="header"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form
+      (ngSubmit)="onSubmit()"
+      [formGroup]="formGroup"
+      [appConnectForm]="accountHolder"
+    >
+      <div class="govuk-fieldset">
+        <div class="govuk-form-group">
+          <div class="govuk-fieldset">
+            <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-xl">{{ caption }}</span>
+                {{ header }}
+              </h1>
+            </div>
+          </div>
+        </div>
+        <h3
+          *ngIf="isAHUpdateWizard"
+          class="govuk-heading-l govuk-!-padding-top-4"
+        >
+          Update the individual's details
+        </h3>
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h2 class="govuk-fieldset__heading">Name</h2>
+        </div>
+
+        <app-form-control-text
+          [label]="'First and middle names'"
+          [hint]="'Given names'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.firstName"
+          controlName="details.firstName"
+          [autocomplete]="'given-name'"
+        ></app-form-control-text>
+
+        <app-form-control-text
+          [label]="'Last name'"
+          [hint]="'Family name'"
+          [maxlength]="40"
+          [validationErrorMessage]="validationErrorMessage.lastName"
+          controlName="details.lastName"
+          [autocomplete]="'family-name'"
+        ></app-form-control-text>
+
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h2 class="govuk-fieldset__heading">Country and date of birth</h2>
+        </div>
+
+        <app-form-control-select
+          controlName="details.countryOfBirth"
+          [options]="countrySelectOptions()"
+          [label]="'Country of birth'"
+        ></app-form-control-select>
+
+        <div formGroupName="details">
+          <app-uk-single-checkbox
+            key="isOverEighteen"
+            [label]="'I confirm that the account holder is aged 18 or over'"
+            controlName="details.isOverEighteen"
+            [validationErrorMessage]="validationErrorMessage.isOverEighteen"
+          >
+          </app-uk-single-checkbox>
+        </div>
+
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

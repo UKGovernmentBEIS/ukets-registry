@@ -1,0 +1,91 @@
+<ng-container *ngIf="user">
+  <div class="govuk-grid-row">
+    <div class="govuk-summary-list__row">
+      <h2 class="govuk-summary-list__key govuk-heading-m">
+        Work contact details
+      </h2>
+    </div>
+    <dl
+      class="
+        govuk-summary-list govuk-summary-list--no-border
+        govuk-!-margin-top-5
+      "
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Phone number 1</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-phone-number
+            [countryCode]="
+              user.attributes.workCountryCode
+                ? user.attributes.workCountryCode[0]
+                : ''
+            "
+            [phoneNumber]="
+              user.attributes.workPhoneNumber
+                ? user.attributes.workPhoneNumber[0]
+                : ''
+            "
+          >
+          </app-shared-phone-number>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="!hideWorkAddress">
+        <dt class="govuk-summary-list__key">Address</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-three-line-address
+            [line1]="
+              user.attributes.workBuildingAndStreet
+                ? user.attributes.workBuildingAndStreet[0]
+                : ''
+            "
+            [line2]="
+              user.attributes.workBuildingAndStreetOptional
+                ? user.attributes.workBuildingAndStreetOptional[0]
+                : ''
+            "
+            [line3]="
+              user.attributes.workBuildingAndStreetOptional2
+                ? user.attributes.workBuildingAndStreetOptional2[0]
+                : ''
+            "
+          ></app-shared-three-line-address>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="!hideWorkAddress">
+        <dt class="govuk-summary-list__key">Town or city</dt>
+        <dd class="govuk-summary-list__value">
+          <ng-container
+            *ngIf="user.attributes.workTownOrCity; else elseBlockTownOrCity"
+          >
+            {{ user.attributes.workTownOrCity[0] | titlecase }}
+          </ng-container>
+          <ng-template #elseBlockTownOrCity></ng-template>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="!hideWorkAddress">
+        <dt class="govuk-summary-list__key">State or Province</dt>
+        <dd class="govuk-summary-list__value">
+          <ng-container *ngIf="user.attributes.workStateOrProvince">
+            {{ user.attributes.workStateOrProvince }}
+          </ng-container>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="!hideWorkAddress">
+        <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+        <dd class="govuk-summary-list__value">
+          <ng-container *ngIf="user.attributes.workPostCode">
+            {{ user.attributes.workPostCode }}
+          </ng-container>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="!hideWorkAddress">
+        <dt class="govuk-summary-list__key">Country</dt>
+        <dd class="govuk-summary-list__value">
+          <ng-container *ngIf="user.attributes.workCountry">
+            {{ user.attributes.workCountry[0] | countryNameAsync | async }}
+          </ng-container>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</ng-container>

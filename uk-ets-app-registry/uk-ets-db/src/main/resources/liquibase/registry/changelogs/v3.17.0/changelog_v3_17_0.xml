@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_17_0_MIGRATE_PENDING_APPROVAL_FOR_TRUSTED_ACCOUNTS" author="piliotid" context="migrate">
+        <comment>Migrate TrustedAccountStatus from PENDING_APPROVAL to PENDING_ADDITION_APPROVAL</comment>
+        <sql>
+            update trusted_account set status = 'PENDING_ADDITION_APPROVAL' where status = 'PENDING_APPROVAL';
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_17_1_ADD_NEW_CONTACT_FIELD_STATE_OR_PROVINCE" author="loukerip" context="migrate">
+        <comment>Adds the state_or_province column to contact table.</comment>
+        <sql>
+            alter table contact add column state_or_province varchar(256) default null;
+
+            comment on column contact.state_or_province is 'The state or province';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,128 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/",
+    "dist/",
+    ".storybook/",
+    "coverage/",
+    "e2e/",
+    "reports/",
+    "target/",
+    "tmp/",
+    "src/stories/",
+    "*.js"
+  ],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module",
+        "project": ["tsconfig.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:ngrx/recommended",
+        "prettier"
+      ],
+      "plugins": ["ngrx", "@typescript-eslint", "@angular-eslint", "rxjs"],
+      "rules": {
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-class-suffix": "error",
+        "@angular-eslint/contextual-lifecycle": "error",
+        "@angular-eslint/directive-class-suffix": "error",
+        "@angular-eslint/no-conflicting-lifecycle": "error",
+        "@angular-eslint/no-empty-lifecycle-method": "error",
+        "@angular-eslint/no-host-metadata-property": "error",
+        "@angular-eslint/no-input-rename": "error",
+        "@angular-eslint/no-inputs-metadata-property": "error",
+        "@angular-eslint/no-output-native": "error",
+        "@angular-eslint/no-output-on-prefix": "error",
+        "@angular-eslint/no-output-rename": "error",
+        "@angular-eslint/no-outputs-metadata-property": "error",
+        "@angular-eslint/use-lifecycle-interface": "warn",
+        "@angular-eslint/use-pipe-transform-interface": "error",
+        "@typescript-eslint/ban-types": "warn",
+        "@typescript-eslint/explicit-member-accessibility": [
+          "off",
+          {
+            "accessibility": "explicit"
+          }
+        ],
+        "ngrx/updater-explicit-return-type": "warn",
+        "ngrx/avoid-cyclic-effects": "warn",
+        "ngrx/no-dispatch-in-effects": "warn",
+        "ngrx/no-effect-decorator-and-creator": "error",
+        "ngrx/no-effect-decorator": "warn",
+        "ngrx/no-effects-in-providers": "error",
+        "ngrx/no-multiple-actions-in-effects": "warn",
+        "ngrx/prefer-action-creator-in-of-type": "warn",
+        "ngrx/prefer-concat-latest-from": "warn",
+        "ngrx/prefer-effect-callback-in-block-statement": "warn",
+        "ngrx/use-effects-lifecycle-interface": "warn",
+        "ngrx/avoid-combining-selectors": "warn",
+        "ngrx/avoid-dispatching-multiple-actions-sequentially": "warn",
+        "ngrx/avoid-duplicate-actions-in-reducer": "warn",
+        "ngrx/avoid-mapping-selectors": "warn",
+        "ngrx/good-action-hygiene": "warn",
+        "ngrx/no-multiple-global-stores": "warn",
+        "ngrx/no-reducer-in-key-names": "warn",
+        "ngrx/no-store-subscription": "warn",
+        "ngrx/no-typed-global-store": "warn",
+        "ngrx/on-function-explicit-return-type": "warn",
+        "ngrx/prefer-action-creator-in-dispatch": "warn",
+        "ngrx/prefer-action-creator": "warn",
+        "ngrx/prefer-inline-action-props": "warn",
+        "ngrx/prefer-one-generic-in-create-for-feature-selector": "warn",
+        "ngrx/prefix-selectors-with-select": "warn",
+        "ngrx/select-style": "warn",
+        "ngrx/use-consistent-global-store-name": "warn",
+        "ngrx/prefer-selector-in-select": "warn",
+        "rxjs/no-unsafe-catch": "warn",
+        "rxjs/no-unsafe-first": "warn",
+        "rxjs/no-unsafe-switchmap": "warn",
+        "rxjs/no-cyclic-action": "off",
+        "@angular-eslint/component-max-inline-declarations": [
+          "error",
+          {
+            "template": 30
+          }
+        ],
+        "@angular-eslint/no-forward-ref": "warn",
+        "@angular-eslint/prefer-on-push-component-change-detection": "off",
+        "@angular-eslint/use-injectable-provided-in": "off",
+        "@angular-eslint/relative-url-prefix": "off"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {
+        "@angular-eslint/template/no-autofocus": "error",
+        "@angular-eslint/template/no-positive-tabindex": "error",
+        "@angular-eslint/template/cyclomatic-complexity": "off",
+        "@angular-eslint/template/eqeqeq": "warn"
+      }
+    }
+  ]
+}

@@ -1,0 +1,391 @@
+<app-banner [type]="BannerType.SUCCESS" *ngIf="fileDeleted">
+  <span> {{ fileDeleted }} has been deleted </span>
+</app-banner>
+<div class="govuk-width-container" *ngIf="account">
+  <div class="govuk-grid-row">
+    <app-side-menu
+      [menuItems]="sideMenuItems"
+      [selectedItem]="currentMenuItem"
+      (selectItem)="onSelectMenuItem($event)"
+    ></app-side-menu>
+    <div class="govuk-grid-column-three-quarters" [ngSwitch]="currentMenuItem">
+      <div
+        *ngIf="
+          !(
+            (('urn:uk-ets-registry-api:account-allocation:write'
+              | protect
+              | async) &&
+              currentMenuItem === menuItems.ALLOCATION) ||
+            currentMenuItem === menuItems.TRUSTED_ACCOUNTS
+          );
+          else headerButtonTemplate
+        "
+      >
+        <h1 class="govuk-heading-xl">{{ currentMenuItem }}</h1>
+      </div>
+      <app-overview
+        *ngSwitchCase="menuItems.OVERVIEW"
+        [accountHoldingsResult]="accountHoldingsResult"
+      ></app-overview>
+      <app-details
+        [account]="account"
+        [isAdmin]="isAdmin"
+        [canRequestUpdate]="
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : true
+            | async) ||
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.SURRENDER_INITIATE_AND_APPROVE
+              : false
+            | async)
+        "
+        [canExcludeFromBilling]="
+          isSeniorAdmin &&
+          !account.accountDetails.excludedFromBilling &&
+          (account.accountType === 'TRADING_ACCOUNT' ||
+            account.accountType === 'PERSON_HOLDING_ACCOUNT') &&
+          account.accountDetails.accountStatus !== 'CLOSED' &&
+          account.accountDetails.accountStatus !== 'TRANSFER_PENDING' &&
+          account.accountDetails.accountStatus !== 'SUSPENDED'
+        "
+        [canIncludeInBilling]="
+          isSeniorAdmin &&
+          account.accountDetails.excludedFromBilling &&
+          (account.accountType === 'TRADING_ACCOUNT' ||
+            account.accountType === 'PERSON_HOLDING_ACCOUNT') &&
+          account.accountDetails.accountStatus !== 'CLOSED' &&
+          account.accountDetails.accountStatus !== 'TRANSFER_PENDING' &&
+          account.accountDetails.accountStatus !== 'SUSPENDED'
+        "
+        [countries]="countries"
+        (includeInBilling)="includeInBillingClick()"
+        *ngSwitchCase="menuItems.ACCOUNT_DETAILS"
+      ></app-details>
+      <app-account-holder
+        [account]="account"
+        [documents]="documents"
+        [canRequestUpdateContact]="
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : true
+            | async) ||
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.SURRENDER_INITIATE_AND_APPROVE
+              : false
+            | async)
+        "
+        [canRequestUpdateDocuments]="
+          isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : true
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : true
+            | async
+        "
+        (downloadAccountHolderFileEmitter)="downloadAccountHolderFile($event)"
+        (removeAccountHolderFileEmitter)="removeAccountHolderFile($event)"
+        [accountHolder]="account.accountHolder"
+        [accountHolderContactInfo]="account.accountHolderContactInfo"
+        [countries]="countries"
+        (requestDocuments)="onAccountHolderRequestDocuments()"
+        [canDeleteFile]="isAdmin && !isReadOnlyAdmin"
+        *ngSwitchCase="menuItems.ACCOUNT_HOLDER"
+      ></app-account-holder>
+      <app-aircraft-operator
+        [aircraft]="account.operator | aircraftOperator"
+        *ngSwitchCase="menuItems.AIRCRAFT_OPERATOR_DETAILS"
+        [hasOperatorUpdatePendingApproval]="hasOperatorUpdatePendingApproval"
+        [canRequestUpdate]="
+          isAdmin &&
+          !isReadOnlyAdmin &&
+          account.accountDetails.accountStatus != 'CLOSURE_PENDING' &&
+          account.accountDetails.accountStatus != 'CLOSED' &&
+          account.accountDetails.accountStatus != 'PROPOSED'
+        "
+        (requestAircraftUpdateEmitter)="goToRequestOperatorUpdate()"
+      ></app-aircraft-operator>
+      <app-installation
+        [installation]="account.operator | installation"
+        (requestInstallationUpdateEmitter)="goToRequestOperatorUpdate()"
+        (requestTransferAccountEmitter)="goToRequestTransferAccount()"
+        [hasOperatorUpdatePendingApproval]="hasOperatorUpdatePendingApproval"
+        [canRequestUpdate]="
+          isAdmin &&
+          !isReadOnlyAdmin &&
+          account.accountDetails.accountStatus !== 'CLOSURE_PENDING' &&
+          account.accountDetails.accountStatus !== 'CLOSED' &&
+          account.accountDetails.accountStatus !== 'PROPOSED'
+        "
+        [canRequestAccountTransfer]="
+          account.accountType === 'OPERATOR_HOLDING_ACCOUNT' &&
+          account.accountDetails?.accountStatus !== 'CLOSURE_PENDING' &&
+          account.accountDetails?.accountStatus !== 'CLOSED' &&
+          account.accountDetails?.accountStatus !== 'TRANSFER_PENDING' &&
+          account.accountDetails?.accountStatus !== 'PROPOSED' &&
+          ('urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin'
+            | protect
+            | async)
+        "
+        *ngSwitchCase="menuItems.INSTALLATION_DETAILS"
+      ></app-installation>
+      <app-authorised-representatives
+        [isAdmin]="isAdmin"
+        [isReadOnlyAdmin]="isReadOnlyAdmin"
+        [authorisedReps]="account.authorisedRepresentatives"
+        [pendingRequests]="account.pendingARRequests"
+        [addedARs]="account.addedARs"
+        [removedARs]="account.removedARs"
+        [configuration]="configuration"
+        [accountOpeningDate]="account.accountDetails.openingDate"
+        [accountId]="accountId"
+        [canRequestUpdate]="
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : true
+            | async) ||
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.SURRENDER_INITIATE_AND_APPROVE
+              : false
+            | async)
+        "
+        *ngSwitchCase="menuItems.ARS"
+      ></app-authorised-representatives>
+      <app-emissions-surrenders-container
+        [isAdmin]="isAdmin"
+        [accountId]="accountId"
+        [accountType]="account.accountType"
+        [compliantEntityIdentifier]="compliantEntityIdentifier"
+        [canRequestUpdateExclusionStatus]="
+          isSeniorAdmin &&
+          account.accountDetails.accountStatus != 'CLOSURE_PENDING' &&
+          account.accountDetails.accountStatus != 'CLOSED' &&
+          account.accountDetails.accountStatus != 'TRANSFER_PENDING'
+        "
+        *ngSwitchCase="menuItems.EMISSIONS_SURRENDERS"
+      ></app-emissions-surrenders-container>
+      <app-history-and-comments-container
+        *ngSwitchCase="menuItems.HISTORY_AND_COMMENTS"
+      ></app-history-and-comments-container>
+      <app-holdings
+        [accountId]="accountId"
+        [account]="account"
+        [accountHoldingsResult]="accountHoldingsResult"
+        *ngSwitchCase="menuItems.HOLDINGS"
+      ></app-holdings>
+      <app-transactions-container
+        [fullIdentifier]="account.accountDetails.accountNumber"
+        [trustedAccountListRules]="account.trustedAccountListRules"
+        [isOHAOrAOHA]="isOHAOrAOHA"
+        [isKyotoAccountType]="isKyotoAccountType"
+        [canRequestUpdate]="
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : false
+            | async) ||
+          (isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.SURRENDER_INITIATE_AND_APPROVE
+              : false
+            | async)
+        "
+        *ngSwitchCase="menuItems.TRANSACTIONS"
+      ></app-transactions-container>
+      <app-trusted-accounts
+        [accountFullId]="account.accountDetails.accountNumber"
+        [trustedAccounts]="account.trustedAccountList"
+        [accountHolder]="account.accountHolder"
+        [canRequestUpdate]="
+          isAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : false
+              : false
+            | async
+        "
+        *ngSwitchCase="menuItems.TRUSTED_ACCOUNTS"
+        (trustedAccountFullIdentifierDescriptionUpdate)="
+          loadTrustedAccountUpdateDescription($event)
+        "
+        [isCancelPendingActivationSuccessDisplayed]="
+          isCancelPendingActivationSuccessDisplayed
+        "
+        [selectedTrustedAccountDescription]="selectedTrustedAccountDescription"
+      ></app-trusted-accounts>
+      <app-account-notes
+        *ngSwitchCase="menuItems.NOTES"
+        [accountFullId]="account.accountDetails.accountNumber"
+        [accountNotes]="accountNotes"
+        [accountHolderNotes]="accountHolderNotes"
+        [isSeniorAdmin]="isSeniorAdmin"
+        [isAdmin]="isAdmin"
+      ></app-account-notes>
+      <app-account-allocation
+        [accountId]="accountId"
+        (openHistoryAndComments)="
+          onSelectMenuItem(menuItems.HISTORY_AND_COMMENTS)
+        "
+        [operatorType]="account.operator?.type"
+        [canRequestUpdate]="
+          ('urn:uk-ets-registry-api:transaction:initiate' | protect | async) ||
+          (isSeniorAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : false
+            | async) ||
+          (isSeniorAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.SURRENDER_INITIATE_AND_APPROVE
+              : false
+            | async)
+        "
+        *ngSwitchCase="menuItems.ALLOCATION"
+      >
+      </app-account-allocation>
+    </div>
+  </div>
+  <app-back-to-top></app-back-to-top>
+</div>
+
+<ng-template #headerButtonTemplate>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ currentMenuItem }}</h1>
+      <span
+        *ngIf="
+          compliantEntityIdentifier == null &&
+          'OPERATOR_HOLDING_ACCOUNT' === account.accountType
+        "
+        class="govuk-caption-m govuk-!-margin-bottom-5"
+      >
+        No installation is linked to this account.
+      </span>
+      <span
+        *ngIf="
+          compliantEntityIdentifier == null &&
+          'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT' === account.accountType
+        "
+        class="govuk-caption-m govuk-!-margin-bottom-5"
+      >
+        No operator is linked to this account.
+      </span>
+    </div>
+    <div
+      class="govuk-grid-column-one-third"
+      *ngIf="
+        compliantEntityIdentifier != null &&
+        currentMenuItem === menuItems.ALLOCATION &&
+        (isSeniorAdmin
+          | canRequestUpdate
+            : isReadOnlyAdmin
+            : account.governmentAccount
+            : account.accountDetails.accountStatus
+            : false
+            : account.accountDetails.accountNumber
+            : ArAccessRights.INITIATE
+            : true
+          | async)
+      "
+    >
+      <button
+        class="govuk-button govuk-!-margin-top-9 govuk-!-font-size-16"
+        data-module="govuk-button"
+        (click)="onUpdateAllocationStatus()"
+        style="float: right"
+      >
+        Change withhold status
+      </button>
+    </div>
+    <div
+      class="govuk-grid-column-one-third govuk-!-text-align-right"
+      *ngIf="
+        currentMenuItem === menuItems.TRUSTED_ACCOUNTS &&
+        (isAdmin
+          | canRequestUpdate
+            : isReadOnlyAdmin
+            : account.governmentAccount
+            : account.accountDetails.accountStatus
+            : false
+            : account.accountDetails.accountNumber
+            : ArAccessRights.INITIATE
+            : false
+            : false
+          | async)
+      "
+    >
+      <button
+        (click)="goToRequestTalUpdate()"
+        class="govuk-button govuk-!-margin-right-0 govuk-!-margin-top-2"
+        data-module="govuk-button"
+      >
+        Request update
+      </button>
+    </div>
+  </div>
+</ng-template>

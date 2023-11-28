@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_11_0_ALTER_ACCOUNT_ACCESS_DROP_TYPE" author="fragkise" context="migrate">
+        <comment>Drop useless column type from account_access table</comment>
+        <sql>
+            alter table account_access drop column type;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_11_0_ALTER_COMPLIANT_ENTITY_ADD_ALLOCATION_CLASSIFICATION_AND_ALLOCATION_EXCLUSION_STATUS" author="koukoulakisg" context="migrate">
+        <comment>Adds the allocation classification and allocation exclusion status columns to compliant entity table</comment>
+        <sql>
+            alter table compliant_entity add column allocation_classification varchar;
+            comment on column compliant_entity.allocation_classification is 'The allocation classification of the compliant entity (e.g. not yet allocated, under-allocated etc.)';
+
+            alter table compliant_entity add column allocation_exclusion_status varchar;
+            comment on column compliant_entity.allocation_exclusion_status is 'The allocation exclusion status of the compliant entity (e.g. withheld)';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_11_0_TABLE_ALLOCATION_JOB" author="pougouniasn" context="migrate">
+        <comment>Introduces the relation for allocation jobs</comment>
+        <sql>
+            create sequence allocation_job_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "allocation_job"
+            ("id" bigint,
+            "year" integer,
+            "request_identifier" bigint,
+            "status" varchar(255),
+            "created" timestamp,
+            "updated" timestamp,
+            constraint "pk_allocation_job" primary key("id"));
+
+            comment on table "allocation_job" is 'Represents an allocation job.';
+
+            comment on column "allocation_job"."id" is 'The primary key.';
+            comment on column "allocation_job"."year" is 'The allocation year.';
+            comment on column "allocation_job"."request_identifier" is 'The unique business identifier.';
+            comment on column "allocation_job"."status" is 'The allocation job status (SCHEDULED, RUNNING, COMPLETED).';
+            comment on column "allocation_job"."created" is 'When this allocation was created.';
+            comment on column "allocation_job"."updated" is 'When this allocation was last updated.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_11_0_ADD_TRANSACTION_ATTRIBUTES" author="pougouniasn" context="migrate">
+        <comment>Adds a new column to transaction</comment>
+        <sql>
+            alter table "transaction" add column "attributes" text;
+            comment on column "transaction"."attributes" is 'Optional additional attributes regarding a transaction.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_11_0_ADD_CONTACT_POSITION_IN_THE_COMPANY" author="georgopoulosp" context="migrate">
+        <comment>Adds a new column to contact</comment>
+        <sql>
+            alter table contact add column position_in_company varchar(256) NULL;
+            comment on column contact.position_in_company is 'The position in the company.';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

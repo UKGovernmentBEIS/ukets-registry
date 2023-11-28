@@ -1,0 +1,36 @@
+<div class="govuk-grid-row" *ngIf="formRadioGroupInfo.options">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"
+      >Request to update the authorised representatives</span
+    >
+    <h1 class="govuk-heading-xl">{{ updateType | arUpdateType }}</h1>
+    <dl
+      *ngIf="arFullName"
+      class="govuk-summary-list govuk-summary-list--no-border"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">New user</dt>
+        <dd class="govuk-summary-list__value">
+          {{ arFullName }}
+        </dd>
+      </div>
+    </dl>
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <h2 class="govuk-heading-m">Select the permissions</h2>
+      <app-uk-radio-input
+        controlName="accessRights"
+        [formRadioGroupInfo]="formRadioGroupInfo"
+        [validationErrorMessage]="this.validationErrorMessage.accessRights"
+      >
+      </app-uk-radio-input>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

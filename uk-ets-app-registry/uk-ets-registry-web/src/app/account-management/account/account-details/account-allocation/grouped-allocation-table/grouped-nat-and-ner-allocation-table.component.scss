@@ -1,0 +1,44 @@
+@import '_variables';
+
+.remaining-allocation {
+  border-left-style: solid;
+  border-width: 6px;
+  display: block;
+  padding: 12px;
+}
+td.annual-allocation {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  vertical-align: inherit;
+}
+
+td.no-border-bottom {
+  border-bottom: none !important;
+}
+button.annual-allocation {
+  float: right;
+  margin-bottom: 0;
+}
+.over-allocated {
+  background-color: $red-tint-50;
+  border-color: $red-tint-25;
+}
+
+.under-allocated {
+  background-color: $green-tint-50;
+  border-color: $green-tint-25;
+}
+
+.cell-border-left {
+  border-left: 1px solid $govuk-border-colour;
+  padding-left: 8px;
+}
+
+.center-align-text {
+  text-align: center;
+}
+
+.details-margins {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

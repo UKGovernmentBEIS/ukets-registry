@@ -1,0 +1,114 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="showAccountTransferTypeError()"
+        [attr.id]="'accountTranferGroupInfo-label'"
+      >
+        <fieldset
+          class="govuk-fieldset"
+          aria-describedby="account-transfer-hint"
+        >
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl">Request account transfer</span>
+              Choose the new account holder
+              <p class="govuk-visually-hidden" aria-live="polite">
+                Choose the new account holder
+              </p>
+            </h1>
+          </legend>
+          <span
+            *ngIf="showAccountTransferTypeError()"
+            class="govuk-error-message"
+            [attr.id]="'accountTranferGroupInfo-error-label'"
+          >
+            <span class="govuk-visually-hidden">Error:</span
+            >{{ validationErrorMessage.accountTransferType }}
+          </span>
+          <div
+            class="govuk-radios govuk-radios--conditional"
+            data-module="govuk-radios"
+            [attr.aria-invalid]="showAccountTransferTypeError()"
+          >
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="existing-search"
+                name="accountTransferType"
+                formControlName="accountTransferType"
+                type="radio"
+                [value]="'ACCOUNT_TRANSFER_TO_EXISTING_HOLDER'"
+                (click)="
+                  onSelectAccountTransferType(
+                    'ACCOUNT_TRANSFER_TO_EXISTING_HOLDER'
+                  )
+                "
+              />
+              <label
+                class="govuk-label govuk-radios__label"
+                for="existing-search"
+              >
+                Enter account holder ID
+              </label>
+            </div>
+
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="
+                updateType !== 'ACCOUNT_TRANSFER_TO_EXISTING_HOLDER'
+              "
+              id="conditional-account-holder-id"
+            >
+              <div class="govuk-form-group">
+                <app-type-ahead
+                  [url]="searchByIdentifierRequestUrl"
+                  [params]="requestParams"
+                  searchKey="identifier"
+                  [resultTemplate]="accountHolder"
+                  [inputFormatter]="accountHolderResultFormatter"
+                  placeHolder="Search by ID"
+                  (resultItem)="onSelectFromSearch($event)"
+                ></app-type-ahead>
+              </div>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="new-account-holder"
+                name="accountTransferType"
+                type="radio"
+                formControlName="accountTransferType"
+                [value]="'ACCOUNT_TRANSFER_TO_CREATED_HOLDER'"
+                (click)="
+                  onSelectAccountTransferType(
+                    'ACCOUNT_TRANSFER_TO_CREATED_HOLDER'
+                  )
+                "
+              />
+              <label
+                class="govuk-label govuk-radios__label"
+                for="new-account-holder"
+              >
+                Add a new organisation as account holder
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <button class="govuk-button" data-module="govuk-button" type="submit">
+        Continue
+      </button>
+    </form>
+  </div>
+
+  <ng-template #accountHolder let-r="result" let-t="term">
+    <ngb-highlight
+      [result]="r | formatTypeAheadAccountHolderResult"
+      [term]="t"
+    ></ngb-highlight>
+    <hr class="govuk-section-break" />
+  </ng-template>
+</div>

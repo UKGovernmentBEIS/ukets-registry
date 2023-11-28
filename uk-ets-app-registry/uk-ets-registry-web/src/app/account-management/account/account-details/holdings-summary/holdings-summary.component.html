@@ -1,0 +1,62 @@
+<div
+  class="govuk-warning-text"
+  *ngIf="
+    !hideComplianceInfo &&
+    accountHoldingsResult.shouldMeetEmissionsTarget &&
+    getWarning()
+  "
+>
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    {{ getWarning() }}
+  </strong>
+</div>
+
+<dl class="govuk-summary-list" [class]="'ukets-background-light-grey'">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Total available quantity:</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountHoldingsResult?.totalAvailableQuantity | number }}
+      {{ getLabel(accountHoldingsResult.availableUnitType) }}
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Total reserved quantity:</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountHoldingsResult?.totalReservedQuantity | number }}
+      {{ getLabel(accountHoldingsResult.reservedUnitType) }}
+    </dd>
+  </div>
+
+  <div
+    class="govuk-summary-list__row"
+    *ngIf="
+      !hideComplianceInfo && accountHoldingsResult.shouldMeetEmissionsTarget
+    "
+  >
+    <dt class="govuk-summary-list__key">Current surrender status:</dt>
+    <dd class="govuk-summary-list__value">
+      <app-govuk-tag
+        *ngIf="!!accountHoldingsResult.currentComplianceStatus"
+        [color]="
+          complianceStatusMap[accountHoldingsResult.currentComplianceStatus]
+            .color
+        "
+      >
+        {{
+          complianceStatusMap[accountHoldingsResult.currentComplianceStatus]
+            .label
+        }}
+      </app-govuk-tag>
+      <div
+        *ngIf="
+          accountHoldingsResult.currentComplianceStatus == 'NOT_APPLICABLE'
+        "
+      >
+        Reporting period has not started yet.
+      </div>
+    </dd>
+  </div>
+</dl>

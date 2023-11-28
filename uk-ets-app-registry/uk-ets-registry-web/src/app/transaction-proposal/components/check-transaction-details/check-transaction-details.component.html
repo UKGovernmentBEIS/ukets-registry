@@ -1,0 +1,255 @@
+<app-title-proposal-transaction-type
+  [proposalTransactionType]="proposedTransactionType"
+></app-title-proposal-transaction-type>
+<h1 class="govuk-heading-xl">Check and sign your proposal</h1>
+
+<div *ngIf="approvalRequired" class="govuk-warning-text">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    <ng-container
+      *ngIf="trTypeValues[proposedTransactionType.type].isETSTransaction"
+    >
+      This proposal must be approved by another {{ approvalRole }}
+    </ng-container>
+    <ng-container
+      *ngIf="
+        !trTypeValues[proposedTransactionType.type].isETSTransaction &&
+        !trTypeValues[proposedTransactionType.type].isKPTransactionOnlyForAdmin
+      "
+    >
+      <ng-container *ngIf="isAdmin">
+        This proposal must be approved by another registry administrator
+      </ng-container>
+      <ng-container *ngIf="!isAdmin">
+        This proposal must be approved by another authorised representative
+      </ng-container>
+    </ng-container>
+    <ng-container
+      *ngIf="
+        trTypeValues[proposedTransactionType.type].isKPTransactionOnlyForAdmin
+      "
+    >
+      This proposal must be approved by another registry administrator
+    </ng-container>
+  </strong>
+</div>
+
+<app-account-summary
+  id="transferring-account-container"
+  header="Transferring account"
+  [accountInfo]="transferringAccountInfo"
+  [isTransactionReversal]="
+    trTypeValues[proposedTransactionType?.type].isTransactionReversed
+  "
+>
+</app-account-summary>
+
+<ng-container
+  *ngIf="
+    !trTypeValues[proposedTransactionType.type].cannotGoBackToTransactionType
+  "
+  [ngTemplateOutlet]="header"
+  [ngTemplateOutletContext]="{
+    header: 'Transaction type',
+    route: transactionProposalRoutePaths['select-transaction-type'],
+    id: 'transaction-type-container'
+  }"
+>
+</ng-container>
+<div
+  class="govuk-summary-list"
+  *ngIf="
+    !trTypeValues[proposedTransactionType.type].cannotGoBackToTransactionType
+  "
+>
+  <div
+    *ngIf="proposedTransactionType?.description"
+    class="govuk-summary-list__row"
+  >
+    {{ proposedTransactionType?.description }}
+  </div>
+</div>
+
+<ng-container *ngIf="allocationType">
+  <div class="govuk-grid-row govuk-summary-list govuk-!-padding-bottom-2">
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-0">Transaction type</h2>
+    <hr
+      class="
+        govuk-section-break govuk-section-break--m govuk-section-break--visible
+      "
+    />
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <p class="govuk-body">Return Excess Allocation</p>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<app-year-of-return
+  *ngIf="
+    proposedTransactionType?.type === transactionType.ExcessAllocation ||
+    proposedTransactionType?.type === transactionType.ReverseAllocateAllowances
+  "
+  [allocationYear]="allocationYear"
+  [label]="getTitleForYearSection()"
+>
+</app-year-of-return>
+
+<ng-container *ngIf="itlNotification">
+  <app-itl-notification-summary
+    [itlNotification]="itlNotification"
+  ></app-itl-notification-summary>
+  <hr
+    class="
+      govuk-section-break govuk-section-break--m govuk-section-break--visible
+    "
+  />
+</ng-container>
+
+<ng-container
+  *ngIf="proposedTransactionType?.type !== transactionType.ExcessAllocation"
+  [ngTemplateOutlet]="header"
+  [ngTemplateOutletContext]="{
+    header: 'Unit types and quantity to transfer',
+    route: transactionProposalRoutePaths['select-unit-types-quantity'],
+    id: 'units-quantity-container'
+  }"
+>
+</ng-container>
+
+<ng-container
+  *ngIf="proposedTransactionType?.type !== transactionType.ExcessAllocation"
+>
+  <app-transaction-quantity-table
+    *ngIf="transactionBlocks"
+    [transactionBlocks]="transactionBlocks"
+    [isEtsTransaction]="
+      trTypeValues[proposedTransactionType.type].isETSTransaction
+    "
+  ></app-transaction-quantity-table>
+</ng-container>
+
+<ng-container
+  *ngIf="
+    trTypeValues[proposedTransactionType.type].isETSTransaction &&
+    proposedTransactionType?.type === transactionType.ExcessAllocation
+  "
+>
+  <app-check-allocation-details
+    [isTaskBased]="false"
+    [transactionBlocks]="transactionBlocks"
+    [transferringAccountInfo]="transferringAccountInfo"
+    [acquiringAccountInfo]="acquiringAccountInfo"
+    [proposedTransactionType]="proposedTransactionType"
+    [natQuantity]="returnExcessAllocationTransactionSummary.natQuantity"
+    [nerQuantity]="returnExcessAllocationTransactionSummary.nerQuantity"
+    [nerAcquiringAccountInfo]="
+      returnExcessAllocationTransactionSummary.nerAcquiringAccountInfo
+    "
+    [natAcquiringAccountInfo]="
+      returnExcessAllocationTransactionSummary.natAcquiringAccountInfo
+    "
+    [natReturnTransactionIdentifier]="
+      returnExcessAllocationTransactionSummary.natReturnTransactionIdentifier
+    "
+    [nerReturnTransactionIdentifier]="
+      returnExcessAllocationTransactionSummary.nerReturnTransactionIdentifier
+    "
+    [allocationType]="allocationType"
+    [singleTransactionIdentifier]="transactionSummary.identifier"
+    [totalOverAllocatedQuantity]="
+      totalOverAllocatedQuantity.returnToAllocationAccountAmount +
+      totalOverAllocatedQuantity.returnToNewEntrantsReserveAccount
+    "
+    (navigateToEmitter)="navigateTo($event)"
+  >
+  </app-check-allocation-details>
+</ng-container>
+
+<app-account-summary
+  *ngIf="proposedTransactionType?.type !== transactionType.ExcessAllocation"
+  id="acquiring-account-container"
+  header="Acquiring account"
+  [hasLink]="!proposedTransactionType?.skipAccountStep && !itlNotification"
+  [accountInfo]="acquiringAccountInfo"
+  (linkClicked)="
+    !proposedTransactionType?.skipAccountStep &&
+      navigateTo(transactionProposalRoutePaths['specify-acquiring-account'])
+  "
+  [tip]="acquiringAccountInfo | trustedAccount"
+  [hideTip]="trTypeValues[proposedTransactionType.type].hideTip"
+  [hideAccountHolderName]="true"
+  [showAccountNameInsteadOfNumber]="
+    trTypeValues[proposedTransactionType.type].showAccountNameInsteadOfNumber
+  "
+  [hideAccountNumber]="
+    trTypeValues[proposedTransactionType.type].hideAccountNumber
+  "
+  [showDescription]="
+    trTypeValues[proposedTransactionType.type].showAcquiringDescription ||
+    acquiringAccountInfo?.trusted ||
+    trTypeValues[proposedTransactionType.type].isCentralTransfer
+  "
+>
+</app-account-summary>
+
+<ng-container
+  [ngTemplateOutlet]="header"
+  [ngTemplateOutletContext]="{
+    header: 'Transaction reference',
+    route: transactionProposalRoutePaths['set-transaction-reference'],
+    id: 'transaction-reference-container'
+  }"
+>
+</ng-container>
+<app-transaction-reference [reference]="transactionReference">
+</app-transaction-reference>
+
+<app-transaction-signing-details
+  *ngIf="proposedTransactionType?.type !== transactionType.ExcessAllocation"
+  [transactionId]="transactionSummary.identifier"
+  id="transaction-details-container"
+>
+</app-transaction-signing-details>
+
+<app-sign-request-form (otpCode)="setOtpCode($event)"></app-sign-request-form>
+<button
+  class="govuk-button"
+  data-module="govuk-button"
+  (click)="onContinue()"
+  [disabled]="disableSubmit"
+  id="submit"
+>
+  Submit
+</button>
+
+<ng-template #header let-header="header" let-route="route" let-id="id">
+  <div
+    [id]="id"
+    class="
+      govuk-grid-row govuk-summary-list
+      section-border
+      govuk-!-padding-bottom-2
+    "
+  >
+    <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-0">{{ header }}</h2>
+    </div>
+    <div
+      class="govuk-grid-column-one-third govuk-!-padding-0"
+      *ngIf="!proposedTransactionType?.isReversal"
+    >
+      <a
+        class="govuk-link right-aligned govuk-!-margin-top-2"
+        [routerLink]="[]"
+        (click)="navigateTo(route)"
+      >
+        Change<span class="govuk-visually-hidden">
+          {{ header | lowercase }}</span
+        >
+      </a>
+    </div>
+  </div>
+</ng-template>

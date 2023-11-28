@@ -1,0 +1,32 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">
+        Your account transfer request has been submitted
+      </h1>
+      <div class="govuk-panel__body" *ngIf="submittedIdentifier">
+        The request ID is<br /><strong>{{ submittedIdentifier }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row" *ngIf="submittedIdentifier">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      <span>The registry administrator will review your request.</span>
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="path"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >{{ goBack }}</a
+      >
+    </p>
+  </div>
+</div>

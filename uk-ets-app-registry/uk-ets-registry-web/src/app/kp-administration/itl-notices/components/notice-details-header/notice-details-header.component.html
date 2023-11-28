@@ -1,0 +1,58 @@
+<div class="hmcts-identity-bar">
+  <div class="hmcts-identity-bar__container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <a class="govuk-back-link" routerLink=".." id="back">
+          Back to ITL Notification list
+        </a>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <dl
+          class="
+            govuk-summary-list govuk-summary-list--no-border
+            sub-header-list
+          "
+        >
+          <div class="govuk-summary-list__row">
+            <dt
+              class="
+                govuk-summary-list__key
+                sub-header-list__key
+                govuk-heading-m
+              "
+            >
+              ITL Notification ID:
+            </dt>
+            <dd
+              class="
+                govuk-summary-list__value
+                sub-header-list__value
+                govuk-heading-m
+              "
+            >
+              {{ notice?.notificationIdentifier }}
+            </dd>
+            <dd class="govuk-summary-list__value sub-header-list__value">
+              <app-govuk-tag
+                style="padding: 0 15px 0 10px"
+                [color]="noticeStatusMap[notice?.status]?.color"
+              >
+                {{ noticeStatusMap[notice?.status]?.label }}
+              </app-govuk-tag>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key sub-header-list__key">
+              Notification type:
+            </dt>
+            <dd class="govuk-summary-list__value sub-header-list__value">
+              {{ noticeTypeMap[notice?.type] }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

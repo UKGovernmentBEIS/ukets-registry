@@ -1,0 +1,97 @@
+<table class="govuk-table">
+  <caption class="govuk-table__caption">
+    <ng-container *ngIf="isEditable">
+      Check the quantities for each year, and enter the quantity to issue for
+      {{ activeYear }}
+    </ng-container>
+  </caption>
+  <thead class="govuk-table__head ">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header ">
+        Year
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Cap
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Issued
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Remaining
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header govuk-table__header--numeric govuk-!-width-custom-16"
+      >
+        Quantity to issue
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr
+      *ngFor="
+        let blockSummary of _transactionBlockSummariesOrderedByYear;
+        trackBy: trackByFn
+      "
+      class="govuk-table__row"
+    >
+      <td
+        class="govuk-table__cell govuk-!-padding-bottom-3 govuk-!-padding-top-3 govuk-!-font-weight-bold"
+      >
+        {{ blockSummary.year }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ blockSummary.cap | number }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ blockSummary.issued | number }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ blockSummary.remaining | number }}
+      </td>
+      <td
+        [class.highlighted]="blockSummary.year === activeYear && !isEditable"
+        class="govuk-table__cell govuk-table__cell--numeric"
+      >
+        <ng-container *ngIf="blockSummary.year === activeYear">
+          <app-form-control-text
+            *ngIf="isEditable"
+            [controlName]="'quantity'"
+            [maxlength]="20"
+            [addFormGroupClass]="false"
+            [label]="'Select quantity'"
+            [showLabel]="false"
+          ></app-form-control-text>
+          <ng-container *ngIf="!isEditable">
+            <span class="panel-change-notification">
+              {{ blockSummary.quantity | number }}
+            </span>
+          </ng-container>
+        </ng-container>
+      </td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td
+        class="govuk-table__cell govuk-!-padding-bottom-3 govuk-!-padding-top-3 govuk-!-font-weight-bold"
+      >
+        Total in phase
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ _transactionBlockSummariesOrderedByYear | arraySum: 'cap' | number }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{
+          _transactionBlockSummariesOrderedByYear | arraySum: 'issued' | number
+        }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{
+          _transactionBlockSummariesOrderedByYear
+            | arraySum: 'remaining'
+            | number
+        }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+    </tr>
+  </tbody>
+</table>

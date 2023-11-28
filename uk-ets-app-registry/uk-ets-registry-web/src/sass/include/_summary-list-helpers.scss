@@ -1,0 +1,13 @@
+@import '_variables';
+
+.section-border {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: govuk-colour('mid-grey');
+}
+
+@media (min-width: 40.0525em) {
+  .right-aligned {
+    float: right;
+  }
+}

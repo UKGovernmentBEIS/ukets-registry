@@ -1,0 +1,28 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Email address confirmed'"></div>
+<div class="govuk-grid-row">
+  <div
+    class="govuk-grid-column-two-thirds"
+    *ngIf="user$ | async as user"
+    aria-live="polite"
+  >
+    <div *ngIf="user.userId">
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__body">Email address confirmed</h1>
+      </div>
+      <p class="govuk-body">You can continue to create a registry sign in.</p>
+      <button
+        (click)="next()"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="Submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </div>
+    <div *ngIf="!user.urid">
+      <h1 class="govuk-heading-m">What happens next?</h1>
+      <p [innerHTML]="nextStepMessage$ | async" class="govuk-body"></p>
+    </div>
+  </div>
+</div>

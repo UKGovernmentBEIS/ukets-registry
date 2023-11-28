@@ -1,0 +1,28 @@
+<form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+  <h1 class="govuk-heading-xl">Check your account details</h1>
+  <app-summary-list
+    [class]="'govuk-summary-list--no-border'"
+    [summaryListItems]="getSummaryListItems()"
+    (navigateToEmitter)="navigateTo($event)"
+  ></app-summary-list>
+
+  <button
+    data-prevent-double-click="true"
+    class="govuk-button submit-form"
+    data-module="govuk-button"
+    type="submit"
+    id="submit"
+  >
+    Submit
+  </button>
+  <div>
+    <a
+      [routerLink]="[]"
+      class="govuk-link govuk-link--no-visited-state"
+      (click)="onCancel()"
+      (keyup)="(onCancel)"
+      skipLocationChange
+      >Cancel</a
+    >
+  </div>
+</form>

@@ -1,0 +1,8 @@
+@import '_variables';
+
+.focused-text {
+  background-color: $yellow-tint-50;
+  box-shadow: -6px 0px 0px 0px $yellow-tint-25;
+  margin-right: 90px;
+  padding: 4px;
+}

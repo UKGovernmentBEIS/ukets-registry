@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_30_0_ADD_CLOSURE_REASON_TO_ACCOUNT" author="apostolouk" context="migrate">
+        <comment>Adds the account closure reason column to account table</comment>
+        <sql>
+            alter table account
+            add column closure_reason varchar(1024) default null;
+
+            comment on column account.closure_reason is 'The reason for closing this account';
+        </sql>
+		<rollback>
+	        alter table account drop column closure_reason;
+	    </rollback>
+    </changeSet>
+
+    <changeSet id="0_30_0_ADD_CONTACT_BILLING_EMAILS" author="nakoup" context="migrate">
+        <comment>Adds new columns for billing emails to contact</comment>
+        <sql>
+            alter table contact add column billing_email_1 varchar(256) NULL;
+            comment on column contact.billing_email_1 is 'A billing email.';
+
+            alter table contact add column billing_email_2 varchar(256) NULL;
+            comment on column contact.billing_email_2 is 'A second billing email.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_30_0_ALTER_TRUSTED_ACCOUNT_DESCRIPTION" author="p70366" context="migrate">
+        <comment>Change type of description column of trusted_account table</comment>
+        <sql>
+            alter table trusted_account alter column description type varchar(256);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_30_0_UPDATE_CLOSURE_DATE_FOR_CLOSED_ACCOUNTS" author="georgopoulosp" context="migrate">
+        <comment>Update closure date for already closed accounts</comment>
+        <sql>
+            update account as to_be_updated
+            set closing_date = accounts_to_update.event_date
+                from (
+                    select  ac.id,
+                            de.creation_date as event_date
+                    from account ac
+                    inner join domain_event de
+                    on de.domain_id = ac.identifier::varchar(256)
+                        and de.domain_type ='gov.uk.ets.registry.api.account.domain.Account'
+                        and de.description  = 'Account closed'
+                    where ac.account_status = 'CLOSED'
+                    and ac.closing_date is null
+                    order by ac.id asc
+                ) as accounts_to_update
+            where to_be_updated.id = accounts_to_update.id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_30_0_DELETE_ALLOCATION_WITHHOLD_STATUS_MIGRATOR_RECORD_FROM_MIGRATOR_HISTORY" author="georgopoulosp" context="migrate">
+        <comment>
+            Deletes the record ALLOCATION_WITHHOLD_STATUS_MIGRATOR from migrator_history to run it again.
+        </comment>
+        <sql>
+            delete from migrator_history where migrator_name = 'ALLOCATION_WITHHOLD_STATUS_MIGRATOR';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

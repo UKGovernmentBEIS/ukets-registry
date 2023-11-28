@@ -1,0 +1,89 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-7">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">
+        You have approved the<br />proposed transaction
+      </h1>
+      <div class="govuk-panel__body">
+        <ng-container
+          *ngIf="
+            transactionProposalCompleteResponse?.taskDetailsDTO &&
+              transactionProposalCompleteResponse?.taskDetailsDTO
+                ?.natTransactionIdentifier &&
+              transactionProposalCompleteResponse?.taskDetailsDTO
+                ?.nerTransactionIdentifier;
+            else elseBlock
+          "
+        >
+          <div>
+            The transaction IDs are
+            <strong>
+              {{
+                transactionProposalCompleteResponse?.taskDetailsDTO
+                  ?.nerTransactionIdentifier
+              }}
+              (NER)
+            </strong>
+            <br />
+            and
+            <strong>
+              {{
+                transactionProposalCompleteResponse?.taskDetailsDTO
+                  ?.natTransactionIdentifier
+              }}
+              (NAT)
+            </strong>
+          </div>
+        </ng-container>
+        <ng-template #elseBlock>
+          <div>
+            The transaction ID is
+            <strong>{{
+              transactionProposalCompleteResponse?.transactionIdentifier
+            }}</strong>
+          </div>
+        </ng-template>
+      </div>
+      <hr class="govuk-section-break govuk-section-break--m" />
+      <div class="govuk-panel__body">
+        The estimated transaction completion<br />date/time is
+        {{
+          transactionProposalCompleteResponse?.executionDate
+            | concatDateTime
+              : transactionProposalCompleteResponse?.executionDate
+              : transactionProposalCompleteResponse?.executionTime
+            | gdsDateShort
+        }}, at
+        {{
+          transactionProposalCompleteResponse?.executionTime
+            | concatDateTime
+              : transactionProposalCompleteResponse?.executionDate
+              : transactionProposalCompleteResponse?.executionTime
+            | gdsTime
+        }}.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      This transaction is estimated to be completed at the date and time (your
+      local time).<br />
+      Check the transaction details to see its status.
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        routerLink="/task-list"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >Back to task list</a
+      >
+    </p>
+  </div>
+</div>

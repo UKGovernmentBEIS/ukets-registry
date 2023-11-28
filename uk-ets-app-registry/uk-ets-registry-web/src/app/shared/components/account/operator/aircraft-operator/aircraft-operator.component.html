@@ -1,0 +1,35 @@
+<span *ngIf="aircraft == null" class="govuk-caption-m govuk-!-margin-bottom-5">
+  No operator is linked to this account.
+</span>
+<ng-container *ngIf="hasOperatorUpdatePendingApproval">
+  <div class="govuk-warning-text">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      There are update requests pending approval
+    </strong>
+  </div>
+</ng-container>
+<app-summary-list
+  [class]="
+    'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
+  "
+  [lines]="{
+    'Aircraft Operator ID': aircraft.identifier,
+    'Monitoring plan ID': aircraft.monitoringPlan
+      ? aircraft.monitoringPlan.id
+      : '',
+    Regulator: regulators[aircraft.regulator],
+    'First year of verified emission submission': aircraft.firstYear,
+    'Last year of verified emission submission': aircraft.lastYear
+  }"
+></app-summary-list>
+<div *ngIf="canRequestUpdate">
+  <button
+    (click)="goToRequestUpdate()"
+    class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+    data-module="govuk-button"
+  >
+    Request Update
+  </button>
+</div>

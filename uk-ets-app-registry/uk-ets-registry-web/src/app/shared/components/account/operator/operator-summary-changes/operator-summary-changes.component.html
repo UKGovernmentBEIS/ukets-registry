@@ -1,0 +1,27 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <ng-container *ngIf="!isWizardOrientedFlag">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <p class="govuk-heading-m">
+            <strong>{{ title }}</strong>
+          </p>
+        </div>
+      </div>
+    </ng-container>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body">
+          <strong>{{ titleOfIdentifier }}</strong>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          {{ current.identifier }}
+        </p>
+      </div>
+    </div>
+    <app-summary-list
+      [class]="'govuk-summary-list'"
+      [summaryListItems]="getSummaryListItems()"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-summary-list>
+  </div>
+</div>

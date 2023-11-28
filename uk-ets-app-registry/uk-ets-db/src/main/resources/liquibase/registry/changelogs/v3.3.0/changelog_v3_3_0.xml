@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_3_0_DROP_VAT_INFO" author="fragkise" context="migrate">
+        <comment>Drops VAT related info from DB</comment>
+        <sql>
+            alter table account_holder 
+            drop column if exists vat_number,
+            drop column if exists justification;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

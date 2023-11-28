@@ -1,0 +1,41 @@
+@import '_variables';
+
+.panel-display-quantity {
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  border-left-style: solid;
+  border-left-width: 5px;
+  border-bottom: 1px solid govuk-colour('mid-grey');
+  display: block;
+  padding-left: 7px;
+  padding-right: 7px;
+  text-align: left;
+}
+
+td.no-border {
+  border: none;
+}
+
+.govuk-one-third-width-cell {
+  width: 30%;
+  margin-bottom: 5px;
+  overflow-wrap: break-word;
+  padding: 10px 20px 10px 0;
+  border-bottom: 1px solid #b1b4b6;
+  text-align: left;
+  vertical-align: top;
+}
+
+.yellow-tint-highlighted {
+  border-left-style: solid;
+  border-width: 5px;
+  display: block;
+  padding: 7px;
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  text-align: left;
+}
+
+* {
+  padding-right: 0;
+}

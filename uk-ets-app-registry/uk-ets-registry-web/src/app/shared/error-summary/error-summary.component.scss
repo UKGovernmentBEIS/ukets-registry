@@ -1,0 +1,8 @@
+@import '_variables';
+
+/*
+* Used in error summary component in order to break string at newline characters
+*/
+.str-break-line {
+  white-space: pre;
+}

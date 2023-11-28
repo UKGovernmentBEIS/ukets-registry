@@ -1,0 +1,48 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Check the request and submit</h1>
+  </div>
+  <div class="govuk-grid-column-full">
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        The checksum in the filename must be the same as the original file
+      </strong>
+    </div>
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">Uploaded file</dt>
+        <dd class="govuk-summary-list__key govuk-body-m"></dd>
+        <dd class="govuk-summary-list__key govuk-body-m"></dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateBack('allocation-table')"
+            id="back"
+          >
+            Change
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row--no-border">
+        <dt class="govuk-summary-list__value">
+          {{ fileHeader.fileName }}
+        </dt>
+      </div>
+    </dl>
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="onContinue()"
+      id="submit"
+    >
+      Submit request
+    </button>
+  </div>
+</div>

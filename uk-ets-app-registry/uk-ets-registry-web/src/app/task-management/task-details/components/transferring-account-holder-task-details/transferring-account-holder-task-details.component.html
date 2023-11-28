@@ -1,0 +1,334 @@
+<div class="govuk-details__text">
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-body-l">Transferring Account Holder</span>
+      </dt>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__value">
+        <div class="govuk-inset-text" style="margin-top: 0; margin-bottom: 0">
+          Existing account holder
+        </div>
+      </dt>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Transferring Account Holder ID</dt>
+      <dd class="govuk-summary-list__value">
+        {{ taskDetails.account.transferringAccountHolder.id }}
+      </dd>
+    </div>
+  </dl>
+  <ng-container
+    *ngIf="
+      taskDetails.account.transferringAccountHolder.type ===
+      accountHolderType.INDIVIDUAL
+    "
+  >
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-body-l">Personal Details</span>
+        </dt>
+      </div>
+    </dl>
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border"
+      *ngIf="taskDetails.account.transferringAccountHolder.details"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual).details
+              | individualFullName
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country of birth</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual).details
+              .countryOfBirth
+              | countryNameAsync
+              | async
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          I confirm that the account holder is aged 18 or over
+        </dt>
+        <dd class="govuk-summary-list__value">Yes</dd>
+      </div>
+    </dl>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-body-l">Address and contact details</span>
+        </dt>
+      </div>
+    </dl>
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border"
+      *ngIf="taskDetails.account.transferringAccountHolder.address"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Residential address</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual).address
+              .buildingAndStreet
+          }}
+          <ng-container
+            *ngIf="
+              (taskDetails.account.transferringAccountHolder | individual)
+                .address.buildingAndStreet2 ||
+              (taskDetails.account.transferringAccountHolder | individual)
+                .address.buildingAndStreet3
+            "
+          >
+            <br />
+            {{
+              (taskDetails.account.transferringAccountHolder | individual)
+                .address.buildingAndStreet2
+            }}
+          </ng-container>
+          <ng-container
+            *ngIf="
+              (taskDetails.account.transferringAccountHolder | individual)
+                .address.buildingAndStreet3
+            "
+          >
+            <br />{{
+              (taskDetails.account.transferringAccountHolder | individual)
+                .address.buildingAndStreet3
+            }}</ng-container
+          >
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Town or city</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual).address
+              .townOrCity
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">State or Province</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual).address
+              .stateOrProvince
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual).address
+              .country
+              | countryNameAsync
+              | async
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual).address
+              .postCode
+          }}
+        </dd>
+      </div>
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="
+          (taskDetails.account.transferringAccountHolder | individual)
+            .phoneNumber?.phoneNumber1
+        "
+      >
+        <dt class="govuk-summary-list__key">Phone number 1</dt>
+        <dd class="govuk-summary-list__value">
+          +{{
+            (taskDetails.account.transferringAccountHolder | individual)
+              .phoneNumber.countryCode1
+          }}{{
+            (taskDetails.account.transferringAccountHolder | individual)
+              .phoneNumber.phoneNumber1
+          }}
+        </dd>
+      </div>
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="
+          (taskDetails.account.transferringAccountHolder | individual)
+            .phoneNumber?.phoneNumber2
+        "
+      >
+        <dt class="govuk-summary-list__key">Phone number 2</dt>
+        <dd class="govuk-summary-list__value">
+          +{{
+            (taskDetails.account.transferringAccountHolder | individual)
+              .phoneNumber.countryCode2
+          }}{{
+            (taskDetails.account.transferringAccountHolder | individual)
+              .phoneNumber.phoneNumber2
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Email address</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | individual)
+              .emailAddress?.emailAddress
+          }}
+        </dd>
+      </div>
+    </dl>
+  </ng-container>
+
+  <ng-container
+    *ngIf="
+      taskDetails.account.transferringAccountHolder.type ===
+      accountHolderType.ORGANISATION
+    "
+  >
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-body-l">Organisation details</span>
+        </dt>
+      </div>
+    </dl>
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border"
+      *ngIf="taskDetails.account.transferringAccountHolder.details"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.account.transferringAccountHolder.details?.name }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Registration number</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | organisation)
+              .details.registrationNumber
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Reason for not providing a Registration number
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | organisation)
+              .details.noRegistrationNumJustification
+          }}
+        </dd>
+      </div>
+    </dl>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-body-l">Address and contact details</span>
+        </dt>
+      </div>
+    </dl>
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border"
+      *ngIf="taskDetails.account.transferringAccountHolder.address"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Organisation address</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | organisation)
+              .address.buildingAndStreet
+          }}
+          <ng-container
+            *ngIf="
+              (taskDetails.account.transferringAccountHolder | organisation)
+                .address.buildingAndStreet2
+            "
+          >
+            <br />
+            {{
+              (taskDetails.account.transferringAccountHolder | organisation)
+                .address.buildingAndStreet2
+            }}
+          </ng-container>
+          <ng-container
+            *ngIf="
+              (taskDetails.account.transferringAccountHolder | organisation)
+                .address.buildingAndStreet3
+            "
+          >
+            <br />{{
+              (taskDetails.account.transferringAccountHolder | organisation)
+                .address.buildingAndStreet3
+            }}</ng-container
+          >
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Town or city</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | organisation)
+              .address.townOrCity
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">State or Province</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | organisation)
+              .address.stateOrProvince
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | organisation)
+              .address.country
+              | countryNameAsync
+              | async
+          }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            (taskDetails.account.transferringAccountHolder | organisation)
+              .address.postCode
+          }}
+        </dd>
+      </div>
+    </dl>
+  </ng-container>
+  <app-task-details-account-holder-contacts-details
+    [accountHolderChanged]="hasAccountHolderChanged"
+    [taskDetails]="taskDetails"
+    [installationTransfer]="installationTransfer"
+  >
+  </app-task-details-account-holder-contacts-details>
+</div>
+
+<hr />

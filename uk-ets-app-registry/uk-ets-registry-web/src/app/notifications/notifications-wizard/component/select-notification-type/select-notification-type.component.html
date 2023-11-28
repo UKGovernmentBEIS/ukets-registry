@@ -1,0 +1,35 @@
+<app-feature-header-wrapper
+  *ngIf="notificationRequest === NotificationRequestEnum.UPDATE"
+  ><app-notification-header
+    [notification]="notification"
+    [notificationHeaderVisibility]="
+      notificationRequest === NotificationRequestEnum.UPDATE
+    "
+    [showRequestUpdate]="false"
+    [showClone]="false"
+    [showBackToList]="false"
+  ></app-notification-header
+></app-feature-header-wrapper>
+<div class="govuk-grid-row" *ngIf="formRadioGroupInfo.options">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <app-uk-radio-input
+        controlName="notificationType"
+        [formRadioGroupInfo]="formRadioGroupInfo"
+        [validationErrorMessage]="this.validationErrorMessage.notificationType"
+      >
+      </app-uk-radio-input>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>
+<app-cancel-request-link
+  (goToCancelScreen)="onCancel()"
+></app-cancel-request-link>

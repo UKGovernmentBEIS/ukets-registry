@@ -1,0 +1,153 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">{{ getTitleText() }}</span>
+    <h1 class="govuk-heading-xl">Check and submit your document request</h1>
+
+    <app-summary-list
+      [summaryListItems]="getRecipientHeaderSummaryListItems()"
+    ></app-summary-list>
+
+    <ng-container *ngIf="getRecipientSummaryListItems()">
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <ng-container
+          *ngFor="let item of getRecipientSummaryListItems(); let i = index"
+        >
+          <!-- for recipient name -->
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="!item.value[0].class.includes('recipient_urid_link')"
+          >
+            <dt class="govuk-summary-list__key">
+              <span> {{ item.key.label }} </span>
+            </dt>
+            <dd
+              class="
+                govuk-summary-list__value
+                govuk-summary-list__value_change_description
+              "
+            >
+              {{ item.value[0].label }}
+            </dd>
+          </div>
+          <!-- Recipient urid any admin other than a senior one  -->
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="
+              item.value[0].class.includes('recipient_urid_link') &&
+              isAdmin &&
+              !isSeniorAdmin
+            "
+          >
+            <dt class="govuk-summary-list__key">
+              <span> {{ item.key.label }} </span>
+            </dt>
+            <dd
+              class="
+                govuk-summary-list__value
+                govuk-summary-list__value_change_description
+              "
+            >
+              {{ item.value[0].label }}
+            </dd>
+          </div>
+          <!-- Recipient urid only for admin who is a senior one only -->
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="
+              item.value[0].class.includes('recipient_urid_link') &&
+              isAdmin &&
+              isSeniorAdmin
+            "
+          >
+            <dt class="govuk-summary-list__key">
+              <span> {{ item.key.label }} </span>
+            </dt>
+            <dd
+              *ngIf="item.value[0].class.includes('recipient_urid_link')"
+              class="
+                govuk-summary-list__value
+                govuk-summary-list__value_change_description
+              "
+            >
+              <a
+                class="govuk-link govuk-link--no-visited-state"
+                [routerLink]="['/user-details/' + item.value[0].label]"
+              >
+                {{ item.value[0].label }}
+              </a>
+            </dd>
+          </div>
+        </ng-container>
+      </dl>
+    </ng-container>
+
+    <ng-container
+      *ngIf="documentRequestType === requestDocumentType.ACCOUNT_HOLDER"
+    >
+      <app-summary-list
+        [summaryListItems]="getAccountHeaderSummaryListItems()"
+      ></app-summary-list>
+      <app-summary-list
+        [class]="'govuk-summary-list--no-border'"
+        [summaryListItems]="getAccountSummaryListItems()"
+      ></app-summary-list>
+    </ng-container>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">
+          Requested documents
+        </dt>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateTo(requestDocumentsRoutePaths['select-documents'])"
+          >
+            Change<span class="govuk-visually-hidden">
+              requested documents</span
+            >
+          </a>
+        </dd>
+      </div>
+      <div
+        *ngIf="documentNames.length > 0"
+        class="govuk-summary-list__row govuk-summary-list__row--no-border"
+      >
+        <dt class="govuk-summary-list__key govuk-body-l">
+          <ol class="govuk-list govuk-list--number">
+            <li *ngFor="let name of documentNames">
+              {{ name }}
+            </li>
+          </ol>
+        </dt>
+      </div>
+    </dl>
+    <app-summary-list
+      [summaryListItems]="getCommentsHeaderSummaryListItems()"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-summary-list>
+    <ng-container *ngIf="!displayUserCommentsPage">
+      <app-summary-list
+        [class]="'govuk-summary-list--no-border'"
+        [summaryListItems]="getCommentsSummaryListItems()"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+    </ng-container>
+    <ng-container *ngIf="displayUserCommentsPage">
+      <div>
+        <p class="govuk-body">{{ comment }}</p>
+      </div>
+    </ng-container>
+    <div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        appDebounceClick
+        (debounceClick)="onContinue()"
+        id="submit"
+      >
+        Submit request
+      </button>
+    </div>
+  </div>
+</div>

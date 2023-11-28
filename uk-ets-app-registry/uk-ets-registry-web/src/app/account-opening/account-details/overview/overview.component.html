@@ -1,0 +1,242 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="
+    ((accountDetailsCompleted$ | async) ? 'View ' : 'Check ') + 'your answers'
+  "
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-fieldset">
+      <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl"
+          >Add the {{ accountTypeText }} details</span
+        >
+        {{ (accountDetailsCompleted$ | async) ? 'View ' : 'Check ' }}
+        your answers
+      </h1>
+
+      <ng-container *ngIf="accountDetails$ | async as accountDetails">
+        <div class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <div class="govuk-summary-list__value">
+              <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                Account details
+              </h2>
+            </div>
+            <div class="govuk-summary-list__actions">
+              <a
+                *ngIf="!(accountDetailsCompleted$ | async).valueOf()"
+                class="govuk-link"
+                [routerLink]="accountDetailsWizardRoutes.ACCOUNT_DETAILS"
+                skipLocationChange="true"
+              >
+                Change<span class="govuk-visually-hidden">
+                  account details</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+        <dl
+          class="
+            govuk-summary-list govuk-summary-list--no-border
+            govuk-!-margin-bottom-9
+          "
+        >
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Account type</dt>
+            <dd class="govuk-summary-list__value">
+              {{ accountTypeText }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Account name</dt>
+            <dd class="govuk-summary-list__value">
+              {{ (accountDetails$ | async)?.name }}
+            </dd>
+          </div>
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="
+              (accountDetails$ | async)?.salesContactDetails?.emailAddress
+                ?.emailAddress
+            "
+          >
+            <dt class="govuk-summary-list__key">Sales contact email</dt>
+            <dd class="govuk-summary-list__value">
+              {{
+                (accountDetails$ | async).salesContactDetails.emailAddress
+                  .emailAddress
+              }}
+            </dd>
+          </div>
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="(accountDetails$ | async)?.salesContactDetails?.phoneNumber"
+          >
+            <dt class="govuk-summary-list__key">Sales contact phone</dt>
+            <dd class="govuk-summary-list__value">
+              <app-shared-phone-number
+                [countryCode]="
+                  (accountDetails$ | async).salesContactDetails
+                    .phoneNumberCountryCode
+                "
+                [phoneNumber]="
+                  (accountDetails$ | async).salesContactDetails.phoneNumber
+                "
+              ></app-shared-phone-number>
+            </dd>
+          </div>
+        </dl>
+        <ng-container *ngIf="accountType$ | async | isBillable">
+          <div class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <div class="govuk-summary-list__value">
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+                  Billing details
+                </h2>
+              </div>
+              <div class="govuk-summary-list__actions">
+                <a
+                  *ngIf="!(accountDetailsCompleted$ | async).valueOf()"
+                  class="govuk-link"
+                  [routerLink]="accountDetailsWizardRoutes.BILLING_DETAILS"
+                  skipLocationChange="true"
+                >
+                  Change<span class="govuk-visually-hidden">
+                    billing details</span
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+          <dl
+            class="
+              govuk-summary-list govuk-summary-list--no-border
+              govuk-!-margin-bottom-9
+            "
+          >
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Address</dt>
+              <dd class="govuk-summary-list__value">
+                <app-shared-three-line-address
+                  [line1]="accountDetails.address.buildingAndStreet"
+                  [line2]="accountDetails.address.buildingAndStreet2"
+                  [line3]="accountDetails.address.buildingAndStreet3"
+                ></app-shared-three-line-address>
+              </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Town or city</dt>
+              <dd class="govuk-summary-list__value">
+                <ng-container *ngIf="accountDetails.address.townOrCity">
+                  {{ accountDetails.address.townOrCity }}</ng-container
+                >
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">State or Province</dt>
+              <dd class="govuk-summary-list__value">
+                <ng-container *ngIf="accountDetails.address.stateOrProvince">
+                  {{ accountDetails.address.stateOrProvince }}</ng-container
+                >
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+              <dd class="govuk-summary-list__value">
+                <ng-container *ngIf="accountDetails.address.postCode">
+                  {{ accountDetails.address.postCode }}</ng-container
+                >
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Country</dt>
+              <dd class="govuk-summary-list__value">
+                <ng-container *ngIf="accountDetails.address.country">
+                  {{ accountDetailsCountry$ | async }}</ng-container
+                >
+              </dd>
+            </div>
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="accountDetails.billingContactDetails.sopCustomerId"
+            >
+              <dt class="govuk-summary-list__key">SOP Customer Id</dt>
+              <dd class="govuk-summary-list__value">
+                {{ accountDetails.billingContactDetails.sopCustomerId }}
+              </dd>
+            </div>
+
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="accountDetails.billingContactDetails.contactName"
+            >
+              <dt class="govuk-summary-list__key">Contact name</dt>
+              <dd class="govuk-summary-list__value">
+                {{ accountDetails.billingContactDetails.contactName }}
+              </dd>
+            </div>
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="accountDetails.billingContactDetails.phoneNumber"
+            >
+              <dt class="govuk-summary-list__key">Phone number</dt>
+              <dd class="govuk-summary-list__value">
+                <app-shared-phone-number
+                  [countryCode]="
+                    accountDetails.billingContactDetails.phoneNumberCountryCode
+                  "
+                  [phoneNumber]="
+                    accountDetails.billingContactDetails.phoneNumber
+                  "
+                ></app-shared-phone-number>
+              </dd>
+            </div>
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="accountDetails.billingContactDetails.email"
+            >
+              <dt class="govuk-summary-list__key">E-mail address</dt>
+              <dd class="govuk-summary-list__value">
+                {{ accountDetails.billingContactDetails.email }}
+              </dd>
+            </div>
+          </dl>
+        </ng-container>
+      </ng-container>
+
+      <div class="govuk-form-group">
+        <button
+          *ngIf="accountDetailsCompleted$ | async"
+          class="govuk-button govuk-!-margin-right-3"
+          data-module="govuk-button"
+          type="input"
+          (click)="onEdit()"
+        >
+          Edit
+        </button>
+        <button
+          *ngIf="!(accountDetailsCompleted$ | async).valueOf()"
+          class="govuk-button govuk-!-margin-right-3"
+          data-module="govuk-button"
+          type="input"
+          (click)="onApply()"
+          id="continue"
+        >
+          Continue
+        </button>
+        <button
+          *ngIf="accountDetailsCompleted$ | async"
+          class="govuk-button govuk-button--secondary"
+          data-module="govuk-button"
+          type="input"
+          (click)="onDelete()"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

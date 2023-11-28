@@ -1,0 +1,9 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    uk.ets.lib.commons.kafkaclients.KafkaClientsConfiguration,\
+    uk.ets.lib.kafka.deadletter.DeadLetterConfig,\
+    gov.uk.ets.commons.logging.Config,\
+    gov.uk.ets.commons.ratelimiter.Config,\
+    gov.uk.ets.commons.cloudwatch.metrics.MetricsConfig,\
+    gov.uk.ets.commons.cloudwatch.metrics.HealthMetricsExportConfiguration, \
+    gov.uk.ets.file.upload.services.ClamavService
+org.springframework.context.ApplicationListener=uk.ets.lib.commons.kafkaconfig.KafkaAuthenticationConfigListener

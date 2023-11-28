@@ -1,0 +1,37 @@
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-summary-list__key">Transferring account holder</h2>
+  </div>
+  <hr
+    *ngIf="isSectionBreakVisible"
+    class="govuk-section-break govuk-section-break--visible"
+  />
+</dl>
+
+<dl
+  class="
+    govuk-summary-list govuk-summary-list--no-border
+    govuk-!-margin-bottom-9
+  "
+>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Name</dt>
+    <dd class="govuk-summary-list__value">
+      {{ transferringAccountHolder.details.name }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Registration number</dt>
+    <dd class="govuk-summary-list__value">
+      {{
+        (transferringAccountHolder | organisation).details.registrationNumber
+      }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account Holder ID</dt>
+    <dd class="govuk-summary-list__value">
+      {{ transferringAccountHolder.id }}
+    </dd>
+  </div>
+</dl>

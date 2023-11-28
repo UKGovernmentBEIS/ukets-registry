@@ -1,0 +1,22 @@
+@import '_variables';
+
+.govuk-table__cell {
+  @extend .govuk-table__cell;
+  vertical-align: middle;
+}
+// refactor this to make a geric solution for all highlighted rows in check & sign -requests
+.highlighted {
+  background-color: $yellow-highlight-bg-colour;
+  border-color: $yellow-highlight-border-colour;
+  border-left-style: solid;
+  border-left-width: 4px;
+}
+
+// maybe generify and move this one to the ukets-style.scss it is useful for other cases as well. e.g remove flexbox from transferring account component
+.govuk-\!-width-custom-16 {
+  width: 100% !important;
+
+  @include govuk-media-query($from: tablet) {
+    width: 16% !important;
+  }
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="0_4_0_NEW_TASK_MODEL" author="pougouniasn" context="migrate">
+
+		<comment>Implements the new task/request model</comment>
+		<sql>
+			--------------------------------------------------------
+			--  Modify table Task
+			--------------------------------------------------------
+			drop table if exists request_state;
+			alter table task drop constraint if exists fk_tsk_req;
+			drop table if exists request;
+
+			alter table task
+			drop column if exists created_by,
+			drop column if exists created_date,
+			add column request_identifier bigint,
+			add column initiated_by bigint constraint fk_tsk_ini_usrs references users,
+			add column initiated_date date,
+			add column completed_by bigint constraint fk_tsk_com_usrs references users,
+			add column completed_date date,
+			add column before TEXT,
+			add column after TEXT,
+			add column difference TEXT,
+			add column parent_task_id bigint constraint fk_tsk_tsk references task;
+
+			comment on column task.request_identifier is 'The request business identifier';
+			comment on column task.initiated_by is 'The user who initiated the task';
+			comment on column task.initiated_date is 'When this task was initiated';
+			comment on column task.completed_by is 'The user who completed the task';
+			comment on column task.completed_date is 'When this task was completed';
+			comment on column task.before is 'The business information before approving this task';
+			comment on column task.after is 'The business information after approving this task';
+			comment on column task.difference is 'The difference in business information introduced by this task';
+			comment on column task.parent_task_id is 'The parent task id';
+			comment on column task.status is 'The current state: e.g. SUBMITTED_NOT_YET_APPROVED, APPROVED, REJECTED etc.';
+
+			--------------------------------------------------------
+			--  Table Event
+			--------------------------------------------------------
+
+			CREATE SEQUENCE event_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+			CREATE TABLE "event"
+			(
+			"id" bigint,
+			"task_id" bigint constraint fk_evt_tsk references task,
+			"date" timestamp,
+			"user_id" bigint constraint fk_evt_pro_usrs references users,
+			"receiver_id" bigint constraint fk_evt_rec_usrs references users,
+			"type" varchar(256),
+			"status" varchar(256),
+			constraint "pk_event" primary key("id")
+			);
+
+			create index "idx_fk_evt_tsk" on "event"("task_id");
+			create index "idx_fk_evt_pro_usrs" on "event"("user_id");
+			create index "idx_fk_evt_rec_usrs" on "event"("receiver_id");
+
+			COMMENT ON TABLE "event" is 'Represents a task event';
+			COMMENT ON COLUMN "event"."id" is 'The primary key';
+			COMMENT ON COLUMN "event"."task_id" is 'The task id where this event belongs to';
+			COMMENT ON COLUMN "event"."date" is 'The date';
+			COMMENT ON COLUMN "event"."user_id" is 'The user who triggered this event';
+			COMMENT ON COLUMN "event"."receiver_id" is 'The user who received this event (e.g. the task assignee)';
+			COMMENT ON COLUMN "event"."type" is 'The event type (e.g. INITIATION, COMMENT, TASK_CLAIMED, TASK_ASSIGNED)';
+			COMMENT ON COLUMN "event"."status" is 'The task status, in case the event triggered a status change (e.g. SUBMITTED_NOT_YET_APPROVED, APPROVED, REJECTED)';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_4_0_REVIEW_UPDATES" author="pougouniasn" context="migrate">
+
+		<comment>Implements some additional review updated</comment>
+		<sql>
+			comment on column account.billing_address_same_as_account_holder_address is 'If billing address same as AH';
+			comment on table  databasechangelog is 'Used by the LiquiBase tool';
+			comment on table  databasechangeloglock is 'Used by the LiquiBase tool';
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_4_0_REMOVE_UNUSED_COLUMNS" author="pougouniasn" context="migrate">
+
+		<comment>Removes unused columns</comment>
+		<sql>
+			alter table account drop column previous_account_identifier;
+			alter table account drop column previous_account_status;
+			alter table account drop column closing_date;
+			alter table account drop column hosting_registry_code;
+			alter table account drop column transfer_date;
+			alter table account drop column transaction_initiation_allowed;
+			alter table account drop column balance;
+			alter table account drop column suspend_reason;
+			alter table account_access drop column previous_state;
+			alter table users drop column previous_state;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_4_0_REMOVE_UNUSED_COLUMNS_2" author="pougouniasn" context="migrate">
+
+		<comment>Removes unused columns</comment>
+		<sql>
+			alter table task drop column if exists request_id;
+		</sql>
+
+	</changeSet>
+
+	<changeSet id="0_4_0_ADD_COMMENT" author="pougouniasn" context="migrate">
+
+		<comment>Adds a column to event</comment>
+		<sql>
+			alter table "event"
+			add column "comment" varchar(1024) default null;
+
+			comment on column "event"."comment" is 'The user comment';
+		</sql>
+
+	</changeSet>
+
+
+</databaseChangeLog>

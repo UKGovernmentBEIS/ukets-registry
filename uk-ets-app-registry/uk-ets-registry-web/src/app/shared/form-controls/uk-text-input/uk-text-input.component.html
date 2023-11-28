@@ -1,0 +1,17 @@
+<div class="govuk-form-group">
+  <label class="govuk-label" [attr.for]="id">
+    {{ label }}
+  </label>
+  <span [attr.id]="hintId" class="govuk-hint">
+    {{ hint }}
+  </span>
+  <input
+    class="govuk-input"
+    [attr.id]="id"
+    [attr.name]="id"
+    type="text"
+    [attr.aria-describedby]="hintId"
+    [formControl]="formControl"
+    [attr.maxlength]="maxlength"
+  />
+</div>

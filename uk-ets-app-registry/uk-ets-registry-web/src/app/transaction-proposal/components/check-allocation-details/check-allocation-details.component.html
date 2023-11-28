@@ -1,0 +1,105 @@
+<div class="govuk-grid-row govuk-summary-list govuk-!-padding-bottom-2">
+  <ng-container *ngIf="!isTaskBased; else elseBlock">
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-0">Allocation Details</h2>
+    <hr
+      class="
+        govuk-section-break govuk-section-break--m govuk-section-break--visible
+      "
+    />
+  </ng-container>
+  <ng-template #elseBlock>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-body-l">Allocation Details</dt>
+    </div>
+  </ng-template>
+  <app-transaction-quantity-table
+    [isTaskBased]="isTaskBased"
+    [transactionBlocks]="transactionBlocks"
+    [isEtsTransaction]="
+      trTypeValues[proposedTransactionType.type].isETSTransaction
+    "
+    [isExcessAllocationTransaction]="
+      trTypeValues[proposedTransactionType.type].isETSTransaction &&
+      proposedTransactionType?.type === transactionType.ExcessAllocation
+    "
+    [allocationType]="allocationType"
+    (navigateToEmitter)="onNavigateTo()"
+  ></app-transaction-quantity-table>
+  <ng-container
+    *ngIf="natQuantity && nerQuantity; else singleNatNerOrNavatTransaction"
+  >
+    <app-nat-and-ner-allocation-details-table
+      [isEtsTransaction]="
+        trTypeValues[proposedTransactionType.type].isETSTransaction
+      "
+      [natAmount]="natQuantity"
+      [nerAmount]="nerQuantity"
+      [natAcquiringAccountInfo]="natAcquiringAccountInfo"
+      [nerAcquiringAccountInfo]="nerAcquiringAccountInfo"
+      [natTransactionIdentifier]="natReturnTransactionIdentifier"
+      [nerTransactionIdentifier]="nerReturnTransactionIdentifier"
+      [totalOverAllocatedQuantity]="totalOverAllocatedQuantity"
+    >
+    </app-nat-and-ner-allocation-details-table>
+  </ng-container>
+
+  <ng-template #singleNatNerOrNavatTransaction>
+    <div
+      *ngIf="
+        acquiringAccountInfo !== null && acquiringAccountInfo !== undefined
+      "
+    >
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Allocation Type</dt>
+          <dd class="govuk-summary-list__value">
+            {{ allocationType }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key no-border">
+            Acquiring Account Name
+          </dt>
+          <dd class="govuk-summary-list__value no-border">
+            {{ acquiringAccountInfo.accountName }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key govuk-summary-list__key_custom"
+          ></dt>
+          <dd
+            class="govuk-summary-list__value govuk-summary-list__value_custom"
+          >
+            <div
+              class="govuk-inset-text"
+              style="margin-top: 0; margin-bottom: 0"
+            >
+              {{ acquiringAccountInfo | trustedAccount }}
+            </div>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Transaction ID</dt>
+          <dd class="govuk-summary-list__value">
+            {{ singleTransactionIdentifier ? singleTransactionIdentifier : '' }}
+          </dd>
+        </div>
+      </dl>
+
+      <div
+        class="govuk-warning-text withheld-warning"
+        *ngIf="totalOverAllocatedQuantity - calculateQuantityToTransfer() > 0"
+      >
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <div class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          After this return has been completed, you will still have
+          {{ totalOverAllocatedQuantity - calculateQuantityToTransfer() }}
+          allowance(s) that will need to be returned as part of a separate
+          request.
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>

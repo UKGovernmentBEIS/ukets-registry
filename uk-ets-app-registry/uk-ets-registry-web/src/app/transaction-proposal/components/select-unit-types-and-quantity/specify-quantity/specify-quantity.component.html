@@ -1,0 +1,87 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-title-proposal-transaction-type
+      [proposalTransactionType]="transactionType"
+    ></app-title-proposal-transaction-type>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">{{ chooseUnitsText() }}</h1>
+        </legend>
+        <ng-container *ngIf="itlNotification">
+          <app-itl-notification-summary
+            [itlNotification]="itlNotification"
+          ></app-itl-notification-summary>
+          <hr
+            class="
+              govuk-section-break
+              govuk-section-break--m
+              govuk-section-break--visible
+            "
+          />
+        </ng-container>
+        <div *ngIf="showExcessAllocationText()">
+          <p class="govuk-body">
+            The proposed quantity cannot be more than the number of
+            overallocated allowances, i.e.
+            <strong> {{ excessAmount }}</strong> allowances.
+          </p>
+        </div>
+        <table aria-describedby="select-unit-types" class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Unit type</th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-table__header--numeric"
+              >
+                Available quantity
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-table__header--numeric"
+              >
+                Enter the quantity to transfer
+              </th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr
+              *ngFor="
+                let blockSummary of transactionBlockSummaries;
+                let i = index
+              "
+              class="govuk-table__row"
+            >
+              <td class="govuk-table__cell">
+                {{ blockSummary | unitTypeSopRender }}
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ blockSummary.availableQuantity | number }}
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <app-form-control-text
+                  [label]="'Select quantity'"
+                  [showLabel]="false"
+                  [class]="'govuk-input govuk-!-width-two-thirds'"
+                  [maxlength]="20"
+                  [style]="{ 'text-align': 'right' }"
+                  [controlName]="i + '.selectQuantity'"
+                ></app-form-control-text>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </fieldset>
+    </form>
+  </div>
+</div>

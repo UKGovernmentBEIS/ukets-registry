@@ -1,0 +1,197 @@
+{
+  "identifier": null,
+  "accountType": "OPERATOR_HOLDING_ACCOUNT",
+  "accountHolder": {
+    "id": null,
+    "emailAddress": null,
+    "address": {
+      "country": "UA",
+      "postCode": "fdfd",
+      "empty": false,
+      "townOrCity": "Athens",
+      "buildingAndStreet": "Ethnikis Antistaseos 67",
+      "buildingAndStreet2": "",
+      "buildingAndStreet3": ""
+    },
+    "phoneNumber": null,
+    "details": {
+      "name": "test new organization",
+      "firstName": null,
+      "lastName": null,
+      "registrationNumber": "",
+      "noVatJustification": null,
+      "regNumTypeRadio": null,
+      "noRegistrationNumJustification": "fdfd",
+      "countryOfBirth": null,
+      "yearOfBirth": null,
+      "birthDate": null
+    },
+    "type": "ORGANISATION",
+    "status": null
+  },
+  "oldAccountHolder": {
+    "id": null,
+    "emailAddress": null,
+    "address": {
+      "country": "UA",
+      "postCode": "fdfd",
+      "empty": false,
+      "townOrCity": "fdfd",
+      "buildingAndStreet": "fdfd",
+      "buildingAndStreet2": "",
+      "buildingAndStreet3": ""
+    },
+    "phoneNumber": null,
+    "details": {
+      "name": "test new organization",
+      "firstName": null,
+      "lastName": null,
+      "registrationNumber": "",
+      "noVatJustification": null,
+      "regNumTypeRadio": null,
+      "noRegistrationNumJustification": "fdfd",
+      "countryOfBirth": null,
+      "yearOfBirth": null,
+      "birthDate": null
+    },
+    "type": "ORGANISATION",
+    "status": null
+  },
+  "legalRepresentatives": null,
+  "accountHolderContactInfo": {
+    "primaryContact": {
+      "id": null,
+      "details": {
+        "firstName": "312",
+        "lastName": "313",
+        "aka": "322",
+        "yearOfBirth": null,
+        "birthDate": null
+      },
+      "positionInCompany": "3",
+      "address": {
+        "country": "UA",
+        "postCode": "fdfd",
+        "empty": false,
+        "townOrCity": "fdfd",
+        "buildingAndStreet": "fdfd",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      },
+      "phoneNumber": {
+        "phoneNumber1": "2102222222",
+        "phoneNumber2": "",
+        "countryCode1": "GR (30)",
+        "countryCode2": "",
+        "empty": false
+      },
+      "emailAddress": {
+        "emailAddress": "test@test.test",
+        "emailAddressConfirmation": "test@test.test",
+        "empty": false
+      }
+    },
+    "alternativeContact": null
+  },
+  "oldAccountHolderContactInfo": {
+    "primaryContact": {
+      "id": null,
+      "details": {
+        "firstName": "312",
+        "lastName": "313",
+        "aka": "322",
+        "yearOfBirth": null,
+        "birthDate": null
+      },
+      "positionInCompany": "3",
+      "address": {
+        "country": "UA",
+        "postCode": "fdfd",
+        "empty": false,
+        "townOrCity": "fdfd",
+        "buildingAndStreet": "fdfd",
+        "buildingAndStreet2": "",
+        "buildingAndStreet3": ""
+      },
+      "phoneNumber": {
+        "phoneNumber1": "2102222222",
+        "phoneNumber2": "",
+        "countryCode1": "GR (30)",
+        "countryCode2": "",
+        "empty": false
+      },
+      "emailAddress": {
+        "emailAddress": "test@test.test",
+        "emailAddressConfirmation": "test@test.test",
+        "empty": false
+      }
+    },
+    "alternativeContact": null
+  },
+  "accountDetails": {
+    "name": "This is the account Name",
+    "accountType": null,
+    "accountNumber": null,
+    "accountHolderName": null,
+    "accountStatus": null,
+    "address": {
+      "country": "UK",
+      "postCode": "",
+      "empty": false,
+      "townOrCity": "",
+      "buildingAndStreet": "",
+      "buildingAndStreet2": "",
+      "buildingAndStreet3": ""
+    }
+  },
+  "accountDetailsSameBillingAddress": false,
+  "trustedAccountListRules": {
+    "rule1": true,
+    "rule2": false
+  },
+  "operator": {
+    "type": "INSTALLATION_TRANSFER",
+    "identifier": 1057486,
+    "name": "323",
+    "activityType": null,
+    "regulator": null,
+    "changedRegulator": null,
+    "firstYear": null,
+    "lastYear": null,
+    "lastYearChanged": null,
+    "permit": {
+      "id": "3232323232",
+      "date": null
+    },
+    "monitoringPlan": null
+  },
+  "installationToBeTransferred": {
+    "type": "INSTALLATION",
+    "identifier": 1057486,
+    "name": "test",
+    "activityType": "COMBUSTION_OF_FUELS",
+    "regulator": "EA",
+    "changedRegulator": null,
+    "firstYear": 2021,
+    "lastYear": null,
+    "lastYearChanged": null,
+    "permit": {
+      "id": "3232",
+      "date": {
+        "day": 1,
+        "month": 1,
+        "year": 2021
+      }
+    },
+    "monitoringPlan": null
+  },
+  "authorisedRepresentatives": [],
+  "changedAccountHolderId": null,
+  "oldAccountStatus": "OPEN",
+  "balance": null,
+  "unitType": null,
+  "governmentAccount": false,
+  "trustedAccountList": null,
+  "transactionsAllowed": false,
+  "pendingARRequests": null
+}

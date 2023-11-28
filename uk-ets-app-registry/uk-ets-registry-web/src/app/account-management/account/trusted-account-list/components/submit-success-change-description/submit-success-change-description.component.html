@@ -1,0 +1,21 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <p class="govuk-panel__title">
+        {{ message }}
+      </p>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row" *ngIf="backLinkMessage">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="[backPath]"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >{{ backLinkMessage }}</a
+      >
+    </p>
+  </div>
+</div>

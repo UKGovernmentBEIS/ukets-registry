@@ -1,0 +1,39 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Create a registry sign in'"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" aria-live="polite">
+    <div class="govuk-breadcrumbs">
+      <ol class="govuk-breadcrumbs__list">
+        <li class="govuk-breadcrumbs__list-item">
+          <a class="govuk-breadcrumbs__link" href="#">Home</a>
+        </li>
+      </ol>
+    </div>
+    <h1 class="govuk-heading-l">Create a registry sign in</h1>
+    <p class="govuk-body">
+      Register your details to sign in and access the UK Emissions Trading
+      Registry.
+    </p>
+    <h2 class="govuk-heading-m">Before you start</h2>
+    <p class="govuk-body">
+      You'll need a work email address that is not shared with anyone else.
+    </p>
+    <p class="govuk-body">
+      You'll need a mobile phone or tablet to set up two-factor authentication.
+    </p>
+    <p class="govuk-body">
+      The work email address will be used to contact you about the Registry.
+    </p>
+    <button
+      (click)="navigateToEmailAddress()"
+      class="govuk-button"
+      data-module="govuk-button"
+      [disabled]="!cookiesAccepted"
+      id="continue"
+    >
+      Continue
+    </button>
+  </div>
+</div>

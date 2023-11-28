@@ -1,0 +1,159 @@
+<div class="hmcts-identity-bar" *ngIf="account">
+  <div class="hmcts-identity-bar__container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-report-success-banner
+          [isVisible]="isReportSuccess"
+        ></app-report-success-banner>
+      </div>
+    </div>
+
+    <div *ngIf="showBackToList" class="back-to-list-btn govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <a
+          [routerLink]="[]"
+          (click)="goBackToList($event)"
+          class="govuk-back-link"
+          id="back"
+          >Back to list</a
+        >
+      </div>
+    </div>
+    <div
+      class="govuk-grid-row"
+      [style.margin-top]="showBackToList ? '0px' : '50px'"
+      *ngIf="account"
+    >
+      <div class="govuk-grid-column-full">
+        <dl
+          class="
+            govuk-summary-list govuk-summary-list--no-border
+            sub-header-list
+          "
+        >
+          <div class="govuk-summary-list__row">
+            <dt
+              class="
+                govuk-summary-list__key
+                sub-header-list__key
+                govuk-heading-l
+              "
+            >
+              Account Holder:
+            </dt>
+            <dd
+              class="
+                govuk-summary-list__value
+                sub-header-list__value
+                govuk-heading-l
+              "
+            >
+              {{ this.accountDetailsHolderName }}
+            </dd>
+            <dd style="float: right">
+              <button
+                *ngIf="accountHeaderActionsVisibility && account.canBeClosed"
+                class="govuk-button govuk-button--secondary"
+                data-module="govuk-button"
+                [routerLink]="'account-closure'"
+              >
+                Close account
+              </button>
+            </dd>
+            <dd style="float: right">
+              <ng-container *ngIf="accountDetailsNumber as accountNumber">
+                <button
+                  style="margin-bottom: 0"
+                  *ngIf="
+                    (('urn:uk-ets-registry-api:transaction:initiate'
+                      | protect
+                      | async) ||
+                      (accountNumber
+                        | accountAccess: accessRight.INITIATE
+                        | async) ||
+                      (accountNumber
+                        | accountAccess
+                          : accessRight.SURRENDER_INITIATE_AND_APPROVE
+                        | async)) &&
+                    account.transactionsAllowed &&
+                    accountHeaderActionsVisibility
+                  "
+                  class="govuk-button"
+                  data-module="govuk-button"
+                  (click)="goToTransaction()"
+                >
+                  Propose transaction
+                </button>
+              </ng-container>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__value sub-header-list__value">
+              <details
+                *ngIf="accountDetailsStatus as accountStatus"
+                class="govuk-details"
+                data-module="govuk-details"
+              >
+                <summary class="govuk-details__summary">
+                  <span class="govuk-details__summary-text">
+                    <app-govuk-tag
+                      style="padding: 0 15px 0 0"
+                      [color]="accountStatusMap[accountStatus].color"
+                    >
+                      {{ accountStatusMap[accountStatus].label }}
+                    </app-govuk-tag>
+                  </span>
+                  <span
+                    *ngIf="
+                      ('urn:uk-ets-registry-api:account:status:change'
+                        | protect
+                        | async) &&
+                      accountStatus != 'CLOSURE_PENDING' &&
+                      accountStatus != 'CLOSED' &&
+                      accountStatus != 'PROPOSED' &&
+                      accountStatus != 'TRANSFER_PENDING' &&
+                      accountHeaderActionsVisibility
+                    "
+                  >
+                    <a
+                      style="white-space: nowrap"
+                      [routerLink]="[]"
+                      (click)="fetchAccountStatusActions()"
+                      (keyup)="fetchAccountStatusActions()"
+                      >Change status</a
+                    >
+                  </span>
+                </summary>
+                <div
+                  [ngClass]="
+                    'govuk-tag--' + accountStatusMap[accountStatus].color
+                  "
+                  class="govuk-details__text govuk-details__text"
+                  style="width: 22%; color: black"
+                >
+                  {{ accountStatusMap[accountStatus].summary }}
+                </div>
+              </details>
+            </dt>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dd class="govuk-summary-list__key sub-header-list__key">
+              Account number:
+            </dd>
+            <dd class="govuk-summary-list__value sub-header-list__value">
+              {{ accountDetailsNumber }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dd class="govuk-summary-list__key sub-header-list__key">
+              Account name:
+            </dd>
+            <dd class="govuk-summary-list__value sub-header-list__value">
+              {{ accountDetailsName }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

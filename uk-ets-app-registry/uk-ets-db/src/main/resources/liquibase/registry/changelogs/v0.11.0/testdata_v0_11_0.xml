@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="0_11_0_ADD_AUCTION_ACCOUNT" author="chortism" context="migrate">
+
+		<comment>Adds the auction account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal,
+			account_holder_id
+			)
+			values
+			(
+			nextval('account_seq'),
+			1011,
+			'Auction Account',
+			'UK_AUCTION_ACCOUNT',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			0,
+			'UK',
+			42,
+			'UK-100-1011-0-42',
+			'UK Auction Account',
+			true,
+			true,
+			(select id from account_holder where name = 'HMG')
+			);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_11_0_ADD_ALLOCATION_ACCOUNT" author="chortism" context="migrate">
+
+		<comment>Adds the allocation account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal,
+			account_holder_id
+			)
+			values
+			(
+			nextval('account_seq'),
+			1012,
+			'Allocation Account',
+			'UK_ALLOCATION_ACCOUNT',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			0,
+			'UK',
+			37,
+			'UK-100-1012-0-37',
+			'UK Allocation Account',
+			true,
+			true,
+			(select id from account_holder where name = 'HMG')
+			);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_11_0_ADD_NEW_ENTRANTS_RESERVE_ACCOUNT" author="chortism" context="migrate">
+
+		<comment>Adds the new entrants reserve account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal,
+			account_holder_id
+			)
+			values
+			(
+			nextval('account_seq'),
+			1013,
+			'New Entrants Reserve Account',
+			'UK_NEW_ENTRANTS_RESERVE_ACCOUNT',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			0,
+			'UK',
+			32,
+			'UK-100-1013-0-32',
+			'UK New Entrants Reserve Account',
+			true,
+			true,
+			(select id from account_holder where name = 'HMG')
+			);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_11_0_ADD_MARKET_STABILITY_RESERVE_ACCOUNT" author="chortism" context="migrate">
+
+		<comment>Adds the market stability reserve account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal,
+			account_holder_id
+			)
+			values
+			(
+			nextval('account_seq'),
+			1014,
+			'Market Stability Reserve Account',
+			'UK_MARKET_STABILITY_RESERVE_ACCOUNT',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			0,
+			'UK',
+			27,
+			'UK-100-1014-0-27',
+			'UK Market Stability Reserve Account',
+			true,
+			true,
+			(select id from account_holder where name = 'HMG')
+			);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_11_0_ADD_GENERAL_HOLDING_ACCOUNT" author="chortism" context="migrate">
+
+		<comment>Adds the general holding account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal,
+			account_holder_id
+			)
+			values
+			(
+			nextval('account_seq'),
+			1015,
+			'General Holding Account',
+			'UK_GENERAL_HOLDING_ACCOUNT',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			0,
+			'UK',
+			22,
+			'UK-100-1015-0-22',
+			'UK General Holding Account',
+			true,
+			true,
+			(select id from account_holder where name = 'HMG')
+			);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_11_0_UPDATE_NAMES_OF_CENTRAL_ACCOUNTS" author="chortism" context="migrate">
+
+		<comment>Updates the names of the central accounts to include UK prefix</comment>
+		<sql>
+			UPDATE account
+			SET account_name = 'UK Auction Account'
+			WHERE account_name = 'Auction Account';
+		</sql>
+		<sql>
+			UPDATE account
+			SET account_name = 'UK Total Quantity Account'
+			WHERE account_name = 'Total Quantity Account';
+		</sql>
+		<sql>
+			UPDATE account
+			SET account_name = 'UK Allocation Account'
+			WHERE account_name = 'Allocation Account';
+		</sql>
+		<sql>
+			UPDATE account
+			SET account_name = 'UK New Entrants Reserve Account'
+			WHERE account_name = 'New Entrants Reserve Account';
+		</sql>
+		<sql>
+			UPDATE account
+			SET account_name = 'UK Market Stability Reserve Account'
+			WHERE account_name = 'Market Stability Reserve Account';
+		</sql>
+		<sql>
+			UPDATE account
+			SET account_name = 'UK General Holding Account'
+			WHERE account_name = 'General Holding Account';
+		</sql>
+	</changeSet>
+	<changeSet id="0_11_0_ADD_HOLDING_ACCOUNT_FOR_UK_AUCTION_PLATFORM" author="chortism" context="migrate">
+		<comment>Adds a holding account for the UK Auction Platform</comment>
+		<sql>
+			insert into account_holder (id, identifier, name, justification, status, type, contact_id, no_reg_justification)
+			values (nextval('account_holder_seq'), nextval('account_holder_identifier_seq'), 'UK Auction Platform', 'No VAT', 'ACTIVE', 'LEGAL_ENTITY',
+			(select id from contact where line_1 = '1 Victoria Street'), 'No registration_number');
+		</sql>
+	</changeSet>
+	<changeSet id="0_11_0_ADD_AUCTION_DELIVERY_ACCOUNT" author="chortism" context="migrate">
+
+		<comment>Adds the auction delivery account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal,
+			account_holder_id
+			)
+			values
+			(
+			nextval('account_seq'),
+			1016,
+			'UK Auction Delivery Account',
+			'UK_AUCTION_DELIVERY_ACCOUNT',
+			'PARTY_HOLDING_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			0,
+			'UK',
+			17,
+			'UK-100-1016-0-17',
+			'UK Auction Delivery Account',
+			true,
+			true,
+			(select id from account_holder where name = 'UK Auction Platform')
+			);
+		</sql>
+	</changeSet>
+</databaseChangeLog>

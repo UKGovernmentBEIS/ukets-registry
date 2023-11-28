@@ -1,0 +1,59 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Request to update the user details'"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Request to update the user details</span>
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 class="govuk-heading-xl">Check the update and confirm</h1>
+      </legend>
+    </fieldset>
+    <div class="govuk-body govuk-!-margin-bottom-8">
+      <h2 class="govuk-heading-m">Type of update</h2>
+      <hr
+        class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-2"
+      />
+      <p class="govuk-body-m">
+        {{ this.userUpdateDetailsType | userDetailsUpdateType}}
+      </p>
+    </div>
+    <app-personal-details-summary-changes
+      [countries]="countries"
+      [isWizardOrientedFlag]="true"
+      [current]="currentUserDetails"
+      [changed]="changedValues"
+      [routePathForDetails]="routePathForPersonalDetails"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-personal-details-summary-changes>
+    <app-work-details-summary-changes
+      [countries]="countries"
+      [isWizardOrientedFlag]="true"
+      [current]="currentUserDetails"
+      [changed]="changedValues"
+      [routePathForDetails]="routePathForWorkDetails"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-work-details-summary-changes>
+    <app-memorable-phrase-summary-changes
+      *ngIf="!isMyProfilePage"
+      [current]="currentUserDetails"
+      [changed]="changedValues"
+      [isWizardOrientedFlag]="true"
+      [routePathForDetails]="routePathForMemorablePhrase"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-memorable-phrase-summary-changes>
+    <button
+      id="submit"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="onSubmit()"
+    >
+      Submit
+    </button>
+    <app-cancel-request-link
+      (goToCancelScreen)="onCancel()"
+    ></app-cancel-request-link>
+  </div>
+</div>

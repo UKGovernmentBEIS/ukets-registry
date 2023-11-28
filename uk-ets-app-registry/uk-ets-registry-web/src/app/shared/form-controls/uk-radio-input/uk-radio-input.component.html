@@ -1,0 +1,152 @@
+<div
+  class="govuk-form-group"
+  [class.govuk-form-group--error]="showError()"
+  [attr.id]="formRadioGroupInfo.key + '-label'"
+>
+  <fieldset
+    class="govuk-fieldset"
+    [attr.aria-describedby]="formRadioGroupInfo.key + '-hint'"
+  >
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl">{{
+          formRadioGroupInfo.radioGroupHeadingCaption
+        }}</span>
+        {{ formRadioGroupInfo.radioGroupHeading }}
+        <p class="govuk-visually-hidden" aria-live="polite">
+          {{ formRadioGroupInfo.radioGroupHeading }}
+        </p>
+      </h1>
+    </legend>
+    <span [attr.id]="formRadioGroupInfo.key + '-hint'" class="govuk-hint">
+      {{ formRadioGroupInfo.radioGroupHint }}
+    </span>
+    <span
+      [attr.id]="formRadioGroupInfo.key + '-subtitle'"
+      *ngIf="formRadioGroupInfo.radioGroupSubtitle"
+      class="govuk-warning-text__text govuk-subtitle"
+    >
+      {{ formRadioGroupInfo.radioGroupSubtitle }}
+    </span>
+    <ng-container *ngIf="formRadioGroupInfo.radioGroupSubHeading">
+      <hr class="govuk-section-break govuk-section-break--m" />
+      <h2 class="govuk-heading-m">
+        {{ formRadioGroupInfo.radioGroupSubHeading }}
+      </h2>
+    </ng-container>
+    <span
+      *ngIf="showError()"
+      class="govuk-error-message"
+      [attr.id]="formRadioGroupInfo.key + '-error-label'"
+    >
+      <span class="govuk-visually-hidden">Error:</span
+      >{{ validationErrorMessage }}
+    </span>
+    <div
+      class="govuk-radios"
+      [attr.id]="formRadioGroupInfo.key + '-radios'"
+      [attr.aria-invalid]="formControl.dirty && formControl.invalid"
+    >
+      <ng-container
+        *ngFor="let subGroup of formRadioGroupInfo.subGroups; let sg = index"
+      >
+        <h2 class="govuk-heading-m">{{ subGroup.heading }}</h2>
+        <div *ngFor="let option of subGroup.options; let i = index">
+          <div class="govuk-radios__item" *ngIf="!option.isHidden">
+            <input
+              class="govuk-radios__input"
+              type="radio"
+              [attr.disabled]="option.enabled ? null : ''"
+              [id]="formRadioGroupInfo.key + sg + i"
+              [name]="formRadioGroupInfo.key"
+              [value]="option.value"
+              [formControl]="formControl"
+              [attr.aria-describedby]="
+                formRadioGroupInfo.key + sg + i + '-hint'
+              "
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              [for]="formRadioGroupInfo.key + sg + i"
+            >
+              {{ option.label }}
+            </label>
+            <span
+              *ngIf="option.hint"
+              [id]="formRadioGroupInfo.key + sg + i + '-hint'"
+              class="govuk-hint govuk-radios__hint"
+              [ngClass]="{ 'opacity-40': !option.enabled }"
+            >
+              {{ option.hint }}
+            </span>
+          </div>
+          <div
+            *ngIf="option.infoTemplate"
+            [id]="formRadioGroupInfo.key + sg + i + '-info'"
+            class="govuk-label info"
+          >
+            <ng-container
+              *ngTemplateOutlet="option.infoTemplate"
+            ></ng-container>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngFor="let option of formRadioGroupInfo.options; let i = index"
+      >
+        <div class="govuk-radios__item" *ngIf="!option.isHidden">
+          <input
+            class="govuk-radios__input"
+            type="radio"
+            [attr.disabled]="option.enabled ? null : ''"
+            [id]="formRadioGroupInfo.key + i"
+            [name]="formRadioGroupInfo.key"
+            [value]="option.value"
+            [formControl]="formControl"
+            (click)="selectedValue(option)"
+            [attr.aria-describedby]="formRadioGroupInfo.key + i + '-hint'"
+          />
+          <label
+            class="govuk-label govuk-radios__label"
+            [for]="formRadioGroupInfo.key + i"
+          >
+            {{ option.label }}
+          </label>
+          <span
+            *ngIf="option.hint"
+            [id]="formRadioGroupInfo.key + i + '-hint'"
+            class="govuk-hint govuk-radios__hint"
+          >
+            {{ option.hint }}
+          </span>
+          <ng-container *ngIf="option.showExtraInputField">
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="
+                this.selectedType !== option.value.type
+              "
+            >
+              <label
+                class="govuk-hint"
+                [attr.for]="formRadioGroupInfo.extraInputField + i"
+                >Enter ITL notification ID, if applicable</label
+              >
+              <input
+                [attr.id]="formRadioGroupInfo.extraInputField + i"
+                [id]="formRadioGroupInfo.extraInputField + i"
+                class="govuk-input govuk-!-width-one-third"
+                type="text"
+                autocomplete="off"
+                [formControlName]="formRadioGroupInfo.extraInputField"
+              />
+            </div>
+          </ng-container>
+        </div>
+        <hr
+          *ngIf="separatorIndex === i"
+          class="govuk-section-break govuk-section-break--m separator"
+        />
+      </ng-container>
+    </div>
+  </fieldset>
+</div>

@@ -1,0 +1,761 @@
+Functional Area,Feature File,Scenario
+account-management,account-change-status,As a junior or read only admin I must not see the account change status link
+account-management,account-change-status,As an AR user I must not see the account change status link
+account-management,account-change-status,As senior admin I cannot change account status of CLOSED account
+account-management,account-change-status,As senior admin I can change account status of TRANSFER PENDING account
+account-management,account-change-status,As senior admin during account status change I can navigate back or cancel the process
+account-management,account-change-status,As senior admin I cannot continue to next change account status screen if no choice is selected
+account-management,account-change-status,As senior admin I must provide comment in order to change account status
+account-management,account-change-status,As senior admin I can change non closed KP account status
+account-management,account-change-status,As senior admin I cannot remove transaction restrictions from ALL TRANSACTION RESTRICTED accounts
+account-management,account-change-status,As senior admin I can change non closed ets account status
+account-management,account-change-status,As senior admin I cannot partially suspend or restrict or remove transaction restrictions on an account with outstanding closure requests
+account-management,account-installation-or-aircraft-details-update,As SRA or JRA user I can update the account installation details of an OHA or the aircraft details of an AOHA account
+account-management,account-installation-or-aircraft-details-update,I cannot update oha account installation details or aoha aircraft details when I do not sign in as SRA or JRA or when account status is closed or proposed
+account-management,account-installation-or-aircraft-details-update,During oha account installation details or aoha aircraft details update i can cancel the operation
+account-management,account-search,Security front end test for account access via ad hoc url get
+account-management,account-search,As AR I can search accounts filtering by default criteria
+account-management,account-search,As admin I can search accounts using id full name or User filter
+account-management,account-search,As user I can filter account list by Account name or ID filter
+account-management,account-search,As user I can filter account list by Account Status filter
+account-management,account-search,As a AR I cannot see an open account when I am suspended for this account
+account-management,account-search,As AR enrolled I dont see SUSPENDED or SUSPENDED PARTIALLY or TRANSFER PENDING or CLOSED accounts
+account-management,account-search,As enrolled user I can filter account list by Account Type
+account-management,account-search,As user I can filter account list by Account Type for person holding account
+account-management,account-search,As senior admin user I can filter account list by Account Type
+account-management,account-search,As user I can filter account list using AH filter
+account-management,account-search,As user I can filter account list by Permit or Monitoring Id
+account-management,account-search,As senior admin user I can filter account list by AR id
+account-management,account-search,As user I can filter account list by Regulator
+account-management,account-search,As a admin I can filter account list by ExcludedForYear
+account-management,account-transfer,As SRA or JRA I can transfer an OHA account of allowed account status to another account holder by adding a valid existing account holder id organization
+account-management,account-transfer,As SRA I can see that upon account transfer of an account with authorised representative the authorised representatives are removed from the account
+account-management,account-transfer,As SRA I can complete an account transfer process for an account without authorised representatives
+account-management,account-transfer,As SRA or JRA I can transfer an OHA account of allowed account status to another account holder by adding a new organisation as account holder
+account-management,account-transfer,As SRA I can transfer an OHA account of allowed account status to another account holder by entering account holder id
+account-management,account-transfer,As not authorised user I cannot transfer an OHA account to another account holder
+account-management,account-transfer,As SRA I cannot transfer an OHA account of invalid status to another account holder
+account-management,account-transfer,As SRA I cannot transfer an account of invalid account type to another account holder
+account-management,account-transfer,As SRA I cannot transfer an account to the same account holder
+account-management,account-transfer,As SRA I cannot transfer an account when i enter invalid values
+account-management,account-view-or-edit-details,As enrolled NON AR user I cannot access View account screen because I dont see the account
+account-management,account-view-or-edit-details,As enrolled AR user I CANNOT access View account screen of a PROPOSED status account
+account-management,account-view-or-edit-details,As enrolled AR user I can access View account screen of an OPEN status account
+account-management,account-view-or-edit-details,As admin I can access View account screen of an OPEN or PROPOSED status account
+account-management,account-view-or-edit-details,As user when I go back from View account screen to accounts list data is retained
+account-management,account-view-or-edit-details,As AR enrolled I can go back from account details to accounts list
+account-management,account-view-or-edit-details,As admin I can navigate to all oha account details sections
+account-management,account-view-or-edit-details,As admin I can navigate to all aoha account details sections
+account-management,account-view-or-edit-details,As enrolled AR I can navigate to all oha account details sections
+account-management,account-view-or-edit-details,As enrolled AR I can navigate to all aoha account details sections
+account-management,account-view-or-edit-details,As AR I can see AH details of an account
+account-management,account-view-or-edit-details,As admin I can see AH details of an account
+account-management,account-view-or-edit-details,As AR I can view active account ARs
+account-management,account-view-or-edit-details,As admin I can view active account ARs
+account-management,account-view-or-edit-details,As admin I can go back from account details to accounts list
+account-management,account-view-or-edit-details,As admin I can see accounts holdings
+account-management,account-view-or-edit-details,As AR I can see accounts holdings
+account-management,account-view-or-edit-details,As admin I can see tal of an account
+account-management,account-view-or-edit-details,As AR enrolled I can see tal of an account
+account-management,account-view-or-edit-details,As authorised representative i can edit the account name or billing address
+account-management,account-view-or-edit-details,As AR I see the account status and the ARs for OPEN or ALL TRANSACTIONS RESTRICTED or SOME TRANSACTIONS RESTRICTED accounts
+account-management,account-view-or-edit-details,As AR I cannot see the account status of CLOSED or SUSPENDED or SUSPENDED PARTIALLY or TRANSFER PENDING account
+account-management,account-view-or-edit-details,As admin I can see the correct account status and the ARs
+account-management,account-view-or-edit-details,As admin user I cannot see the suspended ARs of account
+account-management,account-view-or-edit-details,As AR I cannot see the suspended ARs of an account
+account-management,bulkAR-upload,As a junior or read only admin or AR or authority I must not see the Bulk AR upload tab.
+account-management,bulkAR-upload,As senior-admin user I cannot submit a Bulk-Ar xls when the upload process does not meet appropriate criteria
+account-management,bulkAR-upload,As senior-admin user I can prepare to submit a Bulk-Ar xls and navigate back or cancel-it
+account-management,bulkAR-upload,As senior-admin user I can submit a Bulk-Ar xls and add-AR tasks will be created
+account-management,account-view-or-edit-details,As admin I can access View account screen
+account-management,tal-update-request-account-add-or-remove,As admin I cannot add an PROPOSED status account to tal
+account-management,tal-update-request-account-add-or-remove,As admin I can add an OPEN status account to tal WITHOUT COMMENT
+account-management,tal-update-request-account-add-or-remove,As admin I can add an account to tal WITH COMMENT
+account-management,tal-update-request-account-add-or-remove,As admin I cannot add the same account to tal twice
+account-management,tal-update-request-account-add-or-remove,As authorised representative user I can change description of tal
+account-management,tal-update-request-account-add-or-remove,As junior admin I can cancel a tal request update
+account-management,tal-update-request-account-add-or-remove,As a user I can see data retained while navigating backwards during a tal update
+account-management,tal-update-request-account-add-or-remove,As admin I cannot remove an account from tal when account status is PENDING APPROVAL on another tal task
+account-management,tal-update-request-account-add-or-remove,As admin user I can remove an account
+account-management,tal-update-request-account-add-or-remove,As AR I can access View account screen and navigate to other sections of tal
+account-management,tal-update-request-account-add-or-remove,As AR with incorrect access rights I cannot add or remove TAL request update
+account-management,tal-update-request-account-add-or-remove,As AR with incorrect access rights I can add an account to TAL
+account-management,tal-update-request-account-add-or-remove,As AR with correct access rights I can remove an account from TAL
+account-management,tal-update-request-task-approve,As senior admin I can assign and claim add or remove TAL task
+account-management,tal-update-request-task-approve,As senior admin I can complete add or remove update TAL request with comment when I am NOT initiator
+account-management,tal-update-request-task-approve,As senior admin I can APPROVE an add or remove update TAL request without comment when I am NOT initiator
+account-management,tal-update-request-task-approve,As senior admin I cannot REJECT an add or remove update TAL request when I am NOT initiator without entering comment
+account-management,tal-update-request-task-approve,As senior admin I cannot APPROVE an add or remove TAL request when I am BOTH claimant and initiator
+account-management,tal-update-request-task-approve,As senior admin I can REJECT an add or remove TAL request when I am BOTH claimant and initiator
+account-management,tal-update-request-task-approve,As ar with correct access rights I can APPROVE an add or remove update TAL request without comment when I am NOT initiator
+account-management,tal-update-request-task-approve,As AR with correct access rights I can REJECT an add or remove TAL request
+account-management,tal-update-request-task-approve,As ar with INCORRECT access rights I cannot APPROVE an add or remove update TAL request without comment when I am NOT initiator
+account-management,tal-update-request-task-approve,As ar with INCORRECT access rights I cannot REJECT an add or remove TAL request
+account-management,tal-update-request-transaction-rules,As admin I must not see nor update TAL transaction rules for gov accounts
+account-management,tal-update-request-transaction-rules,As admin I can cancel an update of TAL transaction rules of account
+account-management,tal-update-request-transaction-rules,As admin I can navigate back during TAL transaction rules update of account
+account-management,tal-update-request-transaction-rules,As admin I can update TAL transaction rules of account
+account-management,tal-update-request-transaction-rules,As AR enrolled with the correct access rights I can update TAL transaction rules of my account
+account-management,tal-update-request-transaction-rules,As AR with incorrect access rights I cannot update TAL transaction rules of my account
+account-management,update-ah-details-by-ar,As AR I cannot request TRANSFER PENDING account updates as I cannot even see account in Account search results
+account-management,update-ah-details-by-ar,As an AR I can navigate backwards ensuring that data is retained
+account-management,update-ah-details-by-ar,As an AR I can cancel update process
+account-management,update-ah-details-by-ar,i cannot submit an update account details request when no change is applied
+account-management,update-ah-details-by-ar,As AR I can request an update ah details on OHA where AH is organisation
+account-management,update-ah-details-by-ar,As AR I can request an update of ah details on OHA where AH is individual
+account-management,update-ah-details-by-ar,As AR I can request an update of primary contact details on OHA where AH is organisation
+account-management,update-ah-details-by-ar,As AR I can request an update of primary contact details on OHA where AH is individual
+account-management,update-ah-details-by-ar,ah request data update is correctly implemented when and only when task is approved for individual holder type
+account-management,update-ah-details-by-ar,ah request data update is not available for registered user
+account-management,update-ah-details-by-ar,ah request data update is correctly implemented when and only when task is approved for organisation holder type
+account-management,update-ar-request-ar-add,As admin I can cancel an update request submit of an AR
+account-management,update-ar-request-ar-add,As a admin I cannot approve an authorized update request when I am both initiator and claimant due to 4 eyes principle
+account-management,update-ar-request-ar-add,As admin I cannot update request submit of an AR to a CLOSED account
+account-management,update-ar-request-ar-add,As enrolled AR with incorrect access rights APPROVE or READONLY I cannot submit AR update requests for any account
+account-management,update-ar-request-ar-add,As AR with incorrect access rights I cannot complete AR request
+account-management,update-ar-request-ar-add,As AR I can ADD update request submit of an AR to non CLOSED account
+account-management,update-ar-request-ar-add,As AR with correct access rights I can add another AR to an non closed account
+account-management,update-ar-request-ar-add,As AR with correct access rights I CANNOT add another AR to an non closed account as I cannot even search for account
+account-management,update-ar-request-ar-add,As admin I can approve AR addition request when I am NOT initiator and reject even I am initiator
+account-management,update-ar-request-ar-add,As AR with correct access rights I cannot complete add AR request
+account-management,update-ar-request-ar-remove,As admin I can REMOVE update request submit of an AR to non CLOSED account
+account-management,update-ar-request-ar-remove,As admin I can REMOVE update request submit of an AR to non CLOSED account
+account-management,update-ar-request-ar-remove,As AR with correct access rights I can REMOVE another AR to an NON CLOSED account
+account-management,update-ar-request-ar-remove,As admin I can approve AR REMOVE request when I am NOT initiator and reject even I am initiator
+account-management,update-ar-request-ar-remove,As AR with correct access rights I cannot complete REMOVE AR request when I am NOT initiator
+account-management,update-ar-request-ar-replace,As admin I can REPLACE update request submit of an AR to non CLOSED account
+account-management,update-ar-request-ar-replace,As admin I cannot REPLACE update request submit of an AR to Transfer Pending account
+account-management,update-ar-request-ar-replace,As AR with correct access rights I can REPLACE another AR to an non closed account
+account-management,update-ar-request-ar-replace,As admin I can approve AR REPLACE request when I am NOT initiator and reject even I am initiator
+account-management,update-ar-request-ar-replace,As AR with correct access rights I cannot complete REPLACE AR request when I am NOT initiator
+account-management,update-ar-request-ar-restore,As admin I can Restore update request submit of an AR to non CLOSED account
+account-management,update-ar-request-ar-restore,As admin I cannot Restore update request submit of an AR to Transfer Pending account
+account-management,update-ar-request-ar-restore,As admin I can approve AR Restore request when I am NOT initiator and reject even I am initiator
+account-management,update-ar-request-ar-restore,As AR with correct access rights I cannot complete Restore AR request when I am NOT initiator
+account-management,update-ar-request-ar-suspend,As admin I can Suspend update request submit of an AR to non CLOSED account
+account-management,update-ar-request-ar-suspend,As admin I cannot Suspend update request submit of an AR to Transfer Pending account
+account-management,update-ar-request-ar-suspend,As admin I can approve AR Suspend request when I am NOT initiator and reject even I am initiator
+account-management,update-ar-request-ar-suspend,As AR with correct access rights I cannot complete Suspend AR request when I am NOT initiator
+account-management,update-ar-request-change-rights,As admin I can CHANGE access rights update request submit of an AR to non CLOSED account
+account-management,update-ar-request-change-rights,As admin I cannot CHANGE access rights update request submit of an AR to Transfer Pending account
+account-management,update-ar-request-change-rights,As AR with correct access rights I can CHANGE access rights of another AR to an non closed account
+account-management,update-ar-request-change-rights,As admin I can approve AR Change access rights request when I am NOT initiator and reject even I am initiator
+account-management,update-ar-request-change-rights,As AR with correct access rights I cannot complete a Change access rights AR request when I am NOT initiator
+account-opening,account-details-oha-aoha-kp-accounts,As user I can go back to new account overview page
+account-opening,account-details-oha-aoha-kp-accounts,As user when I refresh page data is retained
+account-opening,account-details-oha-aoha-kp-accounts,As user I cannot submit empty name line or town field for PHA accounts
+account-opening,account-details-oha-aoha-kp-accounts,As user I cannot submit empty name line or town field for OHA and AOHA accounts
+account-opening,account-details-oha-aoha-kp-accounts,As user when I navigate to previous screen I see data retained for OHA and AOHA accounts
+account-opening,account-details-oha-aoha-kp-accounts,As user when I navigate to previous screen I see data retained for PHA accounts
+account-opening,account-details-oha-aoha-kp-accounts,As user when I navigate to previous screen I see data retained using case of Billing address the same with one of AH
+account-opening,account-details-oha-aoha-kp-accounts,As user I can submit account details for OHA and AOHA accounts
+account-opening,account-details-oha-aoha-kp-accounts,As user I can submit account details for PHA accounts
+account-opening,account-details-oha-aoha-kp-accounts,As user I can submit the account details for PHA accounts using case of Billing address the same with one of AH
+account-opening,account-details-oha-aoha-kp-accounts,As user I can edit account details for OHA and AOHA accounts after apply
+account-opening,account-details-oha-aoha-kp-accounts,As user I can edit account details for PHA accounts after apply
+account-opening,account-details-oha-aoha-kp-accounts,As user I can change account details for OHA and AOHA accounts before submit
+account-opening,account-details-oha-aoha-kp-accounts,As user I can change account details for PHA accounts before submit
+account-opening,account-details-oha-aoha-kp-accounts,As user I can delete account details from OHA and AOHA accounts request
+account-opening,account-details-oha-aoha-kp-accounts,As user I can delete account details from PHA accounts request
+account-opening,account-details-oha-aoha-kp-accounts,As user I can go back to new account overview page
+account-opening,account-details-trading-account,As user I cannot submit empty mandatory fields for Trading Account
+account-opening,account-details-oha-aoha-kp-accounts,As user when I navigate to previous screen I see data retained
+account-opening,account-details-trading-account,As user I can submit account details for Trading Account
+account-opening,account-details-trading-account,As user I can change account details for Trading Account before apply
+account-opening,account-details-trading-account,As user I can edit account details for Trading Account after apply
+account-opening,account-details-trading-account,As user I can delete account details from request
+account-opening,account-holder-wizard,As user I can go back to previous screen Fill ah type
+account-opening,account-holder-wizard,As a X user I dont see X screen object
+account-opening,account-holder-wizard,As enrolled user I dont see X screen object
+account-opening,account-holder-wizard,As user when I cannot select an existing ah for individual from proposed list
+account-opening,account-holder-wizard,As registered user I cannot create an oha or aoha account
+account-opening,account-holder-wizard,As admin when I select an existing ah for individual via Searching I can view his details in readonly mode
+account-opening,account-holder-wizard,As admin when I select an existing ah for organisation via Searching I can view his details in readonly mode
+account-opening,account-holder-wizard,As user when I select an existing ah for organisation from proposed list I can view his details in readonly mode
+account-opening,account-holder-wizard,As user I can continue to next screen
+account-opening,account-holder-wizard,As user I can Select the type of ah
+account-opening,account-holder-wizard,As user I can Fill ah individual details no name set
+account-opening,account-holder-wizard,As user I can Fill ah individual details no year of birth set
+account-opening,account-holder-wizard,As user I can Fill ah individual details check edge case of invalid age
+account-opening,account-holder-wizard,As user I can Fill ah individual details happy path
+account-opening,account-holder-wizard,As a user I can fill ah individual address details and leave fist line empty
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details leave empty field: Town or city
+account-opening,account-holder-wizard,As user I can go to Fill ah individual address details page leaving empty email field
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details leaving empty retype email field
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details leave empty field: Phone number 1
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details postcode mandatory for UK only UK case WITHOUT postcode
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details postcode mandatory for UK only UK case WITH postcode
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details invalid phone formats
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details different email and retype email addresses
+account-opening,account-holder-wizard,As user I can go Fill ah individual address details happy path
+account-opening,account-holder-wizard,As user I can go back to previous screen Fill ah Organisation details
+account-opening,account-holder-wizard,As user I can continue to next screen organisation
+account-opening,account-holder-wizard,As user I cannot submit empty mandatory fields for organisation fill one field only
+account-opening,account-holder-wizard,As user I can go back to previous screen Fill ah Organisation address
+account-opening,account-holder-wizard,As user I can continue to next screen organisation
+account-opening,account-holder-wizard,As user I cannot submit empty mandatory fields leaving town or city field empty
+account-opening,account-holder-wizard,As user I cannot submit empty mandatory fields leaving line 1 field empty
+account-opening,account-holder-wizard,Postcode is mandatory for UK only organisation section
+account-opening,account-holder-wizard,Ensure that in overview page for individual we can successfully Change Personal Details and Apply
+account-opening,account-holder-wizard,Ensure that in overview page for individual we can successfully change Address and contact details and Apply
+account-opening,account-holder-wizard,Ensure that overview page works properly changing Organisation details and Apply
+account-opening,account-holder-wizard,Ensure that overview page works properly changing Address and contact details and Apply
+account-opening,account-holder-wizard,Ensure that overview page works properly upon Apply button without changing fields for individual
+account-opening,account-holder-wizard,Ensure that overview page works properly upon Apply button without changing fields for organisation
+account-opening,aircraft-operator-wizard,As user I can go back to previous screen navigating from details
+account-opening,account-holder-wizard,As user I can continue to next screen
+account-opening,aircraft-operator-wizard,As user I cannot submit empty regulation option
+account-opening,aircraft-operator-wizard,As user I cannot submit empty textbox fields option
+account-opening,aircraft-operator-wizard,First year of verification cannot be equal to or lower than 2020
+account-opening,aircraft-operator-wizard,First year of verification must be 2021 or later
+account-opening,aircraft-operator-wizard,As user I can go back to previous screen navigating from details view to details
+account-opening,aircraft-operator-wizard,As user filling screens and then coming back and forth I see my filling data preserved
+account-opening,aircraft-operator-wizard,An account with the same monitoring plan ID already exists under same ah then a second account is not permitted
+account-opening,aircraft-operator-wizard,As user I can apply for Specify aoha
+account-opening,aircraft-operator-wizard,As user I can change the information before apply for Specify aoha
+account-opening,aircraft-operator-wizard,As user I can edit aoha after apply
+account-opening,aircraft-operator-wizard,As user I can delete aoha after apply
+account-opening,authorised-representative-wizard,As user I can select an ar from list
+account-opening,authorised-representative-wizard,As user I cannot submit empty mandatory fields in selection screen
+account-opening,authorised-representative-wizard,As user I cannot submit empty mandatory fields in access rights screen
+account-opening,authorised-representative-wizard,As user I can search and select ar
+account-opening,authorised-representative-wizard,As user I cannot proceed to next screen if I provide an invalid user ID
+account-opening,authorised-representative-wizard,As user I can apply for an ar using one the from the existing in list
+account-opening,authorised-representative-wizard,As user I can use myself as ar and AR dropdown list is disappear after adding myself as AR
+account-opening,authorised-representative-wizard,As user I can apply for two ar using one from the existing in list
+account-opening,authorised-representative-wizard,As user I cannot proceed to next screen if I provide user ID of an existing ar
+account-opening,authorised-representative-wizard,As user I can remove account representative from request
+account-opening,authorised-representative-wizard,As user I can select appropriate access rights according to Business Rules validations
+account-opening,authorised-representative-wizard,As user I can change access rights ar before apply
+account-opening,authorised-representative-wizard,As user I can edit ar after apply
+account-opening,check-information-before-submit-and-success-page,As user I can navigate back and forth
+account-opening,check-information-before-submit-and-success-page,As user I can see all sections relevant to my opening request having correct data for Trading ah with Organisation
+account-opening,check-information-before-submit-and-success-page,As user I can submit an Account Type Trading account ETS with 1 AR selected
+account-opening,check-information-before-submit-and-success-page,As user I can see all sections relevant to my Person holding kp opening request having correct data for Organisation
+account-opening,check-information-before-submit-and-success-page,As user I can see that after account opening an account opening request task is generated and an open account is not created
+account-opening,check-information-before-submit-and-success-page,As user I can see that after account opening task approval a new open account is created
+account-opening,check-information-before-submit-and-success-page,As user I can see all sections relevant to my oha opening request having correct data for individual
+account-opening,check-information-before-submit-and-success-page,As user I can view the details of a section of opening request
+account-opening,check-information-before-submit-and-success-page,As user I can be notified when I cannot submit my request due to technical issues
+account-opening,choose-account-type,As user I can access Request a new registry account screen
+account-opening,choose-account-type,As user I can access the Select the type of account screen
+account-opening,choose-account-type,As user I can select type of registry account and proceed to next screen
+account-opening,choose-account-type,As user I want a hint for each account type before I select one
+account-opening,choose-account-type,As Read only admin I cannot request an account creation
+account-opening,choose-account-type,As authorised representative I see the correct account types during account opening
+account-opening,account-holder-wizard,As user I can go back to previous screen
+account-opening,account-holder-wizard,As user I can continue to next screen
+account-opening,installation-operator-wizard,As user I cannot submit without having selected Installation activity type field
+account-opening,installation-operator-wizard,As user I cannot submit form without having selected regulator field
+account-opening,installation-operator-wizard,As user I cannot submit form without having inserted a textbox date field
+account-opening,installation-operator-wizard,As user I cannot submit form without having inserted a textbox fields
+account-opening,installation-operator-wizard,First year of Verified Emission submit must be greater or equal to 2021 negative edge case
+account-opening,installation-operator-wizard,First year of Verified Emission submit must be greater or equal to 2021 positive edge case
+account-opening,installation-operator-wizard,As user I can go back and forth maintaining data
+account-opening,installation-operator-wizard,As user I can apply installation
+account-opening,installation-operator-wizard,As user I can edit installation after apply
+account-opening,installation-operator-wizard,As user I cannot submit an installation of account with the same permit ID already existed under same ah
+account-opening,installation-operator-wizard,As user I can change installation before apply
+account-opening,installation-operator-wizard,As user I can delete installation after apply
+account-opening,installation-transfer,As SRA I can open an OHA account with installation transfer and allowances
+account-opening,installation-transfer,As SRA or JRA only I can open an OHA account with installation transfer
+account-opening,installation-transfer,As SRA I cannot successfully fill in the installation transfer details when I enter invalid values
+account-opening,installation-transfer,As SRA I cannot request an account opening with installation transfer if the old transferring account has pending task
+account-opening,legal-representative-wizard,As user I can submit personal details for 1 primary contact
+account-opening,legal-representative-wizard,As user I can submit personal details for 2 primary contacts
+account-opening,legal-representative-wizard,As user I cannot submit empty mandatory fields in legal representative wizard
+account-opening,legal-representative-wizard,As user I cannot register a primary contact of age under 18 years old
+account-opening,legal-representative-wizard,As user I can bypass the postcode fill if primary contact resides out of UK
+account-opening,legal-representative-wizard,As user I must submit a postcode if the primary contact resides in UK
+account-opening,legal-representative-wizard,As user I cannot submit empty Fill primary contact address fields Line 1 or Town City
+account-opening,legal-representative-wizard,As user I cannot submit empty Phone field in Fill primary contact address screen
+account-opening,legal-representative-wizard,As user I cannot submit empty Email or Retype email field in Fill primary contact address screen
+account-opening,legal-representative-wizard,As user I cannot enter an email address using incorrect format
+account-opening,legal-representative-wizard,As user I can enter a long email address
+account-opening,legal-representative-wizard,As user I must verify primary contacts email address using same value in Email and Retype email fields
+account-opening,legal-representative-wizard,As user I can change primary contacts personal details before apply
+account-opening,legal-representative-wizard,As user I can change primary contacts address and contact details before apply
+account-opening,legal-representative-wizard,As user I can remove primary contact from request
+account-opening,legal-representative-wizard,As user I can edit primary contacts details before submit
+account-opening,main-wizard-task-list,As user I can complete ah section for oha
+account-opening,main-wizard-task-list,As user I can complete ah section for aoha
+account-opening,main-wizard-task-list,As user I can fill in primary contact section for oha
+account-opening,main-wizard-task-list,As user I can complete Transaction rules section for oha
+account-opening,main-wizard-task-list,As user I can complete installation section
+account-opening,main-wizard-task-list,As user I can complete aoha section
+account-opening,main-wizard-task-list,As user I can see the account type I selected on previous step
+account-opening,main-wizard-task-list,As user I can see all common sections relevant to my opening request
+account-opening,main-wizard-task-list,As user I can complete ah section for Trading Account and Person Holding Account
+account-opening,main-wizard-task-list,As user I can fill in primary contact section for aoha
+account-opening,main-wizard-task-list,As user I can fill in primary contact section for Trading Account and Person Holding Account
+account-opening,main-wizard-task-list,As user I can complete Transaction rules section for aoha
+account-opening,main-wizard-task-list,As user I can complete Transaction rules section for Trading Account and Person Holding Account
+account-opening,check-information-before-submit-and-success-page,As user I can see all sections relevant to my opening request
+account-opening,main-wizard-task-list,As user I can know which sections are OPTIONAL for OHA and AOHA accounts
+account-opening,main-wizard-task-list,As user I can know what information is missing from opening request
+account-opening,main-wizard-task-list,As user I cannot submit ars that violate business rules
+account-opening,main-wizard-task-list,As user I cannot submit ars that violate business rules due to 4 eyes principle
+account-opening,main-wizard-task-list,As user I can see oha distinct sections
+account-opening,main-wizard-task-list,As user I can see aoha distinct sections
+account-opening,main-wizard-task-list,As user I can know which sections are OPTIONAL for my request for oha
+account-opening,main-wizard-task-list,As user I can know which sections are INcompleted OPTIONAL for my request for Trading account account type
+account-opening,main-wizard-task-list,As user I can know which sections are INcompleted OPTIONAL for my request for aoha
+account-opening,main-wizard-task-list,As user I can know which sections are INcompleted OPTIONAL for my request for Person holding account KP account type
+account-opening,main-wizard-task-list,As user I can cancel opening request and return to dashboard
+account-opening,main-wizard-task-list,As user I can submit an opening request after I complete all mandatory sections
+account-opening,main-wizard-task-list,As user I can verify that for oha ets account type I see the correct sections status while filling in sections
+account-opening,main-wizard-task-list,As user I can verify that for OHA account type I see the correct sections status when I select an existing ah for individual from proposed list
+account-opening,main-wizard-task-list,As user I can verify that for aoha I see the correct sections status while filling in sections
+account-opening,main-wizard-task-list,As user I can verify that for Trading account account type I see the correct sections status while filling in sections
+account-opening,main-wizard-task-list,As user I can verify that for Person holding account KP account type I see the correct sections status while filling in sections
+account-opening,senior-admin-request-documents,As AR I can complete a senior admin AH documents request on an ad hoc basis via Account menu ah link
+account-opening,senior-admin-request-documents,As AR I can complete a senior admin AH documents request as part of Account opening task
+account-opening,senior-admin-request-documents,As AR I can complete a senior admin AH documents request via User details
+account-opening,trusted-account-wizard,As user when I configured the trust account list and clicked on the APPLY button the settings are reflected in table of contents
+account-opening,trusted-account-wizard,As user I can change the transaction rules before apply changes in second ar approval to accounts
+account-opening,trusted-account-wizard,As user I can change the transaction rules before apply changes in the transfers to accounts not on transaction rules allowed
+account-opening,trusted-account-wizard,As user I can edit transaction rules after apply
+account-opening,trusted-account-wizard,As user I can delete transaction rules after apply
+account-opening,trusted-account-wizard,As user I can go back to previous screen transaction rules 1
+account-opening,trusted-account-wizard,As user I can continue to next screen Configure transaction rules transfers outside list
+account-opening,trusted-account-wizard,As user I can go back to previous screen transaction rules 2
+account-opening,trusted-account-wizard,As user I can continue to next screen Configure transaction rules overview
+account-opening,account-holder-wizard,As user I can go back to previous screen
+account-opening,trusted-account-wizard,As user filling screens and then coming back I see my filling data preserved in second approval necessary screen
+account-opening,trusted-account-wizard,As user filling screens and then coming back I see my fill in data preserved in transfers outside list screen
+compliance,upload-emissions-table-request-and-task,As SRA I can successfully upload emissions table and after task approval the emissions are updated
+compliance,upload-emissions-table-request-and-task,As SRA I cannot upload emissions table due to applied business rules
+compliance,upload-emissions-table-request-and-task,As SRA I can cancel the upload emissions table request
+dashboard,dashboard,As a non admin User I see correct menu items in my dashboard
+dashboard,dashboard,As an admin User I see correct menu items in my dashboard
+dashboard,dashboard,As user I access my dashboard and I can Sign out
+dashboard,dashboard,As a Registered User I see the warning message and request account
+dashboard,dashboard,As validated user User I see the warning message and request account
+dashboard,landing-page,As a not signed in user I access the Landing page and I can Sign in
+dashboard,landing-page,As a not signed in user I access the Landing page and I can Start the Registration process
+dashboard,landing-page,As a not signed in user I access the Landing page and I can go to Gov uk
+dashboard,landing-page,As a not signed-in user, I access the Landing page to Sign in but the service is down
+ets-transactions,account-change-allocation-status,As senior admin I can change allocation status
+ets-transactions,account-change-allocation-status,According to admin type I have the correct visibility of Change allocation status button
+ets-transactions,account-change-allocation-status,As an AR I can read only the allocation status
+ets-transactions,account-change-allocation-status,As an AR or admin user I can view allocation status of an account for each allocation type separately such as NAT NER NAVAT
+ets-transactions,account-change-allocation-status,As an AR or admin user I must not see the allocation status of an account if there are no allocation entries in current phase
+ets-transactions,allocation-return,As SRA user I can trigger a Return excess allocation transaction task and units are correctly transferred upon task approval
+ets-transactions,allocation-return,As SRA user I cannot trigger a Return excess allocation transaction under a ALL TRANSACTIONS RESTRICTED accounts
+ets-transactions,allocation-return,As AR user I cannot trigger a Return excess allocation transaction under a SUSPENDED or PARTIALLY SUSPENDED or ALL_TRANSACTIONS_RESTRICTED accounts
+ets-transactions,allocation-return,As JRA user I cannot trigger a Return excess allocation transaction
+ets-transactions,allocation-return,As AR user I can trigger a Return excess allocation transaction
+ets-transactions,allocation-return,As AR user I cannot trigger a Return excess allocation transaction when I set invalid quantity values or leave mandatory fields empty
+ets-transactions,allocation-return,As SRA user while implementing a Return excess allocation transaction I see data retained while navigating backwards
+ets-transactions,allocation-return,As SRA user I can cancel a Return excess allocation transaction triggering
+ets-transactions,allocation-reversal,As SRA user I can trigger a Reverse Allocation transaction
+ets-transactions,allocation-reversal,As SRA user I cannot trigger a Reverse Allocation transaction of ALL TRANSACTIONS RESTRICTED
+ets-transactions,allocation-reversal,As AR user I cannot trigger a Reverse Allocation transaction
+ets-transactions,allocation-reversal,As JRA user I cannot trigger a Reverse Allocation transaction
+ets-transactions,allocation-reversal,As SRA user I cannot trigger a Reverse Allocation transaction under a Trading or KP account
+ets-transactions,allocation-reversal,As SRA user I cannot trigger a Reverse Allocation transaction to acquiring account with status CLOSED TRANSFER PENDING are not allowed
+ets-transactions,allocation-reversal,As SRA user I cannot trigger a Reverse Allocation transaction after 14 days
+ets-transactions,allocation-reversal,As SRA user I can cancel a Reverse Allocation transaction
+ets-transactions,ets_reconciliation,As a senior admin i can see an alert regarding the ets reconciliation status
+ets-transactions,ets_reconciliation,Main success scenario Successful reconciliation
+ets-transactions,ets_reconciliation,Extension 1 Reconciliation fails due to missing account in Registry
+ets-transactions,ets_reconciliation,Extension 2 Reconciliation fails due to missing account in Transaction Log
+ets-transactions,ets_reconciliation,Extension 3 Reconciliation fails due to missing units in Registry
+ets-transactions,ets_reconciliation,Extension 4 Reconciliation fails due to missing units in Transaction Log
+ets-transactions,ets_reconciliation,Extension 5 Reconciliation fails due to different totals Registry
+ets-transactions,ets_reconciliation,Extension 6 Reconciliation fails due to different totals Transaction Log
+ets-transactions,ets_reconciliation,Extension 7 Reconciliation fails due to different unit types
+ets-transactions,excess-auction-return,As SRA or AR user I can trigger a Return excess auction transaction task and units are correctly transferred upon task approval
+ets-transactions,excess-auction-return,As SRA user I cannot trigger a Return excess auction transaction task when acquiring or transferring account is ALL TRANSACTIONS RESTRICTED
+ets-transactions,excess-auction-return,As SRA user I cannot trigger a Return excess auction transaction task when transferring account has closed status
+ets-transactions,excess-auction-return,As JRA user I cannot trigger a Return excess auction transaction task
+ets-transactions,excess-auction-return,As SRA user I cannot trigger a Return excess auction transaction task when I set invalid values
+ets-transactions,excess-auction-return,As SRA user while implementing a Return excess auction transaction I see data retained while navigating backwards
+ets-transactions,excess-auction-return,As SRA user I can cancel a Return excess auction transaction proposal
+ets-transactions,issue-UK-allowances,Senior admin user has access to ETS Administration Propose to issue UK allowances
+ets-transactions,issue-UK-allowances,As Authority user I can propose to issue UK allowances the quantity must be a positive number
+ets-transactions,issue-UK-allowances,As Authority user I can cancel an issue UK allowances proposal
+ets-transactions,issue-UK-allowances,As Authority user I can navigate back during an issue UK allowances proposal
+ets-transactions,issue-UK-allowances,As Authority user during an issue UK allowances proposal I cannot continue without having set a quantity value
+ets-transactions,issue-UK-allowances,As Authority user during an issue UK allowances proposal I cannot exceed max quantity limit of entire ets phase
+ets-transactions,issue-UK-allowances,As Authority user during an issue UK allowances proposal I must be warned when I exceed max quantity limit of a year
+ets-transactions,issue-UK-allowances,As I user I can change quantity amount during an issue uk allowances proposal
+ets-transactions,issue-UK-allowances,As I user I cannot submit an issue uk allowances proposal without setting otp
+ets-transactions,issue-UK-allowances,As I user I can submit an issue uk allowances proposal
+ets-transactions,request-transfers,As SRA I can request a Transfer of allowances
+ets-transactions,request-transfers,As admin I cannot propose transaction to an acquiring account of PROPOSED status
+ets-transactions,request-transfers,As an ar I can cancel a delayed ets transfer
+ets-transactions,surrender-reversal,As SRA user I can trigger a Reverse Surrender transaction
+ets-transactions,surrender-reversal,As SRA user I cannot trigger a Reverse Surrender transaction of ALL TRANSACTIONS RESTRICTED
+ets-transactions,surrender-reversal,As AR  user I cannot trigger a Reverse Surrender transaction
+ets-transactions,surrender-reversal,As JRA user I cannot trigger a Reverse Surrender transaction
+ets-transactions,surrender-reversal,As SRA user I cannot trigger a Reverse Surrender transaction under a Trading or KP account
+ets-transactions,surrender-reversal,As SRA user I cannot trigger a Reverse Surrender transaction to acquiring account with status CLOSED or TRANSFER PENDING or FULLY SUSPENDED are not allowed
+ets-transactions,surrender-reversal,As SRA user I cannot trigger a Reverse Surrender transaction after 14 days
+ets-transactions,surrender-reversal,As SRA user I can cancel a Reverse Surrender transaction
+ets-transactions,surrender,As SRA user I can successfully propose a Surrender transaction and then a correct Transaction Proposal task is created
+ets-transactions,surrender,As a SRA user I cannot trigger a Surrender transaction of ALL TRANSACTIONS RESTRICTED
+ets-transactions,surrender,As SRA user I can successfully see that correct units are transferred to UK Surrender Account after Surrender transaction proposal task approval
+ets-transactions,surrender,As AR user I can trigger a Surrender transaction
+ets-transactions,surrender,As a AR user I cannot trigger a Surrender transaction under a Trading or KP account
+ets-transactions,surrender,As a SRA user I cannot trigger a Surrender transaction under a Trading or KP account
+ets-transactions,surrender,As AR user I cannot trigger a Surrender transaction under a SUSPENDED or PARTIALLY SUSPENDED accounts
+ets-transactions,surrender,As JRA user I cannot trigger a Surrender transaction
+ets-transactions,surrender,As AR user I cannot trigger a Surrender transaction when I set invalid quantity values or leave mandatory fields empty
+ets-transactions,surrender,As SRA user while implementing a Surrender transaction I see data retained while navigating backwards
+ets-transactions,surrender,As SRA user I can cancel a Surrender transaction triggering
+ets-transactions,transaction-log-business-checks,Main success scenario Transfer of Allowances
+ets-transactions,transaction-log-business-checks,Extension 1 The transferring account number does not exist in Transaction Log
+ets-transactions,transaction-log-business-checks,Extension 2 The acquiring account number does not exist in Transaction Log
+ets-transactions,transaction-log-business-checks,Extension 3 The requested quantity exceeds the current account balance of the transferring account in the Transaction Log for unit type being transferred
+ets-transactions,transaction-log-business-checks,Extension 4 The quantity of allowances issued must not exceed the issuance limit set in Transaction Log
+ets-transactions,transaction-log-business-checks,Extension 5 The transferring account in the Transaction Log does not hold serial blocks being transferred
+ets-transactions,upload-allocation-table,Ensure that as senior admin user have correct access to ETS Administration menu items
+ets-transactions,upload-allocation-table,As Authority user I cannot submit a NAP when the upload process does not meet appropriate criteria
+ets-transactions,upload-allocation-table,As Authority user I can submit a NAP when the upload process meets appropriate criteria
+ets-transactions,upload-allocation-table,As Authority user I cannot submit a NAP when allocation year is not within limits
+kp-transactions,kp-ambition-cancellation,As senior admin user I cannot trigger an Ambition increase cancellation transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-ambition-cancellation,As senior admin user I can trigger an Ambition transaction
+kp-transactions,kp-ambition-cancellation,As senior admin user while implementing Ambition increase cancellation triggering I see data retained while navigating backwards
+kp-transactions,kp-ambition-cancellation,As senior admin user I can cancel a Ambition increase cancellation transaction triggering
+kp-transactions,kp-ambition-cancellation,As senior admin user I cannot propose an Ambition increase cancellation transaction while another transaction of the same type is pending
+kp-transactions,kp-art37-cancellation,As senior admin user I cannot trigger an Art37Cancellation transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-art37-cancellation,As senior admin user I can trigger an Art37 Cancellation transaction
+kp-transactions,kp-art37-cancellation,As senior admin user while implementing Art37ter cancellation triggering I see data retained while navigating backwards
+kp-transactions,kp-art37-cancellation,As senior admin user I can cancel a Art37ter cancellation transaction triggering
+kp-transactions,kp-art37-cancellation,As senior admin user I cannot propose an Art37ter cancellation transaction while another transaction of the same type is pending
+kp-transactions,kp-carryover-aau,As senior admin user I cannot trigger carryover AAU transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-carryover-aau,As senior admin user I can trigger carryover AAU transaction
+kp-transactions,kp-carryover-aau,As senior admin user while implementing carryover AAU triggering I see data retained while navigating backwards
+kp-transactions,kp-carryover-aau,As senior admin user I can cancel a carryover AAU transaction triggering
+kp-transactions,kp-carryover-aau,As senior admin user propose transaction button is available after a cancel
+kp-transactions,kp-carryover-aau,As AR enrolled with INITIATE AND APPROVE access rights I cannot see PARTY HOLDING ACCOUNT accounts and subsequently Propose transaction
+kp-transactions,kp-carryover-aau,As AR enrolled with INITIATE AND APPROVE access rights I cannot carryover AAU regarding non gov accounts
+kp-transactions,kp-carryover-cer-eru,As senior admin user I cannot trigger carryover CER transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-carryover-cer-eru,As senior admin user I can trigger carryover CER transaction
+kp-transactions,kp-carryover-cer-eru,As senior admin user while implementing carryover CER triggering I see data retained while navigating backwards
+kp-transactions,kp-carryover-cer-eru,As senior admin user I can cancel a carryover CER transaction triggering
+kp-transactions,kp-carryover-aau,As senior admin user propose transaction button is available after a cancel
+kp-transactions,kp-carryover-cer-eru,As AR enrolled with an access rights I cannot see PARTY HOLDING ACCOUNT accounts and subsequently Propose transaction
+kp-transactions,kp-carryover-cer-eru,As AR enrolled with INITIATE AND APPROVE access rights I cannot carryover CER regarding non gov accounts
+kp-transactions,kp-expiry-date-change,As senior admin user I cannot trigger an Expiry Date Change transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-expiry-date-change,As senior admin user I can trigger an Expiry Date Change transaction
+kp-transactions,kp-expiry-date-change,As senior admin user while implementing an Expiry Date Change transaction I see data retained while navigating backwards
+kp-transactions,kp-expiry-date-change,As senior admin user I can cancel an Expiry Date Change transaction triggering
+kp-transactions,kp-itl-notifications-and-messages,As a Senior Admin I can see a home page alert when there is at least one itl notification
+kp-transactions,kp-itl-notifications-and-messages,As a Senior Admin I can access ITL notifications
+kp-transactions,kp-itl-notifications-and-messages,As a Senior Admin I can send ITL messages
+kp-transactions,kp-itl-notifications-and-messages,As a Senior Admin I send and then access ITL messages
+kp-transactions,kp-itl-notifications-and-messages,I cannot send an empty ITL message
+kp-transactions,kp-itl-notifications-and-messages,Ensure that ITL message search filters work as expected
+kp-transactions,kp-mandatory-cancellation,As senior admin user I cannot trigger a mandatory cancellation transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-mandatory-cancellation,As senior admin user I can trigger a mandatory cancellation transaction
+kp-transactions,kp-mandatory-cancellation,As senior admin user while implementing a mandatory cancellation transaction I see data retained while navigating backwards
+kp-transactions,kp-mandatory-cancellation,As senior admin user I can cancel a mandatory cancellation transaction triggering
+kp-transactions,kp-mandatory-cancellation,As senior admin user I cannot propose a mandatory cancellation transaction while another transaction of the same type is pending
+kp-transactions,kp-replacement,As senior admin user I cannot trigger a Replacement transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-replacement,As senior admin user I can trigger a Replacement transaction
+kp-transactions,kp-replacement,As senior admin user while implementing a Replacement transaction I see data retained while navigating backwards
+kp-transactions,kp-replacement,As senior admin user I can cancel a Replacement transaction triggering
+kp-transactions,kp-retirement,As senior admin user I cannot trigger an Retirement transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-retirement,As senior admin user I can trigger an retirement transaction
+kp-transactions,kp-retirement,As senior admin user I can propose an Retirement transaction while another transaction of the same type is pending
+kp-transactions,kp-search-transactions-user-admin,As user according to my access rights I can see Transactions menu
+kp-transactions,kp-search-transactions-user-admin,As admin user I can access Transactions screen
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transaction ID filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transaction Type filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transaction Status filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transaction last update date From filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transaction last update date To filter
+kp-transactions,kp-search-transactions-user-admin,As user I can filter transaction list using Transferring Account filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Acquiring Account filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Acquiring Account Type filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transferring Account Type filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Unit Type filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transaction proposal date From filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Transaction proposal date To filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can filter transaction list using Initiator or Approver user ID filter
+kp-transactions,kp-search-transactions-user-admin,As admin user I can initialize filters after a search
+kp-transactions,kp-search-transactions-user-admin,As admin user I can download as CSV file transaction list
+kp-transactions,kp-search-transactions-user-non-admin,Security front end test for transaction access via ad hoc url get
+kp-transactions,kp-search-transactions-user-non-admin,As a non admin user according to my access rights I have appropriate visibility of Transactions menu
+kp-transactions,kp-search-transactions-user-non-admin,As enrolled user I can access Transactions screen
+kp-transactions,kp-search-transactions-user-non-admin,As authorised representative I have appropriate visibility of transactions results
+kp-transactions,kp-search-transactions-user-non-admin,As user when I search for a transaction I see results in correct sorting
+kp-transactions,kp-transaction-proposal-approval,As a Junior Admin I dont have permission to claim KP Issuance transaction proposal task
+kp-transactions,kp-transaction-proposal-approval,As a non admin user I have correct transaction tasks visibility according to my access rights
+kp-transactions,kp-transaction-proposal-approval,As admin user I have correct transaction tasks visibility according to my access rights
+kp-transactions,kp-transaction-proposal-approval,As a Junior Admin I can access a KP Issuance proposal task but I cannot complete it
+kp-transactions,kp-transaction-proposal-approval,As senior admin I can assign task to another admin
+kp-transactions,kp-transaction-proposal-approval,As senior admin I can view more info about kp task
+kp-transactions,kp-transaction-proposal-approval,As senior admin I can view task history and comments
+kp-transactions,kp-transaction-proposal-approval,As senior admin I can APPROVE KP issuance transaction proposal with or without a comment
+kp-transactions,kp-transaction-proposal-approval,As AR enrolled I can APPROVE KP issuance transaction proposal
+kp-transactions,kp-transaction-proposal-approval,As an ar I can cancel a delayed kp transfer
+kp-transactions,kp-transaction-proposal-approval,As senior admin I cannot approve task when I am both claimant and initiator due to 4 eyes security principle
+kp-transactions,kp-transaction-proposal-approval,As senior admin I must enter the correct password to complete task
+kp-transactions,kp-transaction-proposal-approval,As senior admin I cannot REJECT KP issuance transaction proposal without setting a reject comment
+kp-transactions,kp-transaction-proposal-approval,As senior admin I can REJECT KP issuance transaction proposal
+kp-transactions,kp-transaction-proposal-approval,As senior admin I can reject MY OWN task as when I am both claimant and initiator no 4 eyes principle applied
+kp-transactions,kp-transaction-view,As admin user I have the correct transaction details visibility for defined transaction status and AR access rights
+kp-transactions,kp-transaction-view,As a non admin user I have the correct transaction details visibility for defined transaction status and AR access rights
+kp-transactions,kp-transfer-to-sop-for-first-external-transfer,As senior admin user I cannot trigger a transfer to SOP for first external transfer when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-transfer-to-sop-for-first-external-transfer,As senior admin user I can trigger a transfer to SOP for first external transfer
+kp-transactions,kp-transfer-to-sop-for-first-external-transfer,As senior admin user I cannot propose a transfer to SOP for first external transfer while another transaction of the same type is pending
+kp-transactions,kp-units-issue-task,As a admin I can access the Internal Transfer task ensuring that data shown is correct when I am or I am not initiator
+kp-transactions,kp-units-issue-task,As a admin I cannot complete Internal Transfer task when I am initiator because of 4 eyes principle
+kp-transactions,kp-units-issue-task,As senior admin I can complete Internal Transfer task when I am NOT initiator
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units period screen I must fill mandatory fields
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units period screen I cannot see a CLOSED account
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units period screen I can navigate to next screen
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units period screen I can navigate to previous screen
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units period screen I can navigate to next screen with correct data
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units units screen I must fill mandatory fields
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units units screen I must specify at least one non zero quantity entering 1 value only
+kp-transactions,kp-units-issue,As senior admin when I access Propose KP units units screen I can navigate to next screen
+kp-transactions,kp-units-issue,The quantity of AAUs issued must not exceed allowed quantity for Commitment Period
+kp-transactions,kp-units-issue,The quantity of RMUs issued must not exceed allowed quantity for that LULUCF activity type and Commitment Period
+ets-transactions,allocation-return,quantity must be a positive number without decimal places
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units review screen I can finalise operation
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units review screen when I finalise operation a transaction task is generated
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units review screen I can finalise operation Error for blank password
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units review screen I can finalise operation Error for invalid password
+kp-transactions,kp-units-issue,As a REG ADMIN SENIOR when I access Propose KP units review screen I can finalise the operation when Transactions to accounts with other pending transactions of same type are not allowed
+kp-transactions,kp-units-transfer,As SRA user I can ensure that I see correct data regarding Inbound transactions
+kp-transactions,kp-units-transfer,As senior admin user I cannot implement a internal transfer proposal when I have zero balance and TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I cannot implement an internal transfer without Transfer KP units option when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I cannot do an internal transfer proposal if I dont click unit type checkbox when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I cannot implement an internal transfer proposal if I dont enter a unit type value when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I cannot do an internal transfer proposal if I enter a negative unit type value or a symbol when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I can continue to Choose acquiring account of internal transfer if I enter correct quantity when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I have to complete ALL acquiring account fields for internal transfer of account when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,The transaction cannot be completed when transfers outside trusted account list business rule parameter is false
+kp-transactions,kp-units-transfer,As senior admin I cannot choose an acquiring account of PROPOSED account status
+kp-transactions,kp-units-transfer,As senior admin I can specify acquiring account of internal transfer while trying to propose a transaction when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin user I can cancel proposal for a transaction proposal of an internal transfer while trying to propose a transaction when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin user I can cancel a transaction proposal of an internal transfer while trying to propose a transaction when TAL is optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin user I can see already set data being retained while trying to implement a internal transaction proposal for TAL optional for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin user I can propose an internal kp transfer for TAL optional or mandatory for Outbound transaction
+kp-transactions,kp-units-transfer,As AR enrolled I can implement transaction proposal of internal transfer for TAL optional or mandatory for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I can implement a transaction proposal of external transfer with or without comment and TAL optional or mandatory for Outbound transaction
+kp-transactions,kp-units-transfer,As AR enrolled I can implement transaction proposal of external transfer with or without comment when TAL optional or mandatory for Outbound transaction
+kp-transactions,kp-units-transfer,As senior admin I have correct visibility of Propose transaction button as per account status case of Outbound transaction
+kp-transactions,kp-units-transfer,As AR enrolled I have correct visibility of Propose transaction button as per account status case of Outbound transaction
+kp-transactions,kp-voluntary-cancellation,As senior admin user I cannot trigger an AAU Voluntary cancellation transaction when I set invalid quantity values or leave mandatory fields empty
+kp-transactions,kp-voluntary-cancellation,As AR user I can trigger a RMU Voluntary cancellation transaction from my PERSON HOLDING ACCOUNT
+kp-transactions,kp-voluntary-cancellation,As AR user I can trigger an ERU Voluntary cancellation transaction from my FORMER OPERATOR HOLDING ACCOUNT
+kp-transactions,kp-voluntary-cancellation,As senior admin user while implementing CER Voluntary cancellation triggering I see data retained while navigating backwards
+kp-transactions,kp-voluntary-cancellation,As senior admin user I can cancel a tCER Voluntary cancellation transaction triggering
+kp-transactions,kp-voluntary-cancellation,As senior admin user I cannot propose a lCER Voluntary cancellation transaction while another transaction of the same type is pending
+reporting,ets-search-reports,As AR or Authority I do not have access to the Reports menu
+reporting,ets-search-reports,As admin user I have access to the Reports menu
+reporting,ets-search-reports,As SRA I can execute the Search report
+reporting,public-report-page,As unregistered user I can access public report page of kp or ets via landing page link
+reporting,public-report-page,As unregistered user I can navigate back to landing page from public kp or ets reports page
+security,example,Example test case for Registry API
+task-management,junior-admin-validation-account-opening,As a Junior admin I cannot claim account opening task
+task-management,junior-admin-validation-account-opening,As a Junior admin I cannot comment on a task that I have not claimed and assigned
+task-management,junior-admin-validation-account-opening,As a Junior admin I cannot Approve task initiated by me
+task-management,junior-admin-validation-account-opening,As a Junior admin I can Approve task initiated by another user
+task-management,junior-admin-validation-account-opening,As a Junior admin I can Reject task
+task-management,junior-admin-validation-account-opening,As a Junior admin I can view more info about task
+task-management,junior-admin-validation-account-opening,As a Junior admin I can view task history and comments
+task-management,junior-admin-validation-account-opening,As a Junior admin I can view the details of AR who are attached to opening request
+task-management,junior-admin-validation-account-opening,As a Junior admin I can change ah but I cannot complete the task
+task-management,junior-admin-validation-account-opening,As a Junior admin I can change regulator
+task-management,junior-admin-validation-account-opening,As a Junior Registry Admin I can assign a task to another Junior admin
+task-management,junior-admin-validation-account-opening,As a Junior Registry Admin I cannot assign a task to a senior admin
+task-management,junior-admin-validation-account-opening,As a junior admin I can see events generated by spinoff requests such as print letter
+task-management,senior-admin-validation-account-opening,As senior admin I can return to task list and assign task to another admin
+task-management,senior-admin-validation-account-opening,As senior admin I can view more info about account opening task
+kp-transactions,kp-transaction-proposal-approval,As senior admin I can view task history and comments
+task-management,senior-admin-validation-account-opening,As senior admin I can view the details of AR who are attached to opening request
+task-management,senior-admin-validation-account-opening,As senior admin I can APPROVE the opening request when I am not initiator
+task-management,senior-admin-validation-account-opening,As senior admin I cannot approve the opening request when I am initiator
+task-management,senior-admin-validation-account-opening,As senior admin I can REJECT opening request
+task-management,senior-admin-validation-account-opening,As senior admin I can change ah
+task-management,senior-admin-validation-account-opening,As senior admin I can change regulator
+task-management,senior-admin-validation-account-opening,As senior admin I can see events generated by spinoff requests such as print letter
+task-management,task-list,Security front end test for task access via ad hoc url get
+task-management,task-list,As a admin I can see task list headers
+task-management,task-list,As a admin when I refresh page then data is retained
+task-management,task-list,As a admin under the task list screen I can hide filters
+task-management,task-list,As admin user I can filter task list for a particular account using account number
+task-management,task-list,As a non admin user I dont see task list for a particular account using account number filter
+task-management,task-list,As user I can filter task list for a particular claimant
+task-management,task-list,As a non admin user I dont see task list after filtering using a particular claimant
+task-management,task-list,As admin user I can filter task list for a particular ah
+task-management,task-list,As a non admin user I cannot see task list after filtering for a particular ah
+task-management,task-list,As admin user I can filter task list for a particular request ID
+task-management,task-list,As a non admin user I cannot see task list filtering using a particular request ID
+task-management,task-list,As admin user I can filter task list for a particular task status
+task-management,task-list,As a non admin user I cannot see task list for a particular task status filter
+task-management,task-list,As user I cannot fill comments in completed tasks
+task-management,task-list,As admin user I can filter task list for a particular task type
+task-management,task-list,As a non admin user I cannot see task list using a particular task type filter
+task-management,task-list,As admin user I can filter task list for a particular initiator
+task-management,task-list,As a non admin user I cannot see task list filtering for a particular Name of initiator
+task-management,task-list,As admin user I can filter task list for a particular Account type
+task-management,task-list,As a non admin user I cannot see task list filtering for a particular Account type
+task-management,task-list,As admin user I can filter task list for a particular Task outcome
+task-management,task-list,As a non admin user I cannot see task list filtering for a particular Task outcome
+task-management,task-list,As admin user I can filter task list for a Initiated or claimed by role
+task-management,task-list,As a non admin user I cannot filter for a Initiated or claimed by role
+task-management,task-list,As admin user I can filter task list for a particular transaction id
+task-management,task-list,As a non admin user I can filter task list for a particular transaction id
+task-management,task-list,As senior admin user I can filter task list for a particular date
+task-management,task-list,As senior admin user I get an error when I search using a filled partially date
+task-management,task-list,As user I can expand my search to include end user tasks as Admin user
+task-management,task-list,As user I cannot expand my search to include end user tasks as Non Admin user
+task-management,task-list,As user I see results shown in descending order after task search after returning back from a task
+task-management,task-list,As user I can CLAIM one task which is not already claimed and The assignee becomes the claimant of task
+task-management,task-list,As user I can CLAIM multiple tasks of same type
+task-management,task-list,As user I can CLAIM one task which is already claimed by another user
+task-management,task-list,As user I can CLAIM one task which is already claimed by me only if i leave a comment
+task-management,task-list,As user I can CLAIM multiple tasks of same type which are already claimed case of 2 tasks
+task-management,task-list,As user I cannot CLAIM multiple tasks of DIFFERENT type which are already claimed case of 2 tasks
+task-management,task-list,As user I can claim already claimed task when NO claim comment is added
+task-management,task-list,As user I can claim UNCLAIMED task when NO claim comment is added
+task-management,task-list,As user I cannot claim CLAIMED task when NO claim comment is added
+task-management,task-list,As user I cannot CLAIM tasks of different types for 2 tasks which are NOT claimed
+task-management,task-list,As user I cannot apply CLAIM functionality when no task is selected
+task-management,task-list,As a admin I can ASSIGN one task which is not already claimed and The assignee becomes the claimant of task
+task-management,task-list,As an admin I can ASSIGN two tasks of same type
+task-management,task-list,As a admin I cannot ASSIGN task when user or comment is missing
+task-management,task-list,As a admin I cannt ASSIGN one or more tasks of different types
+task-management,task-list,As a junior admin I cant ASSIGN a task to a senior admin
+task-management,task-list,As senior admin user When searching by Request ID system also displays any spinoff tasks
+user-registration,check-answers-and-submit,As user I would like to see my phone number in international format
+user-registration,check-answers-and-submit,As user when I click on link Change I navigate to respective screen
+user-registration,check-answers-and-submit,As a not registered user I can register
+user-registration,check-answers-and-submit,As user I can be notified when I cannot submit due to technical issues
+user-registration,choose-password-and-memorable-phrase,As user I can successfully set a memorable phrase
+user-registration,choose-password-and-memorable-phrase,As user I cannot continue without having set a memorable phrase
+user-registration,choose-password-and-memorable-phrase,As user I cannot continue when I set invalid characters in memorable phrase
+user-registration,choose-password-and-memorable-phrase,As user I can submit a valid password
+user-registration,choose-password-and-memorable-phrase,As user I can select passwords that are at least 8 characters long
+user-registration,choose-password-and-memorable-phrase,As user I should not be allowed to use weak or invalid characters passwords
+user-registration,choose-password-and-memorable-phrase,As user I must verify password that I have already provided by typing it again
+user-registration,email-registration,As a not registered user I cannot enter an email address longer than 256 characters
+user-registration,email-registration,As a not registered user I can click email verification link
+user-registration,email-registration,As a not registered user once I register to system then an event is generated
+user-registration,email-registration,As a not registered user when I submit my email address I successfully receive an email message
+user-registration,email-registration,As a not registered user I can navigate from landing page to start registration page
+user-registration,email-registration,As a not registered user I can see the correct screen when registry application is down
+user-registration,email-registration,As a not registered user I can access Verify your email screen
+user-registration,email-registration,As a user I must be prevented or allowed to click email verification link before it expires
+user-registration,email-registration,As a not registered user I cannot click email verification link after it expires
+user-registration,enroll-user,As validated user user I can access Enter Registry Activation Code screen
+user-registration,enroll-user,As validated user user I can register my self
+user-registration,enroll-user,As validated user user I provide an invalid activation code
+user-registration,enroll-user,As validated user user I provide an expired activation code
+user-registration,first-time-sign-in,As unregistered user implement registration and sign in using 2FA by SCANNING QR CODE setup for first sign in using correct algorithm within time allowed
+user-registration,first-time-sign-in,As admin user I can see a New OTP has been activated event generated after a new registered user first time sign in
+user-registration,first-time-sign-in,As unregistered user implement registration and sign in using MANUAL 2FA setup for first sign in using correct algorithm within time allowed
+user-registration,first-time-sign-in,As unregistered user implement registration I cannot sign in when verification code is incorrect
+user-registration,first-time-sign-in,As unregistered user implement registration I cannot sign in when algorithm hash is not sha256
+user-registration,first-time-sign-in,As unregistered user implement registration I cannot sign in when otp type is hotp instead of totp
+user-registration,first-time-sign-in,As unregistered user implement registration I cannot sign in when digits generated are 8 instead of 6
+user-registration,first-time-sign-in,As unregistered user implement registration I can sign in when verification code is set 29 seconds later
+user-registration,first-time-sign-in,As unregistered user implement registration I cannot sign in when verification code is set 31 seconds later
+user-registration,my-profile,As validated user user I can view my own user details
+user-registration,my-profile,As validated user user I can view my own user details regarding already existing documents
+user-registration,my-profile,As validated user user I can access account page by using view my own user details screen
+user-registration,personal-details-registration,As user I can successfully enter my personal details
+user-registration,personal-details-registration,As user I can register only if I am over 18 years old
+user-registration,personal-details-registration,As user I cannot submit empty mandatory fields for country uk
+user-registration,personal-details-registration,As user I can submit empty postcode field for country not equals to uk
+user-registration,personal-details-registration,As user when I come back from Enter Work Contact Details screen I see data retained
+user-registration,request-new-registry-activation-code,As validated user user I can request a new registry activation code because current code is not valid
+user-registration,request-new-registry-activation-code,As validated user user I can request a new registry activation code because I have not received the email with initial code
+user-registration,request-new-registry-activation-code,As validated user user I cannot requesting a new registry activation code because there is another pending request for a new code
+user-registration,request-new-registry-activation-code,As validated user user I cannot requesting a new registry activation code because current code has not expired yet
+user-registration,sign-in,As user I can sign in successfully
+user-registration,sign-in,As user I cant sign in if I dont submit my credentials
+user-registration,sign-in,As user I enter incorrect credentials
+user-registration,sign-in,As a suspended or deactivated or pending deactivation user I cannot sign in Registry
+user-registration,sign-in,As user I can access Sign in screen
+user-registration,sign-in,As user I can navigate to registration page
+user-registration,sign-in,As user having my account locked I must wait until account is unlocked again
+user-registration,sign-in,As user having Y unsuccessful password attempts my account should be temporarily locked for X minutes
+user-registration,sign-in,As user having multiple open sessions in the system when I sign out from first one then I should be invalidated to others also
+user-registration,sign-in,As a System I should support a maximum of 5 sign in requests per second
+user-registration,sign-out,As user I can sign out from registry
+user-registration,sign-out,As user I am automatically signed out when I am inactive for 30 minutes
+user-registration,sign-out,As user I can sign in after I am automatically signed out when I am inactive for 10 minutes
+user-registration,task-print-letter,As a admin I can access Print letter with registry activation code task
+user-registration,task-print-letter,As a admin in Checking Tasks Comments Add or Clear Comment section I can enter comments to task
+user-registration,task-print-letter,As a admin I can see clickable Download button in Print letter with registry activation code task
+user-registration,task-print-letter,As a admin I can access Print letter with registry activation code task
+user-registration,task-print-letter,As a admin in Checking Tasks Complete task sector I can complete Print letter with registry activation code task
+user-registration,view-user-details-and-change-user-status,As admin I can change status of a user from REGISTERED to VALIDATED and SUSPENDED and rollback to previous state
+user-registration,view-user-details-and-change-user-status,As admin I can change status of a user from REGISTERED and ENROLLED to SUSPENDED and rollback to previous state
+user-registration,view-user-details-and-change-user-status,As a Admin I can see change button for another senior admin
+user-registration,view-user-details-and-change-user-status,As a admin user I can view my own user details
+user-registration,view-user-details-and-change-user-status,As a Admin I can ensure data is retained when I cancel change of status
+user-registration,view-user-details-and-change-user-status,As a Admin I can verify status change of a user is displayed as event in history and comments section
+user-registration,work-details-registration,As user I can successful submit work contact details
+user-registration,work-details-registration,As user I can successful submit phone numbers
+user-registration,work-details-registration,As user I cannot submit invalid phone numbers
+user-registration,work-details-registration,As user I cannot submit empty mandatory fields in work details registration
+user-registration,work-details-registration,As user I must verify my email address by retyping it
+user-registration,work-details-registration,As user when I come back from Choose Password screen I see data retained
+user-registration,work-details-registration,As user I cannot enter an email address longer than 256 characters type 257 characters and ensure that only first 256 are set
+user-registration,work-details-registration,As user I can enter an email address with large length characters
+user-validation,handle-cookies,As a browser user I cannot continue if I dont handle cookies when I start the registration process
+user-validation,handle-cookies,As a browser user I cannot continue if I dont handle cookies when I start the sign process
+user-validation,handle-cookies,As a non registered user I must accept cookies to use the service
+user-validation,handle-cookies,As a non registered user I can set cookie preferences
+user-validation,handle-cookies,As a non registered user I can set cookie preferences
+user-validation,search-users,Security front end test for user access via ad hoc url get
+user-validation,search-users,As a admin I can access user data for a filter search based on user id
+user-validation,search-users,As a admin I can access user data for a filter search based on user status
+user-validation,search-users,As a admin I can hide search filters
+user-validation,search-users,As a admin I can access user data for a filter search based on user email
+user-validation,search-users,As a admin I can access user data for a filter search based on user role
+user-validation,search-users,As a admin I can access user data for a filter search based on user last sign in date From or To
+user-validation,search-users,As a admin I can access user data for a filter search based on aka or first name only or first name with last name
+user-validation,search-users,As a admin I can see results by default in descending order
+user-validation,update-user-details,As a user I can update my own user details
+user-validation,update-user-details,As an admin user I cannot submit a second user update request for my user details when there is already a pending request for my user details
+user-validation,update-user-details,As an admin user I can update user details of another user of non deactivated or pending deactivation user status
+user-validation,update-user-details,As an admin user I cannot approve my own user details update task
+user-validation,update-user-details,As an admin user I can navigate back to the user details page after user details task submit
+user-validation,update-user-details,As an admin user I can navigate backwards during user details update ensuring that data is kept
+user-validation,update-user-details,As an admin user during user details update I can cancel the operation
+user-validation,user-change-2fa-and-password,As a registered user I can activate the Lost Password and 2FA process
+user-validation,user-change-2fa-and-password,As a registered user after otp and password change I cannot login with the old credentials
+user-validation,user-change-2fa-and-password,As a registered user during otp and password change I cannot set invalid or weak password
+user-validation,user-change-2fa-and-password,As a validated or enrolled or Authority or admin user I activate the Lost Password and 2FA process
+user-validation,user-change-2fa-and-password,As a user I activate the Lost Password and 2FA process and I give a wrong email
+user-validation,user-change-2fa-and-password,As a user I activate the Lost Password and 2FA process giving a email that does not correspond to a user
+user-validation,user-change-2fa-and-password,As a user I activate the Lost Password and 2FA process and for any reason I can reactivate it again
+user-validation,user-change-2fa-and-password,As a user I activate the Lost Password and 2FA process and the email links are expired
+user-validation,user-change-2fa-and-password,As a user I activate the Lost Password and 2FA process but the admin rejects the demand
+user-validation,user-change-2fa-emergency,As not logged in user I cannot complete lost 2fA device process if I dont enter mandatory fields or I enter invalid values
+user-validation,user-change-2fa-emergency,As not logged in user I can navigate backwards during 2fA device process
+user-validation,user-change-2fa-emergency,As not logged in user I can request emergency access again during 2fA device process
+user-validation,user-change-2fa-emergency,As not logged in user I cannot complete lost 2fA device process when there is another pending same task
+user-validation,user-change-2fa-emergency,As not logged in user I cannot complete lost 2fA device process when task is pending because my account is currently disabled
+user-validation,user-change-2fa-emergency,As not logged in user I can submit a request regarding lost 2fA device
+user-validation,user-change-2fa-emergency,As not logged in user I can complete lost 2fA device process when task is approved
+user-validation,user-change-2fa,As user I cannot set 2fA to a new device when I dont fill mandatory fields
+user-validation,user-change-2fa,As user I can request for a 2fA change
+user-validation,user-change-2fa,When I request for a 2fA change as user then correct task is created
+user-validation,user-change-2fa,As user I cannot request for a 2fA change again when then is already a pending request
+user-validation,user-change-2fa,As user I can change the 2fA when the task is approved and verification email link is clicked
+user-validation,user-change-email,As an user I get an error summary when I apply invalid actions during email change process
+user-validation,user-change-email,As user I can change my email
+user-validation,user-change-password,As a registered user I can change my password
+user-validation,user-change-password,As a registered user I cannot change my password when I apply invalid actions
+user-validation,user-deactivation,As a user I can submit a user deactivation request for myself and an admin can successfully approve it
+user-validation,user-deactivation,As an authorized representative I can submit a user deactivation request for myself and an admin can successfully approve it
+user-validation,user-deactivation,As a user I cannot submit a second deactivation request for users in pending deactivation status
+user-validation,user-deactivation,As an SRA or JRA user I can request a user deactivation for another user and deactivation is successful after task approval
+user-validation,user-deactivation,As read only admin I cannot proceed with user deactivation request for another user
+user-validation,user-deactivation,As a user I cannot submit a user deactivation request for myself if I do not fill the justification textbox
+user-validation,user-deactivation,As a user I can cancel a user deactivation request request for myself
+user-validation,user-forgot-password,As an enrolled user I cannot confirm the forgot my password process filling invalid email address
+user-validation,user-forgot-password,As an enrolled user I can request another password reset during forgot password process
+user-validation,user-forgot-password,As an enrolled user I cannot complete the forgot my password process when I enter invalid values in reset screen
+user-validation,user-forgot-password,As an enrolled user I can successfully complete the forgot my password process

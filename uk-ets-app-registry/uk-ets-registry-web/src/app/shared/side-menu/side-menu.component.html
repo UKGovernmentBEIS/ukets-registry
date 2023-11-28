@@ -1,0 +1,16 @@
+<div class="govuk-grid-column-one-quarter">
+  <nav class="hmcts-sub-navigation" aria-label="Sub navigation">
+    <ul class="hmcts-sub-navigation__list noshadow">
+      <li *ngFor="let menuItem of menuItems" class="hmcts-sub-navigation__item">
+        <a
+          class="hmcts-sub-navigation__link govuk-link--no-visited-state"
+          [attr.aria-current]="selectedItem === menuItem ? 'page' : 'false'"
+          [routerLink]="[]"
+          (click)="selectedItem = menuItem; selectItem.emit(menuItem)"
+        >
+          {{ menuItem }}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

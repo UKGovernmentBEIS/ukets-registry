@@ -1,0 +1,74 @@
+<div class="govuk-form-group">
+  <label class="govuk-label" for="userDefinedNumber">
+    <strong>{{ titleToDisplay }}</strong>
+  </label>
+  <span id="account-number-hint" class="govuk-hint">
+    {{ subTitleToDisplay }}
+  </span>
+  <div class="govuk-grid-column-full">
+    <div class="govuk-grid-row" id="userDefinedNumber">
+      <div class="flexbox">
+        <div style="flex: 0 0 5%;">
+          <app-form-control-text
+            [controlName]="countryCode"
+            [maxlength]="3"
+            [label]="'Add Country code'"
+            [showLabel]="false"
+          ></app-form-control-text>
+        </div>
+        <div class="dash">
+          <div>
+            -
+          </div>
+        </div>
+        <div style="flex: 0 0 5%;">
+          <app-form-control-text
+            [controlName]="accountType"
+            [maxlength]="3"
+            [label]="'Add Account Type'"
+            [showLabel]="false"
+          ></app-form-control-text>
+        </div>
+        <div class="dash">
+          <div>
+            -
+          </div>
+        </div>
+        <div style="flex: 0 0 21%;">
+          <app-form-control-text
+            [controlName]="accountId"
+            [maxlength]="15"
+            [label]="'Add Account identifier'"
+            [showLabel]="false"
+          ></app-form-control-text>
+        </div>
+        <div class="dash">
+          <div>
+            -
+          </div>
+        </div>
+        <div style="flex: 0 0 4%;">
+          <app-form-control-text
+            [controlName]="period"
+            [maxlength]="2"
+            [label]="'Add Period'"
+            [showLabel]="false"
+          ></app-form-control-text>
+        </div>
+        <div class="dash">
+          <div>
+            -
+          </div>
+        </div>
+        <div style="flex: 0 0 4%;">
+          <app-form-control-text
+            [controlName]="checkDigits"
+            [maxlength]="2"
+            [label]="'Add Check Digits'"
+            [showLabel]="false"
+          ></app-form-control-text>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

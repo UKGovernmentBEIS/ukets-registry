@@ -1,0 +1,33 @@
+<div class="govuk-grid-row">
+  <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+    <div class="govuk-grid-column-two-thirds">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">
+          <span class="govuk-caption-xl">Cancel transaction</span>
+          Are you sure you want to cancel this transaction?
+        </h1>
+      </legend>
+      <hr class="govuk-section-break govuk-section-break--m" />
+      <div class="govuk-form-group">
+        <p class="govuk-body">
+          Any units reserved for this transaction will be released and made
+          available for future transactions.
+        </p>
+      </div>
+      <app-form-comment-area
+        controlName="comment"
+        [label]="'Explain why you\'re cancelling this transaction'"
+        [hint]="''"
+        [validationErrorMessage]="validationErrorMessage.comment"
+      ></app-form-comment-area>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button govuk-button--warning submit-form"
+        data-module="govuk-button"
+        type="submit"
+      >
+        Cancel Transaction
+      </button>
+    </div>
+  </form>
+</div>

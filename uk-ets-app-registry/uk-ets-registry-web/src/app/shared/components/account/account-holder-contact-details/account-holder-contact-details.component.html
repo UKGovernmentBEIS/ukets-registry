@@ -1,0 +1,62 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-form-group">
+      <app-sub-wizard-title
+        [contactType]="contactType"
+        [subTitle]="getSubtitle()"
+        [isAHUpdateWizard]="isAHUpdateWizard"
+      ></app-sub-wizard-title>
+    </div>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <form
+      (ngSubmit)="onSubmit()"
+      [formGroup]="formGroup"
+      [appConnectForm]="accountHolderContact"
+    >
+      <fieldset class="govuk-fieldset">
+        <legend
+          class="govuk-fieldset__legend govuk-fieldset__legend--m"
+        ></legend>
+        <app-form-control-text
+          [label]="'First name'"
+          [hint]="'Given name'"
+          [maxlength]="40"
+          [validationErrorMessage]="validationErrorMessage.firstName"
+          controlName="details.firstName"
+          [autocomplete]="'given-name'"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Last name'"
+          [hint]="'Family name'"
+          [maxlength]="40"
+          [validationErrorMessage]="validationErrorMessage.lastName"
+          controlName="details.lastName"
+          [autocomplete]="'family-name'"
+        ></app-form-control-text>
+      </fieldset>
+      <fieldset class="govuk-fieldset">
+        <legend
+          class="govuk-fieldset__legend govuk-fieldset__legend--m"
+        ></legend>
+        <div formGroupName="details">
+          <app-uk-single-checkbox
+            key="isOverEighteen"
+            [label]="getAgeLabel()"
+            controlName="details.isOverEighteen"
+            [validationErrorMessage]="validationErrorMessage.isOverEighteen"
+          >
+          </app-uk-single-checkbox>
+        </div>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

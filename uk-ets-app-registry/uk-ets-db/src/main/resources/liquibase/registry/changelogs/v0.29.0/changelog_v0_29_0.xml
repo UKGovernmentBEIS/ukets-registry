@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_29_0_ADD_TRANSACTION_REFERENCE_COLUMN_TO_TASK" author="nakoup" context="migrate">
+        <comment>Adds the transaction reference column to transaction table</comment>
+        <sql>
+            alter table transaction
+            add column reference varchar(1024) default null;
+
+            comment on column transaction.reference is 'The field is completed during transaction proposal';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_29_0_DELETE_ALLOCATION_CLASSIFICATION_MIGRATOR_RECORD_FROM_MIGRATOR_HISTORY" author="georgopoulosp" context="migrate">
+        <comment>
+            Deletes the record ALLOCATION_CLASSIFICATION_MIGRATOR from migrator_history to run it again.
+        </comment>
+        <sql>
+            delete from migrator_history where migrator_name = 'ALLOCATION_CLASSIFICATION_MIGRATOR';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_29_0_ALTER_TRUSTED_ACCOUNT_INDEX" author="nakoup" context="migrate">
+        <comment>Recreate trusted account unique index to ignore also CANCELLED status</comment>
+        <sql>
+            DROP INDEX IF EXISTS trusted_account_index;
+
+            CREATE UNIQUE INDEX trusted_account_index
+            ON trusted_account (account_id, trusted_account_full_identifier, status)
+            WHERE status != 'REJECTED' and status != 'CANCELLED'
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_29_0_ADD_MISSING_INDEXES_TRANSACTION_BLOCK" author="georgopoulosp" context="migrate">
+        <comment>Adds missing indexes in transaction block table</comment>
+        <sql>
+            CREATE INDEX IF NOT EXISTS tra_blo_idx5 ON public.transaction_block USING btree (originating_country_code, end_block);
+            CREATE INDEX IF NOT EXISTS tra_blo_idx6 ON public.transaction_block USING btree (originating_country_code, start_block, end_block);
+            CREATE INDEX IF NOT EXISTS tra_blo_idx7 ON public.transaction_block USING btree (start_block, end_block);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

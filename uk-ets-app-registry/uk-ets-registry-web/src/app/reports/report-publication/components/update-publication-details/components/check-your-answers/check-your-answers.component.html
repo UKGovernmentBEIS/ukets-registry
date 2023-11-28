@@ -1,0 +1,38 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Update publication details'"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Update details</span>
+    <fieldset class="govuk-fieldset">
+      <legend
+        class="
+          govuk-fieldset__legend govuk-fieldset__legend--xl
+          govuk-!-margin-bottom-9
+        "
+      >
+        <h1 class="govuk-fieldset__heading">Check your answers</h1>
+      </legend>
+      <app-summary-list
+        [class]="'govuk-summary-list'"
+        [summaryListItems]="sectionDetailsItems"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+      <app-summary-list
+        [class]="'govuk-summary-list'"
+        [summaryListItems]="publicationDetailsItems"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+    </fieldset>
+    <button
+      id="submit"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="submitChanges()"
+    >
+      Submit
+    </button>
+  </div>
+</div>

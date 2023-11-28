@@ -1,0 +1,90 @@
+<div appScreenReaderPageAnnounce [pageTitle]="header"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="accountHolder"
+    >
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-heading-xl">
+            <span class="govuk-caption-xl">{{ caption }}</span> {{ header }}
+          </h1>
+          <h3 *ngIf="isAHUpdateWizard" class="govuk-heading-l">
+            Update the organisation address
+          </h3>
+          <p class="govuk-body govuk-!-margin-top-3">
+            This is also known as the registered address
+          </p>
+        </legend>
+
+        <div formGroupName="address">
+          <app-form-control-text
+            label="Address line 1"
+            [maxlength]="256"
+            [validationErrorMessage]="validationErrorMessage.buildingAndStreet"
+            controlName="address.buildingAndStreet"
+            [autocomplete]="'address-line1'"
+          ></app-form-control-text>
+          <app-form-control-text
+            label="Address line 2 (optional)"
+            [maxlength]="256"
+            controlName="address.buildingAndStreet2"
+            [autocomplete]="'address-line2'"
+          ></app-form-control-text>
+          <app-form-control-text
+            label="Address line 3 (optional)"
+            [maxlength]="256"
+            controlName="address.buildingAndStreet3"
+            [autocomplete]="'address-line3'"
+          ></app-form-control-text>
+          <app-form-control-text
+            label="Town or city"
+            [validationErrorMessage]="validationErrorMessage.townOrCity"
+            [maxlength]="256"
+            controlName="address.townOrCity"
+            [autocomplete]="'address-level2'"
+          ></app-form-control-text>
+          <app-form-control-text
+            label="State or Province (optional)"
+            [maxlength]="256"
+            controlName="address.stateOrProvince"
+            [autocomplete]="'state-or-province'"
+          ></app-form-control-text>
+
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="country"> Country </label>
+            <select
+              class="govuk-select"
+              formControlName="country"
+              id="country"
+              name="country"
+            >
+              <option *ngFor="let country of countries" [value]="country.key">
+                {{ country.item[0].name }}
+              </option>
+            </select>
+          </div>
+          <app-form-control-text
+            label="Postal Code or ZIP (optional, if outside UK)"
+            [class]="'govuk-input--width-10'"
+            [maxlength]="256"
+            [validationErrorMessage]="validationErrorMessage.postCode"
+            controlName="address.postCode"
+            [autocomplete]="'postal-code'"
+          ></app-form-control-text>
+        </div>
+      </fieldset>
+
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a
+      [routerLink]="'/task-details/' + requestId"
+      class="govuk-back-link"
+      skipLocationChange
+      id="back"
+      >Back</a
+    >
+  </div>
+</div>
+<form [formGroup]="formModel" *ngIf="isCompleted">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-heading-l">History and comments</h1>
+    </legend>
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Add comment</span>
+      </summary>
+      <div class="govuk-details__text" style="border-left: none">
+        <div class="govuk-form-group">
+          <app-form-comment-area
+            controlName="comment"
+            [label]="'Enter text'"
+          ></app-form-comment-area>
+          <div class="govuk-grid-column-one-half">
+            <div class="govuk-grid-row">
+              <button
+                (click)="submit()"
+                data-prevent-double-click="true"
+                class="govuk-button govuk-!-margin-right-3"
+                data-module="govuk-button"
+                id="submit"
+              >
+                Add comment
+              </button>
+              <button
+                class="govuk-button govuk-!-margin-right-3 govuk-button--secondary"
+                data-module="govuk-button"
+                (click)="formModel.reset()"
+              >
+                Clear comment
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </fieldset>
+</form>

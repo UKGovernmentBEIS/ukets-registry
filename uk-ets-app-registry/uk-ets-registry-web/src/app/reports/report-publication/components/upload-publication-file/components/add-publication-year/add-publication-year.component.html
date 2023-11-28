@@ -1,0 +1,30 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Upload new file</span>
+    <form (submit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Add file year</h1>
+        </legend>
+        <app-form-control-text
+          controlName="addFileYear"
+          [class]="'govuk-input--width-4'"
+          [label]=""
+          [hint]="'The year will appear on the published files list.'"
+          [maxlength]="4"
+          [validationErrorMessage]="validationErrorMessage.addFileYear"
+        ></app-form-control-text>
+      </fieldset>
+      <div>
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

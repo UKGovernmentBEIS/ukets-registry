@@ -1,0 +1,36 @@
+<form [formGroup]="form">
+  <h1 class="govuk-heading-xl">Assign task to a user</h1>
+
+  <div class="govuk-form-group">
+    <app-type-ahead
+      [label]="'User'"
+      id="user"
+      hint="Enter a user's name"
+      [url]="searchByNameRequestUrl"
+      [params]="requestParams"
+      searchKey="term"
+      [resultTemplate]="userResult"
+      [inputFormatter]="userResultFormatter"
+      placeHolder=""
+      (resultItem)="onSelectFromSearch($event)"
+    ></app-type-ahead>
+  </div>
+
+  <app-form-comment-area
+    controlName="comment"
+    [label]="'Explain why you\'re assigning the task to this user'"
+  ></app-form-comment-area>
+  <button
+    (click)="submit()"
+    data-prevent-double-click="true"
+    class="govuk-button submit-form"
+    data-module="govuk-button"
+  >
+    Assign task
+  </button>
+</form>
+
+<ng-template #userResult let-r="result" let-t="term">
+  <ngb-highlight [result]="r.displayName" [term]="t"></ngb-highlight>
+  <hr class="govuk-section-break" />
+</ng-template>

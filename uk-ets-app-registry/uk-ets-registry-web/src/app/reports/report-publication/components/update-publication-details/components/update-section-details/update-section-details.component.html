@@ -1,0 +1,58 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-form-group">
+      <div
+        appScreenReaderPageAnnounce
+        [pageTitle]="'Update the section details'"
+      ></div>
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl"> Update details </span>
+            Update the section details
+          </h1>
+        </div>
+      </div>
+      <p class="govuk-body">
+        If no changes are needed for the details of this page, select Continue.
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <app-form-control-select
+        controlName="reportType"
+        [options]="reportTypeOptions"
+        [label]="'Report type'"
+        [readonly]="true"
+      ></app-form-control-select>
+      <app-form-control-text
+        controlName="title"
+        [label]="'Title'"
+        [hint]="'This will be the title of the report section.'"
+        [maxlength]="256"
+        [validationErrorMessage]="validationErrorMessage.title"
+      ></app-form-control-text>
+      <app-form-comment-area
+        controlName="summary"
+        [label]="'Summary'"
+        [hint]="'This will be a brief description of the reports included.'"
+      >
+      </app-form-comment-area>
+      <app-form-control-select
+        controlName="displayType"
+        [options]="displayTypeOptions"
+        [label]="'Display type'"
+        [readonly]="true"
+      ></app-form-control-select>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

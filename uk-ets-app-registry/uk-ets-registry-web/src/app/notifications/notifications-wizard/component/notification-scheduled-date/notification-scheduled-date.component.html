@@ -1,0 +1,247 @@
+<app-feature-header-wrapper
+  *ngIf="notificationRequest === NotificationRequestEnum.UPDATE"
+  ><app-notification-header
+    [notification]="newNotification"
+    [notificationHeaderVisibility]="
+      notificationRequest === NotificationRequestEnum.UPDATE
+    "
+    [showRequestUpdate]="false"
+    [showClone]="false"
+    [showBackToList]="false"
+  ></app-notification-header
+></app-feature-header-wrapper>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-form-group">
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl"
+              >{{
+                notificationRequest === NotificationRequestEnum.NEW ||
+                notificationRequest === NotificationRequestEnum.CLONE
+                  ? 'New ' + notificationTypeLabels[newNotification?.type].label
+                  : 'Request to update the notification'
+              }}
+            </span>
+            Add the activation details
+          </h1>
+        </div>
+      </div>
+    </div>
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <app-form-control-datepicker
+            controlName="scheduledDate"
+            [label]="'Scheduled date'"
+            [isReadonly]="false"
+            [hint]="'For example, 31/03/2020.'"
+            [validationErrorMessage]="validationErrorMessage.scheduledDate"
+            [isDisabled]="
+              notificationRequest === NotificationRequestEnum.UPDATE &&
+              newNotification?.status === 'ACTIVE'
+            "
+            [attrRole]="'group'"
+            [useDefaultAriaLabelledBy]="true"
+          ></app-form-control-datepicker>
+        </div>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <app-form-control-select
+            controlName="scheduledTime"
+            [options]="scheduledTimeOptions"
+            [class]="'govuk-!-width-full'"
+            [hint]="
+              newNotification?.type !== NotificationTypesEnum.AD_HOC
+                ? 'The notification will be sent at your local time'
+                : 'The time selected is at your local time'
+            "
+            [label]="'Scheduled time'"
+            [validationErrorMessage]="validationErrorMessage.scheduledTime"
+            [readonly]="
+              notificationRequest === NotificationRequestEnum.UPDATE &&
+              newNotification?.status === 'ACTIVE'
+            "
+          ></app-form-control-select>
+        </div>
+      </div>
+      <ng-container
+        *ngIf="newNotification?.type !== NotificationTypesEnum.AD_HOC"
+      >
+        <div
+          formGroupName="recurrenceDetails"
+          [class.govuk-form-group--error]="
+            validationErrorMessage.recurrenceDetails
+          "
+          id="recurrenceDetails-label"
+        >
+          <app-uk-single-checkbox
+            key="hasRecurrence"
+            [label]="'Set notification recurrence'"
+            controlName="recurrenceDetails.hasRecurrence"
+            (change)="toggle($event.target.checked)"
+            [validationErrorMessage]="validationErrorMessage.hasRecurrence"
+          >
+          </app-uk-single-checkbox>
+          <ng-container *ngIf="validationErrorMessage.recurrenceDetails">
+            <span
+              id="event-name-error2"
+              class="govuk-error-message"
+              role="alert"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ validationErrorMessage.recurrenceDetails }}
+            </span>
+          </ng-container>
+          <div
+            [ngClass]="
+              this.isRecurrenceEnabled
+                ? 'govuk-checkboxes__conditional'
+                : 'govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden'
+            "
+          >
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-third">
+                <app-form-control-text
+                  [label]="'Recur every'"
+                  [hint]="'The days are calendar days.'"
+                  [showTextAfterInputElement]="'Days'"
+                  [class]="'govuk-input--width-4'"
+                  [maxlength]="5"
+                  [validationErrorMessage]="validationErrorMessage.recurDays"
+                  controlName="recurrenceDetails.recurDays"
+                ></app-form-control-text>
+              </div>
+            </div>
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-third">
+                <app-form-control-datepicker
+                  controlName="recurrenceDetails.expirationDateForRecur"
+                  [label]="'Expires by (optional)'"
+                  [hint]="
+                    'For example, 31/03/2020. The expiration date is included.'
+                  "
+                  [attrRole]="'group'"
+                  [useDefaultAriaLabelledBy]="true"
+                ></app-form-control-datepicker>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="newNotification?.type === NotificationTypesEnum.AD_HOC"
+      >
+        <div
+          formGroupName="expirationDateDetails"
+          [class.govuk-form-group--error]="
+            validationErrorMessage.expirationDateDetails
+          "
+          id="expirationDateDetails-label"
+        >
+          <div class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <span class="govuk-fieldset__heading"> Expiration date </span>
+          </div>
+
+          <ng-container *ngIf="validationErrorMessage.expirationDateDetails">
+            <span
+              id="event-name-error"
+              class="govuk-error-message"
+              role="alert"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ validationErrorMessage.expirationDateDetails }}
+            </span>
+          </ng-container>
+
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="expirationDateDetails"
+                type="radio"
+                [value]="'NO_EXPIRATION_DATE'"
+                formControlName="expirationAddHocRadio"
+                (click)="
+                  selectAddHocExpirationDetailsSection('NO_EXPIRATION_DATE')
+                "
+              />
+              <label
+                class="govuk-label govuk-radios__label"
+                for="expirationDateDetails"
+              >
+                No expiration date
+              </label>
+            </div>
+
+            <div class="govuk-radios__item govuk-!-margin-bottom-6">
+              <input
+                class="govuk-radios__input"
+                id="expiresByInput"
+                type="radio"
+                [value]="'WITH_EXPIRATION_DATE'"
+                formControlName="expirationAddHocRadio"
+                (click)="
+                  selectAddHocExpirationDetailsSection('WITH_EXPIRATION_DATE')
+                "
+              />
+              <label
+                class="govuk-label govuk-radios__label"
+                for="expiresByInput"
+              >
+                Expires by
+              </label>
+            </div>
+
+            <div
+              class="govuk-radios__conditional govuk-!-margin-bottom-6"
+              id="conditional-select-from-search"
+              [class.govuk-radios__conditional--hidden]="
+                addHocExpirationOption !== 'WITH_EXPIRATION_DATE'
+              "
+            >
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-third">
+                  <app-form-control-datepicker
+                    controlName="expirationDateDetails.expirationDate"
+                    [label]="'Expiration date'"
+                    [hint]="'For example, 31/03/2020.'"
+                    [validationErrorMessage]="
+                      validationErrorMessage.expiredDateRequired
+                    "
+                    [attrRole]="'group'"
+                    [useDefaultAriaLabelledBy]="true"
+                  ></app-form-control-datepicker>
+                </div>
+              </div>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-third">
+                  <app-form-control-select
+                    controlName="expirationDateDetails.expirationTime"
+                    [options]="expirationTimeOptions"
+                    [class]="'govuk-!-width-full'"
+                    [hint]="'The time selected is at your local time.'"
+                    [label]="'Expiration time'"
+                  ></app-form-control-select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>
+<app-cancel-request-link
+  (goToCancelScreen)="onCancel()"
+></app-cancel-request-link>

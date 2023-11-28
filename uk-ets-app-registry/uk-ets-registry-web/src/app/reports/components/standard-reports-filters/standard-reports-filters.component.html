@@ -1,0 +1,144 @@
+<div *ngIf="selectedReport$ | async as selectedReport">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <hr
+        class="
+          govuk-section-break
+          govuk-section-break--s
+          govuk-section-break--visible
+        "
+      />
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-!-margin-top-4">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-2">
+        {{ selectedReport?.label }}
+      </h2>
+      <p class="govuk-body">{{ summaryDescription }}</p>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div
+      [ngClass]="{
+        'govuk-form-group govuk-form-group--error': formHasErrors()
+      }"
+    >
+      <div
+        class="govuk-grid-column-full govuk-!-margin-bottom-1"
+        *ngIf="this.hasPeriod"
+      >
+        <label class="govuk-heading-s" for="select-period-type">
+          Select period to generate report
+        </label>
+        <span
+          *ngIf="formHasErrors()"
+          id="date-related-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span>
+          <span
+            class="govuk-!-display-block"
+            *ngIf="validationErrorMessage?.from"
+            >{{ validationErrorMessage?.from }}</span
+          >
+          <span *ngIf="validationErrorMessage?.to">{{
+            validationErrorMessage?.to
+          }}</span>
+          <span *ngIf="this.errorMessage">{{
+            this.errorMessage?.invalidDateRange
+          }}</span>
+        </span>
+      </div>
+      <div class="govuk-grid-column-one-third" *ngIf="this.hasPeriod">
+        <div class="govuk-form-group" *ngIf="datePeriodOptions">
+          <select
+            class="govuk-select govuk-grid-column-two-thirds"
+            id="select-period-type"
+            name="select-period-type"
+          >
+            <option
+              selected
+              value="{{ period.value }}"
+              *ngFor="let period of datePeriodOptions"
+            >
+              {{ period.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="govuk-grid-column-one-third" *ngIf="showForm">
+        <form [formGroup]="formGroup" *ngIf="formGroup?.controls">
+          <div class="govuk-grid-row">
+            <ng-container
+              *ngFor="
+                let control of formGroup.controls | keyvalue: returnZero;
+                let i = index;
+                trackBy: trackBy
+              "
+            >
+              <div
+                class=""
+                [ngClass]="
+                  params[selectedReport.type][i]?.period
+                    ? 'govuk-grid-column-one-half'
+                    : 'govuk-grid-column-full'
+                "
+              >
+                <app-form-control-datepicker
+                  [validationErrorMessage]="
+                    !this.hasPeriod && errorMessage
+                      ? errorMessage[control.key]
+                      : null
+                  "
+                  *ngIf="
+                    params[selectedReport.type][i]?.inputType === 'datepicker'
+                  "
+                  controlName="{{ control.key }}"
+                  [label]="
+                    params[selectedReport.type][i]?.label
+                      ? params[selectedReport.type][i].label
+                      : (control.key | titlecase)
+                  "
+                  [hint]="params[selectedReport.type][i]?.hint"
+                  [isHorizontal]="params[selectedReport.type][i]?.isHorizontal"
+                  [isReadonly]="false"
+                  [attrRole]="'group'"
+                  [useDefaultAriaLabelledBy]="true"
+                >
+                </app-form-control-datepicker>
+                <app-form-control-select
+                  [validationErrorMessage]="
+                    errorMessage ? errorMessage[control.key] : null
+                  "
+                  *ngIf="params[selectedReport.type][i]?.inputType === 'select'"
+                  controlName="{{ control.key }}"
+                  [options]="params[selectedReport.type][i]?.options"
+                  [label]="params[selectedReport.type][i]?.label"
+                  [hint]="params[selectedReport.type][i]?.hint"
+                  [class]="'govuk-!-width-full'"
+                  [isFirstSelected]="
+                    params[selectedReport.type][i]?.options?.length === 1
+                  "
+                ></app-form-control-select>
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="selectedReport">
+    <button
+      id="generate{{ selectedReport.type }}Btn"
+      class="govuk-button govuk-button--secondary"
+      data-module="govuk-button"
+      (click)="generateReport()"
+    >
+      Generate report
+    </button>
+  </div>
+</div>

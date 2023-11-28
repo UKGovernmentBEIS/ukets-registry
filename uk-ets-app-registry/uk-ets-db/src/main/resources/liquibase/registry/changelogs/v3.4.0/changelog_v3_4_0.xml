@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="3_4_0_REMOVE_EMPTY_BLOCK_ROLE"
+		author="fragkise" context="migrate">
+		<comment>Removes empty strings from BLOCK_REP column</comment>
+		<sql>
+               create table transaction_block_empty_block_role ("id" bigint,block_role varchar(12));
+               insert into transaction_block_empty_block_role (select id,block_role from transaction_block where trim(block_role)='');
+               update transaction_block set block_role = null where trim(block_role)='';
+		</sql>
+		
+		<rollback>
+            <sql>
+               update transaction_block as b set block_role = t.block_role from  transaction_block_empty_block_role as t where t.id=b.id;
+               drop table transaction_block_empty_block_role;  
+            </sql>
+        </rollback>
+	</changeSet>
+	
+    <changeSet id="3_4_0_RENAME_ARTICLE37TER_CANCELLATION_ACCOUNT"
+        author="fragkise" context="migrate">
+        <comment>Removes enum constant to match the ITL one</comment>
+        <sql>
+               update account set kyoto_account_type = 'ARTICLE_3_7_TER_CANCELLATION_ACCOUNT' where kyoto_account_type  = 'ART37TER_CANCELLATION_ACCOUNT';
+               update transaction set acquiring_account_type = 'ARTICLE_3_7_TER_CANCELLATION_ACCOUNT' where acquiring_account_type  = 'ART37TER_CANCELLATION_ACCOUNT';
+        </sql>
+        
+        <rollback>
+            <sql>
+               update account set kyoto_account_type = 'ART37TER_CANCELLATION_ACCOUNT' where kyoto_account_type  = 'ARTICLE_3_7_TER_CANCELLATION_ACCOUNT';
+               update transaction set acquiring_account_type = 'ART37TER_CANCELLATION_ACCOUNT' where acquiring_account_type  = 'ARTICLE_3_7_TER_CANCELLATION_ACCOUNT';
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

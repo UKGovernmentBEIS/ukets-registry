@@ -1,0 +1,135 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <span class="govuk-caption-xl">
+          Request to update rules for transactions
+        </span>
+        <h1 class="govuk-fieldset__heading">
+          Check the update request and confirm
+        </h1>
+      </legend>
+    </fieldset>
+  </div>
+  <div class="govuk-grid-column-full">
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        The changes will only apply to transactions proposed after this request
+        is approved.
+      </strong>
+    </div>
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-m">Transaction rules</dt>
+        <dd class="govuk-summary-list__key govuk-body-m">Current</dd>
+        <dd class="govuk-summary-list__key govuk-body-m">New</dd>
+        <dd class="govuk-summary-list__key govuk-body-m"></dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Is the approval of a second authorised representative necessary to
+          execute transfers to accounts on the trusted account list?
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ getTransactionRuleValue(currentRules.rule1) }}
+        </dd>
+        <dd class="govuk-summary-list__key govuk-body-m">
+          <div *ngIf="rule1Changed" class="focused-text">
+            {{ getTransactionRuleValue(updatedRules.rule1) }}
+          </div>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="
+              navigateTo(
+                talTransactionRulesRoutePaths['select-second-approval']
+              )
+            "
+          >
+            Change
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Are transfers to accounts not on the trusted account list allowed?
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ getTransactionRuleValue(currentRules.rule2) }}
+        </dd>
+        <dd class="govuk-summary-list__key govuk-body-m">
+          <div *ngIf="rule2Changed" class="focused-text">
+            {{ getTransactionRuleValue(updatedRules.rule2) }}
+          </div>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="
+              navigateTo(
+                talTransactionRulesRoutePaths['select-transfers-outside-list']
+              )
+            "
+          >
+            Change
+          </a>
+        </dd>
+      </div>
+      <div *ngIf="isOHAOrAOHA" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Is the approval of a second AR necessary to execute a surrender
+          transaction or a return of excess allocation?
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ getTransactionRuleValue(currentRules.rule3) }}
+        </dd>
+        <dd class="govuk-summary-list__key govuk-body-m">
+          <div *ngIf="rule3Changed" class="focused-text">
+            {{ getTransactionRuleValue(updatedRules.rule3) }}
+          </div>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="
+              navigateTo(
+                talTransactionRulesRoutePaths[
+                  'single-person-surrender-excess-allocation'
+                ]
+              )
+            "
+          >
+            Change
+          </a>
+        </dd>
+      </div>
+    </dl>
+    <button
+      class="govuk-button"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="onContinue()"
+      id="submit"
+    >
+      Submit request
+    </button>
+    <div>
+      <a
+        [routerLink]="[]"
+        (click)="onCancel()"
+        (keypress)="onCancel()"
+        class="govuk-link govuk-link--no-visited-state"
+        >Cancel</a
+      >
+    </div>
+  </div>
+</div>

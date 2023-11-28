@@ -1,0 +1,30 @@
+<hr class="govuk-section-break govuk-section-break--visible" />
+<ng-container *ngIf="taskDetails">
+  <hr class="govuk-section-break govuk-section-break govuk-section-break--m" />
+  <div class="govuk-warning-text">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      The checksum in the filename must be the same as the original file.
+    </strong>
+  </div>
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-body-l">Download file</span>
+      </dt>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <img
+          src="/assets/images/icon-file-download.png"
+          style="vertical-align: middle; margin-right: 10px"
+          alt="download"
+        />
+        <a class="govuk-link" (click)="onDownloadFile()" [routerLink]="[]"
+          >{{ taskDetails.fileName }} ({{ taskDetails.fileSize }})
+        </a>
+      </dt>
+    </div>
+  </dl>
+</ng-container>

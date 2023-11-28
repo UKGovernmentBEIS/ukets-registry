@@ -1,0 +1,77 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Check your answers'"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-form-group">
+      <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl"> Request account transfer </span>
+        Check your answers
+      </h1>
+    </div>
+
+    <app-transferring-account-holder-summary
+      [transferringAccountHolder]="transferringAccountHolder"
+    ></app-transferring-account-holder-summary>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <h2 class="govuk-summary-list__key">New account holder</h2>
+      </div>
+      <hr class="govuk-section-break govuk-section-break--visible" />
+    </dl>
+
+    <dl
+      class="
+        govuk-summary-list govuk-summary-list--no-border
+        govuk-!-margin-bottom-9
+      "
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Account Holder ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ acquiringAccountHolder?.id }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateToSelectUpdateType()"
+          >
+            Change<span class="govuk-visually-hidden">
+              individual's personal details</span
+            >
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+    <app-acquiring-account-holder-individual-summary
+      [acquiringAccountHolder]="acquiringAccountHolder"
+    >
+    </app-acquiring-account-holder-individual-summary>
+
+    <app-acquiring-account-holder-organisation-summary
+      [acquiringAccountHolder]="acquiringAccountHolder"
+    >
+    </app-acquiring-account-holder-organisation-summary>
+
+    <hr class="govuk-section-break govuk-section-break--visible" />
+
+    <app-acquiring-account-holder-contact-summary
+      [acquiringAccountHolderPrimaryContact]="
+        acquiringAccountHolderPrimaryContact
+      "
+    ></app-acquiring-account-holder-contact-summary>
+
+    <div class="govuk-form-group">
+      <button
+        id="submit"
+        class="govuk-button"
+        data-module="govuk-button"
+        appDebounceClick
+        (debounceClick)="onSubmit()"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</div>

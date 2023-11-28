@@ -1,0 +1,38 @@
+<div class="govuk-form-group" [class.govuk-form-group--error]="showError()">
+  <label
+    class="govuk-label"
+    [class.govuk-visually-hidden]="!showLabel"
+    [attr.for]="id"
+    [attr.id]="labelId"
+  >
+    {{ label }}
+  </label>
+  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+    {{ hint }}
+  </span>
+  <ng-container *ngIf="showError()">
+    <span
+      *ngIf="showError()"
+      id="event-name-error"
+      class="govuk-error-message"
+      role="alert"
+      [attr.aria-describedby]="labelId"
+    >
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ validationErrorMessage }}
+    </span>
+  </ng-container>
+  <textarea
+    class="govuk-textarea"
+    [class.govuk-input--error]="showError()"
+    [ngClass]="class"
+    [formControl]="formControl"
+    [attr.id]="id"
+    [attr.name]="id"
+    type="text"
+    [maxlength]="maxlength"
+    [required]="hasRequiredField(formControl)"
+    [readonly]="readonly"
+    [attr.aria-invalid]="showError()"
+  ></textarea>
+</div>

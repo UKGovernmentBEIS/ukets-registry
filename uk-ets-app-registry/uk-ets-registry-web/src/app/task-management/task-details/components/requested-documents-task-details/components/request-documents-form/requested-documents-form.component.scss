@@ -1,0 +1,23 @@
+@import '_variables';
+
+.file-date {
+  font-weight: 400;
+  color: govuk-colour('dark-grey');
+  font-size: 0.85em;
+
+  .date {
+    font-weight: bold;
+  }
+}
+
+.margin-right-8 {
+  margin-right: 8px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.border-bottom {
+  border-bottom: 1px solid govuk-colour('mid-grey');
+}

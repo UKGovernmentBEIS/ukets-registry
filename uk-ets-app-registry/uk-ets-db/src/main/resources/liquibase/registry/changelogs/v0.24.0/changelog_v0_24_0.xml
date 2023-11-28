@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_24_0_UPDATE_USERS_FIRSTNAME_LASTNAME_DISCLOSEDNAME_MULTIPLE_SPACES" author="BilisS" context="migrate">
+        <comment>
+            Updates columns fist__name, last_name and disclosed_name
+            by replacing multiple spaces with a single one and trimming
+            each value of each column.
+
+            See https://pmo.trasys.be/jira/browse/UKETS-5163 for details.
+        </comment>
+        <sql>
+            update users u
+            set disclosed_name = trim(regexp_replace(u.disclosed_name, '\s+', ' ', 'g'));
+            update users u
+            set first_name= trim(regexp_replace(u.first_name, '\s+', ' ', 'g'));
+            update users u
+            set last_name= trim(regexp_replace(u.last_name, '\s+', ' ', 'g'));
+        </sql>
+    </changeSet>
+    
+    <changeSet id="0_24_0_DROP_UNIQUE_INDEX_FROM_EMISSIONS_ENTRY_TABLE" author="fragkise" context="migrate">
+        <comment>
+            Drops the unique index on  filename,compliant_entity_id,year to allow the same excel to be loaded twice.
+        </comment>
+        <sql>
+            drop index if exists emissions_entry_idx1 cascade;
+            alter table emissions_entry drop constraint if exists emissions_entry_filename_compliant_entity_id_year_key cascade;
+        </sql>
+    </changeSet>
+    
+    <changeSet id="0_24_0_ADD_COLUMN_UPLOAD_DATE_TO_EMISSIONS_ENTRY_TABLE" author="fragkise" context="migrate">
+	    <comment>
+	        Adds the upload timestamp to the emissions table.
+	    </comment>
+	    <sql>
+	        alter table emissions_entry add column upload_date timestamp;
+	
+	        comment on column "emissions_entry"."upload_date" is 'The date the excel file was approved';
+	    </sql>
+	    <rollback>
+	        alter table emissions_entry drop column upload_date;
+	    </rollback>
+	</changeSet>
+
+    <changeSet id="0_24_0_ADD_EXCLUDE_EMISSIONS_ENTRY_TABLE" author="apostolouk" context="migrate">
+        <comment>Adds new table for excluded emissions</comment>
+        <sql>
+            create sequence exclude_emissions_entry_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1
+            no cycle;
+            
+            create table exclude_emissions_entry
+            (
+            id bigint not null,
+            compliant_entity_id bigint not null,
+            year bigint not null,
+            excluded boolean not null,
+			last_updated timestamp,
+            primary key (id),
+            unique (compliant_entity_id,year)
+            );
+
+            create unique index "exclude_emissions_entry_idx1" on "exclude_emissions_entry" ("compliant_entity_id", "year");
+        </sql>
+        <rollback>
+            drop table exclude_emissions_entry cascade;
+            drop sequence exclude_emissions_entry_seq;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_24_0_COMPLIANCE_OUTBOX_TABLE_CREATION" author="trifyllisa">
+
+        <comment>Initial creation of Compliance Outbox</comment>
+        <sql>
+
+            create sequence compliance_outbox_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            CREATE TABLE compliance_outbox
+            (
+            id BIGINT NOT NULL PRIMARY KEY,
+            event_id uuid not null,
+            compliant_entity_id BIGINT NOT NULL,
+            type VARCHAR(50) NOT NULL,
+            payload VARCHAR NOT NULL,
+            generated_on TIMESTAMP NOT NULL,
+            status varchar(20) NOT NULL
+
+            );
+
+            COMMENT ON TABLE "compliance_outbox" IS 'Compliance Outbox Entity';
+            COMMENT ON COLUMN "compliance_outbox"."payload" IS 'The compliance event payload in json format';
+            COMMENT ON COLUMN "compliance_outbox"."status" IS 'The status can be either CREATED or SENT';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "compliance_outbox" CASCADE;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="0_24_0_CLOSING_DATE_COLUMN_ADDITION" author="koukoulakisg">
+
+        <comment>Add the CLOSING DATE column in Account table</comment>
+        <sql>
+
+            ALTER TABLE "account"
+                ADD closing_date TIMESTAMP DEFAULT NULL;
+
+            COMMENT ON COLUMN "account"."closing_date" IS 'The date of the account closure completion';
+        </sql>
+		
+    </changeSet>
+
+    <changeSet id="0_24_0_ADD_STATIC_COMPLIANCE_STATUS_TABLE" author="fragkise" context="migrate">
+        <comment>Adds new table for static compliance status</comment>
+        <sql>
+            create sequence static_compliance_status_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1
+            no cycle;
+            
+            create table static_compliance_status
+            (
+            id bigint not null,
+            compliant_entity_id bigint not null,
+            year bigint not null,
+            compliance_status varchar(40) not null,
+            primary key (id),
+            unique (compliant_entity_id,year,compliance_status)
+            );
+
+            create unique index "static_compliance_status_idx1" on "static_compliance_status" ("compliant_entity_id", "year","compliance_status");
+            comment on table "static_compliance_status" is 'Contains the Compliance status calculated on 30/04 at 23.59 BST each year per entity.';
+        </sql>
+        <rollback>
+            drop table static_compliance_status cascade;
+            drop sequence static_compliance_status_seq;
+        </rollback>
+    </changeSet>
+	
+	<changeSet id="0_24_0_ADD_TASK_SEARCH_METADATA_TABLE" author="apostolouk">
+
+        <comment>Adds new task_search_metadata table</comment>
+        <sql>
+
+            create sequence task_search_metadata_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            CREATE TABLE task_search_metadata
+            (
+            id BIGINT NOT NULL PRIMARY KEY,
+            task_id BIGINT NOT NULL,
+            metadata_name VARCHAR NOT NULL,
+            metadata_value VARCHAR 
+
+            );
+			
+			alter table "task_search_metadata" add constraint "fk_search_task_id" foreign key ("task_id")
+            references "task" ("id");
+			
+			-- migration for existing account opening tasks
+			insert into task_search_metadata(id,task_id,metadata_name,metadata_value)
+            select nextval('task_search_metadata_seq'), t.id, 'ACCOUNT_TYPE', t.difference::json->>'accountType'
+            from task t where t.type = 'ACCOUNT_OPENING_REQUEST' and t.status = 'SUBMITTED_NOT_YET_APPROVED';
+
+            insert into task_search_metadata(id,task_id,metadata_name,metadata_value)
+            select nextval('task_search_metadata_seq'), t.id, 'AH_NAME', t.difference::json->'accountHolder'->'details'->>'name'
+            from task t where t.type = 'ACCOUNT_OPENING_REQUEST' and t.status = 'SUBMITTED_NOT_YET_APPROVED';
+
+        </sql>
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "task_search_metadata" CASCADE;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

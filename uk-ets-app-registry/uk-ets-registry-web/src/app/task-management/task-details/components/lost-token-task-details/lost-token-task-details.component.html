@@ -1,0 +1,20 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr class="govuk-section-break govuk-section-break--visible" />
+  </div>
+  <div class="govuk-grid-row">
+    <app-summary-list
+      [class]="'govuk-summary-list--no-border'"
+      title="User details"
+      [lines]="{
+        'Email address': taskDetails.email,
+        'User ID': taskDetails.initiatorUrid,
+        'First and middle names': taskDetails.firstName,
+        'Last name': taskDetails.lastName
+      }"
+      [links]="isAdmin ? {
+        'User ID': '/user-details/' + taskDetails.initiatorUrid
+      } : null"
+    ></app-summary-list>
+  </div>
+</div>

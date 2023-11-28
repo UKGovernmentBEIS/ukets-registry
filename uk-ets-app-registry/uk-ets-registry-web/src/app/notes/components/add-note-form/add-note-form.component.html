@@ -1,0 +1,32 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" aria-live="polite">
+    <span class="govuk-caption-xl">Add note</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">Add notes</h1>
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <app-form-comment-area
+        controlName="noteDescription"
+        [maxlength]="1024"
+        [rows]="6"
+        [validationErrorMessage]="validationErrorMessage.noteDescription"
+        [label]="'Notes'"
+      >
+      </app-form-comment-area>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+      <div>
+        <a
+          [routerLink]="[]"
+          class="govuk-link govuk-link--no-visited-state"
+          (click)="onCancel()"
+          >Cancel</a
+        >
+      </div>
+    </form>
+  </div>
+</div>

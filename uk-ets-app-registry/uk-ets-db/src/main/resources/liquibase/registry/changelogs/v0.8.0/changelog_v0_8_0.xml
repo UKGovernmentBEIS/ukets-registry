@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="0_8_0_ALTER_TRANSACTION_EXECUTION_DATE_TO_TIMESTAMP" author="chortism" context="migrate">
+        <comment>Alters execution_date column of transaction to type TIMESTAMP</comment>
+        <sql>
+            --------------------------------------------------------
+            -- Modify table Transaction
+            --------------------------------------------------------
+            alter table transaction
+            alter column execution_date type timestamp;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_8_0_ADD_COLUMN_TO_USER" author="fragkise" context="migrate">
+        <comment>Alter table user by adding column for previous state upon suspension</comment>
+        <sql>
+            ALTER TABLE users ADD COLUMN previous_state character varying(255) NULL;
+            comment ON COLUMN users.previous_state IS 'Previous state (i.e. before suspended)';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_8_0_COMMENT_ON_COLUMN_STATE_TO_USER" author="fragkise" context="migrate">
+        <sql>
+            COMMENT ON COLUMN "users"."state" IS 'The state: REGISTERED, VALIDATED, ENROLLED, UNENROLLEMENT_PENDING,
+            UNENROLLED, SUSPENDED';
+            COMMENT ON COLUMN "users"."previous_state" IS 'The previous state: REGISTERED, VALIDATED, ENROLLED';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_8_0_CREATE_TRUSTED_ACCOUNT_TABLE" author="chortism" context="migrate">
+        <sql>
+            --------------------------------------------------------
+            -- Create table Trusted Account
+            --------------------------------------------------------
+            create sequence trusted_account_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache
+            1 no cycle;
+
+            create table "trusted_account"
+            ("id" bigint,
+            "account_id" bigint,
+            "trusted_account_full_identifier" varchar(255) not null,
+            "status" varchar(50) not null,
+            "description" varchar(255),
+            "activation_date" timestamp,
+
+            constraint "pk_trusted_account" primary key("id"));
+
+            alter table "trusted_account" add constraint "fk_tra_res_tra" foreign key ("account_id")
+            references "account" ("id");
+
+            comment on table "trusted_account" is 'Stores the trusted list of an account';
+
+            comment on column "trusted_account"."id" is 'The primary key.';
+            comment on column "trusted_account"."account_id" is 'The owner of this trusted list; foreign key to
+            account.';
+            comment on column "trusted_account"."trusted_account_full_identifier" is 'The trusted account.';
+            comment on column "trusted_account"."status" is 'The current status, one of: PENDING_APPROVAL,
+            PENDING_ACTIVATION (delayed), REJECTED, CANCELLED, ACTIVE';
+            comment on column "trusted_account"."description" is 'The description of the trusted account.';
+            comment on column "trusted_account"."activation_date" is 'The date when the trusted account was / will be
+            activated.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_8_0_SCHEDULED_TASKS_LOCKING" author="pougouniasn" context="migrate">
+        <comment>Introduces the shedlock table, for synchronising concurrent scheduled tasks.</comment>
+        <sql>
+            create table "shedlock"(
+            "name" varchar(64),
+            "lock_until" timestamp,
+            "locked_at" timestamp,
+            "locked_by" varchar(255),
+
+            constraint "pk_shedlock" primary key("name"));
+
+            comment on table "shedlock" is 'Technical table used for synchronising properly concurrent scheduled jobs.';
+            comment on column "shedlock"."name" is 'The name of the scheduled task; primary key.';
+            comment on column "shedlock"."lock_until" is 'When the lock will be released.';
+            comment on column "shedlock"."locked_at" is 'When the lock started.';
+            comment on column "shedlock"."locked_by" is 'Which process performed this lock.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_8_0_ADD_TRUSTED_ACCOUNT_CONSTRAINT" author="georgopoulosp" context="migrate">
+        <comment>Adds in the trusted_account database table the unique business constraint.</comment>
+        <sql>
+            ALTER TABLE trusted_account
+                add CONSTRAINT trusted_account_con1 UNIQUE (account_id, trusted_account_full_identifier, status);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_8_0_ADD_TRUSTED_ACCOUNT_INDEX_AND_REMOVE_CONSTRAINT" author="georgopoulosp" context="migrate">
+        <comment>Adds unique conditional index in the trusted_account database table and removes the unique business constraint.</comment>
+        <sql>
+            ALTER TABLE trusted_account drop CONSTRAINT trusted_account_con1;
+
+            CREATE UNIQUE INDEX trusted_account_index
+                ON trusted_account (account_id, trusted_account_full_identifier, status)
+                    WHERE status != 'REJECTED'
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

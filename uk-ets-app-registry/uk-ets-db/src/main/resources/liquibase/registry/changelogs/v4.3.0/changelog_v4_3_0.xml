@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_1_0_CREATE_TASK_ASSIGNMENT_TABLE" author="piliotid" context="migrate">
+        <comment>Creates new task_assignment table.</comment>
+        <sql>
+
+            create sequence task_assignment_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+                cache 1 no cycle;
+
+            CREATE TABLE task_assignment
+            (
+                id BIGINT NOT NULL PRIMARY KEY,
+                task_id BIGINT NOT NULL,
+                urid VARCHAR(56) NOT NULL,
+                assignment_date TIMESTAMP NOT NULL,
+                roles VARCHAR(255)
+            );
+
+            alter table "task_assignment" add constraint "fk_task_assignment_task_id" foreign key ("task_id") references "task" ("id");
+
+            COMMENT ON TABLE "task_assignment" IS 'Task assignment history';
+            COMMENT ON COLUMN "task_assignment"."task_id" IS 'The id of the task';
+            COMMENT ON COLUMN "task_assignment"."urid" IS 'The urid of the user';
+            COMMENT ON COLUMN "task_assignment"."assignment_date" IS 'The date of the assignment';
+            COMMENT ON COLUMN "task_assignment"."roles" IS 'The roles of the user at the point of the assignment separated by comma (,)';
+        </sql>
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "task_assignment" CASCADE;
+                DROP SEQUENCE IF EXISTS task_assignment_seq;
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

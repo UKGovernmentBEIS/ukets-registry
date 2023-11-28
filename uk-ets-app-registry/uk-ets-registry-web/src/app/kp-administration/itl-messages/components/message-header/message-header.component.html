@@ -1,0 +1,27 @@
+<div class="hmcts-identity-bar" *ngIf="messageDetails">
+  <div class="hmcts-identity-bar__container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <a
+          [routerLink]="['/kpadministration/itl-message-list']"
+          [queryParams]="{ mode: 0 }"
+          class="govuk-back-link"
+          id="back"
+          >Back to ITL messages</a
+        >
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full" *ngIf="messageDetails">
+        <h3 class="govuk-heading-m">
+          Message ID: {{ messageDetails.messageId }}
+        </h3>
+        <div class="govuk-body">
+          <div *ngIf="messageDetails.messageDate">
+            Message Date {{ messageDetails.messageDate | gdsDateTime }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

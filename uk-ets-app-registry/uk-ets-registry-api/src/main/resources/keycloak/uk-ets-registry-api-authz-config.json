@@ -1,0 +1,2378 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [
+    {
+      "name": "Transaction Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Transaction Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/transactions.get",
+        "/api-registry/transactions.generate.details.report",
+        "/api-registry/transactions.get.history",
+        "/api-registry/transactions.validate",
+        "/api-registry/transactions.excess-allocation-nat-and-ner.validate",
+        "/api-registry/transactions.propose",
+        "/api-registry/transactions.excess-allocation-nat-and-ner.propose",
+        "/api-registry/transactions.list",
+        "/api-registry/transactions.list.filters",
+        "/api-registry/transactions.cancel"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Transaction Resource - Allowance",
+      "ownerManagedAccess": false,
+      "displayName": "Transaction Resource - Allowance",
+      "attributes": {},
+      "uris": ["/api-registry/transactions.propose-allowances"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:issue-allowances:write"
+        }
+      ]
+    },
+    {
+      "name": "Account Search Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Account Search Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/accounts.list",
+        "/api-registry/accounts.list.filters"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:account:search:authorizedRepresentativeUrid:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:account:search:excludedForYear:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:account:search:installationOrAircraftOperatorId:view"
+        }
+      ]
+    },
+    {
+      "name": "Account Details Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Account Details Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/accounts.get",
+        "/api-registry/accounts.get.operator",
+        "/api-registry/accounts-operator.update-details",
+        "/api-registry/accounts.validate",
+        "/api-registry/accounts.get.history",
+        "/api-registry/account-holder.get.files",
+        "/api-registry/account-holder.get.file",
+        "/api-registry/account-holder.delete.file",
+        "/api-registry/accounts.get.holdings",
+        "/api-registry/accounts.get.transactions",
+        "/api-registry/accounts.get.transactions.report",
+        "/api-registry/compliance.get.overview",
+        "/api-registry/compliance.get.emissions",
+        "/api-registry/compliance.get.status.history",
+        "/api-registry/compliance.get.events.history"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Account Resource - Exclude from billing",
+      "ownerManagedAccess": false,
+      "displayName": "Account Resource - Exclude from billing",
+      "attributes": {},
+      "uris": [
+        "/api-registry/accounts.exclude.from.billing",
+        "/api-registry/accounts.include.in.billing"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Issuance KP Units resource",
+      "ownerManagedAccess": false,
+      "displayName": "Issuance KP Units resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/transaction-wizard.get.issuance-accounts",
+        "/api-registry/transaction-wizard.get.registry-levels"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:issuance:complete"
+        }
+      ]
+    },
+    {
+      "name": "Transaction Search",
+      "type": "urn:uk-ets-registry-api:page:transaction-list",
+      "ownerManagedAccess": false,
+      "displayName": "Transaction Search",
+      "attributes": {},
+      "uris": [
+        "/api-registry/transactions.list",
+        "/api-registry/transactions.list.filters"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForNonAdmin"
+        }
+      ],
+      "icon_uri": ""
+    },
+    {
+      "name": "User Resource",
+      "ownerManagedAccess": false,
+      "displayName": "User Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/users.get",
+        "/api-registry/users.get.authorised-representatives",
+        "/api-registry/users.get.files",
+        "/api-registry/users.get.file",
+        "/api-registry/users.delete.file",
+        "/api-registry/users.get.history",
+        "/api-registry/users.get.enrolment-key",
+        "/api-registry/users.enrol",
+        "/api-registry/users.get.basic-info",
+        "/api-registry/users.get.basic-info"
+      ]
+    },
+    {
+      "name": "Account Accesses Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Account Accesses Resource",
+      "attributes": {},
+      "uris": ["/api-registry/account/auth"]
+    },
+    {
+      "name": "Task List Resource",
+      "type": "urn:uk-ets-registry-api:page:task-list",
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "uris": ["/api-registry/tasks.*"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:ar:complete"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:read"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:sra:complete"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:issuance:complete"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:issuance:read"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForNonAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:task-list:search:accountType:view"
+        }
+      ]
+    },
+    {
+      "name": "Account Resource",
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "uris": [
+        "/api-registry/accounts.propose",
+        "/api-registry/accounts.update.details"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account:create"
+        }
+      ]
+    },
+    {
+      "name": "Account Closure",
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "uris": [
+        "/api-registry/accounts.close",
+        "/api-registry/allocations.get.pendingTaskExists"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account:close"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard Page",
+      "type": "urn:uk-ets-registry-api:page:dashboard",
+      "ownerManagedAccess": false,
+      "displayName": "Dashboard Page",
+      "attributes": {},
+      "uris": [],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:dashboard:registryActivationCodeLink:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:dashboard:searchAccountMenuItem:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:dashboard:adminMenuItem:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:dashboard:limitedRegistryAccessMessage:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:dashboard:transactionMenuItem:view"
+        }
+      ]
+    },
+    {
+      "name": "Account Holder Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Account Holder Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/account-holder.get.by-name",
+        "/api-registry/account-holder.get.list",
+        "/api-registry/account-holder.get",
+        "/api-registry/account-holder.get.by-identifier",
+        "/api-registry/account-holder.get.contacts"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForNonAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Legal Respresentative Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Legal Respresentative Resource",
+      "attributes": {},
+      "uris": ["/api-registry/account/legalRepresentative/byHolder"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForNonAdmin"
+        }
+      ]
+    },
+    {
+      "name": "User Admin Resource",
+      "ownerManagedAccess": false,
+      "displayName": "User Admin Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/admin/users.get",
+        "/api-registry/admin/users.get.files",
+        "/api-registry/admin/users.get.file",
+        "/api-registry/admin/users.delete.file",
+        "/api-registry/admin/users.list",
+        "/api-registry/admin/users.get.statuses",
+        "/api-registry/admin/users.update.status",
+        "/api-registry/admin/users.update.details",
+        "/api-registry/admin/users.deactivate",
+        "/api-registry/admin/users.validateUserUpdateRequest",
+        "/api-registry/authorised-representatives.get.by-user/*"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Task Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Task Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/tasks.claim",
+        "/api-registry/tasks.assign",
+        "/api-registry/tasks.complete"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:issuance:complete"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:account-open:complete"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:account-open:write"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:ar:complete"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:sra:complete"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:trusted-accounts-list:write"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:issue-allowances:write"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:task:allocation-table:write"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:requested-documents:write"
+        }
+      ]
+    },
+    {
+      "name": "User Enrol Resource",
+      "ownerManagedAccess": false,
+      "displayName": "User Enrol Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/users.enrol",
+        "/api-registry/users.request.registry-code"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user:enrol"
+        }
+      ]
+    },
+    {
+      "name": "Account Status Change Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Account Status Change Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/accounts.get.statuses",
+        "/api-registry/accounts.update"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account:status:change"
+        }
+      ]
+    },
+    {
+      "name": "Operator Exclusion Status Change Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Operator Exclusion Status Change Resource",
+      "attributes": {},
+      "uris": ["/api-registry/compliance.update.exclusion-status"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:compliance:exclusion-status:change"
+        }
+      ]
+    },
+    {
+      "name": "Transaction Proposal Wizard Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Transaction Proposal Wizard Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/transaction-wizard.get.transaction-types",
+        "/api-registry/transaction-wizard.get.transaction-block-summaries",
+        "/api-registry/transaction-wizard.get.candidate-acquiring-accounts",
+        "/api-registry/transaction-wizard.get.user-defined-acquiring-account",
+        "/api-registry/transaction-wizard.get.acquiring-account-details",
+        "/api-registry/transaction-wizard.get.complete-transaction-summary",
+        "/api-registry/transaction-wizard.get.excess-allocation-nat-and-ner.complete-transaction-summary",
+        "/api-registry/transaction-wizard.get.reversed-accounts"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Allowance Proposal Wizard Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Allowance Proposal Wizard Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/transaction-wizard.get.allowances-acquiring-account",
+        "/api-registry/transaction-wizard.get.allowance-block-summaries"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:issue-allowances:read"
+        }
+      ]
+    },
+    {
+      "name": "Request Allocation Wizard Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Request Allocation Wizard Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/allocations.get.available-years",
+        "/api-registry/allocations.submit",
+        "/api-registry/allocations.get.file",
+        "/api-registry/allocations.get.pending",
+        "/api-registry/allocations.cancel.pending"
+      ]
+    },
+    {
+      "name": "User Status Change Resource",
+      "ownerManagedAccess": false,
+      "displayName": "User Status Change Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/admin/users.get.statuses",
+        "/api-registry/admin/users.update.status"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user:status:write"
+        }
+      ]
+    },
+    {
+      "name": "Trusted Account List View Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Trusted Account List View Resource",
+      "attributes": {},
+      "uris": ["/api-registry/tal.get", "/api-registry/tal.list"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:trusted-accounts-list:read"
+        }
+      ]
+    },
+    {
+      "name": "Trusted Account List Add Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Trusted Account List Add Resource",
+      "attributes": {},
+      "uris": ["/api-registry/tal.add"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:trusted-accounts-list:write"
+        }
+      ]
+    },
+    {
+      "name": "Trusted Account List Update Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Trusted Account List Update Resource",
+      "attributes": {},
+      "uris": ["/api-registry/tal.update"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:trusted-accounts-update-description:write"
+        }
+      ]
+    },
+    {
+      "name": "Trusted Account List Cancel Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Trusted Account List Cancel Resource",
+      "attributes": {},
+      "uris": ["/api-registry/tal.cancel.pending"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:trusted-accounts-cancel-addition:write"
+        }
+      ]
+    },
+    {
+      "name": "Trusted Account List Remove Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Trusted Account List Remove Resource",
+      "attributes": {},
+      "uris": ["/api-registry/tal.remove"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:trusted-accounts-list:write"
+        }
+      ]
+    },
+    {
+      "name": "Account Monitoring or Installation Plan Exists",
+      "ownerManagedAccess": false,
+      "displayName": "Account Monitoring Plan Exists",
+      "attributes": {},
+      "uris": [
+        "/api-registry/accounts.get.monitoring-plan",
+        "/api-registry/accounts.get.installation-permit-id",
+        "/api-registry/account.validate.installation-transfer",
+        "/api-registry/accounts.get.candidate-installation-transfer"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForNonAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Account Holding Details",
+      "ownerManagedAccess": false,
+      "displayName": "Account Holding Details",
+      "attributes": {},
+      "uris": ["/api-registry/accounts.get.holding-details"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Reset Database Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Reset Database Resource",
+      "attributes": {},
+      "uris": ["/api-registry/system-administration.reset"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:system-administration:write"
+        }
+      ]
+    },
+    {
+      "name": "Set user as authority services",
+      "ownerManagedAccess": false,
+      "displayName": "Set User as Authority",
+      "attributes": {},
+      "uris": [
+        "/api-registry/admin/users.add.authority",
+        "/api-registry/admin/users.get.enrolled",
+        "/api-registry/admin/users.remove.authority"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:authority-setting:write"
+        }
+      ]
+    },
+    {
+      "name": "Update Authorized Representatives",
+      "ownerManagedAccess": false,
+      "displayName": "Update Authorized Representatives Wizard",
+      "attributes": {},
+      "uris": [
+        "/api-registry/account/{id}/authorised-representatives",
+        "/api-registry/authorised-representatives.add",
+        "/api-registry/authorised-representatives.remove",
+        "/api-registry/authorised-representatives.replace",
+        "/api-registry/authorised-representatives.suspend",
+        "/api-registry/authorised-representatives.restore",
+        "/api-registry/authorised-representatives.change.access-rights"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:authorised-representatives:write"
+        }
+      ]
+    },
+    {
+      "name": "View Authorised Representatives Resource",
+      "ownerManagedAccess": false,
+      "displayName": "View Authorised Representatives Details",
+      "attributes": {},
+      "uris": [
+        "/api-registry/authorised-representatives.get.other-accounts-ars",
+        "/api-registry/authorised-representatives.get.candidate"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:authorised-representative-candidate:view"
+        }
+      ]
+    },
+    {
+      "name": "Update Account Holder",
+      "ownerManagedAccess": false,
+      "displayName": "Update Account Holder Wizard",
+      "attributes": {},
+      "uris": [
+        "/api-registry/account-holder.update-details",
+        "/api-registry/account-holder.update-primary-contact",
+        "/api-registry/account-holder.update-alternative-primary-contact"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:authorised-representatives:write"
+        }
+      ]
+    },
+    {
+      "name": "View Authorized Representatives",
+      "ownerManagedAccess": false,
+      "displayName": "Update Authorized Representatives Wizard",
+      "attributes": {},
+      "uris": ["/api-registry/authorised-representatives.get.by-account"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:authorised-representatives:read"
+        }
+      ]
+    },
+    {
+      "name": "Fetch TAL transaction rules Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Fetch TAL transaction rules",
+      "attributes": {},
+      "uris": ["/api-registry/tal-transaction-rules.get"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:trusted-accounts-list-transaction-rules:read"
+        }
+      ]
+    },
+    {
+      "name": "Update TAL transaction rules Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Update TAL transaction rules",
+      "attributes": {},
+      "uris": ["/api-registry/tal-transaction-rules.update"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:trusted-accounts-list-transaction-rules:write"
+        }
+      ]
+    },
+    {
+      "name": "Upload allocation table Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Validate & submit allocation table",
+      "attributes": {},
+      "uris": [
+        "/api-registry/allocation-table.upload",
+        "/api-registry/allocation-table.submit",
+        "/api-registry/allocation-table.get.errors"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:allocation-table:write"
+        }
+      ]
+    },
+    {
+      "name": "Upload emissions table Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Validate & submit emissions table",
+      "attributes": {},
+      "uris": [
+        "/api-registry/emissions-table.upload",
+        "/api-registry/emissions-table.submit",
+        "/api-registry/emissions-table.get.errors"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:emissions-table:write"
+        }
+      ]
+    },
+    {
+      "name": "Compliance Status Recalculation Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Submit recalculation of compliance status",
+      "attributes": {},
+      "uris": ["/api-registry/compliance.recalculate.dynamic-status"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:compliance-status:write"
+        }
+      ]
+    },
+    {
+      "name": "Upload bulk AR file Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Validate & submit bulk AR file",
+      "attributes": {},
+      "uris": ["/api-registry/bulk-ar.upload", "/api-registry/bulk-ar.submit"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:bulk-ar-upload:write"
+        }
+      ]
+    },
+    {
+      "name": "Upload requested document Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Validate & submit a requested document",
+      "attributes": {},
+      "uris": ["/api-registry/requested-document.upload"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:requested-documents:write"
+        }
+      ]
+    },
+    {
+      "name": "Delete requested document Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Delete an uploaded document",
+      "attributes": {},
+      "uris": ["/api-registry/requested-document.delete"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:requested-documents:write"
+        }
+      ]
+    },
+    {
+      "name": "Request documents wizard",
+      "ownerManagedAccess": false,
+      "displayName": "Submit a documents request",
+      "attributes": {},
+      "uris": ["/api-registry/documents-request.submit"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:documents-request:submit"
+        }
+      ]
+    },
+    {
+      "name": "View Account Allocation",
+      "ownerManagedAccess": false,
+      "displayName": "View Account Allocation",
+      "attributes": {},
+      "uris": ["/api-registry/allocations.get"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account-allocation:read"
+        }
+      ]
+    },
+    {
+      "name": "Update Account Allocation Status",
+      "ownerManagedAccess": false,
+      "displayName": "View Account Allocation",
+      "attributes": {},
+      "uris": [
+        "/api-registry/allocations.update.status",
+        "/api-registry/allocations.get.status"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account-allocation:write"
+        }
+      ]
+    },
+    {
+      "name": "Reconciliation administration",
+      "ownerManagedAccess": false,
+      "displayName": "Reconciliation administration",
+      "attributes": {},
+      "uris": [
+        "/api-registry/reconciliation.get.latest",
+        "/api-registry/reconciliation.start"
+      ]
+    },
+    {
+      "name": "Notifications administrator",
+      "ownerManagedAccess": false,
+      "displayName": "Notifications administrator",
+      "attributes": {},
+      "uris": [
+        "/api-registry/notifications.create",
+        "/api-registry/notifications.update",
+        "/api-registry/notifications.get.definition",
+        "/api-registry/notifications.list",
+        "/api-registry/notifications.get",
+        "/api-registry/notifications.get.definition.recipients.count"
+      ]
+    },
+    {
+      "name": "Dashboard Notifications",
+      "ownerManagedAccess": false,
+      "displayName": "Dashboard Notifications",
+      "attributes": {},
+      "uris": ["/api-registry/notifications.list.for-dashboard"]
+    },
+    {
+      "name": "ITL Reconciliation administration",
+      "ownerManagedAccess": false,
+      "displayName": "ITL Reconciliation administration",
+      "attributes": {},
+      "uris": ["/api-registry/itl-reconciliation.get.latest"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:itl-reconciliation:read"
+        }
+      ]
+    },
+    {
+      "name": "View Issuance and Allocation Status",
+      "ownerManagedAccess": false,
+      "displayName": "View Issuance and Allocation Status",
+      "attributes": {},
+      "uris": [
+        "/api-registry/allocations.get.issuance-by-year",
+        "/api-registry/allocation-table.get.history"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:registry-yearly-issuance-allocation:read"
+        }
+      ]
+    },
+    {
+      "name": "Request email change",
+      "ownerManagedAccess": false,
+      "displayName": "Request email change",
+      "attributes": {},
+      "uris": ["/api-registry/user-profile.update.email"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-email-change:write"
+        }
+      ]
+    },
+    {
+      "name": "Request token change",
+      "ownerManagedAccess": false,
+      "displayName": "Request token change",
+      "attributes": {},
+      "uris": ["/api-registry/user-profile.update.token"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-token-change:write"
+        }
+      ]
+    },
+    {
+      "name": "Validate OTP",
+      "ownerManagedAccess": false,
+      "displayName": "Request OTP",
+      "attributes": {},
+      "uris": ["/api-registry/validate-otp"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-token-change:write"
+        }
+      ]
+    },
+    {
+      "name": "Get token last update date",
+      "ownerManagedAccess": false,
+      "displayName": "Get token last update date",
+      "attributes": {},
+      "uris": ["/api-registry/user-profile.get.token-date"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-token-date-get:read"
+        }
+      ]
+    },
+    {
+      "name": "Request password change",
+      "ownerManagedAccess": false,
+      "displayName": "Request password change",
+      "attributes": {},
+      "uris": ["/api-registry/user-profile.update.password"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-password-change:write"
+        }
+      ]
+    },
+    {
+      "name": "Actuator endpoints",
+      "ownerManagedAccess": false,
+      "displayName": "Actuator endpoints",
+      "attributes": {},
+      "uris": ["/api-registry/actuator/*"]
+    },
+    {
+      "name": "View ITL Message List",
+      "ownerManagedAccess": false,
+      "displayName": "View ITL Message List",
+      "attributes": {},
+      "uris": ["/api-registry/itl.messages.list"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:itl-message:read"
+        }
+      ]
+    },
+    {
+      "name": "View ITL Message",
+      "ownerManagedAccess": false,
+      "displayName": "View ITL Message",
+      "attributes": {},
+      "uris": ["/api-registry/itl.messages.get"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:itl-message:read"
+        }
+      ]
+    },
+    {
+      "name": "Send ITL Message",
+      "ownerManagedAccess": false,
+      "displayName": "Send ITL Message",
+      "attributes": {},
+      "uris": ["/api-registry/itl.messages.send"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:itl-message:write"
+        }
+      ]
+    },
+    {
+      "name": "View ITL Notices List",
+      "ownerManagedAccess": false,
+      "displayName": "View ITL Notices List",
+      "attributes": {},
+      "uris": ["/api-registry/itl.notices.list"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:itl-notice:read"
+        }
+      ]
+    },
+    {
+      "name": "View ITL Notice",
+      "ownerManagedAccess": false,
+      "displayName": "View ITL Notice",
+      "attributes": {},
+      "uris": [
+        "/api-registry/itl.notices.get",
+        "/api-registry/itl.notices.validate"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:itl-notice:read"
+        }
+      ]
+    },
+    {
+      "name": "Account Opening Add Account Holder Page",
+      "type": "urn:uk-ets-registry-api:page:accountOpeningAccountHolder",
+      "ownerManagedAccess": false,
+      "displayName": "Account Opening Add Account Holder Page",
+      "attributes": {},
+      "uris": [],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:accountOpeningAccountHolder:fromList:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:accountOpeningAccountHolder:searchByName:view"
+        }
+      ]
+    },
+    {
+      "name": "Get Alerts",
+      "ownerManagedAccess": false,
+      "displayName": "Get Alerts",
+      "attributes": {},
+      "uris": ["/api-registry/alerts.get.details"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:page:dashboard:alerts:read"
+        }
+      ]
+    },
+    {
+      "name": "Account Transfer",
+      "ownerManagedAccess": false,
+      "displayName": "Account Transfer",
+      "attributes": {},
+      "uris": ["/api-registry/account-transfer.perform"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        }
+      ]
+    },
+    {
+      "name": "View Note Resource",
+      "ownerManagedAccess": false,
+      "displayName": "View Note Resource",
+      "attributes": {},
+      "uris": ["/api-registry/notes.get"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Update Note Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Update Note Resource",
+      "attributes": {},
+      "uris": ["/api-registry/notes.add", "/api-registry/notes.delete/*"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+        }
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "name": "Any Enrolled non Admin User Policy",
+      "description": "Defines that enrolled users who are not registry administrators can do something",
+      "type": "aggregate",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "applyPolicies": "[\"Any Non Registry Administrator Policy\",\"Enrolled User Policy\"]"
+      }
+    },
+    {
+      "name": "Read only Administrator policy",
+      "description": "Defines that Read only Administrators  can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"uk-ets-registry-api/readonly-administrator\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "Any Registry Administrator Policy",
+      "description": "Defines that All Registry Administrators can do something",
+      "type": "aggregate",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\",\"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "Any Non Registry Administrator Policy",
+      "description": "Defines that Any Non Registry Administrator can do something",
+      "type": "aggregate",
+      "logic": "NEGATIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Enrolled User Policy",
+      "description": "Defines that enrolled users can do something",
+      "type": "script-only-enrolled-policy.js",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {}
+    },
+    {
+      "name": "Registered User Policy",
+      "description": "Defines that registered users can do something",
+      "type": "script-only-registered-policy.js",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {}
+    },
+    {
+      "name": "Validated User Policy",
+      "description": "Defines that validated users can do something",
+      "type": "script-only-validated-policy.js",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {}
+    },
+    {
+      "name": "Authorized Representative Policy",
+      "description": "Defines that Authorized Reprentative can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"uk-ets-registry-api/authorized-representative\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "Senior & Junior Registry Administrator Policy",
+      "description": "Defines that Senior & Junior Registry Administrators can do something (I.e. Exclude Read Only Admin)",
+      "type": "aggregate",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Any Verifier Policy",
+      "description": "Defines that Verifiers can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"uk-ets-registry-api/verifier\",\"required\":false}]"
+      }
+    },
+    {
+      "name": "Everyone except Read Only Admin & Verifiers & Authority Users Policy",
+      "type": "aggregate",
+      "logic": "NEGATIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "applyPolicies": "[\"Read only Administrator policy\",\"Any Verifier Policy\",\"Authority User Policy\"]"
+      }
+    },
+    {
+      "name": "Everyone except Authority & Verifiers & Registered Users Policy",
+      "type": "aggregate",
+      "logic": "NEGATIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "applyPolicies": "[\"Authority User Policy\",\"Registered User Policy\",\"Any Verifier Policy\"]"
+      }
+    },
+    {
+      "name": "Any UK ETS User",
+      "description": "Defines that all UK ETS users can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"ets_user\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "Senior Registry Administrator Policy",
+      "description": "Defines that Senior Registry Administrators can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"uk-ets-registry-api/senior-registry-administrator\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "Junior Registry Administrator Policy",
+      "description": "Defines that Junior Registry Administrators can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"uk-ets-registry-api/junior-registry-administrator\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "System Administrator Policy",
+      "description": "Defines that System Administrators can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"uk-ets-registry-api/system-administrator\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "Authority User Policy",
+      "description": "Defines that Authority User can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"uk-ets-registry-api/authority-user\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "Account Details Permission",
+      "description": "Defines who can view details of an account",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"Account Details Resource\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\",\"Enrolled User Policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Resource Permission",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Transaction Resource\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Any Enrolled non Administrator Action Scope Permission",
+      "description": "Defines actions for enrolled non Administrators",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForEnrolledNonAdmin\"]",
+        "applyPolicies": "[\"Any Enrolled non Admin User Policy\"]"
+      }
+    },
+    {
+      "name": "Account Search view Authorised Representative ID textbox on  Account Search Permission",
+      "description": "Defines who can view the Authorised Representative ID search criterion on the Account Search page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:account:search:authorizedRepresentativeUrid:view\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Account Search view Installation or Aircraft Operator ID textbox on Account Search Permission",
+      "description": "Defines who can view the Installation or Aircraft Operator ID search criterion on the Account Search page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:account:search:installationOrAircraftOperatorId:view\"]",
+        "applyPolicies": "[\"Everyone except Authority & Verifiers & Registered Users Policy\"]"
+      }
+    },
+    {
+      "name": "Account Search view Excluded For Year textbox on  Account Search Permission",
+      "description": "Defines who can view the Excluded For Year search criterion on the Account Search page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:account:search:excludedForYear:view\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Initiate Permission",
+      "description": "Defines who can initiate a transaction",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:transaction:initiate\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Task Account Open Write",
+      "description": "Defines who can perform a write operation on a task of type account-opening in the registry",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:account-open:write\"]",
+        "applyPolicies": "[\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "User Enrol Permission",
+      "description": "Defines who can enrol",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user:enrol\"]",
+        "applyPolicies": "[\"Validated User Policy\"]"
+      }
+    },
+    {
+      "name": "User Resource Permission",
+      "description": "Defines who can query , view & edit users",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"User Resource\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Account Accesses Resource Permission",
+      "description": "Defines who can query account accesses",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Account Accesses Resource\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Admin Menu Item View Scope Permission",
+      "description": "Defines who can view admin menus on the dashboard page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:adminMenuItem:view\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Registry Administration Menu Item View Scope Permission",
+      "description": "Defines who can view the registry administration menu",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:registryAdminMenuItem:view\"]",
+        "applyPolicies": "[\"System Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Transactions  Menu Item View Scope Permission",
+      "description": "Defines who can view transaction menu on the dashboard page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:transactionMenuItem:view\"]",
+        "applyPolicies": "[\"Enrolled User Policy\"]"
+      }
+    },
+    {
+      "name": "Any Non Administrator Action Scope Permission",
+      "description": "Any Non Administrator Action Scope Permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForNonAdmin\"]",
+        "applyPolicies": "[\"Any Non Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Any Administrator Action Scope Permission",
+      "description": "Any Administrator Action Scope Permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForAnyAdmin\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Senior Administrator Action Scope Permission",
+      "description": "Senior Administrator Action Scope Permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForSeniorAdmin\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Search Accounts  Menu Item View Scope Permission",
+      "description": "Defines who can view search accounts menu on the dashboard page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:searchAccountMenuItem:view\"]",
+        "applyPolicies": "[\"Enrolled User Policy\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Registry Activation Code Link View Scope Permission",
+      "description": "Defines who can view the Registry activation code link on the dashboard page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:registryActivationCodeLink:view\"]",
+        "applyPolicies": "[\"Validated User Policy\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Limited Registry Access Message View Scope Permission",
+      "description": "Defines who can view  the limited registry access message on the dashboard page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:limitedRegistryAccessMessage:view\"]",
+        "applyPolicies": "[\"Registered User Policy\"]"
+      }
+    },
+    {
+      "name": "Task Account Open Read",
+      "description": "Defines who can perform a read operation on a task of type account-opening in the registry",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:account-open:read\"]",
+        "applyPolicies": "[\"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "Account Create Scope Permission",
+      "description": "Defines who can create an account on the registry",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:account:create\"]",
+        "applyPolicies": "[\"Everyone except Read Only Admin & Verifiers & Authority Users Policy\"]"
+      }
+    },
+    {
+      "name": "Account Close Scope Permission",
+      "description": "Defines who can close an account on the registry",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:account:close\"]",
+        "applyPolicies": "[\"Everyone except Read Only Admin & Verifiers & Authority Users Policy\"]"
+      }
+    },
+    {
+      "name": "View Authorised Representative Permission",
+      "description": "Defines who can view Authorised Representative Details",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:authorised-representative-candidate:view\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "View User Permission",
+      "description": "Defines who can view User Details",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user:view\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Task Account Open Complete",
+      "description": "Defines who can complete a task of type account-opening in the registry",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:account-open:complete\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Proposal - Issuance Read permission",
+      "description": "Transaction Proposal - Issuance Read permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:transaction-proposal:issuance:read\"]",
+        "applyPolicies": "[\"Junior Registry Administrator Policy\",\"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Proposal - Issuance Complete permission",
+      "description": "Transaction Proposal - Issuance Complete permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:transaction-proposal:issuance:complete\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Account status change permission",
+      "description": "Defines who can change the account status",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:account:status:change\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Operator exclusion status change permission",
+      "description": "Defines who can change the operator exclusion status",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:compliance:exclusion-status:change\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Proposal Wizard Permission",
+      "description": "Defines who can view the transaction proposal wizard",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"Transaction Proposal Wizard Resource\"]",
+        "applyPolicies": "[\"Any Enrolled non Admin User Policy\",\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Proposal - Generic Senior Registry Admin Complete permission",
+      "description": "Defines who can complete a generic \"Transaction Proposal\" task as a senior registry admin",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:transaction-proposal:generic:sra:complete\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Proposal - Generic Authorised Representative Complete permission",
+      "description": "Defines who can complete a generic \"Transaction Proposal\" task as an authorised representative",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:transaction-proposal:generic:ar:complete\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\",\"Enrolled User Policy\"]"
+      }
+    },
+    {
+      "name": "Transaction Proposal - Generic Read permission",
+      "description": "Defines who can view \"Transaction Proposal\" task details",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:transaction-proposal:generic:read\"]",
+        "applyPolicies": "[\"Junior Registry Administrator Policy\",\"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "User status change permission",
+      "description": "Defines who can change the user status",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user:status:write\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "User request documents permission",
+      "description": "Defines who can request user documents",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user:documents:request\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Trusted Account List - Read Permission",
+      "description": "Defines who can view trusted account list",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "resources": "[\"Trusted Account List View Resource\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\",\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Trusted Account List - Write permission",
+      "description": "Defines who can perform an Add or Delete to TAL request",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:trusted-accounts-list:write\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\",\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Trusted Account List - Update description permission",
+      "description": "Defines who can perform an Update to TAL update description UI action",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:trusted-accounts-update-description:write\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\",\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Trusted Account List - Cancel addition permission",
+      "description": "Defines who can cancel addition to TAL UI action",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:trusted-accounts-cancel-addition:write\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\", \"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Trusted Account List - Task - Read permission",
+      "description": "Defines who can view an Add or Delete to TAL Task request task details",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:trusted-accounts-list:read\"]",
+        "applyPolicies": "[\"Junior Registry Administrator Policy\",\"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "Trusted Account List - Task - Write Permission",
+      "description": "Defines who can complete an Add/Delete to TAL Task request",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:trusted-accounts-list:write\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Authorized Representative Policy\",\"Enrolled User Policy\"]"
+      }
+    },
+    {
+      "name": "View Issue KP Units page Permission",
+      "description": "Defines who can view the Issue KP Units page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:issuekpunits:read\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Read-Only Administrators Action Scope Permission",
+      "description": "Read-Only Administrators Action Scope Permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForReadOnlyAdmins\"]",
+        "applyPolicies": "[\"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "Reset Database Permission",
+      "description": "Defines who can reset the DB state",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:system-administration:write\"]",
+        "applyPolicies": "[\"System Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Set User as Authority Permission",
+      "description": "Defines who can set a user as authority",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:authority-setting:write\"]",
+        "applyPolicies": "[\"System Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Issue Allowances - Read Permission",
+      "description": "Defines who can read issue allowances",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:issue-allowances:read\"]",
+        "applyPolicies": "[\"Authority User Policy\"]"
+      }
+    },
+    {
+      "name": "Issue Allowances - Write Permission",
+      "description": "Defines who can write issue allowances",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:issue-allowances:write\"]",
+        "applyPolicies": "[\"Authority User Policy\"]"
+      }
+    },
+    {
+      "name": "Authorised Representatives - Write Permission",
+      "description": "Defines who can update the AR list",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:authorised-representatives:write\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\",\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Authorised Representatives - Read Permission",
+      "description": "Defines who can view the AR list",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:authorised-representatives:read\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\", \"Authorized Representative Policy\"]"
+      }
+    },
+    {
+      "name": "Account Allocation - Read Permission",
+      "description": "Defines who can view the account allocation",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:account-allocation:read\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\", \"Authorized Representative Policy\"]"
+      }
+    },
+    {
+      "name": "Account Allocation Status - Update Permission",
+      "description": "Defines who can update the account allocation status",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:account-allocation:write\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Request Allocation",
+      "description": "Defines who can access the request allocation wizard and submit an allocation  request",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Request Allocation Wizard Resource\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "TAL Transaction Rules - Read Permission",
+      "description": "Defines who can read the TAL transaction rules",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:trusted-accounts-list-transaction-rules:read\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\",\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "TAL Transaction Rules - Write Permission",
+      "description": "Defines who can update the TAL transaction rules",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:trusted-accounts-list-transaction-rules:write\"]",
+        "applyPolicies": "[\"Authorized Representative Policy\",\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Allocation Table - Read Permission",
+      "description": "Defines who can download the allocation table file",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:allocation-table:read\"]",
+        "applyPolicies": "[\"Authority User Policy\"]"
+      }
+    },
+    {
+      "name": "Allocation Table - Write Permission",
+      "description": "Defines who can upload the allocation table file",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:allocation-table:write\"]",
+        "applyPolicies": "[\"Authority User Policy\"]"
+      }
+    },
+    {
+      "name": "Emissions Table - Write Permission",
+      "description": "Defines who can upload the emissions table file",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:emissions-table:write\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Compliance Status - Write Permission",
+      "description": "Defines who can request compliance status recalculation",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:compliance-status:write\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Bulk AR upload - Write Permission",
+      "description": "Defines who can upload the Bulk AR file",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:bulk-ar-upload:write\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Requested docs Table - Write Permission",
+      "description": "Defines who can upload a requested document",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:requested-documents:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Request Documents Wizard - Submit Permission",
+      "description": "Defines who can submit a documents request",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:documents-request:submit\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Allocation Table - Task - Write Permission",
+      "description": "Defines who can complete an allocation table upload Task request",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:task:allocation-table:write\"]",
+        "applyPolicies": "[\"Authority User Policy\"]"
+      }
+    },
+    {
+      "name": "Start reconciliation",
+      "description": "Defines who can access the reconciliation administration page",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Reconciliation administration\"]",
+        "applyPolicies": "[\"System Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Notifications",
+      "description": "Defines who can access the notifications administration page",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Notifications administrator\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Dashboard Notifications",
+      "description": "Defines who can see the notifications in the dashboard page",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Dashboard Notifications\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Issuance and Allocation Table Read Permission",
+      "description": "Defines who can view the issuance and allocation status",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:registry-yearly-issuance-allocation:read\"]",
+        "applyPolicies": "[\"Authority User Policy\",\"Senior Registry Administrator Policy\", \"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "Request email change - User profile - Write Permission",
+      "description": "Defines who can request an email change",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-email-change:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Request token change - User profile - Write Permission",
+      "description": "Defines who can request a token change",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-token-change:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Token last update date - User profile - Read Permission",
+      "description": "Defines who can retrieve the last update date of the 2FA token",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-token-date-get:read\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Request password change - User profile - Write Permission",
+      "description": "Defines who can request a password change",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-password-change:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Actuator endpoints Permission",
+      "description": "Defines who can monitor and interact with registry api application via actuator endpoints",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Actuator endpoints\"]",
+        "applyPolicies": "[\"System Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "ITL Messages - Read Permission",
+      "description": "Defines who can view ITL Messages",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:itl-message:read\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\", \"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "ITL Notices - Read Permission",
+      "description": "Defines who can view ITL Notices",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:itl-notice:read\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\", \"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "ITL Messages - Write Permission",
+      "description": "Defines who can send ITL Messages",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:itl-message:write\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "ITL Reconciliation - Read Permission",
+      "description": "Defines who can view ITL Reconciliation info",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:itl-reconciliation:read\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Account Opening Add Account Holder Page Select List View Scope Permission",
+      "description": "Defines who can view select account holder list on the add account holder page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:accountOpeningAccountHolder:fromList:view\"]",
+        "applyPolicies": "[\"Enrolled User Policy\", \"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Account Opening Add Account Holder Page Search By Name View Scope Permission",
+      "description": "Defines who can view search by account holder name element on the add account holder page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:accountOpeningAccountHolder:searchByName:view\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Get alerts - Read Permission",
+      "description": "Defines who can get alert info",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:alerts:read\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\",\"Read only Administrator policy\"]"
+      }
+    },
+    {
+      "name": "Account types",
+      "description": "Account types",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Account Transfer Permission",
+      "description": "Account Transfer Permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Reports Standard Reports Menu Item View Scope Permission",
+      "description": "Defines who can view the standard reports menu",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:standardReportsMenuItem:view\"]",
+        "applyPolicies": "[\"Any Registry Administrator Policy\", \"Authority User Policy\"]"
+      }
+    },
+    {
+      "name": "Task Search Page Account Type Options Item View Scope Permission",
+      "description": "Defines who can view the account type option search criteria",
+      "type": "scope",
+      "logic": "NEGATIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:task-list:search:accountType:view\"]",
+        "applyPolicies": "[\"Authority User Policy\"]"
+      }
+    }
+  ],
+  "scopes": [
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:limitedRegistryAccessMessage:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account:create"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account:close"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:adminMenuItem:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:registryAdminMenuItem:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:transactionMenuItem:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:actionForNonAdmin"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:searchAccountMenuItem:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:registryActivationCodeLink:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:account-open:complete"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:transaction:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:account-open:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:account-open:read",
+      "displayName": "urn:uk-ets-registry-api:task:account-open:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user:enrol"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:transaction:approve"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:account:search:authorizedRepresentativeUrid:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:account:search:installationOrAircraftOperatorId:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:account:search:excludedForYear:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:transaction:initiate"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:transaction-proposal:issuance:complete"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:transaction-proposal:issuance:read",
+      "displayName": "urn:uk-ets-registry-api:task:transaction-proposal:issuance:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account:status:change",
+      "displayName": "urn:uk-ets-registry-api:account:status:change"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account:exclusion-status:change"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:sra:complete"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:transaction-proposal:generic:ar:complete"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user:status:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user:documents:request"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:trusted-accounts-list:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:trusted-accounts-list:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:trusted-accounts-list:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:trusted-accounts-list:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:trusted-accounts-update-description:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:trusted-accounts-cancel-addition:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:issuekpunits:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:actionForReadOnlyAdmins"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:authorised-representatives:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:authorised-representatives:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:system-administration:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:authority-setting:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:trusted-accounts-list-transaction-rules:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:trusted-accounts-list-transaction-rules:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:issue-allowances:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:issue-allowances:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:allocation-table:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:allocation-table:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:emissions-table:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:compliance-status:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account-allocation:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account-allocation:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:task:allocation-table:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:requested-documents:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:documents-request:submit"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:bulk-ar-upload:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:registry-yearly-issuance-allocation:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-email-change:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-token-change:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-token-date-get:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-password-change:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:itl-message:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:itl-message:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:itl-notice:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:itl-reconciliation:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:accountOpeningAccountHolder:fromList:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:accountOpeningAccountHolder:searchByName:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:alerts:read"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:standardReportsMenuItem:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:task-list:search:accountType:view"
+    }
+  ],
+  "decisionStrategy": "UNANIMOUS"
+}

@@ -1,0 +1,45 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <a
+      [routerLink]="['/kpadministration/itl-message-list']"
+      [queryParams]="{ mode: 0 }"
+      class="govuk-back-link"
+      skipLocationChange
+      id="back"
+      >Back to ITL Message list</a
+    >
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-heading-l">Send message to ITL</h1>
+        </legend>
+        <div class="govuk-form-group">
+          <app-form-comment-area
+            controlName="content"
+            [label]="'Enter text'"
+            [hint]="''"
+            [validationErrorMessage]="validationErrorMessage.content"
+          ></app-form-comment-area>
+          <div class="govuk-grid-column-one-half">
+            <div class="govuk-grid-row">
+              <button
+                type="Submit"
+                data-prevent-double-click="true"
+                class="govuk-button govuk-!-margin-right-3"
+                data-module="govuk-button"
+                id="submit"
+              >
+                Send message
+              </button>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>

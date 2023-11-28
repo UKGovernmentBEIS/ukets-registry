@@ -1,0 +1,42 @@
+<ng-container *ngIf="!accountNotes || accountNotes?.length === 0">
+  <span class="govuk-hint"> No items added.</span>
+</ng-container>
+<ng-container *ngIf="accountNotes?.length > 0">
+  <table class="govuk-table" aria-describedby="Domain events table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header date">Date</th>
+        <th scope="col" class="govuk-table__header who">Who</th>
+        <th scope="col" class="govuk-table__header">Notes</th>
+        <th scope="col" class="govuk-table__header" *ngIf="isSeniorAdmin">
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr *ngFor="let accountNote of accountNotes" class="govuk-table__row">
+        <td class="govuk-table__cell date">
+          {{ accountNote.creationDate | gdsDateTimeShort }}
+        </td>
+        <td class="govuk-table__cell break-word">
+          <a
+            class="govuk-link govuk-link--no-visited-state"
+            [routerLink]="['/user-details/' + accountNote.userIdentifier]"
+            >{{ accountNote.userName }}</a
+          >
+        </td>
+        <td class="govuk-table__cell break-word">
+          <app-read-more>{{ accountNote.description }}</app-read-more>
+        </td>
+        <td class="govuk-table__cell" *ngIf="isSeniorAdmin">
+          <a
+            class="govuk-link govuk-link--no-visited-state"
+            [routerLink]="[]"
+            (click)="deleteNoteClick(accountNote.id)"
+            >Delete</a
+          >
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>

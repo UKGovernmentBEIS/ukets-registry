@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_6_0_SET_UK_HOLIDAYS" author="piliotid" context="migrate">
+    <comment>Sets the UK bank Holidays for 2023</comment>
+    <sql>
+        --2023
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-01-02');
+
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-04-7');
+
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-04-10');
+
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-05-01');
+
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-05-29');
+
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-08-28');
+
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-12-25');
+
+        insert into holiday (id,working_off_day)
+        values (nextval('holiday_seq'), '2023-12-26');
+    </sql>
+</changeSet>
+
+    <changeSet id="3_6_0_SET_EXTRA_UK_HOLIDAYS" author="piliotid" context="migrate">
+        <comment>Sets the UK bank Holidays for 2023</comment>
+        <sql>
+            --2023
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2023-5-8');
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_6_0_TEMPORARY_TABLE_TEMP_TRANSACTION_BLOCK_EMPTY_BLOCK_ROLE"
+               author="gourgiog" context="migrate" failOnError="false">
+        <comment>Drops temporary table  transaction_block_empty_block_role created for UKETS-6939</comment>
+        <sql>
+            drop table transaction_block_empty_block_role;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,48 @@
+<app-account-details-view
+  *ngIf="account.accountDetails"
+  [accountDetails]="account.accountDetails"
+  [accountType]="account.accountType"
+  [countries]="countries"
+  [isConfirmMode]="false"
+  [isAdmin]="isAdmin"
+></app-account-details-view>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <a
+      *ngIf="canRequestUpdate"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+      data-module="govuk-button"
+      [routerLink]="'/account/' + account.identifier + '/edit'"
+      skipLocationChange
+    >
+      Update account
+    </a>
+
+    <a
+      *ngIf="canExcludeFromBilling"
+      class="
+        govuk-button govuk-button--secondary
+        govuk-!-margin-right-1 govuk-!-margin-bottom-0
+      "
+      data-module="govuk-button"
+      (click)="excludeBillingClick()"
+      [routerLink]="'/account/' + account.identifier + '/exclude-billing'"
+      skipLocationChange
+    >
+      Exclude from billing
+    </a>
+
+    <a
+      *ngIf="canIncludeInBilling"
+      class="
+        govuk-button govuk-button--secondary
+        govuk-!-margin-right-1 govuk-!-margin-bottom-0
+      "
+      data-module="govuk-button"
+      data-prevent-double-click="true"
+      (click)="inlcudeInBillingClick()"
+    >
+      Include in billing
+    </a>
+  </div>
+</div>

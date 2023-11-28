@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="0_7_0_DROP_TRANSACTION_RESPONSE_BLOCK" author="georgopoulosp" context="migrate">
+        <comment>Drop table transaction_response_block</comment>
+        <sql>
+            drop table "transaction_response_block";
+        </sql>
+    </changeSet>
+    <changeSet id="0_7_0_ADD_COLUMNS_TO_TRANSACTION_RESPONSE" author="georgopoulosp" context="migrate">
+        <comment>Alter table transaction_response by adding columns</comment>
+        <sql>
+            alter table "transaction_response"
+            add column "transaction_block_id" int8 NULL;
+
+            comment ON COLUMN transaction_response.transaction_block_id IS 'Foreign key to transaction block.';
+
+            alter table "transaction_response"
+            add column "details" varchar(2000) NULL;
+
+            comment ON COLUMN transaction_response.details IS 'The description of the error that occurred during the transaction.';
+
+            alter table "transaction_response"
+            add column "date_occurred" timestamp NOT NULL;
+
+            comment ON COLUMN transaction_response.date_occurred IS 'the date that the error occurred.';
+        </sql>
+    </changeSet>
+    <changeSet id="0_7_0_ADD_FOREIGN_KEY_TO_TRANSACTION_RESPONSE" author="georgopoulosp" context="migrate">
+        <comment>Add table transaction_response by adding foreign key to transaction_block</comment>
+        <sql>
+            alter table "transaction_response"
+            add CONSTRAINT fk_tra_res_tra_block FOREIGN KEY (transaction_block_id) REFERENCES transaction_block(id);
+        </sql>
+    </changeSet>
+    <changeSet id="0_7_0_SET_UK_HOLIDAYS" author="gerasopouloss" context="migrate">
+        <comment>Sets the UK bank Holidays</comment>
+        <sql>
+            --2020
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2020-04-10');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2020-04-13');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2020-05-08');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2020-05-25');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2020-08-31');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2020-12-25');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2020-12-28');
+
+            --2021
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-01-01');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-04-02');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-04-05');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-05-03');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-05-31');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-08-30');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-12-27');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2021-12-28');
+        </sql>
+    </changeSet>
+    <changeSet id="0_7_0_ACCOUNT_REGISTRY_CODE" author="pougouniasn" context="migrate">
+        <comment>Sets the registry code to the pre-existing accounts</comment>
+        <sql>
+            update account set registry_code = 'UK' where full_identifier like 'UK%';
+            update account set registry_code = 'GB' where full_identifier like 'GB%';
+        </sql>
+    </changeSet>
+    <changeSet id="0_7_0_ALTER_LEGAL_REPRESENTATIVE_TABLE" author="karavitisk" context="migrate">
+        <comment>Rename the legal_representative table to account_holder_representative and add new column for keeping if the contact type (primary or alternative)</comment>
+        <sql>
+            alter table legal_representative rename to account_holder_representative;
+            alter table account_holder_representative add column "account_contact_type" varchar(15) NULL;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

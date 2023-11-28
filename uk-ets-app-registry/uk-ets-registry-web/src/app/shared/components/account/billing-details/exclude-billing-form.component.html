@@ -1,0 +1,27 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" aria-live="polite">
+    <span class="govuk-caption-xl">Exclude account from billing</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">
+      Leave your remarks regarding the exclusion
+    </h1>
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <app-form-comment-area
+        controlName="remarks"
+        [maxlength]="1024"
+        [rows]="6"
+        [validationErrorMessage]="validationErrorMessage.remarks"
+        [label]="'Exclusion remarks'"
+      >
+      </app-form-comment-area>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="submit"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

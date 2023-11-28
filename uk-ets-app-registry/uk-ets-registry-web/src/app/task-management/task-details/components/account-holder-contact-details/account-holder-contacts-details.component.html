@@ -1,0 +1,77 @@
+<ng-container *ngIf="!installationTransfer; else oldAccountHolderTemplate">
+  <ng-container
+    *ngIf="
+      taskDetails.account?.accountHolderContactInfo
+        .primaryContact as primaryContact
+    "
+  >
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-body-l" [class.disabled]="accountHolderChanged"
+            >Primary Contact(s)</span
+          >
+        </dt>
+      </div>
+    </dl>
+
+    <div class="govuk-details__text">
+      <app-task-details-account-holder-contact-summary
+        [contactType]="primaryContactType"
+        [accountHolderContact]="primaryContact"
+        [accountHolderChanged]="accountHolderChanged"
+      >
+      </app-task-details-account-holder-contact-summary>
+
+      <app-task-details-account-holder-contact-summary
+        *ngIf="
+          taskDetails.account?.accountHolderContactInfo
+            .alternativeContact as alternativeContact
+        "
+        [contactType]="alternativeContactType"
+        [accountHolderContact]="alternativeContact"
+        [accountHolderChanged]="accountHolderChanged"
+      >
+      </app-task-details-account-holder-contact-summary>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template #oldAccountHolderTemplate>
+  <ng-container
+    *ngIf="
+      taskDetails.account?.transferringAccountHolderContactInfo
+        .primaryContact as primaryContact
+    "
+  >
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          <span class="govuk-body-l" [class.disabled]="accountHolderChanged"
+            >Primary Contact(s)</span
+          >
+        </dt>
+      </div>
+    </dl>
+
+    <div class="govuk-details__text">
+      <app-task-details-account-holder-contact-summary
+        [contactType]="primaryContactType"
+        [accountHolderContact]="primaryContact"
+        [accountHolderChanged]="accountHolderChanged"
+      >
+      </app-task-details-account-holder-contact-summary>
+
+      <app-task-details-account-holder-contact-summary
+        *ngIf="
+          taskDetails.account?.transferringAccountHolderContactInfo
+            .alternativeContact as alternativeContact
+        "
+        [contactType]="alternativeContactType"
+        [accountHolderContact]="alternativeContact"
+        [accountHolderChanged]="accountHolderChanged"
+      >
+      </app-task-details-account-holder-contact-summary>
+    </div>
+  </ng-container>
+</ng-template>

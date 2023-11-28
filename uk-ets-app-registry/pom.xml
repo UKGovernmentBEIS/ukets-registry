@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>uk.gov.ets</groupId>
+    <artifactId>uk-ets-registry</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.10</version>
+        <relativePath/>
+    </parent>
+
+    <modules>
+        <module>uk-ets-registry-api</module>
+        <module>uk-ets-registry-web</module>
+        <module>uk-ets-db</module>
+        <module>uk-ets-transaction-engine</module>
+        <module>uk-ets-reconciliation</module>
+        <module>uk-ets-allocations</module>
+        <module>uk-ets-transaction-domain</module>
+        <module>uk-ets-registry-user-notifications</module>
+        <module>uk-ets-registry-event</module>
+        <module>uk-ets-itl-reconciliation-domain</module>
+        <module>uk-ets-itl-reconciliation-engine</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+        <maven.versions.plugin>2.7</maven.versions.plugin>
+        <maven.checkstyle.plugin>3.1.1</maven.checkstyle.plugin>
+        <maven.checkstyle.plugin.configLocation>checkstyle-ukets.xml</maven.checkstyle.plugin.configLocation>
+        <maven.pmd.plugin>3.15.0</maven.pmd.plugin>
+        <maven.spotbugs.plugin>4.7.2.1</maven.spotbugs.plugin>
+        <maven.javadoc.plugin>3.1.1</maven.javadoc.plugin>
+        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+        <maven.frontend.plugin>1.8.0</maven.frontend.plugin>
+        <maven.properties.plugin>1.0.0</maven.properties.plugin>
+        <maven.project.info.reports.plugin>3.0.0</maven.project.info.reports.plugin>
+        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+        <failsafeArgLine>--illegal-access=permit</failsafeArgLine>
+        <surefireArgLine>--illegal-access=permit</surefireArgLine>
+        <cucumber.version>4.3.1</cucumber.version>
+        <node.version>v16.20.2</node.version>
+        <npm.version>8.1.2</npm.version>
+        <keycloak.version>21.1.2</keycloak.version>
+        <commons.beanutils.version>1.9.4</commons.beanutils.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <openpdf-version>1.3.23</openpdf-version>
+        <libphonenumber.version>8.12.14</libphonenumber.version>
+        <togglz.version>2.8.0</togglz.version>
+        <ui.full.build>true</ui.full.build>
+        <ui.quick.build>false</ui.quick.build>
+        <dependency.check.maven.version>5.3.0</dependency.check.maven.version>
+        <dependency.check.maven.skip>false</dependency.check.maven.skip>
+        <jacoco.skip>true</jacoco.skip>
+        <shedlock.version>4.18.0</shedlock.version>
+        <apache.tika.version>1.28</apache.tika.version>
+        <fastexcel.version>0.12.12</fastexcel.version>
+        <re2j.version>1.5</re2j.version>
+        <equalsverifier.version>3.8.1</equalsverifier.version>
+        <log4j2.logstash.layout.version>1.0.5</log4j2.logstash.layout.version>
+        <org.testcontainers.version>1.16.0</org.testcontainers.version>
+        <java.jwt.version>3.11.0</java.jwt.version>
+        <springdoc.openapi.ui.version>1.7.0</springdoc.openapi.ui.version>
+        <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
+        <hibernate-types.version>2.14.0</hibernate-types.version>
+        <jsoup.version>1.14.3</jsoup.version>
+        <log4j2.version>2.17.1</log4j2.version>
+        <checkstyle.version>8.45.1</checkstyle.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>instrument</id>
+            <properties>
+                <jacoco.skip>false</jacoco.skip>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>buildQuickly</id>
+            <properties>
+                <pmd.skip>true</pmd.skip>
+                <jacoco.skip>true</jacoco.skip>
+                <spotbugs.skip>true</spotbugs.skip>
+                <checkstyle.skip>true</checkstyle.skip>
+                <ui.full.build>false</ui.full.build>
+                <ui.quick.build>true</ui.quick.build>
+                <dependency.check.maven.skip>true</dependency.check.maven.skip>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven.checkstyle.plugin}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

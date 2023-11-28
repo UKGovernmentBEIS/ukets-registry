@@ -1,0 +1,26 @@
+@import '_variables';
+
+.inline-block {
+  display: inline-block;
+}
+
+.img-container {
+  vertical-align: top;
+  padding-top: 5px;
+}
+
+.file-date {
+  font-weight: 400;
+  color: govuk-colour('dark-grey');
+  font-size: 0.85em;
+
+  .date {
+    font-weight: bold;
+  }
+}
+
+.hint {
+  line-height: 2.7em;
+  border-left: 10px solid govuk-colour('mid-grey');
+  padding-left: 10px;
+}

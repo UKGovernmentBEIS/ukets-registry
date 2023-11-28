@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.config.SecurityConfig"/>
+        <Bug pattern="SPRING_CSRF_PROTECTION_DISABLED"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.common.aspect.TimeElapsedAspect"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.user.UserGeneratorService"/>
+        <Bug pattern="HARD_CODE_PASSWORD"/>
+    </Match>
+    <Match>
+        <Class name="~.*\.*Controller"/>
+        <Bug pattern="SPRING_ENDPOINT"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.common.web.filter.XRequestIdFilter"/>
+        <Bug pattern="SERVLET_HEADER"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.system.administration.service.SystemAdministrationServiceImpl"/>
+        <Bug pattern="FORMAT_STRING_MANIPULATION"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.auditevent.DomainEventConsumer"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableExcelFileValidationService"/>
+        <Bug pattern="WEAK_MESSAGE_DIGEST_MD5"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.services.FileUploadService"/>
+        <Bug pattern="WEAK_MESSAGE_DIGEST_MD5"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableExcelFileValidationService"/>
+        <Bug pattern="WEAK_FILENAMEUTILS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableService"/>
+        <Bug pattern="WEAK_FILENAMEUTILS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.user.messaging.KeycloakEventListener"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.user.profile.service.CommonEmergencyChangeService"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.authz.SecurityPolicyExporter"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.system.administration.service.SystemAdministrationServiceImpl"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableExcelFileValidationService"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.user.service.UserService"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.notification.emailgeneration.TransactionCompletionEmailGenerator"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.user.messaging.handlers.KeycloakEventNotificationHandler"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.user.messaging.KeycloakEventHelper"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.emissionstable.services.EmissionsTableExcelFileValidationService"/>
+         <Or>
+	        <Bug pattern="FORMAT_STRING_MANIPULATION"/>
+	        <Bug pattern="IMPROPER_UNICODE"/>
+        </Or>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.wrappers.EmissionsTableContentValidationWrapper"/>
+        <Bug pattern="FORMAT_STRING_MANIPULATION"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.emissionstable.services.EmissionsTableExcelHeaderValidator"/>
+        <Bug pattern="FORMAT_STRING_MANIPULATION"/>
+    </Match>    
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.emissionstable.services.EmissionsTableExcelFilenameValidator"/>
+        <Or>
+	        <Bug pattern="IMPROPER_UNICODE"/>
+	        <Bug pattern="WEAK_FILENAMEUTILS"/>
+        </Or>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.channel.EmailChannelClient"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.notification.userinitiated.services.StringEmailTemplateProcessor"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableExcelFileValidationService"/>
+        <Bug pattern="FORMAT_STRING_MANIPULATION"/>
+    </Match>
+    <Match>
+        <Class name="gov.uk.ets.registry.api.file.upload.allocationtable.notification.UploadAllocationTableNotificationAppliance"/>
+        <Bug pattern="WEAK_FILENAMEUTILS"/>
+    </Match>     
+</FindBugsFilter>

@@ -1,0 +1,20 @@
+<form [formGroup]="form">
+  <h1 class="govuk-heading-xl">Claim task</h1>
+  <app-form-comment-area
+    controlName="comment"
+    [label]="
+      (isAuthorityUser$ | async) || (areTasksClaimed$ | async)
+        ? 'Explain why you\'re claiming this task'
+        : 'Explain why you\'re claiming this task (optional)'
+    "
+  ></app-form-comment-area>
+  <button
+    (click)="submit()"
+    data-prevent-double-click="true"
+    class="govuk-button submit-form"
+    data-module="govuk-button"
+    id="submit"
+  >
+    Claim task
+  </button>
+</form>

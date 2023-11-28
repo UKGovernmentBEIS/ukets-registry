@@ -1,0 +1,36 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr class="govuk-section-break govuk-section-break--visible" />
+  </div>
+  <div class="govuk-grid-row">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">
+          Reason for requesting a change
+        </dt>
+      </div>
+      <div class="govuk-summary-list__row govuk-summary-list__row--no-border">
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails.comment }}
+        </dd>
+      </div>
+    </dl>
+
+    <app-summary-list
+      title="User details"
+      [class]="'govuk-summary-list--no-border'"
+      [lines]="{
+        'Email address': taskDetails.email,
+        'User ID': taskDetails.initiatorUrid,
+        'First and middle names': taskDetails.firstName,
+        'Last name': taskDetails.lastName
+      }"
+      [links]="
+        isAdmin
+          ? { 'User ID': '/user-details/' + taskDetails.initiatorUrid }
+          : null
+      "
+      [skipLocationChange]="false"
+    ></app-summary-list>
+  </div>
+</div>

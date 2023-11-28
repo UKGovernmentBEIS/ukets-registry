@@ -1,0 +1,41 @@
+@import '_variables';
+@import 'input-helper';
+
+/* shows link tooltip on top of other elements */
+:host ::ng-deep .ql-snow .ql-tooltip {
+  z-index: 2;
+}
+
+/* adds minimum height to text editor
+(after the text goes over this height the editor height will grow dynamically)
+*/
+:host ::ng-deep .ql-editor {
+  min-height: 200px;
+}
+
+/* adds border to toolbar buttons and increases their size*/
+:host ::ng-deep .ql-snow.ql-toolbar button,
+:host ::ng-deep .ql-snow .ql-toolbar button {
+  border: 2px solid govuk-colour('black');
+  margin-left: -2px; // needed to hide the double border between adjacent buttons
+  width: 35px;
+  height: 35px;
+}
+
+/* remove borders from toolbar*/
+:host ::ng-deep .ql-toolbar.ql-snow {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+/* makes the editor (text-area) behave like a govuk-input (styling, focus etc) */
+:host ::ng-deep .ql-editor {
+  @extend %input-extender;
+}
+
+/* this trick is used to make the element with .ql-editor
+inherit the govuk-input--error class styles (mainly the border) */
+:host ::ng-deep .govuk-input--error .ql-editor {
+  @extend .govuk-input--error;
+}

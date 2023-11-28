@@ -1,0 +1,30 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a (click)="onGoBack()" class="govuk-back-link" id="back" [routerLink]="[]"
+      >Back</a
+    >
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl">Task Incomplete</span>
+        Are you sure you want to leave this page before completing the task?
+      </h1>
+    </legend>
+    <hr class="govuk-section-break govuk-section-break--m" />
+    <div class="govuk-form-group">
+      <p class="govuk-body">
+        Some documents have been uploaded but the task has not been completed.
+      </p>
+    </div>
+    <button
+      (click)="onLeave()"
+      class="govuk-button govuk-button--warning"
+      data-module="govuk-button"
+    >
+      Yes, I want to leave
+    </button>
+  </div>
+</div>

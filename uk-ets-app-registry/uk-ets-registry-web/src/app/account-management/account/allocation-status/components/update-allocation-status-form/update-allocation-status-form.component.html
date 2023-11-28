@@ -1,0 +1,95 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Change withhold status</h1>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <form [formGroup]="formGroup" (submit)="onSubmit()">
+      <table
+        class="govuk-table"
+        aria-describedby="Allocation status"
+        formGroupName="status"
+      >
+        <caption class="govuk-table__caption">
+          Select
+        </caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Year</th>
+            <th scope="col" class="govuk-table__header">
+              Change withhold status
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr
+            *ngFor="let status of accountAllocationStatus | keyvalue"
+            class="govuk-table__row"
+          >
+            <td class="govuk-table__cell">
+              {{ status.key }}
+            </td>
+            <td class="govuk-table__cell">
+              <div
+                class="govuk-radios govuk-radios--inline govuk-radios--small"
+              >
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    [attr.id]="status.key + '-' + allocationStatusEnum.ALLOWED"
+                    [attr.name]="status.key"
+                    type="radio"
+                    [value]="allocationStatusEnum.ALLOWED"
+                    [formControlName]="status.key"
+                  />
+                  <label
+                    class="govuk-label govuk-radios__label"
+                    [attr.for]="status.key + '-' + allocationStatusEnum.ALLOWED"
+                  >
+                    {{
+                      allocationStatusLabels[allocationStatusEnum.ALLOWED].label
+                    }}
+                  </label>
+                </div>
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input govuk-radios--small"
+                    [attr.id]="status.key + '-' + allocationStatusEnum.WITHHELD"
+                    [attr.name]="status.key"
+                    type="radio"
+                    [value]="allocationStatusEnum.WITHHELD"
+                    [formControlName]="status.key"
+                  />
+                  <label
+                    class="govuk-label govuk-radios__label"
+                    [attr.for]="
+                      status.key + '-' + allocationStatusEnum.WITHHELD
+                    "
+                  >
+                    {{
+                      allocationStatusLabels[allocationStatusEnum.WITHHELD]
+                        .label
+                    }}
+                  </label>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <app-form-comment-area
+        [label]="'Enter justification for changing the withhold status'"
+        [maxlength]="1024"
+        controlName="justification"
+        [validationErrorMessage]="validationErrorMessage.comment"
+      ></app-form-comment-area>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

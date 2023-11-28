@@ -1,0 +1,19 @@
+<div class="govuk-form-group">
+  <label class="govuk-label" [attr.for]="id">
+    {{ label }}
+  </label>
+  <span [attr.id]="hintId" class="govuk-hint">
+    {{ hint }}
+  </span>
+  <select
+    class="govuk-select govuk-!-width-full"
+    [attr.id]="id"
+    [attr.name]="id"
+    [attr.aria-describedby]="hintId"
+    [formControl]="formControl"
+  >
+    <option *ngFor="let option of options" [ngValue]="option.value">
+      {{ option.label }}
+    </option>
+  </select>
+</div>

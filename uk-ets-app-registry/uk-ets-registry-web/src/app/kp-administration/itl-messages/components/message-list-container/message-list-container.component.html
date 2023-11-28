@@ -1,0 +1,69 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">ITL Messages</h1>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <button
+      *ngIf="(isReadOnlyAdmin$ | async) === false"
+      (click)="navigateToSendMessage()"
+      class="govuk-button"
+      data-module="govuk-button"
+      data-prevent-double-click="true"
+    >
+      Send message
+    </button>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <app-show-hide-toggle-button
+          [displayable]="resultsLoaded$ | async"
+          [condition]="hideCriteria$ | async"
+          [trueStateLabel]="'Show filters'"
+          [falseStateLabel]="'Hide filters'"
+          (toggle)="hideShowCriteria($event)"
+        ></app-show-hide-toggle-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-search-messages-form
+  [ngStyle]="{ display: (hideCriteria$ | async) ? 'none' : 'block' }"
+  (search)="onSearchMessages($event)"
+  (submitClick)="onSubmitClick()"
+  (errorDetails)="onError($event)"
+  [storedCriteria]="storedCriteria$ | async"
+>
+</app-search-messages-form>
+
+<app-search-messages-results
+  *ngIf="resultsLoaded$ | async"
+  [results]="results$ | async"
+  [sortParameters]="sortParameters$ | async"
+  (sort)="onSort($event)"
+>
+</app-search-messages-results>
+
+<app-empty-search-results
+  *ngIf="(resultsLoaded$ | async) && (results$ | async).length === 0"
+>
+</app-empty-search-results>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-paginator
+      [pagination]="pagination$ | async"
+      [pageSizeOptions]="pageSizeOptions"
+      (selectFirstPage)="goToFirstPageOfResults($event)"
+      (selectLastPage)="goToLastPageOfResults($event)"
+      (selectNextPage)="goToNextPageOfResults($event)"
+      (selectPreviousPage)="goToPreviousPageOfResults($event)"
+      (changePageSize)="onChangePageSize($event)"
+    >
+    </app-paginator>
+  </div>
+</div>

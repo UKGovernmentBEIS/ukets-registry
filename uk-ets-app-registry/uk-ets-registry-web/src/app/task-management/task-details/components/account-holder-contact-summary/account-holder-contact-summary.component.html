@@ -1,0 +1,239 @@
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span
+      class="govuk-details__summary-text"
+      [class.disabled]="accountHolderChanged"
+    >
+      {{ getNameDetails() }}
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    <ng-container>
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <span class="govuk-body-l" [class.disabled]="accountHolderChanged"
+              >Personal Details</span
+            >
+          </dt>
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="accountHolderContact.details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="accountHolderChanged"
+          >
+            First and middle names
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="accountHolderChanged"
+          >
+            {{ accountHolderContact.details?.firstName }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="accountHolderChanged"
+          >
+            Last name
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="accountHolderChanged"
+          >
+            {{ accountHolderContact.details?.lastName }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="accountHolderChanged"
+          >
+            I confirm that the {{ getTypeText() }} is aged 18 or over
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="accountHolderChanged"
+          >
+            Yes
+          </dd>
+        </div>
+      </dl>
+
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <span class="govuk-body-l" [class.disabled]="accountHolderChanged"
+              >Address and contact details</span
+            >
+          </dt>
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border"
+        *ngIf="accountHolderContact"
+      >
+        <div class="govuk-summary-list__row">
+          <dt
+            class="govuk-summary-list__key"
+            [class.disabled]="accountHolderChanged"
+          >
+            Company position
+          </dt>
+          <dd
+            class="govuk-summary-list__value"
+            [class.disabled]="accountHolderChanged"
+          >
+            {{ accountHolderContact.positionInCompany }}
+          </dd>
+        </div>
+        <ng-container *ngIf="accountHolderContact.address">
+          <div class="govuk-summary-list__row">
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              Work address
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              {{ accountHolderContact.address.buildingAndStreet }}
+              <ng-container
+                *ngIf="
+                  accountHolderContact.address.buildingAndStreet2 ||
+                  accountHolderContact.address.buildingAndStreet3
+                "
+              >
+                <br />
+                {{ accountHolderContact.address.buildingAndStreet2 }}
+              </ng-container>
+              <ng-container
+                *ngIf="accountHolderContact.address.buildingAndStreet3"
+              >
+                <br />{{
+                  accountHolderContact.address.buildingAndStreet3
+                }}</ng-container
+              >
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              Town or city
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              {{ accountHolderContact.address.townOrCity }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              State or Province
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              {{ accountHolderContact.address.stateOrProvince }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              Country
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              {{
+                accountHolderContact.address.country | countryNameAsync | async
+              }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              Postal Code or ZIP
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              {{ accountHolderContact.address.postCode }}
+            </dd>
+          </div>
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="accountHolderContact.phoneNumber?.phoneNumber1"
+          >
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              Work phone number 1
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              +{{ accountHolderContact.phoneNumber.countryCode1
+              }}{{ accountHolderContact.phoneNumber.phoneNumber1 }}
+            </dd>
+          </div>
+          <div
+            class="govuk-summary-list__row"
+            *ngIf="accountHolderContact.phoneNumber?.phoneNumber2"
+          >
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              Work phone number 2
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              +{{ accountHolderContact.phoneNumber.countryCode2
+              }}{{ accountHolderContact.phoneNumber.phoneNumber2 }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt
+              class="govuk-summary-list__key"
+              [class.disabled]="accountHolderChanged"
+            >
+              Email address
+            </dt>
+            <dd
+              class="govuk-summary-list__value"
+              [class.disabled]="accountHolderChanged"
+            >
+              {{ accountHolderContact.emailAddress?.emailAddress }}
+            </dd>
+          </div>
+        </ng-container>
+      </dl>
+    </ng-container>
+  </div>
+</details>

@@ -1,0 +1,27 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+  <div class="govuk-fieldset">
+    <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl"> Set/Unset Authority User </span>
+        Add user ID
+      </h1>
+    </div>
+  </div>
+
+  <app-form-control-text
+    [validationErrorMessage]="validationErrorMessage.urid"
+    [label]="''"
+    [showLabel]="false"
+    controlName="urid"
+  ></app-form-control-text>
+
+  <button
+    data-prevent-double-click="true"
+    class="govuk-button"
+    data-module="govuk-button"
+    type="Submit"
+    id="continue"
+  >
+    Continue
+  </button>
+</form>

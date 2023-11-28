@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_22_0_ADD_USER_ROLE_TABLES" author="trifyllisa" context="migrate">
+        <comment>Adds new tables and relationships concerning the user roles from keycloak.</comment>
+        <sql>
+
+            create sequence iam_user_role_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1
+            no cycle;
+
+            create table iam_user_role
+            (
+            id bigint not null,
+            iam_identifier varchar(255),
+            role_name varchar(255),
+            primary key (id)
+            );
+
+            create sequence user_role_mapping_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            create table user_role_mapping
+            (
+            id bigint not null,
+            role_id bigint
+            constraint fk_user_role_mapping_role references iam_user_role,
+            user_id bigint
+            constraint fk_user_role_mapping_user references users,
+            mapped_on timestamp not null,
+            primary key (id),
+            unique (role_id, user_id)
+            );
+
+        </sql>
+        <rollback>
+            drop table user_role_mapping cascade ;
+            drop sequence user_role_mapping_seq;
+            drop table iam_user_role cascade ;
+            drop sequence iam_user_role_seq;
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>

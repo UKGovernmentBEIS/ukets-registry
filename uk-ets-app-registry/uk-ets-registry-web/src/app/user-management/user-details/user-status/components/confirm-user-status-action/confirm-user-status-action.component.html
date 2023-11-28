@@ -1,0 +1,67 @@
+<h1 class="govuk-heading-xl">
+  <span class="govuk-caption-xl">Change the user status</span>
+  Check your update and confirm
+</h1>
+<form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Current user status</dt>
+      <dd class="govuk-summary-list__value">
+        {{ currentUserStatus | userStatus }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Action</dt>
+      <dd class="govuk-summary-list__value">
+        {{ userStatusActionSnapshot?.label }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">New user status</dt>
+      <dd class="govuk-summary-list__value">
+        <span class="panel-change-notification">
+          {{ userStatusActionSnapshot?.newStatus | userStatus }}
+        </span>
+      </dd>
+    </div>
+  </dl>
+
+  <div class="govuk-warning-text" *ngIf="userStatusActionSnapshot?.message">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      {{ userStatusActionSnapshot?.message }}
+    </strong>
+  </div>
+
+  <app-form-comment-area
+    *ngIf="['RESTORE', 'SUSPEND'].includes(this.userStatusAction?.value)"
+    controlName="comment"
+    [label]="
+      'Explain why you decided to ' +
+      ('RESTORE' === this.userStatusAction?.value ? 'restore' : 'suspend') +
+      ' this user'
+    "
+    [hint]="''"
+    [validationErrorMessage]="validationErrorMessage.comment"
+  ></app-form-comment-area>
+
+  <button
+    data-prevent-double-click="true"
+    class="govuk-button submit-form"
+    data-module="govuk-button"
+    type="submit"
+    id="submit"
+  >
+    Apply
+  </button>
+  <div>
+    <a
+      [routerLink]="[]"
+      class="govuk-link govuk-link--no-visited-state"
+      (click)="onCancel()"
+      (keyup)="(onCancel)"
+      >Cancel</a
+    >
+  </div>
+</form>

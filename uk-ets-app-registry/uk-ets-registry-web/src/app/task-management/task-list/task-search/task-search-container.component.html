@@ -1,0 +1,127 @@
+<app-bulk-action-success></app-bulk-action-success>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-report-success-banner
+      [isVisible]="isReportSuccess$ | async"
+    ></app-report-success-banner>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Tasks</h1>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <app-show-hide-toggle-button
+      [displayable]="resultsLoaded$ | async"
+      [condition]="hideCriteria$ | async"
+      [trueStateLabel]="'Show filters'"
+      [falseStateLabel]="'Hide filters'"
+      (toggle)="hideShowCriteria($event)"
+    >
+    </app-show-hide-toggle-button>
+
+    <span class="vertical-divider"></span>
+
+    <ng-container
+      *ngIf="
+        'urn:uk-ets-reports-api:anyReportingAction'
+          | protect: 'uk-ets-reports-api'
+          | async
+      "
+    >
+      <app-search-report-button
+        [criteria]="storedCriteria$ | async"
+        (requestReport)="requestReport($event)"
+      ></app-search-report-button>
+
+      <span class="vertical-divider"></span>
+    </ng-container>
+
+    <app-claim-assign-button-group
+      [disabled]="disableClaimAssignButtons"
+      [displayable]="resultsLoaded$ | async"
+      (claim)="onClaim()"
+      (assign)="onAssign()"
+    ></app-claim-assign-button-group>
+  </div>
+</div>
+
+<app-search-tasks-admin-criteria
+  *ngIf="
+    ('urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async) &&
+    (sortParameters$ | async) as sortParameters
+  "
+  [ngStyle]="{ display: (hideCriteria$ | async) ? 'none' : 'block' }"
+  (search)="onSearchTasks($event, sortParameters)"
+  (submitClick)="onSubmitClick()"
+  [storedCriteria]="storedCriteria$ | async"
+  [showAdvancedSearch]="showAdvancedSearch$ | async"
+  [taskTypeOptions]="taskTypeOptions$ | async"
+  [allocationYearOptions]="allocationYearOptions$ | async"
+  (advancedSearch)="toggleAdvancedSearch($event)"
+  (errorDetails)="onError($event)"
+></app-search-tasks-admin-criteria>
+
+<app-search-tasks-user-criteria
+  *ngIf="
+    ('urn:uk-ets-registry-api:actionForNonAdmin' | protect | async) &&
+    (sortParameters$ | async) as sortParameters
+  "
+  [ngStyle]="{ display: (hideCriteria$ | async) ? 'none' : 'block' }"
+  (search)="onSearchTasks($event, sortParameters)"
+  (submitClick)="onSubmitClick()"
+  [storedCriteria]="storedCriteria$ | async"
+  [taskTypeOptions]="taskTypeOptions$ | async"
+  [accountTypeOptions]="accountTypeOptions$ | async"
+  [showAdvancedSearch]="showAdvancedSearch$ | async"
+  (advancedSearch)="toggleAdvancedSearch($event)"
+  (errorDetails)="onError($event)"
+></app-search-tasks-user-criteria>
+
+<app-search-tasks-results
+  *ngIf="resultsLoaded$ | async"
+  [results]="results$ | async"
+  [selectedTasks]="selectedTasks$ | async"
+  [taskTypeOptionsAll]="taskTypeOptionsAll$ | async"
+  [accountTypeOptions]="accountTypeOptions$ | async"
+  (selectedTasksChanged)="onSelectedTasksChanged($event)"
+  (sort)="onSort($event)"
+  (openDetail)="onOpenTaskDetail($event)"
+  [sortParameters]="sortParameters$ | async"
+></app-search-tasks-results>
+
+<app-empty-search-results
+  *ngIf="(resultsLoaded$ | async) && (results$ | async).length === 0"
+>
+</app-empty-search-results>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-paginator
+      [pagination]="pagination$ | async"
+      [pageSizeOptions]="pageSizeOptions"
+      (selectFirstPage)="goToFirstPageOfResults($event)"
+      (selectLastPage)="goToLastPageOfResults($event)"
+      (selectNextPage)="goToNextPageOfResults($event)"
+      (selectPreviousPage)="goToPreviousPageOfResults($event)"
+      (changePageSize)="onChangePageSize($event)"
+    >
+    </app-paginator>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-5">
+  <div class="govuk-grid-column-one-third">
+    <app-claim-assign-button-group
+      [disabled]="disableClaimAssignButtons"
+      [displayable]="resultsLoaded$ | async"
+      (claim)="onClaim()"
+      (assign)="onAssign()"
+    ></app-claim-assign-button-group>
+  </div>
+</div>

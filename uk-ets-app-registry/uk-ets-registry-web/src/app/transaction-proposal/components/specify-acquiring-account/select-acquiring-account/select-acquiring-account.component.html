@@ -1,0 +1,254 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-title-proposal-transaction-type
+      [proposalTransactionType]="transactionType"
+    ></app-title-proposal-transaction-type>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">Specify acquiring account</h1>
+        </div>
+        <span
+          *ngIf="showTrustedAccountOptions()"
+          id="changed-name-hint"
+          class="govuk-hint"
+        >
+          Select one account from the list
+        </span>
+      </div>
+      <hr class="govuk-section-break govuk-section-break--m" />
+      <div class="govuk-fieldset">
+        <div
+          *ngIf="
+            showTrustedAccountOptions() &&
+            atLeastOneTrustedAccountUnderTheSameAccountHolder()
+          "
+          class="govuk-fieldset__legend govuk-fieldset__legend--m"
+        >
+          <span
+            *ngIf="_transferringAccount?.accountHolder?.type"
+            class="govuk-fieldset__heading"
+          >
+            Trusted accounts under
+            {{ _transferringAccount.accountHolder.details.name }}
+          </span>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <table
+              aria-describedby="trusted-accounts"
+              *ngIf="
+                showTrustedAccountOptions() &&
+                atLeastOneTrustedAccountUnderTheSameAccountHolder()
+              "
+              class="govuk-table govuk-!-margin-bottom-4"
+            >
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th
+                    scope="col"
+                    class="govuk-table__header govuk-!-width-one-third"
+                  >
+                    Account number
+                  </th>
+                  <th scope="col" class="govuk-table__header">Account name</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr
+                  *ngFor="
+                    let accountInfo of trustedAccountsResult?.trustedAccountsUnderTheSameHolder;
+                    let i = index
+                  "
+                  [class.ukets-background-light-grey]="
+                    formGroup.get('acquiringAccountIdentifier').value ===
+                    (i + 1).toString()
+                  "
+                  class="govuk-table__row"
+                >
+                  <th
+                    scope="row"
+                    class="govuk-table__header govuk-!-width-one-third"
+                  >
+                    <div class="govuk-radios govuk-radios--small">
+                      <div class="govuk-radios__item">
+                        <input
+                          class="govuk-radios__input"
+                          [id]="
+                            'acquiring-account-' + accountInfo?.fullIdentifier
+                          "
+                          type="radio"
+                          formControlName="acquiringAccountIdentifier"
+                          value="{{ accountInfo.fullIdentifier }}"
+                          data-aria-controls="conditional-how-contacted-conditional"
+                        />
+                        <label
+                          class="govuk-label govuk-radios__label"
+                          [attr.for]="
+                            'acquiring-account-' + accountInfo?.fullIdentifier
+                          "
+                        >
+                          {{ accountInfo.fullIdentifier }}
+                        </label>
+                      </div>
+                    </div>
+                  </th>
+
+                  <td class="govuk-table__cell" style="vertical-align: middle">
+                    {{ accountInfo.accountName }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!--        TODO: the following part is almost the same with the previous one. It should be merged into one common component-->
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div
+              *ngIf="
+                showTrustedAccountOptions() && atLeastOneOtherTrustedAccount()
+              "
+              class="govuk-fieldset__legend govuk-fieldset__legend--m"
+            >
+              Other trusted accounts
+            </div>
+            <table
+              aria-describedby="trusted-accounts"
+              *ngIf="
+                showTrustedAccountOptions() && atLeastOneOtherTrustedAccount()
+              "
+              class="govuk-table govuk-!-margin-bottom-4"
+            >
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th
+                    scope="col"
+                    class="govuk-table__header govuk-!-width-one-third"
+                  >
+                    Account number
+                  </th>
+                  <th scope="col" class="govuk-table__header">
+                    Account description
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr
+                  *ngFor="
+                    let otherTrustedAccountInfo of trustedAccountsResult?.otherTrustedAccounts;
+                    let i = index
+                  "
+                  [class.ukets-background-light-grey]="
+                    formGroup.get('acquiringAccountIdentifier').value ===
+                    (i + 1).toString()
+                  "
+                  class="govuk-table__row"
+                >
+                  <th
+                    scope="row"
+                    class="govuk-table__header govuk-!-width-one-third"
+                  >
+                    <div class="govuk-radios govuk-radios--small">
+                      <div class="govuk-radios__item">
+                        <input
+                          class="govuk-radios__input"
+                          [id]="
+                            'acquiring-account-' +
+                            otherTrustedAccountInfo?.fullIdentifier
+                          "
+                          type="radio"
+                          formControlName="acquiringAccountIdentifier"
+                          value="{{ otherTrustedAccountInfo?.fullIdentifier }}"
+                          data-aria-controls="conditional-how-contacted-conditional"
+                        />
+                        <label
+                          class="govuk-label govuk-radios__label"
+                          [attr.for]="
+                            'acquiring-account-' +
+                            otherTrustedAccountInfo?.fullIdentifier
+                          "
+                        >
+                          {{ otherTrustedAccountInfo?.fullIdentifier }}
+                        </label>
+                      </div>
+                    </div>
+                  </th>
+
+                  <td class="govuk-table__cell" style="vertical-align: middle">
+                    {{ otherTrustedAccountInfo.accountName }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div
+              *ngIf="transfersOutsideTalAllowed"
+              class="govuk-radios govuk-radios--conditional govuk-radios--small"
+            >
+              <div
+                *ngIf="showTrustedAccountOptions()"
+                class="govuk-radios__divider"
+              >
+                or
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [id]="'user-defined-acquiring-account'"
+                  type="radio"
+                  *ngIf="showTrustedAccountOptions()"
+                  formControlName="acquiringAccountIdentifier"
+                  [value]="USER_DEFINED_ACCOUNT"
+                  data-aria-controls="conditional-how-contacted-conditional"
+                />
+                <label
+                  class="govuk-label govuk-radios__label"
+                  *ngIf="showTrustedAccountOptions()"
+                  [attr.for]="'user-defined-acquiring-account'"
+                >
+                  Enter the account number
+                </label>
+              </div>
+              <div
+                *ngIf="
+                  acquiringAccountIdentifierControl.value ===
+                  USER_DEFINED_ACCOUNT
+                "
+                [class.govuk-radios__conditional]="showTrustedAccountOptions()"
+                id="conditional-how-contacted-conditional-3"
+              >
+                <app-account-input
+                  titleToDisplay="Account Number"
+                  subTitleToDisplay="For example {{
+                    getAccountCode()
+                  }}-xxx-xxxxxx-x-xx"
+                  countryCode="userDefinedCountryCode"
+                  accountType="userDefinedAccountType"
+                  accountId="userDefinedAccountId"
+                  period="userDefinedPeriod"
+                  checkDigits="userDefinedCheckDigits"
+                ></app-account-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="govuk-!-margin-top-4 govuk-!-margin-bottom-10">
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

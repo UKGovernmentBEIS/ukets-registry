@@ -1,0 +1,113 @@
+<ng-container
+  *ngIf="transactionBlocks != null && transactionBlocks.length === 0"
+>
+  <span class="govuk-hint"> No items added.</span>
+</ng-container>
+<ng-container *ngIf="transactionBlocks != null && transactionBlocks.length > 0">
+  <ng-container *ngIf="!isEtsTransaction; else etsTransactionTemplate">
+    <table class="govuk-table" aria-describedby="display-transaction-blocks">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Unit type</th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            Original CP
+          </th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            Applicable CP
+          </th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            Quantity to transfer
+          </th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            Project or activity
+          </th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <ng-container *ngFor="let block of transactionBlocks">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              {{ block | unitTypeSopRender }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ block.originalPeriod }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ block.applicablePeriod }}
+            </td>
+            <td
+              class="
+                govuk-table__cell govuk-table__cell--numeric
+                panel-display-quantity
+              "
+            >
+              {{ block.quantity | number }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{
+                block.projectNumber == null &&
+                block.environmentalActivity == null
+                  ? ''
+                  : block.projectNumber == null
+                  ? (block.environmentalActivity | environmentalActivity)
+                  : block.projectNumber
+              }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </ng-container>
+  <ng-template #etsTransactionTemplate>
+    <table
+      class="govuk-table"
+      aria-describedby="display-transaction-blocks-central-transfer"
+    >
+      <ng-container *ngFor="let block of transactionBlocks">
+        <tr class="govuk-table__row">
+          <td class="{{ getClassByAllocationType(allocationType, true) }}">
+            <strong>Unit type</strong>
+          </td>
+          <td class="{{ getClassByAllocationType(allocationType, false) }}">
+            {{ block | unitTypeSopRender }}
+          </td>
+          <td
+            class="{{ getClassByAllocationType(allocationType, false) }}"
+          ></td>
+        </tr>
+        <tr class="govuk-table__row">
+          <td class="{{ getClassByAllocationType(allocationType, true) }}">
+            <strong>Total Quantity to transfer </strong>
+          </td>
+          <td class="{{ getClassByAllocationType(allocationType, false) }}">
+            <span class="yellow-tint-highlighted">
+              {{ block.quantity | number }}
+            </span>
+          </td>
+          <td class="{{ getClassByAllocationType(allocationType, false) }}">
+            <a
+              *ngIf="isExcessAllocationTransaction && !isTaskBased"
+              class="govuk-link right-aligned govuk-!-margin-top-2"
+              [routerLink]="[]"
+              (click)="onNavigateTo()"
+            >
+              Change<span class="govuk-visually-hidden"></span>
+            </a>
+          </td>
+        </tr>
+      </ng-container>
+    </table>
+  </ng-template>
+</ng-container>

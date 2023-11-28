@@ -1,0 +1,77 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a
+      [routerLink]="'/task-details/' + taskDetails.requestId"
+      id="back"
+      class="govuk-back-link"
+      >Back</a
+    >
+  </div>
+</div>
+
+<!-- A custom error panel since it contains a link to download csv from server -->
+<ng-container *ngIf="containsErrorFile()">
+  <div
+    id="emissions-errors-file"
+    class="govuk-form-group govuk-form-group--error"
+  >
+    <ul class="govuk-list">
+      <li>
+        <p class="govuk-body">
+          Download the following CSV file to view the errors:
+        </p>
+        <p class="govuk-body">
+          <img
+            src="/assets/images/icon-file-download.png"
+            style="vertical-align: middle; margin-right: 10px"
+            alt="download"
+          />
+          <a
+            id="csv-download-errors-link"
+            class="govuk-link govuk-link--no-visited-state"
+            (click)="onDownloadErrorsCSV()"
+            [routerLink]="[]"
+            >{{ errorFileName() }}
+          </a>
+        </p>
+        <p class="govuk-body">
+          You can send this file to the relevant stakeholders
+        </p>
+      </li>
+    </ul>
+  </div>
+</ng-container>
+
+<form [formGroup]="form">
+  <h1 class="govuk-heading-xl">
+    {{
+      taskOutcome === TaskOutcome.APPROVED
+        ? 'Approve ' + headingText
+        : taskOutcome === TaskOutcome.REJECTED
+        ? 'Reject ' + headingText
+        : 'Complete task'
+    }}
+  </h1>
+  <app-form-comment-area
+    controlName="comment"
+    [label]="label$ | async"
+  ></app-form-comment-area>
+  <app-form-control-text
+    *ngIf="otpCodeRequired()"
+    controlName="otp"
+    [class]="'govuk-input--width-5'"
+    [label]="'Enter the 6-digit code shown in your authenticator app'"
+    [autocomplete]="'off'"
+  >
+  </app-form-control-text>
+  <button
+    (click)="submit()"
+    data-prevent-double-click="true"
+    class="govuk-button submit-form"
+    data-module="govuk-button"
+    id="submit"
+    [disabled]="disableSubmit"
+  >
+    Complete task
+  </button>
+</form>

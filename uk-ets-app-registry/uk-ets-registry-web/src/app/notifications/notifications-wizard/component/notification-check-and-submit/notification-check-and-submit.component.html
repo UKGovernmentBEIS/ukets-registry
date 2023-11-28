@@ -1,0 +1,221 @@
+<app-feature-header-wrapper
+  *ngIf="notificationRequest === NotificationRequestEnum.UPDATE"
+  ><app-notification-header
+    [notification]="newNotification"
+    [notificationHeaderVisibility]="
+      notificationRequest === NotificationRequestEnum.UPDATE
+    "
+    [showRequestUpdate]="false"
+    [showClone]="false"
+    [showBackToList]="false"
+  ></app-notification-header
+></app-feature-header-wrapper>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">{{
+      notificationRequest === NotificationRequestEnum.NEW ||
+      notificationRequest === NotificationRequestEnum.CLONE
+        ? 'New ' + notificationTypeLabels[newNotification?.type].label
+        : 'Request to update the notification'
+    }}</span>
+    <fieldset class="govuk-fieldset">
+      <ng-container
+        *ngIf="
+          notificationRequest === NotificationRequestEnum.UPDATE;
+          else newNotificationTemplate
+        "
+      >
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-heading-xl">Check the update and confirm</h1>
+        </legend>
+
+        <app-summary-list
+          *ngIf="notificationId"
+          [class]="'govuk-summary-list--no-border'"
+          [summaryListItems]="getNotificationType()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list--no-border'"
+          [summaryListItems]="getNotificationRecipientItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list'"
+          [summaryListItems]="getActivationDetailsHeaderItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list'"
+          [summaryListItems]="getActivationDetailsSummaryDiff()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list'"
+          [summaryListItems]="getNotificationDetailsHeaderItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <!--TODO adjust app-summary-list in order to support [innerHTML] -->
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt
+              class="
+                govuk-summary-list__key
+                govuk-summary-list-width-thirty__key
+              "
+            >
+              Field
+            </dt>
+            <dd
+              class="
+                govuk-summary-list__value
+                govuk-!-font-weight-bold
+                govuk-summary-list-width-thirty-five__value
+              "
+            >
+              Current value
+            </dd>
+            <dd
+              class="
+                govuk-summary-list__value
+                govuk-!-font-weight-bold
+                govuk-summary-list-width-thirty-five__value
+              "
+            >
+              Changed value
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt
+              class="
+                govuk-summary-list__key
+                govuk-summary-list-width-thirty__key
+              "
+            >
+              Title
+            </dt>
+            <dd
+              class="
+                govuk-summary-list__value
+                govuk-summary-list-width-thirty-five__value
+              "
+            >
+              {{ this.currentNotification?.contentDetails?.subject }}
+            </dd>
+            <dd
+              [ngClass]="
+                this.changedValues['contentDetails']['subject']
+                  ? 'govuk-summary-list__value summary-list-change-notification'
+                  : 'govuk-summary-list__value'
+              "
+            >
+              {{ this.changedValues['contentDetails']['subject'] }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt
+              class="
+                govuk-summary-list__key
+                govuk-summary-list-width-thirty__key
+              "
+            >
+              Content
+            </dt>
+            <dd
+              class="
+                govuk-summary-list__value
+                govuk-summary-list-width-thirty-five__value
+              "
+            >
+              <app-notification-renderer
+                [content]="this.currentNotification?.contentDetails?.content"
+              ></app-notification-renderer>
+            </dd>
+            <dd
+              [ngClass]="
+                this.changedValues['contentDetails']['content']
+                  ? 'govuk-summary-list__value summary-list-change-notification govuk-summary-list-width-thirty-five__value'
+                  : 'govuk-summary-list__value govuk-summary-list-width-thirty-five__value'
+              "
+            >
+              <app-notification-renderer
+                [content]="this.changedValues['contentDetails']['content']"
+              ></app-notification-renderer>
+            </dd>
+          </div>
+        </dl>
+      </ng-container>
+      <ng-template #newNotificationTemplate>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-heading-xl">Check your answers</h1>
+        </legend>
+
+        <app-summary-list
+          [class]="'govuk-summary-list--no-border'"
+          [summaryListItems]="getNotificationTypeItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list--no-border'"
+          [summaryListItems]="getNotificationRecipientItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list'"
+          [summaryListItems]="getActivationDetailsHeaderItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list--no-border'"
+          [summaryListItems]="getActivationDetailsItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list'"
+          [summaryListItems]="getNotificationDetailsHeaderItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <!--TODO adjust app-summary-list in order to support [innerHTML] -->
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Subject</dt>
+            <dd class="govuk-summary-list__value">
+              {{ this.newNotification?.contentDetails?.subject }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Content</dt>
+            <dd class="govuk-summary-list__value">
+              <app-notification-renderer
+                [content]="this.newNotification?.contentDetails.content"
+              ></app-notification-renderer>
+            </dd>
+          </div>
+        </dl>
+      </ng-template>
+
+      <button
+        id="submit"
+        class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+        data-module="govuk-button"
+        appDebounceClick
+        (debounceClick)="onSubmit()"
+      >
+        Schedule
+      </button>
+      <app-cancel-request-link
+        (goToCancelScreen)="onCancel()"
+      ></app-cancel-request-link>
+    </fieldset>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_7_0_ADD_WORK_EMAIL_COLUMN_MIGRATE_WITH_KEYCLOAK_DB"
+               author="gourgiog" context="migrate">
+        <comment>Adds the email column in users table as part of migrating it from the keycloak db</comment>
+        <sql>
+            alter table users
+            add column work_email varchar(255);
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis" id="3_7_0_ADD_USER_ROLES_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='USER_ROLES_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>USER_ROLES_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'USER_ROLES_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis" id="3_7_0_ADD_USER_KNOWN_AS_ATTRIBUTE_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='USER_KNOWN_AS_ATTRIBUTE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>USER_KNOWN_AS_ATTRIBUTE_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'USER_KNOWN_AS_ATTRIBUTE_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis" id="3_7_0_ADD_REJECTED_ACCOUNTS_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='REJECTED_ACCOUNTS_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>REJECTED_ACCOUNTS_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'REJECTED_ACCOUNTS_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis" id="3_7_0_ADD_ACCOUNTS_COMPLIANCE_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='ACCOUNTS_COMPLIANCE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>ACCOUNTS_COMPLIANCE_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'ACCOUNTS_COMPLIANCE_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis"
+               id="3_7_0_ADD_ALLOCATION_CLASSIFICATION_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='ALLOCATION_CLASSIFICATION_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>ALLOCATION_CLASSIFICATION_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'ALLOCATION_CLASSIFICATION_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis"
+               id="3_7_0_ADD_TRANSACTION_SIGNING_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='TRANSACTION_SIGNING_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>TRANSACTION_SIGNING_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'TRANSACTION_SIGNING_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis"
+               id="3_7_0_ADD_ALLOCATION_WITHHOLD_STATUS_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='ALLOCATION_WITHHOLD_STATUS_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>ALLOCATION_WITHHOLD_STATUS_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'ALLOCATION_WITHHOLD_STATUS_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+    <changeSet author="akarmenis"
+               id="3_7_0_ADD_WORK_EMAIL_ATTRIBUTE_MIGRATOR_TO_HISTORY_TABLE" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='WORK_EMAIL_ATTRIBUTE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>WORK_EMAIL_ATTRIBUTE_MIGRATOR</comment>
+        <sql>
+            insert into migrator_history(id,migrator_name,created_on) values
+                (nextval('migrator_history_seq'),'WORK_EMAIL_ATTRIBUTE_MIGRATOR', 'now()');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

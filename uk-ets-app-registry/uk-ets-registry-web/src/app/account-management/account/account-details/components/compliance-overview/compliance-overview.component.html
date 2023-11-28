@@ -1,0 +1,77 @@
+<div class="govuk-warning-text" *ngIf="getWarning()">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    {{ getWarning() }}
+  </strong>
+</div>
+<dl class="govuk-summary-list" [class]="'ukets-background-light-grey'">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Cumulative verified emissions</dt>
+    <dd class="govuk-summary-list__value">
+      {{ complianceOverviewResult?.totalVerifiedEmissions | nullAmountToDash }}
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Cumulative surrenders</dt>
+    <dd class="govuk-summary-list__value">
+      {{ complianceOverviewResult?.totalNetSurrenders | zeroAmountToDash }}
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      <p>Current surrender status</p>
+      <span>
+        <p>Surrender balance</p>
+      </span>
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <p>
+        <app-govuk-tag
+          *ngIf="!!complianceOverviewResult?.currentComplianceStatus"
+          [color]="
+            complianceStatusMap[
+              complianceOverviewResult?.currentComplianceStatus
+            ].color
+          "
+        >
+          {{
+            complianceStatusMap[
+              complianceOverviewResult?.currentComplianceStatus
+            ].label
+          }}
+        </app-govuk-tag>
+      </p>
+      <div
+        *ngIf="
+          complianceOverviewResult?.currentComplianceStatus == 'NOT_APPLICABLE'
+        "
+      >
+        Reporting period has not started yet.
+      </div>
+      <div
+        *ngIf="
+          compliantEntityIdentifier == null &&
+          'OPERATOR_HOLDING_ACCOUNT' === accountType
+        "
+      >
+        No installation is linked to this account.
+      </div>
+      <div
+        *ngIf="
+          compliantEntityIdentifier == null &&
+          'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT' === accountType
+        "
+      >
+        No operator is linked to this account.
+      </div>
+      <span>
+        <p>
+          {{ getSurrenderBalance() | nullAmountToDash }}
+        </p>
+      </span>
+    </dd>
+  </div>
+</dl>

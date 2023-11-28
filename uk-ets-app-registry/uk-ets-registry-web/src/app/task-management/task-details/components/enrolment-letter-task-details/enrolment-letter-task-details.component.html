@@ -1,0 +1,49 @@
+<hr class="govuk-section-break govuk-section-break--visible" />
+<ng-container *ngIf="taskDetails">
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-body-l">User</span>
+      </dt>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">First and middle names</dt>
+      <dd class="govuk-summary-list__value">
+        {{ taskDetails.referredUserFirstName }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Last name</dt>
+      <dd class="govuk-summary-list__value">
+        {{ taskDetails.referredUserLastName }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">User ID</dt>
+      <dd class="govuk-summary-list__value">
+        <a [routerLink]="['/user-details', taskDetails.referredUserURID]">{{
+          taskDetails.referredUserURID
+        }}</a>
+      </dd>
+    </div>
+  </dl>
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-body-l">Download letter</span>
+      </dt>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <img
+          src="/assets/images/icon-file-download.png"
+          style="vertical-align: middle; margin-right: 10px"
+          alt="download"
+        />
+        <a class="govuk-link" (click)="onDownloadFile()" [routerLink]="[]"
+          >{{ taskDetails.fileName }} ({{ taskDetails.fileSize }})
+        </a>
+      </dt>
+    </div>
+  </dl>
+</ng-container>

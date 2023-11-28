@@ -1,0 +1,22 @@
+.govuk-summary-list {
+  &.sub-header-list > div:first-child {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    dt {
+      font-weight: 700;
+    }
+    dd {
+      font-weight: 700;
+    }
+  }
+}
+
+.govuk-summary-list__key.sub-header-list__key,
+.govuk-summary-list__value.sub-header-list__value,
+.govuk-summary-list__actions.sub-header-list__action {
+  font-weight: 500;
+  padding: 5px;
+  display: contents;
+}

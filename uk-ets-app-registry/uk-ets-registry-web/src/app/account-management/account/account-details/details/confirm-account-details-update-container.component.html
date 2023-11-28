@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">
+      Request to update the account details
+    </span>
+    <h1 class="govuk-heading-xl">Check your answers</h1>
+  </div>
+</div>
+<app-account-details-view
+  *ngIf="updatedDetails$ | async"
+  [accountDetails]="updatedDetails$ | async"
+  [accountType]="(account$ | async).accountType"
+  [countries]="countries$ | async"
+  [isAdmin]="isAdmin$ | async"
+  [isConfirmMode]="true"
+></app-account-details-view>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div>
+      <a
+        class="govuk-button"
+        data-module="govuk-button"
+        (click)="submitChanges()"
+      >
+        Submit
+      </a>
+    </div>
+  </div>
+</div>
+<app-cancel-request-link (goToCancelScreen)="onCancel()">
+</app-cancel-request-link>

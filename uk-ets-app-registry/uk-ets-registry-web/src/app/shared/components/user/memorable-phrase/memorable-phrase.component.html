@@ -1,0 +1,59 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Create a memorable phrase'"
+></div>
+<form (ngSubmit)="onSubmit()" [formGroup]="formGroup" [appConnectForm]="user">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl"> {{ caption }} </span>
+            {{ header }}
+          </h1>
+        </div>
+        <p class="govuk-body" *ngIf="!isRequestUpdateProcess">
+          You should record your memorable phrase and keep it in a safe
+          place.<br />
+          You will not be able to change this phrase in the future.
+        </p>
+
+        <p class="govuk-body" *ngIf="isRequestUpdateProcess">
+          If no changes are needed for the details on this page, select
+          Continue.
+        </p>
+      </div>
+      <div class="govuk-form-group">
+        <h3 class="govuk-heading-m">Memorable phrase</h3>
+        <div class="govuk-hint">
+          {{ isRequestUpdateProcess ? 'The' : 'Your' }} memorable phrase must
+          be:
+          <ul class="govuk-list govuk-list--bullet govuk-hint">
+            <li>a short sentence or phrase</li>
+            <li>easy for you to remember</li>
+          </ul>
+          {{ isRequestUpdateProcess ? 'The' : 'Your' }} memorable phrase can
+          have spaces and a combination of letters and numbers.<br />
+          {{ isRequestUpdateProcess ? 'The' : 'Your' }} memorable phrase cannot
+          contain any special characters.
+        </div>
+        <app-form-control-textarea
+          [label]="'Add Memorable Phrase'"
+          [showLabel]="false"
+          [maxlength]="255"
+          [validationErrorMessage]="validationErrorMessage.memorablePhrase"
+          controlName="memorablePhrase"
+          [attr.id]="'memorablePhrase-label'"
+        ></app-form-control-textarea>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+</form>

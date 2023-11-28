@@ -1,0 +1,27 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <hr
+      class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-0"
+    />
+    <form [formGroup]="formGroup">
+      <div
+        class="sign-request govuk-!-margin-bottom-5 govuk-!-padding-left-3 govuk-!-padding-top-3"
+      >
+        <h1 class="govuk-heading-m">Sign proposal</h1>
+        <p class="govuk-body govuk-!-font-weight-bold ">
+          By signing this proposal you confirm that the information above is
+          correct.
+        </p>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <app-form-control-text
+              [controlName]="'otpCode'"
+              [label]="'Enter the 6-digit code shown in your authenticator app'"
+              [class]="'govuk-input--width-5'"
+            ></app-form-control-text>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

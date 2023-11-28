@@ -1,0 +1,140 @@
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-summary-list__key">New Primary Contact</h2>
+  </div>
+</dl>
+
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-summary-list__key govuk-heading-m">
+      Primary Contact Details
+    </h2>
+  </div>
+</dl>
+
+<dl
+  class="
+    govuk-summary-list govuk-summary-list--no-border
+    govuk-!-margin-bottom-9
+  "
+>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">First and middle names</dt>
+    <dd class="govuk-summary-list__value">
+      {{ acquiringAccountHolderPrimaryContact?.details.firstName }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last name</dt>
+    <dd class="govuk-summary-list__value">
+      {{ acquiringAccountHolderPrimaryContact?.details.lastName }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      I confirm that the Primary Contact is aged 18 or over
+    </dt>
+    <dd class="govuk-summary-list__value">Yes</dd>
+  </div>
+</dl>
+
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-summary-list__key govuk-heading-m">
+      Primary Contact Work Details
+    </h2>
+  </div>
+</dl>
+
+<dl
+  class="
+    govuk-summary-list govuk-summary-list--no-border
+    govuk-!-margin-bottom-9
+  "
+>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Company position</dt>
+    <dd class="govuk-summary-list__value">
+      {{ acquiringAccountHolderPrimaryContact?.positionInCompany }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Address</dt>
+    <dd class="govuk-summary-list__value">
+      {{ acquiringAccountHolderPrimaryContact?.address.buildingAndStreet }}
+      <ng-container
+        *ngIf="
+          acquiringAccountHolderPrimaryContact?.address.buildingAndStreet2 ||
+          acquiringAccountHolderPrimaryContact?.address.buildingAndStreet3
+        "
+      >
+        <br />
+        {{ acquiringAccountHolderPrimaryContact?.address.buildingAndStreet2 }}
+      </ng-container>
+      <ng-container
+        *ngIf="acquiringAccountHolderPrimaryContact?.address.buildingAndStreet3"
+      >
+        <br />{{
+          acquiringAccountHolderPrimaryContact?.address.buildingAndStreet3
+        }}</ng-container
+      >
+
+      <ng-container
+        *ngIf="acquiringAccountHolderPrimaryContact?.address.townOrCity"
+      >
+        <br />{{
+          acquiringAccountHolderPrimaryContact?.address.townOrCity
+        }}</ng-container
+      >
+      <ng-container
+        *ngIf="acquiringAccountHolderPrimaryContact?.address.stateOrProvince"
+      >
+        <br />{{
+          acquiringAccountHolderPrimaryContact?.address.stateOrProvince
+        }}</ng-container
+      >
+      <ng-container
+        *ngIf="acquiringAccountHolderPrimaryContact?.address.country"
+      >
+        <br />{{
+          acquiringAccountHolderPrimaryContact?.address.country
+            | countryNameAsync
+            | async
+        }}</ng-container
+      >
+      <ng-container
+        *ngIf="acquiringAccountHolderPrimaryContact?.address.postCode"
+      >
+        <br />{{
+          acquiringAccountHolderPrimaryContact?.address.postCode
+        }}</ng-container
+      >
+    </dd>
+  </div>
+  <div
+    class="govuk-summary-list__row"
+    *ngIf="acquiringAccountHolderPrimaryContact?.phoneNumber?.phoneNumber1"
+  >
+    <dt class="govuk-summary-list__key">Phone number 1</dt>
+    <dd class="govuk-summary-list__value">
+      +{{ acquiringAccountHolderPrimaryContact?.phoneNumber.countryCode1
+      }}{{ acquiringAccountHolderPrimaryContact?.phoneNumber.phoneNumber1 }}
+    </dd>
+  </div>
+  <div
+    class="govuk-summary-list__row"
+    *ngIf="acquiringAccountHolderPrimaryContact?.phoneNumber?.phoneNumber2"
+  >
+    <dt class="govuk-summary-list__key">Phone number 2</dt>
+    <dd class="govuk-summary-list__value">
+      +{{ acquiringAccountHolderPrimaryContact?.phoneNumber.countryCode2
+      }}{{ acquiringAccountHolderPrimaryContact?.phoneNumber.phoneNumber2 }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Email address</dt>
+    <dd class="govuk-summary-list__value">
+      {{ acquiringAccountHolderPrimaryContact?.emailAddress?.emailAddress }}
+    </dd>
+  </div>
+</dl>

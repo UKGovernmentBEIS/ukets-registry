@@ -1,0 +1,25 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl">Delete request</span>
+        Are you sure you want to delete this note?
+      </h1>
+    </div>
+    <hr class="govuk-section-break govuk-section-break--m" />
+    <div class="govuk-form-group">
+      <p class="govuk-body">
+        The note will be removed from the list.<br />
+        Please confirm that you want to delete this note.
+      </p>
+    </div>
+    <button
+      appDebounceClick
+      (click)="onDelete()"
+      class="govuk-button govuk-button--warning"
+      data-module="govuk-button"
+    >
+      Delete
+    </button>
+  </div>
+</div>

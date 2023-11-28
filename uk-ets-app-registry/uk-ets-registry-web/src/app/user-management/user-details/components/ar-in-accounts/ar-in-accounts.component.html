@@ -1,0 +1,66 @@
+<div class="govuk-grid-row govuk-!-margin-top-6">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-summary-list__key govuk-heading-m">
+      Authorised Representative in accounts
+    </h2>
+  </div>
+
+  <ng-container
+    *ngIf="arInAccount !== null && arInAccount?.length === 0; else elseBlock"
+  >
+    <span class="govuk-hint"> No items added.</span>
+  </ng-container>
+  <ng-template #elseBlock>
+    <table
+      class="govuk-table govuk-!-margin-top-5"
+      aria-describedby="display-ar-in-account"
+    >
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row ara_tr">
+          <th scope="col" class="govuk-table__header">Account</th>
+          <th scope="col" class="govuk-table__header">Account Holder</th>
+          <th scope="col" class="govuk-table__header">Permissions</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <ng-container *ngFor="let ar of arInAccount">
+          <tr class="govuk-table__row ara_tr">
+            <td class="govuk-table__cell">
+              <a
+                *ngIf="
+                  ('urn:uk-ets-registry-api:actionForEnrolledNonAdmin'
+                    | protect
+                    | async) ||
+                    ('urn:uk-ets-registry-api:actionForAnyAdmin'
+                      | protect
+                      | async);
+                  else no_link
+                "
+                [routerLink]="['/account', ar.accountIdentifier]"
+              >
+                {{ ar.accountName }}<br />{{ ar.accountFullIdentifier }}</a
+              >
+              <ng-template #no_link
+                >{{ ar.accountName }}<br />{{
+                  ar.accountFullIdentifier
+                }}</ng-template
+              >
+            </td>
+            <td class="govuk-table__cell">
+              {{ ar.accountHolderName }}
+            </td>
+            <td class="govuk-table__cell">
+              {{ ar.right | accessRights }}
+            </td>
+            <td class="govuk-table__cell">
+              <app-govuk-tag [color]="accountAccessStateMap[ar.state].color">
+                {{ accountAccessStateMap[ar.state].label }}
+              </app-govuk-tag>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </ng-template>
+</div>

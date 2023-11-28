@@ -1,0 +1,34 @@
+<app-feature-header-wrapper>
+  <app-user-header
+    [user]="user$ | async"
+    [userHeaderVisibility]="getVisibilityBasedOnViewMode()"
+    [userHeaderActionsVisibility]="getVisibilityBasedOnViewMode()"
+    [showBackToList]="getVisibilityBasedOnViewMode()"
+    [showRequestUpdate]="isSeniorOrJuniorAdmin$ | async"
+    [goBackToListRoute]="goBackToListRoute$ | async"
+    [goBackToListNavigationExtras]="goBackToListNavigationExtras$ | async"
+  >
+  </app-user-header>
+</app-feature-header-wrapper>
+<app-user-details
+  [hasUserDetailsPendingTask]="hasUserDetailsPendingTask$ | async"
+  [user]="user$ | async"
+  [enrolmentKeyDetails]="enrolmentKeyDetails$ | async"
+  [documents]="userFiles$ | async"
+  [arInAccount]="arInAccount$ | async"
+  [domainEvents]="userHistory$ | async"
+  (requestDocuments)="onUserRequestDocuments($event)"
+  (downloadFileEmitter)="ondDownloadFile($event)"
+  (deleteFileEmitter)="onDeleteFile($event)"
+  (emailChange)="startEmailChangeWizard($event)"
+  (tokenChange)="startTokenChangeWizard($event)"
+  (passwordChange)="startPasswordChangeWizard($event)"
+  (userDetailsUpdateEmitter)="goToUpdateUserDetails($event)"
+  [currentViewMode]="viewMode"
+  [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
+  [isSeniorAdmin]="isSeniorAdmin$ | async"
+  [initiatorUrid]="initiatorUrid$ | async"
+  [fileDeleted]="fileDeleted$ | async"
+  (navigate)="navigateToUserPage($event)"
+  [isAdmin]="isAdmin$ | async"
+></app-user-details>

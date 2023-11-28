@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_17_0_ADD_MANDATORY_CANCELLATION_ACCOUNT_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Mandatory cancellation account to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1023,
+            'Mandatory cancellation account for CP1',
+            'NONE',
+            'MANDATORY_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            84,
+            'GB-250-1023-1-84',
+            'Mandatory cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_MANDATORY_CANCELLATION_ACCOUNT_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Mandatory cancellation account to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            1024,
+            'Mandatory cancellation account for CP2',
+            'NONE',
+            'MANDATORY_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            76,
+            'GB-250-1024-2-76',
+            'Mandatory cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_NET_SOURCE_CANCELLATION_ACCOUNT_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Net source cancellation account to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000013,
+            'Net source cancellation account for CP1',
+            'NONE',
+            'NET_SOURCE_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            70,
+            'GB-210-10000013-1-70',
+            'Net source cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_NET_SOURCE_CANCELLATION_ACCOUNT_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Net source cancellation account to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000014,
+            'Net source cancellation account for CP2',
+            'NONE',
+            'NET_SOURCE_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            62,
+            'GB-210-10000014-2-62',
+            'Net source cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_NON_COMPLIANCE_CANCELLATION_ACCOUNT_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Non-compliance cancellation account to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000015,
+            'Non-compliance cancellation account for CP1',
+            'NONE',
+            'NON_COMPLIANCE_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            67,
+            'GB-220-10000015-1-67',
+            'Non-compliance cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_NON_COMPLIANCE_CANCELLATION_ACCOUNT_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the Non-compliance cancellation account to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000016,
+            'Non-compliance cancellation account for CP2',
+            'NONE',
+            'NON_COMPLIANCE_CANCELLATION_ACCOUNT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            59,
+            'GB-220-10000016-2-59',
+            'Non-compliance cancellation account',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the tCER Replacement account for expiry to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000017,
+            'tCER Replacement account for expiry for CP1',
+            'NONE',
+            'TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            84,
+            'GB-411-10000017-1-84',
+            'tCER Replacement account for expiry',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the tCER Replacement account for expiry to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000018,
+            'tCER Replacement account for expiry for CP2',
+            'NONE',
+            'TCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            76,
+            'GB-411-10000018-2-76',
+            'tCER Replacement account for expiry',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the lCER Replacement account for expiry to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000019,
+            'lCER Replacement account for expiry for CP1',
+            'NONE',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            81,
+            'GB-421-10000019-1-81',
+            'lCER Replacement account for expiry',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the lCER Replacement account for expiry to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000020,
+            'lCER Replacement account for expiry for CP2',
+            'NONE',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_EXPIRY',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            73,
+            'GB-421-10000020-2-73',
+            'lCER Replacement account for expiry',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the lCER Replacement account for reversal of storage to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000021,
+            'lCER Replacement account for reversal of storage for CP1',
+            'NONE',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            62,
+            'GB-422-10000021-1-62',
+            'lCER Replacement account for reversal of storage',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the lCER Replacement account for reversal of storage to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000022,
+            'lCER Replacement account for reversal of storage for CP2',
+            'NONE',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_REVERSAL_OF_STORAGE',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            54,
+            'GB-422-10000022-2-54',
+            'lCER Replacement account for reversal of storage',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT_CP1" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the lCER Replacement account for reversal of storage to the registry for CP1</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000023,
+            'lCER Replacement account for non-submission of certification report for CP1',
+            'NONE',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            1,
+            'GB',
+            43,
+            'GB-423-10000023-1-43',
+            'lCER Replacement account for non-submission',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT_CP2" author="georgopoulosp" context="migrate">
+
+        <comment>Adds the lCER Replacement account for reversal of storage to the registry for CP2</comment>
+        <sql>
+            insert into account
+            (
+            id,
+            identifier,
+            account_name,
+            registry_account_type,
+            kyoto_account_type,
+            account_status,
+            opening_date,
+            request_status,
+            commitment_period_code,
+            registry_code,
+            check_digits,
+            full_identifier,
+            type_label,
+            approval_second_ar_required,
+            transfers_outside_tal,
+            account_holder_id
+            )
+            values
+            (
+            nextval('account_seq'),
+            10000024,
+            'lCER Replacement account for non-submission of certification report for CP2',
+            'NONE',
+            'LCER_REPLACEMENT_ACCOUNT_FOR_NON_SUBMISSION_OF_CERTIFICATION_REPORT',
+            'OPEN',
+            now(),
+            'ACTIVE',
+            2,
+            'GB',
+            35,
+            'GB-423-10000024-2-35',
+            'lCER Replacement account for non-submission',
+            true,
+            true,
+            (select id from account_holder where name = 'HMG')
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,70 @@
+<div class="hmcts-identity-bar" *ngIf="userHeaderVisibility && user">
+  <div class="hmcts-identity-bar__container">
+    <div *ngIf="showBackToList" class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <a
+          [routerLink]="[]"
+          (click)="goBack($event)"
+          class="govuk-back-link"
+          id="back"
+          >Back to list</a
+        >
+      </div>
+    </div>
+    <div
+      class="govuk-grid-row"
+      [style.margin-top]="showBackToList ? '0px' : '50px'"
+      *ngIf="user"
+    >
+      <div class="govuk-grid-column-two-thirds">
+        <h3 class="govuk-heading-l govuk-!-margin-bottom-0">
+          {{ user | keycloakUserDisplayName }}
+        </h3>
+      </div>
+      <div class="govuk-grid-column-one-third" *ngIf="requestUpdate">
+        <div style="float: right">
+          <button
+            (click)="goToUpdateUserDetails()"
+            [routerLink]="[]"
+            style="margin-bottom: 0"
+            class="govuk-button govuk-!-margin-right-1"
+            data-module="govuk-button"
+          >
+            Request Update
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <app-govuk-tag
+        style="margin-left: 15px"
+        [color]="userStatusMap[user.attributes.state[0]].color"
+      >
+        {{ userStatusMap[user.attributes.state[0]].label }}
+      </app-govuk-tag>
+      <span
+        style="margin-left: 15px"
+        *ngIf="
+          ('urn:uk-ets-registry-api:user:status:write' | protect | async) &&
+          headerActionsVisibility
+        "
+      >
+        <a
+          class="govuk-link govuk-body govuk-!-font-size-19"
+          [routerLink]="[]"
+          (click)="goToUpdateUserStatus()"
+          (keyup)="(goToUpdateUserStatus)"
+          >Change status</a
+        >
+      </span>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full" *ngIf="user">
+        <div class="govuk-body">
+          <div>User ID: {{ user.attributes.urid[0] }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

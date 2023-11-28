@@ -1,0 +1,118 @@
+<ng-container *ngIf="accountDetails.address as address">
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-0
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-heading-m">Billing details</span>
+        <span class="govuk-hint" *ngIf="!isConfirmMode"
+          >We will use these details to email your annual subsistence
+          invoice(s)</span
+        >
+      </dt>
+    </div>
+  </dl>
+  <ng-container *ngIf="!isConfirmMode && isAdmin">
+    <dl
+      class="
+        govuk-summary-list govuk-summary-list--no-border
+        govuk-!-margin-bottom-0
+      "
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Exclude from billing</dt>
+        <dd class="govuk-summary-list__value">
+          {{ accountDetails.excludedFromBilling ? 'Yes' : 'No' }}
+        </dd>
+      </div>
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="accountDetails.excludedFromBilling"
+      >
+        <dt class="govuk-summary-list__key">Exclusion remarks</dt>
+        <dd class="govuk-summary-list__value">
+          {{ accountDetails.excludedFromBillingRemarks }}
+        </dd>
+      </div>
+    </dl>
+  </ng-container>
+  <dl
+    class="
+      govuk-summary-list govuk-summary-list--no-border
+      govuk-!-margin-bottom-9
+    "
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Address</dt>
+      <dd class="govuk-summary-list__value">
+        <app-shared-three-line-address
+          [line1]="address.buildingAndStreet"
+          [line2]="address.buildingAndStreet2"
+          [line3]="address.buildingAndStreet3"
+        >
+        </app-shared-three-line-address>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Town or city</dt>
+      <dd class="govuk-summary-list__value">
+        {{ address.townOrCity }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">State or Province</dt>
+      <dd class="govuk-summary-list__value">
+        {{ address.stateOrProvince }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+      <dd class="govuk-summary-list__value">
+        {{ address.postCode }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Country</dt>
+      <dd class="govuk-summary-list__value">
+        {{ getCountryNameFromCountryCode(address.country) }}
+      </dd>
+    </div>
+    <ng-container
+      *ngIf="accountDetails.billingContactDetails as billingContact"
+    >
+      <div
+        class="govuk-summary-list__row"
+        *ngIf="billingContact.sopCustomerId && isAdmin"
+      >
+        <dt class="govuk-summary-list__key">SOP Customer ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ billingContact.sopCustomerId }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="billingContact.contactName">
+        <dt class="govuk-summary-list__key">Contact name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ billingContact.contactName }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="billingContact.phoneNumber">
+        <dt class="govuk-summary-list__key">Phone number</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-phone-number
+            [countryCode]="billingContact.phoneNumberCountryCode"
+            [phoneNumber]="billingContact.phoneNumber"
+          ></app-shared-phone-number>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row" *ngIf="billingContact.email">
+        <dt class="govuk-summary-list__key">E-mail address</dt>
+        <dd class="govuk-summary-list__value">
+          {{ billingContact.email }}
+        </dd>
+      </div>
+    </ng-container>
+  </dl>
+</ng-container>

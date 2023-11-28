@@ -1,0 +1,33 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">
+        {{ title }}
+      </h1>
+      <div class="govuk-panel__body">
+        Request ID<br /><strong>{{ submittedIdentifier }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">You have been automatically signed out.</p>
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      {{ whatNextMessage }}
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="backToLink"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >{{ backToLabel }}</a
+      >
+    </p>
+  </div>
+</div>

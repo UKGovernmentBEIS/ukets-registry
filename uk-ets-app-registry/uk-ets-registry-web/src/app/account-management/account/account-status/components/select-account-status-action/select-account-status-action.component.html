@@ -1,0 +1,31 @@
+<div class="govuk-grid-row" *ngIf="formRadioGroupInfo.options">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <app-uk-radio-input
+        controlName="accountStatusAction"
+        [formRadioGroupInfo]="formRadioGroupInfo"
+        [validationErrorMessage]="
+          this.validationErrorMessage.accountStatusAction
+        "
+      >
+      </app-uk-radio-input>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+      <div>
+        <a
+          [routerLink]="[]"
+          class="govuk-link govuk-link--no-visited-state"
+          (click)="onCancel()"
+          (keyup)="(onCancel)"
+          >Cancel</a
+        >
+      </div>
+    </form>
+  </div>
+</div>

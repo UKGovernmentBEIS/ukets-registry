@@ -1,0 +1,65 @@
+<div class="app-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-m govuk-!-margin-bottom-7 guidance-title">
+        UK Emissions Trading Registry guidance
+      </h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l">
+        View the guidance on meeting your UK ETS surrender obligation
+      </h2>
+      <span class="govuk-caption-l"
+        >This guidance explains the process for meeting your UK ETS surrender
+        obligation.</span
+      >
+
+      <app-guidance-modification-date
+        [published]="'10 February 2022'"
+        [lastUpdated]="'10 February 2022'"
+      ></app-guidance-modification-date>
+
+      <h2 class="govuk-heading-m">UK ETS Surrender reporting obligation</h2>
+
+      <div>
+        <iframe
+          width="850"
+          height="640"
+          [src]="environment.guidanceVideoUrl | safeurl"
+        >
+        </iframe>
+      </div>
+
+      <p class="govuk-body govuk-!-padding-top-6">
+        <a
+          class="govuk-link"
+          target="_self"
+          href="{{ environment.documentGuidePath }}{{
+            environment.documentSurrenderGuideFilename
+          }}"
+          download="{{ environment.documentSurrenderGuideFilename }}"
+          >Download a written guide</a
+        >
+        on meeting your UK ETS surrender obligation (a pdf viewer is required).
+      </p>
+
+      <p class="govuk-body">
+        If you need further advice or help with your Emissions and Surrenders
+        reporting obligations,
+        <a class="govuk-link" href="mailto:{{ etsRegistryHelpEmail$ | async }}"
+          >email the UK Registry helpdesk.</a
+        >
+      </p>
+
+      <p class="govuk-body">
+        The helpdesk is available Monday to Friday, 8:30am to 4:30pm (except
+        public holidays).
+      </p>
+    </div>
+  </div>
+</div>
+
+<app-back-to-top></app-back-to-top>

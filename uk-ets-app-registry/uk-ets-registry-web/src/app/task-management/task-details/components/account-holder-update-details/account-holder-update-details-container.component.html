@@ -1,0 +1,59 @@
+<hr
+  class="
+    govuk-section-break govuk-section-break--m govuk-section-break--visible
+  "
+/>
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <dt class="govuk-summary-list__key">
+    <span class="govuk-heading-m">Account details</span>
+  </dt>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account Holder</dt>
+    <dd class="govuk-summary-list__value">
+      {{ taskDetails.accountDetails?.accountHolderName }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account number</dt>
+    <dd class="govuk-summary-list__value">
+      {{ taskDetails.accountDetails?.accountNumber }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account name</dt>
+    <dd class="govuk-summary-list__value">
+      {{ taskDetails.accountDetails?.name }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account type</dt>
+    <dd class="govuk-summary-list__value">
+      {{ getLabel(taskDetails.accountDetails?.accountType) }}
+    </dd>
+  </div>
+</dl>
+<app-account-holder-multiple-ownership
+  [accountHolderOwnership]="taskDetails.accountHolderOwnership"
+>
+</app-account-holder-multiple-ownership>
+<app-account-holder-summary-changes
+  [isWizardOrientedFlag]="false"
+  [isContactBasedUpdate]="false"
+  [currentValues]="this.currentValues"
+  [changedValues]="this.changedValues"
+  [countries]="countries$ | async"
+></app-account-holder-summary-changes>
+<ng-container *ngIf="taskDetails.currentUserClaimant && !isCompleted">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-grid-row">
+      <button
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="onAccountHolderRequestDocuments()"
+        (keypress)="onAccountHolderRequestDocuments()"
+      >
+        Request documents
+      </button>
+    </div>
+  </div>
+</ng-container>

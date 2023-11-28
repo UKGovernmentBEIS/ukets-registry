@@ -1,0 +1,44 @@
+<ng-container>
+  <strong>Email</strong>
+  <div>{{ contact.emailAddress }}</div>
+  <strong>Phone number</strong>
+  <div *ngIf="contact.phoneNumber1">
+    <app-shared-phone-number
+      [countryCode]="contact.countryCode1"
+      [phoneNumber]="contact.phoneNumber1"
+    ></app-shared-phone-number>
+  </div>
+  <div>
+    <a
+      [routerLink]="[]"
+      (keypress)="moreInfo = !moreInfo"
+      (click)="moreInfo = !moreInfo"
+      class="govuk-link"
+      >{{ moreInfo ? 'less info' : 'more info'
+      }}<span class="govuk-visually-hidden">
+        about {{ firstName }} {{ lastName }}
+      </span>
+    </a>
+  </div>
+  <div *ngIf="moreInfo">
+    <strong>Address</strong>
+    <app-shared-three-line-address
+      [line1]="contact.line1"
+      [line2]="contact.line2"
+      [line3]="contact.line3"
+    >
+    </app-shared-three-line-address>
+    <div *ngIf="contact.city">{{ contact.city }}</div>
+    <div *ngIf="contact.country">
+      {{ contact.country | countryNameAsync | async }}
+    </div>
+    <div *ngIf="contact.postCode">{{ contact.postCode }}</div>
+    <div *ngIf="contact.phoneNumber2">
+      <strong>Phone number 2</strong>
+      <app-shared-phone-number
+        [countryCode]="contact.countryCode2"
+        [phoneNumber]="contact.phoneNumber2"
+      ></app-shared-phone-number>
+    </div>
+  </div>
+</ng-container>

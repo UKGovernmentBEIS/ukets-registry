@@ -1,0 +1,10 @@
+<button
+  *ngIf="displayable"
+  data-prevent-double-click="true"
+  class="govuk-button govuk-button--secondary"
+  data-module="govuk-button"
+  [attr.aria-expanded]="!condition"
+  (click)="toggle.emit(!condition)"
+>
+  {{ condition ? trueStateLabel : falseStateLabel }}
+</button>

@@ -1,0 +1,106 @@
+<div class="govuk-grid-row">
+  <fieldset class="govuk-fieldset">
+    <div class="govuk-grid-column-full">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <span class="govuk-caption-xl">
+            Request to update the trusted account list
+          </span>
+          <h1 class="govuk-fieldset__heading">
+            Check the update request and confirm
+          </h1>
+        </legend>
+      </fieldset>
+    </div>
+    <div class="govuk-grid-column-full">
+      <div
+        class="govuk-warning-text"
+        *ngIf="
+          updateType === updateTypes.ADD &&
+          isTrustedAccountKyotoType != null &&
+          isTrustedAccountKyotoType !== account.kyotoAccountType
+        "
+      >
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          The selected account is not
+          {{ account.kyotoAccountType ? 'a KP' : 'an ETS' }} account.
+          Transactions cannot be made to this account if it is added to the
+          trusted account list.
+        </strong>
+      </div>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">Type of update</dt>
+          <dd class="govuk-summary-list__actions">
+            <a
+              class="govuk-link"
+              [routerLink]="[]"
+              (click)="
+                navigateTo(trustedAccountListRoutePaths['select-update-type'])
+              "
+            >
+              Change<span class="govuk-visually-hidden"> type of update</span>
+            </a>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row govuk-summary-list__row--no-border">
+          <dd class="govuk-summary-list__row">
+            {{ updateType | titlecase }}
+            {{ updateType === updateTypes.ADD ? 'account' : 'account(s)' }}
+          </dd>
+        </div>
+      </dl>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">
+            {{ updateType === updateTypes.ADD ? 'Account' : 'Account(s)' }}
+          </dt>
+          <dd class="govuk-summary-list__actions">
+            <a
+              class="govuk-link"
+              [routerLink]="[]"
+              (click)="
+                updateType === updateTypes.ADD
+                  ? navigateTo(trustedAccountListRoutePaths['add-account'])
+                  : navigateTo(trustedAccountListRoutePaths['remove-account'])
+              "
+            >
+              Change<span class="govuk-visually-hidden"> account(s)</span>
+            </a>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row govuk-summary-list__row--no-border">
+          <dd class="govuk-summary-list__row">
+            {{
+              updateType === updateTypes.ADD
+                ? 'The following account will be added to the trusted account list'
+                : 'The following account(s) will be deleted from the trusted account list'
+            }}
+          </dd>
+        </div>
+      </dl>
+      <app-trusted-account-table [trustedAccounts]="trustedAccounts">
+      </app-trusted-account-table>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        appDebounceClick
+        (debounceClick)="onContinue()"
+        id="submit"
+      >
+        Submit request
+      </button>
+      <div>
+        <a
+          [routerLink]="[]"
+          (click)="onCancel()"
+          (keypress)="onCancel()"
+          class="govuk-link govuk-link--no-visited-state"
+          >Cancel</a
+        >
+      </div>
+    </div>
+  </fieldset>
+</div>

@@ -1,0 +1,186 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-title-proposal-transaction-type
+      [proposalTransactionType]="transactionType"
+    ></app-title-proposal-transaction-type>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            Select unit type(s) and specify quantity
+          </h1>
+        </legend>
+
+        <ng-container *ngIf="itlNotification">
+          <app-itl-notification-summary
+            [itlNotification]="itlNotification"
+          ></app-itl-notification-summary>
+          <span *ngIf="isReplacement">
+            <p
+              class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24"
+            >
+              Select the Replacement units
+            </p>
+          </span>
+          <hr
+            class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
+          />
+        </ng-container>
+
+        <table
+          aria-describedby="select-unit-types"
+          class="govuk-table"
+          id="blocks_table"
+        >
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Select Unit type</th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-table__header--numeric"
+              >
+                Original CP
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-table__header--numeric"
+              >
+                Applicable CP
+              </th>
+              <th
+                scope="col"
+                class="govuk-table__header govuk-table__header--numeric"
+              >
+                Available quantity
+              </th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr
+              [class.ukets-background-light-grey]="checkedIdSet.has(i)"
+              *ngFor="
+                let blockSummary of transactionBlockSummaries;
+                let i = index
+              "
+              class="govuk-table__row"
+            >
+              <td class="govuk-table__cell">
+                <div class="govuk-checkboxes">
+                  <div class="govuk-checkboxes__item">
+                    <input
+                      class="govuk-checkboxes__input"
+                      [attr.id]="'quantity-' + i"
+                      [attr.name]="'quantity-' + i"
+                      (change)="toggle($event.target.checked, i)"
+                      [checked]="checked(i)"
+                      type="checkbox"
+                    />
+                    <label
+                      class="govuk-label govuk-checkboxes__label"
+                      [attr.id]="'quantity-' + i + '-label'"
+                      [attr.for]="'quantity-' + i"
+                    >
+                      {{ blockSummary | unitTypeSopRender }}</label
+                    >
+                  </div>
+                  <ng-container *ngIf="checkedIdSet.has(i)" [formGroupName]="i">
+                    <div
+                      class="govuk-checkboxes__conditional"
+                      [attr.id]="'quantity-' + i + '-conditional'"
+                    >
+                      <app-form-control-text
+                        [class]="'govuk-input govuk-!-width-two-thirds'"
+                        [label]="'Enter quantity'"
+                        [maxlength]="20"
+                        [style]="{ 'text-align': 'right' }"
+                        [controlName]="i + '.quantity'"
+                      ></app-form-control-text>
+                      <app-form-control-text
+                        *ngIf="isTransactionConversionAorB"
+                        [class]="'govuk-input govuk-!-width-two-thirds'"
+                        [label]="'Enter project number'"
+                        [maxlength]="20"
+                        [style]="{ 'text-align': 'right' }"
+                        [controlName]="i + '.conversionProjectNumber_' + i"
+                        [attr.id]="
+                          i + '.conversionProjectNumber_' + i + '-label'
+                        "
+                      ></app-form-control-text>
+                      <app-form-control-select
+                        *ngIf="isTransactionConversionAorB"
+                        [controlName]="i + '.conversionProjectTrack_' + i"
+                        [options]="getProjectTrackOptions()"
+                        [class]="'govuk-select govuk-!-width-two-thirds'"
+                        [style]="{ 'background-color': 'white' }"
+                        [label]="'Select project track'"
+                        [attr.id]="
+                          i + '.conversionProjectTrack_' + i + '-label'
+                        "
+                      ></app-form-control-select>
+                      <app-form-control-select
+                        *ngIf="blockSummary?.projectNumbers?.length > 0"
+                        [controlName]="i + '.project'"
+                        [options]="getProjectOptions(blockSummary)"
+                        [class]="'govuk-select govuk-!-width-two-thirds'"
+                        [style]="{ 'background-color': 'white' }"
+                        [label]="'Select project(optional)'"
+                      ></app-form-control-select>
+                      <app-form-control-select
+                        *ngIf="
+                          blockSummary?.environmentalActivities?.length > 0
+                        "
+                        [controlName]="i + '.environmentalActivity'"
+                        [options]="
+                          getEnvironmentalActivitiesOptions(blockSummary)
+                        "
+                        [class]="'govuk-select govuk-!-width-two-thirds'"
+                        [style]="{ 'background-color': 'white' }"
+                        [label]="'Select activity(optional)'"
+                      ></app-form-control-select>
+                    </div>
+                  </ng-container>
+                </div>
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ blockSummary.originalPeriod }}
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ blockSummary.applicablePeriod }}
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ blockSummary.availableQuantity | number }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ng-container *ngIf="isReplacement">
+          <p
+            class="govuk-body govuk-!-font-weight-bold govuk-body govuk-!-font-size-24"
+          >
+            Units to be replaced from (Optional)
+          </p>
+          <app-account-input
+            id="toBeReplacedAccountInputId"
+            titleToDisplay="Enter account number"
+            subTitleToDisplay="For example GB-300-1022-2-24"
+            countryCode="userDefinedCountryCode"
+            accountType="userDefinedAccountType"
+            accountId="userDefinedAccountId"
+            period="userDefinedPeriod"
+            checkDigits="userDefinedCheckDigits"
+          ></app-account-input>
+        </ng-container>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

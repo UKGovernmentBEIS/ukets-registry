@@ -1,0 +1,105 @@
+<h1 class="govuk-heading-l">View holding details</h1>
+
+<dl class="govuk-summary-list" [class.ukets-background-light-grey]="true">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-third">Unit:</dt>
+    <dd class="govuk-summary-list__value govuk-!-width-two-thirds">
+      {{ unitTypeLabels[details.unit]?.label }}
+    </dd>
+  </div>
+  <div
+    *ngIf="AccountTypeMap[accountType]?.isKyoto"
+    class="govuk-summary-list__row"
+  >
+    <dt class="govuk-summary-list__key govuk-!-width-one-third">
+      Original CP:
+    </dt>
+    <dd class="govuk-summary-list__value govuk-!-width-two-thirds">
+      {{ commitmentPeriod[details.originalPeriod] }}
+    </dd>
+  </div>
+  <div
+    *ngIf="AccountTypeMap[accountType]?.isKyoto"
+    class="govuk-summary-list__row"
+  >
+    <dt class="govuk-summary-list__key govuk-!-width-one-third">
+      Applicable CP:
+    </dt>
+    <dd class="govuk-summary-list__value govuk-!-width-two-thirds">
+      {{ commitmentPeriod[details.applicablePeriod] }}
+    </dd>
+  </div>
+</dl>
+
+<table class="govuk-table" aria-describedby="Account holding details table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        class="govuk-table__header govuk-table__header--numeric"
+        *ngIf="'urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async"
+      >
+        Serial number start
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header govuk-table__header--numeric"
+        *ngIf="'urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async"
+      >
+        Serial number end
+      </th>
+      <th
+        *ngIf="AccountTypeMap[accountType]?.isKyoto"
+        scope="col"
+        class="govuk-table__header govuk-table__header--numeric"
+      >
+        Project
+      </th>
+      <th
+        *ngIf="AccountTypeMap[accountType]?.isKyoto"
+        scope="col"
+        class="govuk-table__header"
+      >
+        Activity
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+        Quantity
+      </th>
+      <th scope="col" class="govuk-table__header">Reserved</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let block of details.results" class="govuk-table__row">
+      <td
+        class="govuk-table__cell govuk-table__cell--numeric"
+        *ngIf="'urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async"
+      >
+        {{ block.serialNumberStart }}
+      </td>
+      <td
+        class="govuk-table__cell govuk-table__cell--numeric"
+        *ngIf="'urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async"
+      >
+        {{ block.serialNumberEnd }}
+      </td>
+      <td
+        *ngIf="AccountTypeMap[accountType]?.isKyoto"
+        class="govuk-table__cell govuk-table__cell--numeric"
+      >
+        {{ block.project }}
+      </td>
+      <td
+        *ngIf="AccountTypeMap[accountType]?.isKyoto"
+        class="govuk-table__cell"
+      >
+        {{ getActivityLabel(block.activity) }}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{ block.quantity | number }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ block.reserved ? 'Yes' : 'No' }}
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_28_0_RENAME_ALLOCATION_EXCLUSION_STATUS_TO_ALLOCATION_WITHHOLD_STATUS" author="apostolouk" context="migrate">
+	    <comment>
+	        Renames the column allocation_exclusion_status to allocation_withhold_status.
+	    </comment>
+	    <sql>
+	        alter table compliant_entity rename column allocation_exclusion_status to allocation_withhold_status;
+	    </sql>
+	</changeSet>
+    <changeSet id="0_28_0_CREATE_MIGRATOR_HISTORY_TABLE" author="koukoulakisg" context="migrate">
+        <comment>
+            Create the Migrator History table in order to list migrator runs that have been executed.
+        </comment>
+        <sql>
+            create sequence migrator_history_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "migrator_history"
+            ("id" bigint,
+             "migrator_name" varchar (40),
+             "created_on" timestamp not null,
+             constraint "pk_migrator_history" primary key(id)
+            );
+
+            comment on table "migrator_history" is 'Lists migrator runs that have been executed.';
+            comment on column "migrator_history"."id" is 'The primary key.';
+            comment on column "migrator_history"."migrator_name" is 'The migrator name.';
+            comment on column "migrator_history"."created_on" is 'The migration date.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_28_0_ADD_TYPE_ID_IN_NOTIFICATION_DEFINITION_TABLE" author="georgopoulosp" context="migrate">
+        <comment>
+            Add type id column in notification_definition db table. Also add the related data.
+        </comment>
+        <sql>
+            alter table notification_definition add column "type_id" int4 NULL;
+
+            update notification_definition set type_id = 1 where type = 'EMISSIONS_MISSING_FOR_OHA';
+            update notification_definition set type_id = 2 where type = 'SURRENDER_DEFICIT_FOR_OHA';
+            update notification_definition set type_id = 3 where type = 'EMISSIONS_MISSING_FOR_AOHA';
+            update notification_definition set type_id = 4 where type = 'SURRENDER_DEFICIT_FOR_AOHA';
+            update notification_definition set type_id = 5 where type = 'YEARLY_INTRODUCTION_TO_OHA_AOHA_WITH_OBLIGATIONS';
+            update notification_definition set type_id = 6 where type = 'AD_HOC';
+
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_28_0_UPDATE_NOTIFICATION_DEFINITION_CONTENTS" author="trifyllisa" context="migrate">
+        <comment>
+            Updates the notification definitions with the correct subject and body.
+        </comment>
+        <sqlFile path="updated_notification_definition_data.sql" relativeToChangelogFile="true"
+                 splitStatements="false"/>
+    </changeSet>
+
+    <changeSet id="0_28_0_UPDATE_DEFINITIONS_WITH_SIGNATURES" author="trifyllisa" context="migrate">
+        <comment>
+            Updates the notification definitions with the signatures.
+        </comment>
+        <sqlFile path="updated_definition_signatures.sql" relativeToChangelogFile="true"
+                 splitStatements="false"/>
+    </changeSet>
+
+    <changeSet id="0_28_0_CORRECTIONS_IN_NOTIFICATION_DEFINITIONS" author="trifyllisa" context="migrate">
+        <comment>
+            Updates the notification definitions with the signatures.
+        </comment>
+        <sqlFile path="corrections_on_notification_definitions.sql" relativeToChangelogFile="true"
+                 splitStatements="false"/>
+    </changeSet>
+
+    <changeSet id="0_28_0_RENAME_ALLOCATION_CLASSIFICATION_COMPLIANT_IN_COMPLIANT_ENTITY_TABLE" author="georgopoulosp" context="migrate">
+        <comment>
+            Rename application classification COMPLIANT to FULLY_ALLOCATED in compliant_entity db table.
+        </comment>
+        <sql>
+            update compliant_entity set allocation_classification = 'FULLY_ALLOCATED' where allocation_classification = 'COMPLIANT';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_28_0_UPDATE_ACCOUNTS_SET_BALANCE_TO_ZERO_IF_NULL" author="nakoup" context="migrate">
+        <comment>
+            If an account balance is null set it to zero.
+        </comment>
+        <sql>
+            update account set balance = 0 where balance is null;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_28_0_ADD_NOTIFICATION_DEFINITION_FOR_TYPE_5" author="trifyllisa" context="migrate">
+        <comment>
+            Updates the notification definition for compliance notification 5.
+        </comment>
+        <sqlFile path="notification_definition_type_5.sql" relativeToChangelogFile="true"
+                 splitStatements="false"/>
+    </changeSet>
+
+</databaseChangeLog>

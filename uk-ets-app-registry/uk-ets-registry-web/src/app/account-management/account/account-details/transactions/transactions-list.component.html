@@ -1,0 +1,38 @@
+<div class="govuk-grid-row" *ngIf="showRunningBalances">
+  <div class="govuk-grid-column-full">
+    <button
+      style="margin-bottom: 0"
+      class="govuk-button govuk-button--secondary"
+      (click)="generateCurrentReport()"
+    >
+      Generate current report
+    </button>
+  </div>
+</div>
+<hr class="govuk-section-break govuk-section-break--m" />
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-search-transactions-results
+      [results]="results"
+      (sort)="onSort($event)"
+      [goBackToListRoute]="'account-list'"
+      [showRunningBalances]="showRunningBalances"
+      [isSortable]="false"
+    >
+    </app-search-transactions-results>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-paginator
+      [pagination]="pagination"
+      [pageSizeOptions]="pageSizeOptions"
+      (selectFirstPage)="goToFirstPageOfResults($event)"
+      (selectLastPage)="goToLastPageOfResults($event)"
+      (selectNextPage)="goToNextPageOfResults($event)"
+      (selectPreviousPage)="goToPreviousPageOfResults($event)"
+      (changePageSize)="onChangePageSize($event)"
+    >
+    </app-paginator>
+  </div>
+</div>

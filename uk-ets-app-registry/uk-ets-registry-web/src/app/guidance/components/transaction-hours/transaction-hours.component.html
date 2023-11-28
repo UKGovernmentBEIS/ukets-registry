@@ -1,0 +1,375 @@
+<div class="app-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-m govuk-!-margin-bottom-7 guidance-title">
+        UK Emissions Trading Registry guidance
+      </h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l">Transaction hours and delays</h2>
+      <span class="govuk-caption-l"
+        >Transactions on the UK Registry take place within set processing
+        times.</span
+      >
+
+      <app-guidance-modification-date></app-guidance-modification-date>
+
+      <p class="govuk-body">Contents</p>
+
+      <ul class="govuk-list">
+        <li>
+          -
+          <a class="govuk-link" [routerLink]="[]" fragment="subsection1"
+            >Transaction rules for UK Registry actions</a
+          >
+        </li>
+        <li>
+          -
+          <a class="govuk-link" [routerLink]="[]" fragment="subsection2"
+            >Example processing time scenarios</a
+          >
+        </li>
+      </ul>
+
+      <h3 class="govuk-heading-s" id="subsection1">
+        Transaction rules for UK Registry actions
+      </h3>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          the UK Registry transaction window is Monday to Friday 10am to 4pm (UK
+          time), excluding bank holidays in England and Wales
+        </li>
+        <li>
+          the Account Holder can set up transaction rules such that only
+          transactions to accounts in the Trusted Account List (TAL) are
+          permitted
+        </li>
+      </ul>
+      <table class="govuk-table" aria-describedby="subsection1">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Action</th>
+            <th scope="col" class="govuk-table__header">
+              Second approver required
+            </th>
+            <th scope="col" class="govuk-table__header">Processing time</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Add or remove account from TAL</td>
+            <td class="govuk-table__cell">Yes</td>
+            <td class="govuk-table__cell">4 working days</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              Add or amend an Authorised Representative to an account
+            </td>
+            <td class="govuk-table__cell">Registry Administrator</td>
+            <td class="govuk-table__cell">
+              Immediate (subject to UK working hours)
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              Change two-factor authentication device (FreeOTP)
+            </td>
+            <td class="govuk-table__cell">Registry Administrator</td>
+            <td class="govuk-table__cell">
+              Immediate (subject to UK working hours)
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Change email address or password</td>
+            <td class="govuk-table__cell">No</td>
+            <td class="govuk-table__cell">Immediate, no delays</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Surrender allowance</td>
+            <td class="govuk-table__cell">Yes</td>
+            <td class="govuk-table__cell">Immediate, no delays</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              Transfer units or allocations to account on TAL
+            </td>
+            <td class="govuk-table__cell">
+              Yes (depending on transaction rules)
+            </td>
+            <td class="govuk-table__cell">
+              Immediate – if within transaction window
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              Transfer units or allocations to account not on TAL
+            </td>
+            <td class="govuk-table__cell">Yes</td>
+            <td class="govuk-table__cell">
+              24 hour delay - if within transaction window
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="govuk-heading-s" id="subsection2">
+        Example processing time scenarios
+      </h2>
+      <p class="govuk-body govuk-!-font-weight-bold">
+        Scenario 1: Normal working week
+      </p>
+
+      <p class="govuk-body">Transfers to trusted account</p>
+
+      <table class="govuk-table" aria-describedby="subsection2">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">
+              Transaction proposal approval day and time
+            </th>
+            <th scope="col" class="govuk-table__header">Start clock</th>
+            <th scope="col" class="govuk-table__header">Stop clock</th>
+            <th scope="col" class="govuk-table__header">
+              Transaction execution time
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 09:50</th>
+            <td class="govuk-table__cell">Friday 10:00</td>
+            <td class="govuk-table__cell">Friday 10:00</td>
+            <th scope="row" class="govuk-table__header">Friday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 15:59</th>
+            <td class="govuk-table__cell">Friday 15:59</td>
+            <td class="govuk-table__cell">Friday 15:59</td>
+            <th scope="row" class="govuk-table__header">Friday 15:59</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 16:01</th>
+            <td class="govuk-table__cell">Monday 10:00</td>
+            <td class="govuk-table__cell">Monday 10:00</td>
+            <th scope="row" class="govuk-table__header">Monday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Saturday 12:00</th>
+            <td class="govuk-table__cell">Monday 10:00</td>
+            <td class="govuk-table__cell">Monday 10:00</td>
+            <th scope="row" class="govuk-table__header">Monday 10:00</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="govuk-body">Transfers to non-trusted account</p>
+
+      <table class="govuk-table" aria-describedby="subsection2">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">
+              Transaction proposal approval day and time
+            </th>
+            <th scope="col" class="govuk-table__header">Start clock</th>
+            <th scope="col" class="govuk-table__header">Stop clock</th>
+            <th scope="col" class="govuk-table__header">
+              Transaction execution time
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 09:50</th>
+            <td class="govuk-table__cell">Friday 10:00</td>
+            <td class="govuk-table__cell">Monday 10:00</td>
+            <th scope="row" class="govuk-table__header">Monday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 15:59</th>
+            <td class="govuk-table__cell">Friday 15:59</td>
+            <td class="govuk-table__cell">Monday 15:59</td>
+            <th scope="row" class="govuk-table__header">Monday 15:59</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 16:01</th>
+            <td class="govuk-table__cell">Monday 10:00</td>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Saturday 12:00</th>
+            <td class="govuk-table__cell">Monday 10:00</td>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="govuk-body govuk-!-font-weight-bold">
+        Scenario 2: Public holiday on a Monday (England and Wales public
+        holidays only)
+      </p>
+
+      <p class="govuk-body">Transfers to trusted account</p>
+      <table class="govuk-table" aria-describedby="subsection2">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">
+              Transaction proposal approval day and time
+            </th>
+            <th scope="col" class="govuk-table__header">Start clock</th>
+            <th scope="col" class="govuk-table__header">Stop clock</th>
+            <th scope="col" class="govuk-table__header">
+              Transaction execution time
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 09:50</th>
+            <td class="govuk-table__cell">Friday 10:00</td>
+            <td class="govuk-table__cell">Friday 10:00</td>
+            <th scope="row" class="govuk-table__header">Friday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 16:01</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Saturday 12:00</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="govuk-body">Transfers to non-trusted account</p>
+      <table class="govuk-table" aria-describedby="subsection2">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">
+              Transaction proposal approval day and time
+            </th>
+            <th scope="col" class="govuk-table__header">Start clock</th>
+            <th scope="col" class="govuk-table__header">Stop clock</th>
+            <th scope="col" class="govuk-table__header">
+              Transaction execution time
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 09:50</th>
+            <td class="govuk-table__cell">Friday 10:00</td>
+            <td class="govuk-table__cell">Saturday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 16:01</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Wednesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Wednesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Saturday 12:00</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Wednesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Wednesday 10:00</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="govuk-body govuk-!-font-weight-bold">
+        Scenario 3: Friday and Monday Public holidays (England and Wales public
+        holidays only)
+      </p>
+
+      <p class="govuk-body">Transfers to trusted account</p>
+
+      <table class="govuk-table" aria-describedby="subsection2">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">
+              Transaction proposal approval day and time
+            </th>
+            <th scope="col" class="govuk-table__header">Start clock</th>
+            <th scope="col" class="govuk-table__header">Stop clock</th>
+            <th scope="col" class="govuk-table__header">
+              Transaction execution time
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Thursday 16:01</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Friday 15:00</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Tuesday 16:01</th>
+            <td class="govuk-table__cell">Wednesday 10:00</td>
+            <td class="govuk-table__cell">Wednesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Wednesday 10:00</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="govuk-body">Transfers to non-trusted account</p>
+      <table class="govuk-table" aria-describedby="subsection2">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">
+              Transaction proposal approval day and time
+            </th>
+            <th scope="col" class="govuk-table__header">Start clock</th>
+            <th scope="col" class="govuk-table__header">Stop clock</th>
+            <th scope="col" class="govuk-table__header">
+              Transaction execution time
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Thursday 15:59</th>
+            <td class="govuk-table__cell">Thursday 15:59</td>
+            <td class="govuk-table__cell">Tuesday 15:59</td>
+            <th scope="row" class="govuk-table__header">Tuesday 15:59</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Thursday 16:01</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Wednesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Wednesday 10:00</th>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Tuesday 10:00</th>
+            <td class="govuk-table__cell">Tuesday 10:00</td>
+            <td class="govuk-table__cell">Wednesday 10:00</td>
+            <th scope="row" class="govuk-table__header">Wednesday 10:00</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-back-to-top></app-back-to-top>

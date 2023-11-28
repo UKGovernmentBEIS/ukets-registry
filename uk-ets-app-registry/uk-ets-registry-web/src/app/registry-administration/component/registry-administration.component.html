@@ -1,0 +1,14 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <button
+      *ngIf="
+        'urn:uk-ets-registry-api:authority-setting:write' | protect | async
+      "
+      class="govuk-button"
+      (click)="onSetUserAsAuthority()"
+      data-module="govuk-button"
+    >
+      Set/Unset Authority User
+    </button>
+  </div>
+</div>

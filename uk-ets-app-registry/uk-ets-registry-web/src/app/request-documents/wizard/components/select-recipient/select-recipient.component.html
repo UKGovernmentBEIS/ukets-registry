@@ -1,0 +1,53 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <span class="govuk-caption-xl">{{ getTitleText() }}</span>
+    <h1 class="govuk-heading-xl">
+      Choose the person who will receive the request
+    </h1>
+    <form [formGroup]="formGroup" (submit)="onSubmit()">
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row" *ngIf="accountHolderName">
+          <dt class="govuk-summary-list__key">Account Holder</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountHolderName }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngIf="accountNumber">
+          <dt class="govuk-summary-list__key">Account number</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountNumber }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngIf="accountName">
+          <dt class="govuk-summary-list__key">Account name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountName }}
+          </dd>
+        </div>
+      </dl>
+      <app-form-control-select
+        controlName="recipient"
+        [options]="candidateRecipientOptions"
+        [class]="'govuk-!-width-full'"
+        [validationErrorMessage]="validationErrorMessage.recipient"
+        [label]="'Enter an authorised representative'"
+      ></app-form-control-select>
+      <app-form-comment-area
+        [label]="
+          'Explain why you are assigning this task to the authorised representative'
+        "
+        [maxlength]="1024"
+        [validationErrorMessage]="validationErrorMessage.comment"
+        controlName="comment"
+      ></app-form-comment-area>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

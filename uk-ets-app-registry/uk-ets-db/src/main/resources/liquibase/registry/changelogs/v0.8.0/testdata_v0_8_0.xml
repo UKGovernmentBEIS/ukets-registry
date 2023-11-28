@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="0_8_0_ADD_PPSR_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<comment>Adds a PPSR account to the registry</comment>
+		<sql>
+			insert into account
+			(
+			id,
+			identifier,
+			account_name,
+			registry_account_type,
+			kyoto_account_type,
+			account_status,
+			opening_date,
+			request_status,
+			commitment_period_code,
+			registry_code,
+			check_digits,
+			full_identifier,
+			type_label,
+			approval_second_ar_required,
+			transfers_outside_tal
+			)
+			values
+			(
+			nextval('account_seq'),
+			1009,
+			'Previous Period Surplus Reserve',
+			'NONE',
+			'PREVIOUS_PERIOD_SURPLUS_RESERVE_ACCOUNT',
+			'OPEN',
+			now(),
+			'ACTIVE',
+			2,
+			'GB',
+			46,
+			'GB-100-1009-2-46',
+			'Previous Period Surplus Reserve account (PPSR)',
+			true,
+			true
+			);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_8_0_ADD_HOLDING_ACCOUNT_FOR_HMG" author="pougouniasn" context="migrate">
+
+		<comment>Adds a holding account for the Government accounts</comment>
+		<sql>
+			insert into contact (id, line_1, post_code, city, country, phone_number_1, email_address, phone_number_1_country)
+			values (nextval('contact_seq'), '1 Victoria Street', 'SW1H 0ET', 'London', 'UK', '02072155000', 'enquiries@beis.gov.uk', 'UK');
+
+			insert into account_holder (id, identifier, name, justification, status, type, contact_id, no_reg_justification)
+			values (nextval('account_holder_seq'), nextval('account_holder_identifier_seq'), 'HMG', 'No VAT', 'ACTIVE', 'GOVERNMENT',
+			(select id from contact where line_1 = '1 Victoria Street'), 'No registration_number');
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_8_0_UPDATE_PREVIOUS_GOVERNMENT_ACCOUNTS" author="pougouniasn" context="migrate">
+
+		<comment>Adds a holding account for the Government accounts</comment>
+		<sql>
+			update account
+			   set approval_second_ar_required = true,
+			       transfers_outside_tal = true,
+			       account_holder_id = (select id from account_holder where name = 'HMG')
+			 where registry_account_type = 'NONE'
+			   and kyoto_account_type = 'PARTY_HOLDING_ACCOUNT';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_8_0_UPDATE_PPSR_ACCOUNT" author="pougouniasn" context="migrate">
+
+		<comment>Corrects the PPSR account type</comment>
+		<sql>
+			update account
+			   set full_identifier = 'GB-130-1009-2-67',
+			       check_digits = 67
+			 where full_identifier = 'GB-100-1009-2-46';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_8_0_UPDATE_PPSR_ACCOUNT_WITH_HMG_ACCOUNT_HOLDER" author="pougouniasn" context="migrate">
+
+		<comment>Corrects the PPSR account type to match the Government Account Holder ID</comment>
+		<sql>
+			update account
+			set approval_second_ar_required = true,
+			transfers_outside_tal = true,
+			account_holder_id = (select id from account_holder where name = 'HMG')
+			where registry_account_type = 'NONE'
+			and kyoto_account_type = 'PREVIOUS_PERIOD_SURPLUS_RESERVE_ACCOUNT';
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>
+

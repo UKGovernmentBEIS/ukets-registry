@@ -1,0 +1,33 @@
+export enum AccountHolderDetailsType {
+  ACCOUNT_HOLDER_UPDATE_DETAILS = 'ACCOUNT_HOLDER_UPDATE_DETAILS',
+  ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS = 'ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS',
+  ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE = 'ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE',
+  ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE = 'ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE',
+  ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD = 'ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD',
+}
+
+export const AccountHolderDetailsTypeMap = new Map<
+  AccountHolderDetailsType,
+  string
+>([
+  [
+    AccountHolderDetailsType.ACCOUNT_HOLDER_UPDATE_DETAILS,
+    'Update the account holder details',
+  ],
+  [
+    AccountHolderDetailsType.ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS,
+    'Update the Primary Contact details',
+  ],
+  [
+    AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE,
+    'Update the alternative Primary Contact details',
+  ],
+  [
+    AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE,
+    'Remove the alternative Primary Contact',
+  ],
+  [
+    AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD,
+    'Add the alternative Primary Contact',
+  ],
+]);

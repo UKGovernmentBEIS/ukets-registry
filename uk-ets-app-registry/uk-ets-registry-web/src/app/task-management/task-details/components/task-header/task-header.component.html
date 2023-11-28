@@ -1,0 +1,188 @@
+<!--
+TODO: logic controlling buttons and labels by calling checkIfCanApprove checkIfCanReject is unreasonably
+complicated in this html and should be simplified
+-->
+<div class="hmcts-identity-bar" *ngIf="taskDetails">
+  <div class="hmcts-identity-bar__container">
+    <div *ngIf="showBackToList" class="govuk-grid-row">
+      <div class="govuk-grid-columns-two-thirds">
+        <a
+          [routerLink]="[]"
+          (click)="goBackToList($event)"
+          class="govuk-back-link"
+          id="back"
+          >Back to list</a
+        >
+      </div>
+    </div>
+    <div
+      class="govuk-grid-row"
+      [style.margin-top]="showBackToList ? '0px' : '50px'"
+      *ngIf="taskDetails"
+    >
+      <div
+        [class.govuk-grid-column-three-quarters]="
+          (taskDetails.taskStatus !== 'COMPLETED' &&
+            (!checkIfCanApprove(taskDetails.taskType) ||
+              !checkIfCanReject(taskDetails.taskType))) ||
+          taskDetails.taskStatus === 'COMPLETED'
+        "
+        [class.govuk-grid-column-two-thirds]="
+          taskDetails.taskStatus !== 'COMPLETED' &&
+          checkIfCanApprove(taskDetails.taskType) &&
+          checkIfCanReject(taskDetails.taskType)
+        "
+      >
+        <h3 class="govuk-heading-l govuk-!-margin-bottom-0">
+          {{ getTaskTypeLabel() }}
+        </h3>
+      </div>
+      <div
+        [class.govuk-grid-column-one-quarter]="
+          (taskDetails.taskStatus !== 'COMPLETED' &&
+            (!checkIfCanApprove(taskDetails.taskType) ||
+              !checkIfCanReject(taskDetails.taskType))) ||
+          taskDetails.taskStatus === 'COMPLETED'
+        "
+        [class.govuk-grid-column-one-third]="
+          taskDetails.taskStatus !== 'COMPLETED' &&
+          checkIfCanApprove(taskDetails.taskType) &&
+          checkIfCanReject(taskDetails.taskType)
+        "
+      >
+        <div style="float: right">
+          <div
+            *ngIf="
+              showExportToPDF &&
+              isAdmin &&
+              (taskDetails.taskType === 'ACCOUNT_OPENING_REQUEST' ||
+                taskDetails.taskType ===
+                  'ACCOUNT_OPENING_INSTALLATION_TRANSFER_REQUEST') &&
+              taskHeaderActionsVisibility
+            "
+            [ngClass]="{
+              'separator-container':
+                taskDetails.taskStatus !== 'COMPLETED' &&
+                taskDetails.currentUserClaimant &&
+                taskHeaderActionsVisibility &&
+                checkIfCanApprove(taskDetails.taskType)
+            }"
+          >
+            <button
+              class="
+                govuk-button govuk-button--secondary
+                govuk-!-margin-right-4 govuk-!-margin-bottom-0
+              "
+              data-module="govuk-button"
+              (click)="exportPDF()"
+            >
+              Export as PDF
+            </button>
+          </div>
+
+          <button
+            style="margin-bottom: 0"
+            *ngIf="
+              taskDetails.taskStatus !== 'COMPLETED' &&
+              taskDetails.currentUserClaimant &&
+              taskHeaderActionsVisibility &&
+              checkIfCanApprove(taskDetails.taskType)
+            "
+            (click)="proceedWith(TaskOutcome.APPROVED)"
+            class="govuk-button govuk-!-margin-left-4 govuk-!-margin-right-1"
+            data-module="govuk-button"
+          >
+            Approve
+          </button>
+          <button
+            style="margin-bottom: 0"
+            *ngIf="
+              taskDetails.taskStatus !== 'COMPLETED' &&
+              taskDetails.currentUserClaimant &&
+              taskHeaderActionsVisibility &&
+              checkIfCanReject(taskDetails.taskType)
+            "
+            (click)="proceedWith(TaskOutcome.REJECTED)"
+            class="govuk-button govuk-button--secondary"
+            data-module="govuk-button"
+          >
+            Reject
+          </button>
+        </div>
+        <div style="float: right">
+          <button
+            style="margin-bottom: 0"
+            *ngIf="
+              taskDetails.taskStatus !== 'COMPLETED' &&
+              taskDetails.currentUserClaimant &&
+              taskHeaderActionsVisibility &&
+              checkIfCanOnlyComplete(taskDetails.taskType)
+            "
+            (click)="proceedWith(TaskOutcome.APPROVED)"
+            class="govuk-button"
+            data-module="govuk-button"
+          >
+            Complete task
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <app-govuk-tag
+        *ngIf="
+          taskDetails.taskStatus === 'COMPLETED' &&
+            !checkIfCanOnlyComplete(taskDetails.taskType);
+          else completedOnly
+        "
+        [color]="requestStatusMap[taskDetails.requestStatus].color"
+        style="margin-left: 15px"
+        >{{ requestStatusMap[taskDetails.requestStatus].label }}</app-govuk-tag
+      >
+      <ng-template #completedOnly>
+        <app-govuk-tag
+          *ngIf="
+            taskDetails.taskStatus === 'COMPLETED' &&
+            checkIfCanOnlyComplete(taskDetails.taskType)
+          "
+          color="green"
+          style="margin-left: 15px"
+          >COMPLETED
+        </app-govuk-tag>
+      </ng-template>
+      <div class="govuk-grid-column-full" *ngIf="taskDetails">
+        <div class="govuk-body">
+          Request ID: {{ taskDetails.requestId }}
+          <a
+            [routerLink]="[]"
+            (keypress)="moreInfo = !moreInfo"
+            (click)="moreInfo = !moreInfo"
+            class="govuk-link"
+            style="margin-left: 10px"
+            >{{ moreInfo ? 'less info' : 'more info' }}</a
+          >
+          <ng-container *ngIf="moreInfo">
+            <div
+              *ngIf="
+                taskDetails.taskType.endsWith('REQUESTED_DOCUMENT_UPLOAD');
+                else fullInitiatorName
+              "
+            >
+              Initiated by registry administrator on
+              {{ taskDetails.initiatedDate | gdsDateTime }}
+            </div>
+            <ng-template #fullInitiatorName>
+              <div>
+                Initiated by {{ taskDetails.initiatorName }} on
+                {{ taskDetails.initiatedDate | gdsDateTime }}
+              </div>
+            </ng-template>
+            <div *ngIf="taskDetails.claimantName">
+              Claimed by {{ taskDetails.claimantName }} on
+              {{ taskDetails.claimedDate | gdsDateTime }}
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

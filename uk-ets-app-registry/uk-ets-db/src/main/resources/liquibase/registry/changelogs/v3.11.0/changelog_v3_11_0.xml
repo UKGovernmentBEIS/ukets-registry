@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_11_0_ADD_NEW_BILLING_DETAILS_FIELDS" author="piliotid" context="migrate">
+        <comment>Adds the contact name and SOP Customer Id columns to contact table</comment>
+        <sql>
+            alter table contact add column contact_name varchar(1024) default null;
+            alter table contact add column sop_customer_id varchar(1024) default null;
+
+            comment on column contact.contact_name is 'This is the name of the person or department that invoices will be sent to.';
+            comment on column contact.sop_customer_id is 'This is the SOP Customer Id.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_11_0_CREATE_BILLING_DETAILS_TEMP_TABLE" author="piliotid" context="migrate">
+        <comment>Create billing details temp table</comment>
+        <sql>
+            CREATE TABLE "billing_contact_migration"
+            (
+                "id" bigint,
+                "phone_number_1_country" varchar(10),
+                "phone_number_1" varchar(256),
+                "phone_number_2_country" varchar(10),
+                "phone_number_2" varchar(256),
+                "email_address" varchar(256),
+                constraint "pk_billing_contact" primary key("id")
+            );
+
+            COMMENT ON TABLE "billing_contact_migration" IS 'Billing contact information from initial migration';
+			COMMENT ON COLUMN "billing_contact_migration"."id" IS 'The primary key, same as the contact table';
+			COMMENT ON COLUMN "billing_contact_migration"."phone_number_1_country" IS 'First phone number country code';
+			COMMENT ON COLUMN "billing_contact_migration"."phone_number_1" IS 'First phone number';
+			COMMENT ON COLUMN "billing_contact_migration"."phone_number_2_country" IS 'Second phone number country code';
+			COMMENT ON COLUMN "billing_contact_migration"."phone_number_2" IS 'Second phone number';
+			COMMENT ON COLUMN "billing_contact_migration"."email_address" IS 'The email address';
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_11_0_MIGRATE_EMAIL_PHONE_FROM_ACCOUNT_CONTACT_TO_TEMP_TABLE" author="piliotid" context="migrate">
+        <sql>
+            -- migrate existing email and phones to temp table
+            INSERT INTO "billing_contact_migration" ("id", "phone_number_1_country", "phone_number_1", "phone_number_2_country", "phone_number_2", "email_address")
+            SELECT "id", "phone_number_1_country", "phone_number_1", "phone_number_2_country", "phone_number_2", "email_address"
+            FROM contact
+            WHERE (phone_number_1 != '' OR phone_number_2 != '' OR email_address != '')
+              AND id in (select contact_id from account);
+
+            UPDATE contact SET phone_number_1_country = NULL, phone_number_1 = NULL, phone_number_2_country = NULL, phone_number_2 = NULL, email_address = NULL
+            WHERE (phone_number_1 != '' OR phone_number_2 != '' OR email_address != '')
+              AND id in (select contact_id from account);
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_11_0_MIGRATE_CONTACT_BILLING_EMAIL_ADDRESS" author="piliotid" context="migrate">
+        <sql>
+            -- migration for billing emails
+            update contact set email_address = case when billing_email_1 != '' then billing_email_1 else billing_email_2 end
+            where (billing_email_1 != '' or billing_email_2 != '')
+              and (email_address is null or email_address = '')
+              and id in (select contact_id from account);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="loukerip" id="3_11_x_UPDATE_COUNTRY_CODE_GB_TO_UK" context="migrate">
+        <comment>Update the country code of users, accounts, account holders from GB To UK</comment>
+        <sql>
+            update account_holder set birth_country = 'UK' where birth_country = 'GB';
+            update contact set country = 'UK' where country = 'GB';
+        </sql>
+    </changeSet>
+
+    <changeSet id="3_11_0_ADD_TABLE_TASK_TRANSACTION" author="fragkise" context="migrate">
+        <comment>Initial creation of Transactions per Task</comment>
+        <sql>
+            --------------------------------------------------------
+            --  Table TASK_TRANSACTIONS
+            --------------------------------------------------------
+
+            CREATE SEQUENCE task_transaction_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "task_transaction" (
+            "id" BIGINT NOT NULL,
+            "task_id" BIGINT NOT NULL,
+            "transaction_identifier" VARCHAR(255),
+            "recipient_account_number" varchar(50)
+            );
+            
+            ALTER TABLE "task_transaction" ADD CONSTRAINT "pk_task_transactions" PRIMARY KEY ("id");
+
+            CREATE INDEX "task_transaction_idx" ON "task_transaction" ("transaction_identifier");
+
+            COMMENT ON TABLE "task_transaction"  IS 'Stores the transactions per task';
+            COMMENT ON COLUMN "task_transaction"."task_id" IS 'The task id';
+            COMMENT ON COLUMN "task_transaction"."transaction_identifier" is 'The transaction identifier';
+            COMMENT ON COLUMN "task"."recipient_account_number" is 'Acquiring Account Identifier';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "task_transaction" CASCADE;
+                DROP SEQUENCE IF EXISTS task_transaction_seq;
+            </sql>
+        </rollback>
+
+    </changeSet>
+    
+    
+    <changeSet id="3_11_0_MIGRATE_EXISTING_TRANSACTION_TASKS" author="fragkise" context="migrate">
+        <sql>
+            insert into task_transaction(id, task_id, transaction_identifier,recipient_account_number)
+            select nextval('task_transaction_seq'), t.id , t.transaction_identifier , t.recipient_account_number
+            from task t
+            where t."type" in ('TRANSACTION_REQUEST')
+            order by t.request_identifier;
+        </sql>
+        
+        <rollback>
+            <sql>
+                delete from task_transaction;
+            </sql>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="3_11_0_DROP_OBSOLETE_COLUMNS_FROM_TASK" author="fragkise" context="migrate">
+        <sql>
+            alter table task drop column transaction_identifier;
+            alter table task drop column recipient_account_number;
+        </sql>
+        
+        <rollback>
+            <sql>
+                alter table task add transaction_identifier varchar(256) null;
+                comment on column task.transaction_identifier is 'the transaction identifier';
+                alter table task add recipient_account_number varchar(50) null;
+                comment on column task.recipient_account_number is 'acquiring account identifier';    
+                update task t set transaction_identifier = (select string_agg(tt.transaction_identifier,',') from task_transaction tt  where tt.task_id = t.id group by tt.task_id order by tt.task_id) where transaction_identifier is null;          
+                update task t set recipient_account_number = (select string_agg(tt.recipient_account_number ,',') from task_transaction tt  where tt.task_id = t.id group by tt.task_id order by tt.task_id) where recipient_account_number is null;
+            </sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

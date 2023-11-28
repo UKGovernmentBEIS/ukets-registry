@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_14_0_CREATE_REGISTRY_LOCKS_TABLE" author="kkaravitis" context="migrate">
+        <comment>Create a table for keeping various locks that should be acquired to avoid race conditions.</comment>
+        <sql>
+                --------------------------------------------------------
+                --  Table REGISTRY_LOCK
+                --------------------------------------------------------
+                CREATE TABLE "registry_lock"
+                (
+                "key" VARCHAR(40),
+                constraint "pk_registry_lock" primary key("key")
+                );
+
+                COMMENT ON TABLE "registry_lock" IS 'Represents the application locks';
+                COMMENT ON COLUMN "registry_lock"."key" IS 'The primary key';
+            </sql>
+
+            <rollback>
+                <sql>
+                    DROP TABLE IF EXISTS "registry_lock" CASCADE;
+                </sql>
+            </rollback>
+    </changeSet>
+    <changeSet id="0_14_0_ADD_RECONCILIATION_REGISTRY_LOCK_ENTRY" author="kkaravitis" context="migrate">
+
+      <preConditions onFail="CONTINUE">
+        <sqlCheck expectedResult="0">select count(*) from registry_lock where key = 'reconciliation'</sqlCheck>
+      </preConditions>
+
+      <comment>Adds the reconciliation registry lock</comment>
+
+      <sql>
+        insert into registry_lock (key) values ('reconciliation');
+      </sql>
+    </changeSet>
+</databaseChangeLog>

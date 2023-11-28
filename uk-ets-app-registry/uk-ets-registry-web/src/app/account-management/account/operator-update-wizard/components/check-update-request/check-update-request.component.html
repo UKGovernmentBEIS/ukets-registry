@@ -1,0 +1,45 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="'Request to update the installation information'"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"
+      >Request to update the
+      {{ operatorTypeMap[currentOperatorInfo.type] }} information</span
+    >
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 class="govuk-heading-xl">Check the update and confirm</h1>
+      </legend>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          Revisions are highlighted and shown last.
+        </strong>
+      </div>
+      <app-operator-summary-changes
+        [current]="currentOperatorInfo"
+        [changed]="changedValues"
+        [isWizardOrientedFlag]="true"
+        [routePathForDetails]="routePathForDetails"
+        (navigateToEmitter)="navigateTo($event)"
+      >
+      </app-operator-summary-changes>
+      <button
+        id="submit"
+        class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+        data-module="govuk-button"
+        appDebounceClick
+        (debounceClick)="onSubmit()"
+        id="submit"
+      >
+        Submit
+      </button>
+      <app-cancel-request-link
+        (goToCancelScreen)="onCancel()"
+      ></app-cancel-request-link>
+    </fieldset>
+  </div>
+</div>

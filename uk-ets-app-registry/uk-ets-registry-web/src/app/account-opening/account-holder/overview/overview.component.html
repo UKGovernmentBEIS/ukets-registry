@@ -1,0 +1,441 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="
+    ((accountHolderCompleted$ | async) ? 'View ' : 'Check ') + 'your answers'
+  "
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-form-group">
+      <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl"> Add the account holder </span>
+        {{ (accountHolderCompleted$ | async) ? 'View ' : 'Check ' }} your
+        answers
+      </h1>
+      <div class="govuk-fieldset">
+        <div
+          *ngIf="
+            !(accountHolderExisting$ | async).valueOf() &&
+            (accountHolderCompleted$ | async)
+          "
+          class="govuk-inset-text"
+        >
+          {{
+            (accountHolderType$ | async) === accountHolderTypes.INDIVIDUAL
+              ? 'New individual'
+              : 'New organisation'
+          }}
+        </div>
+      </div>
+    </div>
+
+    <ng-container
+      *ngIf="
+        (accountHolder$ | async) &&
+        (accountHolderType$ | async) === accountHolderTypes.INDIVIDUAL
+      "
+    >
+      <dl
+        class="govuk-summary-list"
+        [class.govuk-summary-list--no-border]="accountHolderCompleted$ | async"
+      >
+        <div class="govuk-summary-list__row">
+          <h2 class="govuk-summary-list__key">Individual's details</h2>
+          <div class="govuk-summary-list__actions">
+            <a
+              *ngIf="
+                !(accountHolderCompleted$ | async).valueOf() &&
+                !(accountHolderExisting$ | async).valueOf()
+              "
+              class="govuk-link"
+              [routerLink]="accountHolderWizardRoutes.INDIVIDUAL_DETAILS"
+              skipLocationChange="true"
+            >
+              Change<span class="govuk-visually-hidden">
+                individual's personal details</span
+              >
+            </a>
+          </div>
+        </div>
+      </dl>
+      <dl
+        class="
+          govuk-summary-list govuk-summary-list--no-border
+          govuk-!-margin-bottom-9
+        "
+        *ngIf="(accountHolder$ | async).details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">First and middle names</dt>
+          <dd class="govuk-summary-list__value">
+            {{
+              (accountHolder$ | async | individual).details
+                | individualFirstAndMiddleNames
+            }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Last name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ (accountHolder$ | async | individual).details.lastName }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Country of birth</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountHolderCountryOfBirth$ | async }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            I confirm that the account holder is aged 18 or over
+          </dt>
+          <dd class="govuk-summary-list__value">Yes</dd>
+        </div>
+      </dl>
+
+      <dl
+        class="govuk-summary-list"
+        [class.govuk-summary-list--no-border]="accountHolderCompleted$ | async"
+      >
+        <div class="govuk-summary-list__row">
+          <h2 class="govuk-summary-list__key">Individual's contact details</h2>
+          <div class="govuk-summary-list__actions">
+            <a
+              *ngIf="
+                !(accountHolderCompleted$ | async).valueOf() &&
+                !(accountHolderExisting$ | async).valueOf()
+              "
+              class="govuk-link"
+              [routerLink]="
+                accountHolderWizardRoutes.INDIVIDUAL_CONTACT_DETAILS
+              "
+              skipLocationChange="true"
+            >
+              Change<span class="govuk-visually-hidden">
+                individual's contact details</span
+              >
+            </a>
+          </div>
+        </div>
+      </dl>
+      <dl
+        class="
+          govuk-summary-list govuk-summary-list--no-border
+          govuk-!-margin-bottom-9
+        "
+        *ngIf="(accountHolder$ | async).address"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Address</dt>
+          <dd class="govuk-summary-list__value">
+            <app-shared-three-line-address
+              [line1]="
+                (accountHolder$ | async | individual).address.buildingAndStreet
+              "
+              [line2]="
+                (accountHolder$ | async | individual).address.buildingAndStreet2
+              "
+              [line3]="
+                (accountHolder$ | async | individual).address.buildingAndStreet3
+              "
+            ></app-shared-three-line-address>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Town or city</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="(accountHolder$ | async | individual).address.townOrCity"
+            >
+              {{
+                (accountHolder$ | async | individual).address.townOrCity
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">State or Province</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="
+                (accountHolder$ | async | individual).address.stateOrProvince
+              "
+            >
+              {{
+                (accountHolder$ | async | individual).address.stateOrProvince
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="(accountHolder$ | async | individual).address.postCode"
+            >
+              {{
+                (accountHolder$ | async | individual).address.postCode
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Country</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="(accountHolder$ | async | individual).address.country"
+            >
+              {{ accountHolderAddressCountry$ | async }}
+            </ng-container>
+          </dd>
+        </div>
+        <div
+          class="govuk-summary-list__row"
+          *ngIf="
+            (accountHolder$ | async | individual).phoneNumber?.phoneNumber1
+          "
+        >
+          <dt class="govuk-summary-list__key">Phone number 1</dt>
+          <dd class="govuk-summary-list__value">
+            +{{ (accountHolder$ | async | individual).phoneNumber.countryCode1
+            }}{{
+              (accountHolder$ | async | individual).phoneNumber.phoneNumber1
+            }}
+          </dd>
+        </div>
+        <div
+          class="govuk-summary-list__row"
+          *ngIf="
+            (accountHolder$ | async | individual).phoneNumber?.phoneNumber2
+          "
+        >
+          <dt class="govuk-summary-list__key">Phone number 2</dt>
+          <dd class="govuk-summary-list__value">
+            +{{ (accountHolder$ | async | individual).phoneNumber.countryCode2
+            }}{{
+              (accountHolder$ | async | individual).phoneNumber.phoneNumber2
+            }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Email address</dt>
+          <dd class="govuk-summary-list__value">
+            {{
+              (accountHolder$ | async | individual).emailAddress?.emailAddress
+            }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        (accountHolder$ | async) &&
+        (accountHolderType$ | async) === accountHolderTypes.ORGANISATION
+      "
+    >
+      <dl
+        class="govuk-summary-list"
+        [class.govuk-summary-list--no-border]="accountHolderCompleted$ | async"
+      >
+        <div class="govuk-summary-list__row">
+          <h2 class="govuk-summary-list__key">Organisation details</h2>
+          <div class="govuk-summary-list__actions">
+            <a
+              *ngIf="
+                !(accountHolderCompleted$ | async).valueOf() &&
+                !(accountHolderExisting$ | async).valueOf()
+              "
+              class="govuk-link"
+              [routerLink]="accountHolderWizardRoutes.ORGANISATION_DETAILS"
+              skipLocationChange="true"
+            >
+              Change<span class="govuk-visually-hidden">
+                organisation details</span
+              >
+            </a>
+          </div>
+        </div>
+      </dl>
+      <dl
+        class="
+          govuk-summary-list govuk-summary-list--no-border
+          govuk-!-margin-bottom-9
+        "
+        *ngIf="(accountHolder$ | async).details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ (accountHolder$ | async).details.name }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Registration number</dt>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="
+              (accountHolder$ | async | organisation).details.registrationNumber
+            "
+          >
+            {{
+              (accountHolder$ | async | organisation).details.registrationNumber
+            }}
+          </dd>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="
+              (accountHolder$ | async | organisation).details
+                .noRegistrationNumJustification
+            "
+          >
+            No registration number <br />
+            {{
+              (accountHolder$ | async | organisation).details
+                .noRegistrationNumJustification
+            }}
+          </dd>
+        </div>
+      </dl>
+
+      <dl
+        class="govuk-summary-list"
+        [class.govuk-summary-list--no-border]="accountHolderCompleted$ | async"
+      >
+        <div class="govuk-summary-list__row">
+          <h2 class="govuk-summary-list__key">Organisation address</h2>
+          <div class="govuk-summary-list__actions">
+            <a
+              *ngIf="
+                !(accountHolderCompleted$ | async).valueOf() &&
+                !(accountHolderExisting$ | async).valueOf()
+              "
+              class="govuk-link"
+              [routerLink]="
+                accountHolderWizardRoutes.ORGANISATION_ADDRESS_DETAILS
+              "
+              skipLocationChange="true"
+            >
+              Change<span class="govuk-visually-hidden">
+                address and contact details</span
+              >
+            </a>
+          </div>
+        </div>
+      </dl>
+      <dl
+        class="
+          govuk-summary-list govuk-summary-list--no-border
+          govuk-!-margin-bottom-9
+        "
+        *ngIf="(accountHolder$ | async).address"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Organisation address</dt>
+          <dd class="govuk-summary-list__value">
+            <app-shared-three-line-address
+              [line1]="
+                (accountHolder$ | async | organisation).address
+                  .buildingAndStreet
+              "
+              [line2]="
+                (accountHolder$ | async | organisation).address
+                  .buildingAndStreet2
+              "
+              [line3]="
+                (accountHolder$ | async | organisation).address
+                  .buildingAndStreet3
+              "
+            ></app-shared-three-line-address>
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Town or city</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="(accountHolder$ | async | organisation).address.townOrCity"
+            >
+              {{
+                (accountHolder$ | async | organisation).address.townOrCity
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">State or Province</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="
+                (accountHolder$ | async | organisation).address.stateOrProvince
+              "
+            >
+              {{
+                (accountHolder$ | async | organisation).address.stateOrProvince
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Postal Code or ZIP</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="(accountHolder$ | async | organisation).address.postCode"
+            >
+              {{
+                (accountHolder$ | async | organisation).address.postCode
+              }}</ng-container
+            >
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Country</dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              *ngIf="(accountHolder$ | async | organisation).address.country"
+            >
+              {{ accountHolderAddressCountry$ | async }}
+            </ng-container>
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+
+    <div class="govuk-form-group">
+      <button
+        *ngIf="
+          (accountHolderCompleted$ | async) &&
+          !(accountHolderExisting$ | async).valueOf()
+        "
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="button"
+        (click)="onEdit()"
+      >
+        Edit
+      </button>
+      <button
+        *ngIf="!(accountHolderCompleted$ | async).valueOf()"
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="button"
+        (click)="onApply()"
+        id="continue"
+      >
+        Continue
+      </button>
+      <button
+        *ngIf="accountHolderCompleted$ | async"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        type="button"
+        (click)="onDelete()"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

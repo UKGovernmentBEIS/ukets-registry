@@ -1,0 +1,455 @@
+<div id="help-system" class="help-system">
+  <header class="govuk-heading-m govuk-heading-m-custom">
+    <span>UK Emissions Trading Registry guidance - FreeOTP Authenticator</span>
+  </header>
+  <div class="grid-row help-body">
+    <div class="column-left">
+      <div class="help-sections" id="help-sections">
+        <article
+          [ngClass]="
+            !enabledTopicAccessingTheRegistry
+              ? 'topic-accessing-the-registry'
+              : 'topic-accessing-the-registry-target'
+          "
+        >
+          <h2>Accessing the Registry</h2>
+          <p class="govuk-body">
+            FreeOTP Authenticator is a two-factor authentication app that
+            generates one time passcodes to add an additional level of security
+            for online accounts. You’ll need to use the app to access the
+            Registry and perform certain actions.
+          </p>
+          <p class="govuk-body">
+            If you have used the FreeOTP previously for user acceptance testing
+            or user research, you might want to delete the old tokens, and
+            recreate them. Instructions for this are below for both iPhone and
+            Android versions of the app.
+          </p>
+        </article>
+        <article
+          [ngClass]="
+            !enabledTopicSettingTheTimeOnDevice
+              ? 'topic-setting-the-time-on-device'
+              : 'topic-setting-the-time-on-device-target'
+          "
+        >
+          <h2>Setting the time on your device</h2>
+          <p class="govuk-body">
+            The two-factor authentication process necessitates that your
+            smartphone must be set for the time to automatically update in order
+            for FreeOTP to work correctly.
+          </p>
+          <strong>For Apple iOS:</strong>
+          <ol class="govuk-list govuk-list--number">
+            <li>
+              Go to Settings > General > Date and Time, then select 'Set
+              Automatically'
+            </li>
+            <li>
+              You may need to allow your device to use the current location to
+              set the correct time zone. To do this, go to Settings > Privacy >
+              Location Services > System Services, then select 'Setting Time
+              Zone'
+            </li>
+            <li>
+              You can check that your device is showing the correct time zone by
+              going to Settings > General > Date and Time > Time Zone
+            </li>
+          </ol>
+          <strong>For Android:</strong>
+          <ol class="govuk-list govuk-list--number">
+            <li>Open your phone's Clock app</li>
+            <li>
+              Select
+              <img
+                src="/assets/images/guidance/settings-android.png"
+                width="24"
+                height="24"
+                alt="Set time for Android device"
+              />
+              > Settings
+            </li>
+            <li>
+              Select 'Change date and time', then select 'Use network-provided
+              time' and 'Use network-provided time zone'
+            </li>
+          </ol>
+        </article>
+        <article
+          [ngClass]="
+            !enabledTopicDownloadingTheApp
+              ? 'topic-downloading-the-app'
+              : 'topic-downloading-the-app-target'
+          "
+        >
+          <h2>Downloading the app</h2>
+          <p class="govuk-body">
+            When you create a Registry sign in, you must download the FreeOTP
+            Authenticator app onto your smartphone. If you cannot download apps
+            onto your phone, contact your organisation’s IT helpdesk.
+          </p>
+        </article>
+        <article
+          [ngClass]="
+            !enabledTopicForAppleIos
+              ? 'topic-for-apple-ios'
+              : 'topic-for-apple-ios-target'
+          "
+        >
+          <h2>For Apple iOS</h2>
+          <ol>
+            <li>
+              <p class="govuk-body">On your iPhone, tap the App Store icon.</p>
+              <img
+                src="/assets/images/guidance/ios-apple.png"
+                width="133"
+                height="125"
+                alt="ios apple"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                Search for FreeOTP Authenticator by Red Hat.
+              </p>
+              <img
+                src="/assets/images/guidance/free-otp-authenticator-ios-app.png"
+                width="470"
+                height="227"
+                alt="otp authenticator"
+              />
+            </li>
+            <li>Tap the app, then download and install it.</li>
+            <li>
+              You’ll be asked to allow FreeOTP Authenticator to access your
+              camera. Select ‘Yes’.
+            </li>
+          </ol>
+
+          <h3 class="govuk-heading-m">Creating your Registry sign in</h3>
+          <p class="govuk-body">
+            During the creation of your Registry sign in you will be asked to
+            scan a QR code and follow further instructions on the page.
+          </p>
+          <ol>
+            <li>
+              <p class="govuk-body">
+                Open the FreeOTP Authenticator app. At the top of the screen
+                select the QR code icon.
+              </p>
+              <img
+                src="/assets/images/guidance/free-otp-icon.png"
+                width="410"
+                height="50"
+                alt="Free OTP"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                Scan the code shown on the screen using the rear facing camera
+                on your iPhone. If your camera does not activate, check your
+                settings for the FreeOTP Authenticator app and set the slider to
+                allow access to the camera.
+              </p>
+              <img
+                src="/assets/images/guidance/free-otp-apps.png"
+                width="410"
+                height="250"
+                alt="Free OTP apps"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                After scanning the QR code you will be asked to choose an icon.
+                You can use any icon shown on the app. This icon is specific to
+                the Registry and will be shown whenever you open FreeOTP
+                Authenticator. Tap on an icon to select it.
+              </p>
+              <img
+                src="/assets/images/guidance/ios-apps.png"
+                width="410"
+                height="500"
+                alt="IOS apps"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                After you have chosen an icon select 'Next' at the top of the
+                screen.
+              </p>
+              <img
+                src="/assets/images/guidance/ios-more-icons-menu.png"
+                width="410"
+                height="650"
+                alt="IOS more icons menu"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                You will be asked to choose whether you need to unlock your
+                phone before being able to activate the token. Set the slider to
+                your choice, then select 'Next' at the top of the screen.
+              </p>
+              <img
+                src="/assets/images/guidance/free-otp-info.png"
+                width="410"
+                height="600"
+                alt="Free OTP info"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                Tap on the icon you chose for the Registry to generate your
+                6-digit code. You will have 60 seconds to enter your code into
+                the Registry before it changes.
+              </p>
+              <img
+                src="/assets/images/guidance/uk-ets-icon.png"
+                width="268"
+                height="133"
+                alt="UK ETS"
+              />
+            </li>
+          </ol>
+
+          <h3 class="govuk-heading-m">Using the app</h3>
+          <ul class="govuk-list govuk-list--bullet">
+            <li class="govuk-body-s">
+              <p class="govuk-body">
+                Use FreeOTP Authenticator whenever you are asked to enter a
+                6-digit code.
+              </p>
+              <img
+                src="/assets/images/guidance/enter-6-digit.png"
+                width="545"
+                height="120"
+                alt="Enter 6 digit code"
+              />
+            </li>
+            <li class="govuk-body-s">
+              <p class="govuk-body">
+                If the code does not work, remove the token by swiping the icon
+                from left to right. Select ‘Remove token’, then rescan the QR
+                code.
+              </p>
+              <img
+                src="/assets/images/guidance/remove-token.png"
+                width="525"
+                height="253"
+                alt="Remove token"
+              />
+            </li>
+          </ul>
+          <app-back-to-top></app-back-to-top>
+        </article>
+        <article
+          [ngClass]="
+            !enabledTopicForAndroid
+              ? 'topic-for-android'
+              : 'topic-for-android-target'
+          "
+        >
+          <h2>For Android</h2>
+          <ol class="govuk-list govuk-list--number">
+            <li>
+              <p class="govuk-body">
+                On your phone, tap the Google Play Store icon.
+              </p>
+              <img
+                src="/assets/images/guidance/google-play.png"
+                alt="google play"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                Search for FreeOTP Authenticator by Red Hat.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp.png"
+                width="540"
+                height="215"
+                alt="Free OTP"
+              />
+            </li>
+            <li>Tap the app, then download and install it.</li>
+            <li>
+              <p class="govuk-body">
+                You’ll be asked to allow FreeOTP Authenticator to access your
+                camera and files. Select ‘Accept’.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-question.png"
+                alt="Free OTP question"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">Set the sliders to allow access.</p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-allow.png"
+                alt="Free OTP allow"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                Depending on your Android version you may see a message that the
+                app was built for an older version of Android. Select ‘OK’.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-updates.png"
+                alt="Free OTP updates"
+              />
+            </li>
+          </ol>
+
+          <h3 class="govuk-heading-m">Creating your Registry sign in</h3>
+          <p class="govuk-body">
+            When you create a Registry sign in you will be asked to scan a QR
+            code and follow further instructions on the page.
+          </p>
+          <ol class="govuk-list govuk-list--number">
+            <li>
+              <p class="govuk-body">
+                Open the FreeOTP Authenticator app. At the top of the screen
+                select the QR code icon.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-select-qr.png"
+                alt="Free OTP select QR"
+              />
+            </li>
+            <li>
+              Scan the code shown on the screen using the rear camera on your
+              phone.
+            </li>
+            <li>
+              <p class="govuk-body">
+                If you are unable to scan the code, select the key icon in the
+                app, and select ‘Problems with scanning’ on the Registry page.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-header.png"
+                alt="Free OTP header"
+              />
+              <br />
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-problem.png"
+                alt="Free OTP problem"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                Enter the information that you see on the Registry page.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-token.png"
+                alt="Free OTP token"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                Tap the icon for the email address you used to create your
+                Registry sign in. This will generate your 6-digit code. You will
+                have 60 seconds to enter your code into the Registry before it
+                changes.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/free-otp-token-timer.png"
+                alt="Free OTP timer"
+              />
+            </li>
+          </ol>
+
+          <h3 class="govuk-heading-m">Using the app</h3>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>
+              <p class="govuk-body">
+                Use FreeOTP Authenticator whenever you are asked to enter a
+                6-digit code.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/enter-token.png"
+                width="545"
+                hright="120"
+                alt="Enter token"
+              />
+            </li>
+            <li>
+              <p class="govuk-body">
+                If the code does not work, remove the token by selecting the
+                three dots on the bottom right. Select ‘Delete’, then rescan the
+                QR code or enter the ‘Problems with scanning?’ details again.
+              </p>
+              <img
+                class="guidance-img"
+                src="/assets/images/guidance/edit-token.png"
+                alt="Edit token"
+              />
+            </li>
+          </ul>
+          <app-back-to-top></app-back-to-top>
+        </article>
+      </div>
+    </div>
+    <div class="column-right">
+      <nav class="help-navigation" id="help-navigation">
+        <h2 class="help-navigation-title">Guidance topics</h2>
+        <ul class="help-topics">
+          <li id="topic-accessing-the-registry-link">
+            <a
+              class="govuk-link"
+              routerLinkActive="active"
+              [routerLink]="'.'"
+              (click)="clickTopicAccessingTheRegistry()"
+              >Accessing the Registry</a
+            >
+          </li>
+          <li id="topic-setting-the-time-on-device-link">
+            <a
+              class="govuk-link"
+              routerLinkActive="active"
+              [routerLink]="'.'"
+              (click)="clickTopicSettingTheTimeOnDevice()"
+              >Setting the time on your device</a
+            >
+          </li>
+          <li id="topic-downloading-the-app-link">
+            <a
+              class="govuk-link"
+              routerLinkActive="active"
+              [routerLink]="'.'"
+              (click)="clickTopicDownloadingTheApp()"
+              >Downloading the app</a
+            >
+          </li>
+          <li id="topic-for-apple-ios-link">
+            <a
+              class="govuk-link"
+              routerLinkActive="active"
+              [routerLink]="'.'"
+              (click)="clickTopicForAppleIos()"
+              >For Apple iOS</a
+            >
+          </li>
+          <li id="topic-for-android-link">
+            <a
+              class="govuk-link"
+              routerLinkActive="active"
+              [routerLink]="'.'"
+              (click)="clickTopicForAndroid()"
+              >For Android</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

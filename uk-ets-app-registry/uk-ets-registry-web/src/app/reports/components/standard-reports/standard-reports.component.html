@@ -1,0 +1,46 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-report-success-banner
+      [isVisible]="isRequestSuccess"
+    ></app-report-success-banner>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <div class="govuk-form-group">
+      <fieldset
+        class="govuk-fieldset"
+        role="group"
+        aria-describedby="select-reports-type-hint"
+      >
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
+            Standard reports
+          </h1>
+        </legend>
+        <span class="govuk-heading-m">Select report type</span>
+        <div class="govuk-form-group">
+          <app-type-ahead
+            class="type-ahead"
+            [hint]="'Search or select a report name'"
+            id="'select-reports-type'"
+            [resultTemplate]="reportResult"
+            [inputFormatter]="resultFormatter"
+            [IsSelect]="true"
+            [options]="reports"
+            placeHolder=""
+            (resultItem)="onSelectFromSearch($event)"
+          ></app-type-ahead>
+        </div>
+      </fieldset>
+    </div>
+
+    <ng-template #reportResult let-r="result" let-t="term">
+      <ngb-highlight [result]="r.label" [term]="t"></ngb-highlight>
+    </ng-template>
+  </div>
+</div>
+
+<app-standard-reports-filters
+  (reportCreation)="generate($event)"
+></app-standard-reports-filters>

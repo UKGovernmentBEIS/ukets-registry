@@ -1,0 +1,9 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Download files</h1>
+  </div>
+</div>
+<app-download-reports-list
+  [reports]="reports$ | async"
+  (downloadReport)="onReportDownloaded($event)"
+></app-download-reports-list>

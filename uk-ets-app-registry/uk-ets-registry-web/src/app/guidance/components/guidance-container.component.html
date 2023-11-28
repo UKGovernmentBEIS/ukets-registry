@@ -1,0 +1,148 @@
+<div class="app-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
+        UK Emissions Trading Registry guidance
+      </h1>
+      <p class="govuk-body">
+        This guidance is for operators and traders using the UK Emissions
+        Trading Registry
+      </p>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body govuk-!-font-weight-bold">15 guidances</p>
+      <ng-container>
+        <app-guidance-section
+          [title]="'About the UK Emissions Trading Registry'"
+          [summary]="
+            '<p class=\'govuk-body\'>The UK Emissions Trading Registry (UK Registry) comprises:</p><ul class=\'govuk-list govuk-list--bullet\'>' +
+            '<li>' +
+            'the UK Emissions Trading Scheme Registry (UK ETS Registry)' +
+            '</li>' +
+            '<li>' +
+            'the UK Kyoto Protocol Registry (UK KP Registry)' +
+            '</li>' +
+            '</ul>'
+          "
+          [link]="'introduction'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Accessing the UK Registry'"
+          [summary]="
+            'You must access the Registry using a desktop or laptop computer or a tablet. ' +
+            'You will need access to a smartphone to use the FreeOTP Authenticator app that ' +
+            'will allow you to securely sign in to the Registry.'
+          "
+          [link]="'accessing-registry'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'User roles'"
+          [summary]="
+            'There are different user roles within the UK Registry. A registry user may have' +
+            ' a different role on each account they are associated with.'
+          "
+          [link]="'user-roles'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="
+            'View the guidance on meeting your UK ETS surrender obligation.'
+          "
+          [summary]="
+            'This guidance explains the process for meeting your UK ETS surrender obligation.'
+          "
+          [link]="'surrender-obligation'"
+          [updated]="'10 February 2022'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Account types'"
+          [summary]="
+            'There are different account types within the UK Registry.'
+          "
+          [link]="'account-types'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Registration status'"
+          [summary]="
+            'After you create a UK Registry sign in you will have limited access to the UK Registry ' +
+            'as a registered user. To gain access to your account in the UK ETS Registry or UK KP ' +
+            'Registry you must go through validation to become an enrolled user.'
+          "
+          [link]="'registry-sign-in'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Document upload requests'"
+          [summary]="
+            'If the Registry Administrator or National Administrator needs to see any documents in ' +
+            'relation to your application, you will receive an email with the title ‘Notification ' +
+            'of documentation request - UK Emissions Trading Registry’.'
+          "
+          [link]="'document-requests'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Request to open a voluntary account'"
+          [summary]="
+            'The UK Registry only allows for applications to open voluntary UK ETS Trading Accounts, ' +
+            'or UK KP Registry Person Holding Accounts. Compliance accounts will be opened by the Registry ' +
+            'Administrator for participants in the UK ETS on instruction from the respective regulator.<br/><br/> ' +
+            'The process to apply to open a UK ETS Trading Account, or UK KP Person Holding Account is identical.' +
+            ' The example given is for an application to open a UK ETS Trading Account.'
+          "
+          [link]="'account-open'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Adding Authorised Representatives to an account'"
+          [summary]="
+            'Authorised Representatives are individuals added to an account who can act ' +
+            'on behalf of the account holder. '
+          "
+          [link]="'authorised-representatives'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Proposing a transaction'"
+          [summary]="
+            'You can propose a transaction to transfer allowances or Kyoto units.'
+          "
+          [link]="'propose-transaction'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Claiming and assigning tasks'"
+          [summary]="
+            'You can claim a task to manage any actions yourself or assign it to another user to complete.'
+          "
+          [link]="'tasks'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="
+            'Adding or removing accounts in the Trusted Account List (TAL)'
+          "
+          [summary]="
+            'You can add or remove accounts in the Trusted Account List (TAL)'
+          "
+          [link]="'update-tal'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Transaction hours and delays'"
+          [summary]="
+            'Transactions on the UK Registry take place within set processing times.'
+          "
+          [link]="'transaction-hours'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Registry features'"
+          [summary]="'Manage your details in the UK Registry.'"
+          [link]="'features'"
+        ></app-guidance-section>
+        <app-guidance-section
+          [title]="'Registry help and support'"
+          [summary]="'Help and support is available for the UK Registry.'"
+          [link]="'help'"
+        ></app-guidance-section>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<app-back-to-top></app-back-to-top>

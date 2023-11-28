@@ -1,0 +1,54 @@
+<div class="govuk-grid-row" *ngIf="!!report && !!report.fullUserName">
+  <div
+    class="govuk-grid-column-full govuk-body"
+    [class.govuk-form-group--error]="report.status === Status.FAILED"
+  >
+    <span>
+      <img
+        [src]="
+          report.status === Status.DONE
+            ? './assets/images/icon-file-download.png'
+            : './assets/images/icon-file-download_gray.png'
+        "
+        class="download-icon disabled"
+        alt="download"
+      />
+    </span>
+    <span class="govuk-!-margin-left-3">
+      <ng-container [ngSwitch]="report.status">
+        <ng-container *ngSwitchCase="Status.DONE">
+          <a [routerLink]="[]" (click)="download(report.id)"
+            >{{ report.fileName }}, {{ report.fileSize }} KB</a
+          >
+        </ng-container>
+        <ng-container *ngSwitchCase="Status.PENDING">
+          <span class="disabled"
+            >{{ ReportTypeMap[report.type].label }} report may take up some
+            minutes...</span
+          >
+        </ng-container>
+        <ng-container *ngSwitchCase="Status.FAILED">
+          <span class="error"
+            >{{ ReportTypeMap[report.type].label }} report failed - Try
+            again.</span
+          >
+        </ng-container>
+      </ng-container>
+    </span>
+    <div class="govuk-!-margin-left-9">
+      By
+      {{ report.fullUserName }} on
+      {{ report.requestDate | gdsDateTimeShort }}
+    </div>
+    <div class="govuk-!-margin-left-9" *ngIf="!!report.expirationDate">
+      Expires on {{ report.expirationDate | gdsDateTimeShort }}
+    </div>
+  </div>
+  <div class="govuk-grid-column-full govuk-body">
+    <hr
+      class="
+        govuk-section-break govuk-section-break--s govuk-section-break--visible
+      "
+    />
+  </div>
+</div>

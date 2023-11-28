@@ -1,0 +1,80 @@
+<div appScreenReaderPageAnnounce [pageTitle]="headerTitle"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">{{ headerTitle }}</span>
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="installation"
+    >
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-heading-xl">
+            {{ title }}
+          </h1>
+        </legend>
+        <div
+          class="govuk-grid-row"
+          *ngIf="installation && installation.identifier"
+        >
+          <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">
+              Installation ID &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              {{ installation.identifier }}
+            </p>
+          </div>
+        </div>
+        <app-form-control-text
+          [label]="' Installation name'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.name"
+          controlName="name"
+        ></app-form-control-text>
+        <app-form-control-select
+          controlName="activityType"
+          [placeHolder]="'Please select'"
+          [validationErrorMessage]="validationErrorMessage.activityType"
+          [options]="activityTypeOptions()"
+          [label]="'Installation activity type'"
+        ></app-form-control-select>
+        <app-form-control-text
+          [label]="'Permit ID'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.id"
+          controlName="permit.id"
+        ></app-form-control-text>
+        <app-form-control-select
+          controlName="regulator"
+          [placeHolder]="'Please select'"
+          [validationErrorMessage]="validationErrorMessage.regulator"
+          [options]="regulatorOptions"
+          [label]="'Regulator'"
+        ></app-form-control-select>
+        <app-form-control-text
+          [class]="'govuk-input--width-4'"
+          [label]="'First year of verified emission submission'"
+          [maxlength]="4"
+          [validationErrorMessage]="validationErrorMessage.firstYear"
+          controlName="yearsOfVerifiedEmission.firstYear"
+          hint="This must be 2021 or later"
+        ></app-form-control-text>
+        <app-form-control-text
+          [class]="'govuk-input--width-4'"
+          [label]="'Last year of verified emission submission'"
+          [maxlength]="4"
+          [validationErrorMessage]="validationErrorMessage.lastYear"
+          controlName="yearsOfVerifiedEmission.lastYear"
+          hint="This must be 2021 or later"
+        ></app-form-control-text>
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+/* this helper classes is used so we can extend from it without having to import the whole govuk-frontend in angular component*/
+
+@import 'node_modules/govuk-frontend/govuk/components/input';
+
+/* this extends all govuk-input states (focus etc)*/
+%input-extender {
+  @extend .govuk-input;
+}

@@ -1,0 +1,11 @@
+<div *ngIf="goBackRoute$ | async as theRouteToGoBackTo" class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a
+      (click)="goBack(theRouteToGoBackTo)"
+      class="govuk-back-link"
+      id="back"
+      [routerLink]="[]"
+      >Back</a
+    >
+  </div>
+</div>

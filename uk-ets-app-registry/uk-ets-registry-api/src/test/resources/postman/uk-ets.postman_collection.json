@@ -1,0 +1,646 @@
+{
+  "info": {
+    "_postman_id": "86271914-a4ef-4e6e-83a7-98cbbf72d67b",
+    "name": "uk-ets",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Requests with pre-request for token",
+      "item": [
+        {
+          "name": "actuator",
+          "item": [
+            {
+              "name": "actuator",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "40e20ca3-a5b8-4abb-8a18-06d7442316e8",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "e2ac8254-21cc-462a-8e84-55c301bd65ae",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://{{API_BASE_URL}}/api-registry/actuator/",
+                  "protocol": "http",
+                  "host": ["{{API_BASE_URL}}"],
+                  "path": ["api-registry", "actuator", ""]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "metrics with tag example",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "42ffed6e-ac3e-4d19-a1f3-56eb4e86577a",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "84a56529-fb0c-41e2-b028-74a2c9cf9e62",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://{{API_BASE_URL}}/api-registry/actuator/",
+                  "protocol": "http",
+                  "host": ["{{API_BASE_URL}}"],
+                  "path": ["api-registry", "actuator", ""]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get beans",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f5b7cb34-69b7-41da-b6f6-823b0678cf5d",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "964f02f5-4609-43d4-97b8-743ca633058c",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://{{API_BASE_URL}}/api-registry/actuator/beans",
+                  "protocol": "http",
+                  "host": ["{{API_BASE_URL}}"],
+                  "path": ["api-registry", "actuator", "beans"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get loggers",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f14dc12b-e565-443a-bb29-f5f4e35932a6",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "1f17a5c6-0e02-4a46-a75b-7e31d8738741",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://{{API_BASE_URL}}/api-registry/actuator/loggers",
+                  "protocol": "http",
+                  "host": ["{{API_BASE_URL}}"],
+                  "path": ["api-registry", "actuator", "loggers"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "change ROOT log level",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "02254c5e-f0c3-4fa8-bdf5-6bf16beb730d",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "940449d7-86f5-4896-bae0-083840bb92dc",
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "http://{{API_BASE_URL}}/api-registry/actuator/loggers/ROOT",
+                  "protocol": "http",
+                  "host": ["{{API_BASE_URL}}"],
+                  "path": ["api-registry", "actuator", "loggers", "ROOT"]
+                }
+              },
+              "response": []
+            }
+          ],
+          "protocolProfileBehavior": {},
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "get users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "36d242b0-1fba-43c2-9b34-f96f1ee6acfa",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "92aa63a9-e87b-4c47-92f7-6fc55807379a",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{API_BASE_URL}}/api-registry/admin/users.list?page=0&pageSize=10&sortField=registeredOn&sortDirection=DESC",
+              "protocol": "http",
+              "host": ["{{API_BASE_URL}}"],
+              "path": ["api-registry", "admin", "users.list"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "sortField",
+                  "value": "registeredOn"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "DESC"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get accounts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "dbb68bf8-e6ac-4753-888c-c632e0663c7e",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "f3dad0fb-39ff-4cd6-9e9a-dd206901f1e0",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{API_BASE_URL}}/api-registry/accounts.list?page=0&pageSize=10&sortField=requestId&sortDirection=ASC",
+              "protocol": "http",
+              "host": ["{{API_BASE_URL}}"],
+              "path": ["api-registry", "accounts.list"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "sortField",
+                  "value": "requestId"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "ASC"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get tasks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3cb8f7de-ff84-4c51-9c11-6450bfa9caed",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "a3b485f4-4654-4100-a985-900c6b4244c6",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{API_BASE_URL}}/api-registry/tasks.list?page=0&pageSize=10&sortField=requestId&sortDirection=ASC",
+              "protocol": "http",
+              "host": ["{{API_BASE_URL}}"],
+              "path": ["api-registry", "tasks.list"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "sortField",
+                  "value": "requestId"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "ASC"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "7a6babe9-4c39-4f24-83f4-0d68c4f9589d",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "678b3691-062e-433d-818f-ce4cc4e147de",
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://{{API_BASE_URL}}/api-registry/tasks.get?requestId=1000000",
+              "protocol": "http",
+              "host": ["{{API_BASE_URL}}"],
+              "path": ["api-registry", "tasks.get"],
+              "query": [
+                {
+                  "key": "requestId",
+                  "value": "1000000"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "operator holding account opening",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"accountType\":\"OPERATOR_HOLDING_ACCOUNT\",\r\n   \"accountHolder\":{\r\n      \"id\":1000002,\r\n      \"emailAddress\":{\r\n         \"emailAddress\":\"a.trifyllis@gmail.com\",\r\n         \"emailAddressConfirmation\":null,\r\n         \"empty\":false\r\n      },\r\n      \"address\":{\r\n         \"country\":\"GR\",\r\n         \"postCode\":\"11475\",\r\n         \"empty\":false,\r\n         \"townOrCity\":\"ATHENS\",\r\n         \"buildingAndStreet\":\"MYSTREET 12-14\",\r\n         \"buildingAndStreet2\":\"\",\r\n         \"buildingAndStreet3\":\"\"\r\n      },\r\n      \"phoneNumber\":{\r\n         \"phoneNumber1\":\"6942473470\",\r\n         \"phoneNumber2\":\"\",\r\n         \"countryCode1\":\"30\",\r\n         \"countryCode2\":\"\",\r\n         \"empty\":false\r\n      },\r\n      \"details\":{\r\n         \"name\":\"Al Tr\",\r\n         \"registrationNumber\":null,\r\n         \"noRegistrationNumJustification\":null,\r\n         \"countryOfBirth\":\"UK\",\r\n         \"yearOfBirth\":null,\r\n         \"birthDate\":{\r\n            \"day\":\"01\",\r\n            \"month\":\"01\",\r\n            \"year\":\"2000\"\r\n         }\r\n      },\r\n      \"type\":\"NATURAL_PERSON\",\r\n      \"status\":\"ACTIVE\"\r\n   },\r\n   \"accountHolderContactInfo\":{\r\n      \"primaryContact\":{\r\n         \"id\":2,\r\n         \"details\":{\r\n            \"firstName\":\"Al\",\r\n            \"lastName\":\"Tr\",\r\n            \"aka\":\"\",\r\n            \"yearOfBirth\":null,\r\n            \"birthDate\":{\r\n               \"day\":\"01\",\r\n               \"month\":\"01\",\r\n               \"year\":\"2000\"\r\n            }\r\n         },\r\n         \"address\":{\r\n            \"country\":\"GR\",\r\n            \"postCode\":\"11475\",\r\n            \"empty\":false,\r\n            \"townOrCity\":\"ATHENS\",\r\n            \"buildingAndStreet\":\"MYSTREET 12-14\",\r\n            \"buildingAndStreet2\":\"\",\r\n            \"buildingAndStreet3\":\"\"\r\n         },\r\n         \"phoneNumber\":{\r\n            \"phoneNumber1\":\"6942473470\",\r\n            \"phoneNumber2\":\"\",\r\n            \"countryCode1\":\"30\",\r\n            \"countryCode2\":\"\",\r\n            \"empty\":false\r\n         },\r\n         \"emailAddress\":{\r\n            \"emailAddress\":\"a.trifyllis@gmail.com\",\r\n            \"emailAddressConfirmation\":null,\r\n            \"empty\":false\r\n         }\r\n      },\r\n      \"alternativeContact\":null\r\n   },\r\n   \"accountDetails\":{\r\n      \"address\":{\r\n         \"buildingAndStreet\":\"\",\r\n         \"buildingAndStreet2\":\"\",\r\n         \"buildingAndStreet3\":\"\",\r\n         \"postCode\":\"\",\r\n         \"townOrCity\":\"\",\r\n         \"country\":\"UK\"\r\n      },\r\n      \"name\":\"account-1\"\r\n   },\r\n   \"trustedAccountListRules\":{\r\n      \"rule1\":true,\r\n      \"rule2\":true\r\n   },\r\n   \"operator\":{\r\n      \"name\":\"test-installation\",\r\n      \"activityType\":\"CAPTURE_OF_GREENHOUSE_GASES\",\r\n      \"permit\":{\r\n         \"id\":\"{{$randomUUID}}\",\r\n         \"date\":{\r\n            \"day\":\"01\",\r\n            \"month\":\"01\",\r\n            \"year\":\"2021\"\r\n         }\r\n      },\r\n      \"regulator\":\"OPRED\",\r\n      \"firstYear\":\"2021\",\r\n      \"type\":\"INSTALLATION\"\r\n   },\r\n   \"authorisedRepresentatives\":[\r\n      {\r\n         \"urid\":\"UK802061511788\",\r\n         \"status\":\"ENROLLED\",\r\n         \"firstName\":\"Registry Administrator\",\r\n         \"lastName\":\"Senior\",\r\n         \"userId\":\"fcb847c4-fcdb-4a37-8639-4d43a45f188a\",\r\n         \"right\":\"INITIATE_AND_APPROVE\"\r\n      },\r\n      {\r\n         \"urid\":\"UK694094547713\",\r\n         \"status\":\"ENROLLED\",\r\n         \"firstName\":\"Administrator\",\r\n         \"lastName\":\"UK ETS Realm\",\r\n         \"userId\":\"a3bfa512-0131-4966-a206-8ddb05593b0e\",\r\n         \"right\":\"INITIATE_AND_APPROVE\"\r\n      }\r\n   ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{API_BASE_URL}}/api-registry/accounts.create",
+              "protocol": "http",
+              "host": ["{{API_BASE_URL}}"],
+              "path": ["api-registry", "accounts.create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "person holding account opening",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"accountType\":\"PERSON_HOLDING_ACCOUNT\",\r\n   \"accountHolder\":{\r\n      \"id\":1000001,\r\n      \"emailAddress\":null,\r\n      \"address\":{\r\n         \"country\":\"GR\",\r\n         \"postCode\":\"\",\r\n         \"empty\":false,\r\n         \"townOrCity\":\"ATHENS\",\r\n         \"buildingAndStreet\":\"MYSTREET\",\r\n         \"buildingAndStreet2\":\"12-14\",\r\n         \"buildingAndStreet3\":\"\"\r\n      },\r\n      \"phoneNumber\":null,\r\n      \"details\":{\r\n         \"name\":\"Alexandros Trifyllis\",\r\n         \"registrationNumber\":\"\",\r\n         \"noRegistrationNumJustification\":\"not sure what this is\",\r\n         \"countryOfBirth\":null,\r\n         \"yearOfBirth\":null,\r\n         \"birthDate\":null\r\n      },\r\n      \"type\":\"ORGANISATION\":\r\n      \"status\":\"REJECTED\"\r\n   },\r\n   \"accountHolderContactInfo\":{\r\n      \"primaryContact\":{\r\n         \"id\":1,\r\n         \"details\":{\r\n            \"firstName\":\"Alexandros\",\r\n            \"lastName\":\"Trifyllis\",\r\n            \"aka\":\"\",\r\n            \"yearOfBirth\":null,\r\n            \"birthDate\":{\r\n               \"day\":\"07\",\r\n               \"month\":\"06\",\r\n               \"year\":\"1980\"\r\n            }\r\n         },\r\n         \"address\":{\r\n            \"country\":\"GR\",\r\n            \"postCode\":\"11475\",\r\n            \"empty\":false,\r\n            \"townOrCity\":\"ATHENS\",\r\n            \"buildingAndStreet\":\"MYSTREET\",\r\n            \"buildingAndStreet2\":\"12-14\",\r\n            \"buildingAndStreet3\":\"\"\r\n         },\r\n         \"phoneNumber\":{\r\n            \"phoneNumber1\":\"6942473470\",\r\n            \"phoneNumber2\":\"\",\r\n            \"countryCode1\":\"30\",\r\n            \"countryCode2\":\"\",\r\n            \"empty\":false\r\n         },\r\n         \"emailAddress\":{\r\n            \"emailAddress\":\"a.trifyllis@gmail.com\",\r\n            \"emailAddressConfirmation\":null,\r\n            \"empty\":false\r\n         }\r\n      },\r\n      \"alternativeContact\":null\r\n   },\r\n   \"accountDetails\":{\r\n      \"address\":{\r\n         \"buildingAndStreet\":\"MYSTREET\",\r\n         \"buildingAndStreet2\":\"12-14\",\r\n         \"buildingAndStreet3\":\"\",\r\n         \"postCode\":\"\",\r\n         \"townOrCity\":\"ATHENS\",\r\n         \"country\":\"GR\"\r\n      },\r\n      \"name\":\"test-account-test\"\r\n   },\r\n   \"trustedAccountListRules\":{\r\n      \"rule1\":true,\r\n      \"rule2\":false\r\n   },\r\n   \"operator\":null,\r\n   \"authorisedRepresentatives\":[\r\n      {\r\n         \"urid\":\"UK802061511788\",\r\n         \"status\":\"ENROLLED\",\r\n         \"firstName\":\"Registry Administrator\",\r\n         \"lastName\":\"Senior\",\r\n         \"userId\":\"fcb847c4-fcdb-4a37-8639-4d43a45f188a\",\r\n         \"right\":\"INITIATE_AND_APPROVE\"\r\n      }\r\n   ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://{{API_BASE_URL}}/api-registry/accounts.create",
+              "protocol": "http",
+              "host": ["{{API_BASE_URL}}"],
+              "path": ["api-registry", "accounts.create"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "id": "fa874d29-f88a-4943-8f27-412046816bd7",
+            "type": "text/javascript",
+            "exec": [
+              "let keycloakTokenUrl = pm.variables.get(\"KEYCLOAK_BASE_URL\") + '/realms/' + pm.variables.get(\"KEYCLOAK_REALM_UNDER_TEST\") + '/protocol/openid-connect/token';",
+              "",
+              "const initialTokenRequest = {",
+              "    url: keycloakTokenUrl,",
+              "    method: 'POST',",
+              "    body: {",
+              "        mode: 'urlencoded',",
+              "        urlencoded: [",
+              "            {",
+              "                key: \"grant_type\",",
+              "                value: 'password'",
+              "            },",
+              "            {",
+              "                key: \"client_id\",",
+              "                value: 'uk-ets-web-app'",
+              "            },",
+              "            {",
+              "                key: \"username\",",
+              "                value: pm.variables.get(\"username\")",
+              "            },",
+              "            {",
+              "                key: \"password\",",
+              "                value: pm.variables.get(\"password\")",
+              "            }",
+              "        ]",
+              "    }",
+              "};",
+              "",
+              "pm.sendRequest(initialTokenRequest, function (err, res) {",
+              "",
+              "    postman.setEnvironmentVariable(\"access_token\", res.json().access_token);",
+              "",
+              "    // here we need to send an attempted request to the url of the request.",
+              "    // one way to retrieve the url and the method of the current request is this:",
+              "    const {Property, Url} = require('postman-collection');",
+              "",
+              "    let resolvedUrl = Property.replaceSubstitutions(pm.request.url.toJSON(), pm.variables.toObject()),",
+              "        newUrl = new Url(resolvedUrl);",
+              "    let currentRequestUrlSegment = newUrl.getPath();",
+              "    let currentRequestHttpMethod = pm.request.method;",
+              "",
+              "    const getUsersAttemptRequest = {",
+              "        url: 'http://' + pm.variables.get(\"API_BASE_URL\") + currentRequestUrlSegment,",
+              "        method: currentRequestHttpMethod,",
+              "        header: 'Authorization: Bearer ' + pm.variables.get(\"access_token\"),",
+              "    };",
+              "",
+              "    pm.sendRequest(getUsersAttemptRequest, function (err, res) {",
+              "",
+              "        let header = res.headers.get('WWW-Authenticate');",
+              "        let ticket = header.split(\",\")[2].split(\"=\")[1].replace(/[\"]+/g, '');",
+              "        postman.setEnvironmentVariable(\"ticket\", ticket);",
+              "",
+              "        const tokenRequest = {",
+              "            url: keycloakTokenUrl,",
+              "            method: 'POST',",
+              "            header: 'Authorization: Bearer ' + pm.variables.get(\"access_token\"),",
+              "            body: {",
+              "                mode: 'urlencoded',",
+              "                urlencoded: [",
+              "                    {",
+              "                        key: \"grant_type\",",
+              "                        value: 'urn:ietf:params:oauth:grant-type:uma-ticket'",
+              "                    },",
+              "                    {",
+              "                        key: \"audience\",",
+              "                        value: 'uk-ets-registry-api'",
+              "                    },",
+              "                    {",
+              "                        key: \"ticket\",",
+              "                        value: pm.variables.get(\"ticket\")",
+              "                    }",
+              "                ]",
+              "            }",
+              "        };",
+              "        pm.sendRequest(tokenRequest, function (err, res) {",
+              "            postman.setEnvironmentVariable(\"access_token\", res.json().access_token);",
+              "        });",
+              "    });",
+              "",
+              "});",
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "id": "17aff138-7cc5-430c-b1d2-f87ac7befaf4",
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ],
+      "protocolProfileBehavior": {}
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "e4e87ee3-2ba0-46b3-b8fd-b27a5299074d",
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "db7cec91-5e7f-4f2c-bc80-84eea3afdc5a",
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "protocolProfileBehavior": {}
+}

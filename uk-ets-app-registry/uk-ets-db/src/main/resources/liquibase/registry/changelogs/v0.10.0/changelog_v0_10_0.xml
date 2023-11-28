@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_10_0_ALTER_DESCRIPTION_SIZE_IN_DOMAIN_EVENTS" author="georgopoulosp" context="migrate">
+        <comment>Increase the size of the description field in domain_events table</comment>
+        <sql>
+            alter table domain_event alter column description TYPE varchar(1280);
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_TABLE_ALLOCATION_PHASE" author="pougouniasn" context="migrate">
+        <comment>Introduces the table for allocation phases</comment>
+        <sql>
+            create sequence allocation_phase_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "allocation_phase"
+            ("id" bigint,
+            "code" integer,
+            "initial_phase_cap" bigint,
+            "consumed_phase_cap" bigint,
+            "pending_phase_cap" bigint,
+            constraint "pk_allocation_phase" primary key("id"));
+
+            comment on table "allocation_phase" is 'Represents an allocation phase, e.g. Phase 1 (2021-2030).';
+
+            comment on column "allocation_phase"."id" is 'The primary key.';
+            comment on column "allocation_phase"."code" is 'The code.';
+            comment on column "allocation_phase"."initial_phase_cap" is 'The initial phase cap.';
+            comment on column "allocation_phase"."consumed_phase_cap" is 'The consumed phase cap.';
+            comment on column "allocation_phase"."pending_phase_cap" is 'The pending phase cap.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_TABLE_ALLOCATION_PERIOD" author="pougouniasn" context="migrate">
+        <comment>Introduces the table for allocation periods</comment>
+        <sql>
+            create sequence allocation_period_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "allocation_period"
+            ("id" bigint,
+            "code" integer,
+            "allocation_phase_id" bigint,
+            constraint "pk_allocation_period" primary key("id"));
+
+            alter table "allocation_period" add constraint "fk_alloc_per_pha" foreign key ("allocation_phase_id")
+            references "allocation_phase" ("id");
+
+            comment on table "allocation_period" is 'Represents an allocation period, e.g. Period 1 (2021-2025), Period 2 (2026-2030).';
+            comment on column "allocation_period"."id" is 'The primary key.';
+            comment on column "allocation_period"."code" is 'The code.';
+            comment on column "allocation_period"."allocation_phase_id" is 'Foreign key: The allocation phase of this period.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_TABLE_ALLOCATION_YEAR" author="pougouniasn" context="migrate">
+        <comment>Introduces the table for allocation years</comment>
+        <sql>
+            create sequence allocation_year_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "allocation_year"
+            ("id" bigint,
+            "year" integer,
+            "initial_yearly_cap" bigint,
+            "consumed_yearly_cap" bigint,
+            "pending_yearly_cap" bigint,
+            "allocation_period_id" bigint,
+            "entitlement" bigint,
+            "allocated" bigint,
+            "auctioned" bigint,
+            constraint "pk_allocation_year" primary key("id"));
+
+            alter table "allocation_year" add constraint "fk_alloc_yea_per" foreign key ("allocation_period_id")
+            references "allocation_period" ("id");
+
+            comment on table "allocation_year" is 'Represents an allocation year, e.g. 2021.';
+            comment on column "allocation_year"."id" is 'The primary key.';
+            comment on column "allocation_year"."year" is 'The year.';
+            comment on column "allocation_year"."initial_yearly_cap" is 'The initial yearly cap.';
+            comment on column "allocation_year"."consumed_yearly_cap" is 'The consumed yearly cap.';
+            comment on column "allocation_year"."pending_yearly_cap" is 'The pending yearly cap.';
+            comment on column "allocation_year"."allocation_period_id" is 'Foreign key: The allocation period of this year.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_POPULATE_FIRST_ALLOCATION_PERIOD" author="pougouniasn" context="migrate">
+        <comment>Populates data about the first allocation period (2021-2030)</comment>
+        <createProcedure>
+            do $$
+            DECLARE
+            phase_id allocation_phase.id%TYPE := nextval('allocation_phase_seq');
+            first_period_id allocation_period.id%TYPE := nextval('allocation_period_seq');
+            second_period_id allocation_period.id%TYPE := nextval('allocation_period_seq');
+            yearList integer ARRAY;
+            year integer;
+            BEGIN
+            insert into allocation_phase (id, code, initial_phase_cap, consumed_phase_cap, pending_phase_cap)
+            values (phase_id, 1, 1000000, 0, 0);
+
+            insert into allocation_period (id, code, allocation_phase_id)
+            values (first_period_id, 1, phase_id);
+
+            insert into allocation_period (id, code, allocation_phase_id)
+            values (second_period_id, 2, phase_id);
+
+            yearList = '{2021, 2022, 2023, 2024, 2025}';
+
+            FOREACH year IN ARRAY yearList
+            LOOP
+            insert into allocation_year (id, year, initial_yearly_cap, consumed_yearly_cap, pending_yearly_cap, entitlement, allocated, auctioned, allocation_period_id)
+            values (nextval('allocation_year_seq'), year, 100000, 0, 0, 0, 0, 0, first_period_id);
+            END LOOP;
+
+            yearList = '{2026, 2027, 2028, 2029, 2030}';
+
+            FOREACH year IN ARRAY yearList
+            LOOP
+            insert into allocation_year (id, year, initial_yearly_cap, consumed_yearly_cap, pending_yearly_cap, entitlement, allocated, auctioned, allocation_period_id)
+            values (nextval('allocation_year_seq'), year, 100000, 0, 0, 0, 0, 0, second_period_id);
+            END LOOP;
+
+            END;
+            $$
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="0_10_0_ADD_YEAR_TO_BLOCK" author="pougouniasn" context="migrate">
+        <comment>Adds the year column to block tables</comment>
+        <sql>
+            alter table unit_block add column year integer;
+            comment on column unit_block.year is 'The year of the block (e.g. the issuance year, the year in commitment period etc.)';
+
+            alter table transaction_block add column year integer;
+            comment on column transaction_block.year is 'The year of the block (e.g. the issuance year, the year in commitment period etc.)';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_CREATE_FILES_TABLE" author="koukoulakisg" context="migrate">
+
+        <comment>Implements the files table</comment>
+        <sql>
+            --------------------------------------------------------
+            -- Files table
+            --------------------------------------------------------
+
+            CREATE SEQUENCE files_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "files"
+            (
+            "id" bigint,
+            "request_identifier" bigint,
+            "file_name" varchar(256),
+            "file_data" bytea,
+            "file_status" varchar(256),
+            "created_on" timestamp,
+            constraint "pk_files" primary key("id")
+            );
+
+            COMMENT ON TABLE  "files" is 'Represents the name and the data of a file';
+            COMMENT ON COLUMN "files"."id" is 'The primary key';
+            COMMENT ON COLUMN "files"."request_identifier" is 'The tasks request identifier';
+            COMMENT ON COLUMN "files"."file_name" is 'The name of the file';
+            COMMENT ON COLUMN "files"."file_data" is 'The file data';
+            COMMENT ON COLUMN "files"."file_status" is 'The file status (e.g. SUBMITTED, NOT_SUBMITTED)';
+            COMMENT ON COLUMN "files"."created_on" is 'The timestamp the file was saved';
+        </sql>
+
+    </changeSet>
+
+    <changeSet id="0_10_0_ALLOCATION_UPDATES" author="pougouniasn" context="migrate">
+        <comment>Performs minor updates on the allocation model</comment>
+        <sql>
+
+            comment on column "allocation_year"."consumed_yearly_cap" is 'The consumed yearly cap (issued).';
+
+            alter table allocation_year add column returned bigint;
+            comment on column allocation_year.returned is 'The yearly quantity returned via return of excess
+            allocation';
+
+            alter table allocation_year add column reversed bigint;
+            comment on column allocation_year.reversed is 'The yearly quantity returned via allocation reversals';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_TABLE_ALLOCATION_ENTRY" author="pougouniasn" context="migrate">
+        <comment>Introduces the table for allocation entries</comment>
+        <sql>
+            create sequence allocation_entry_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            create table "allocation_entry"
+            ("id" bigint,
+            "allocation_year_id" bigint,
+            "compliant_entity_id" bigint,
+            "type" varchar(50),
+            "entitlement" bigint,
+            "allocated" bigint,
+            "returned" bigint,
+            "reversed" bigint,
+            constraint "pk_allocation_entry" primary key("id"));
+
+            alter table "allocation_entry" add constraint "fk_alloc_ent_yer" foreign key ("allocation_year_id")
+            references "allocation_year" ("id");
+
+            alter table "allocation_entry" add constraint "fk_alloc_ent_com" foreign key ("compliant_entity_id")
+            references "compliant_entity" ("id");
+
+            comment on table "allocation_entry" is 'Represents an allocation entry, which was uploaded via an allocation
+            table.';
+            comment on column "allocation_entry"."allocation_year_id" is 'Foreign key: The allocation year.';
+            comment on column "allocation_entry"."compliant_entity_id" is 'Foreign key: The installation / aircraft
+            operator.';
+            comment on column "allocation_entry"."type" is 'The allocation type: NAT, NAVAT or NER.';
+            comment on column "allocation_entry"."entitlement" is 'The planned quantity (entitlement).';
+            comment on column "allocation_entry"."allocated" is 'The allocated quantity.';
+            comment on column "allocation_entry"."returned" is 'The quantity returned via return of excess allocation.';
+            comment on column "allocation_entry"."reversed" is 'The quantity returned via returned via allocation
+            reversals.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_TABLE_ALLOCATION_STATUS" author="pougouniasn" context="migrate">
+        <comment>Introduces the table for allocation status</comment>
+        <sql>
+            create sequence allocation_status_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            create table "allocation_status"
+            ("id" bigint,
+            "allocation_year_id" bigint,
+            "compliant_entity_id" bigint,
+            "status" varchar(50),
+            constraint "pk_allocation_status" primary key("id"));
+
+            alter table "allocation_status" add constraint "fk_alloc_sta_yer" foreign key ("allocation_year_id")
+            references "allocation_year" ("id");
+
+            alter table "allocation_status" add constraint "fk_alloc_sta_com" foreign key ("compliant_entity_id")
+            references "compliant_entity" ("id");
+
+            comment on table "allocation_status" is 'Represents an allocation entry, which was uploaded via an
+            allocation table.';
+            comment on column "allocation_status"."allocation_year_id" is 'Foreign key: The allocation year.';
+            comment on column "allocation_status"."compliant_entity_id" is 'Foreign key: The installation / aircraft
+            operator.';
+            comment on column "allocation_status"."status" is 'The allocation status: ALLOWED, WITHHELD.';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_10_0_ADD_FILE_SIZE_TO_FILES" author="chortism" context="migrate">
+        <comment>Adds the file_size column to files tables</comment>
+        <sql>
+            alter table files add column file_size varchar(256);
+            comment on column files.file_size is 'The size of the file in human readable form (e.g. 1.36MB)';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

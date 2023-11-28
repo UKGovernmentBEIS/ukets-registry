@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+	<changeSet id="0_6_0_ADD_BIRTHDATE_TO_ACCOUNT_HOLDER" author="karavitisk" context="migrate">
+		<comment>Adds the birth date column to account holder</comment>
+		<sql>
+			alter table "account_holder"
+			add column "birth_date" DATE default null;
+
+			comment on column "account_holder"."birth_date" is 'Birth date of account holder';
+		</sql>
+	</changeSet>
+	<changeSet id="0_6_0_ADD_BIRTH_DATE_COLUMN_TO_LEGAL_REPRESENTATIVE" author="karavitisk" context="migrate">
+		<comment>Adds the birth date column to legal_representative table</comment>
+		<sql>
+			alter table "legal_representative"
+			add column "birth_date" DATE default null;
+
+			comment on column "legal_representative"."birth_date" is 'Birth date of legal representative';
+		</sql>
+	</changeSet>
+	<changeSet id="0_6_0_RENAME_TRANSACTION_COLUMN" author="karavitisk" context="migrate">
+		<comment>Correct the name of the transferring account registry code column</comment>
+		<sql>
+			alter table "transaction"
+			rename column "transferring_registry_code" to "transferring_account_registry_code"
+		</sql>
+	</changeSet>
+	<changeSet id="0_6_0_ADD_RECIPIENT_ACCOUNT_NUMBER_COLUMN_TO_TASK" author="fragkise" context="migrate">
+		<comment>Adds the recipient account number column to task table</comment>
+		<sql>
+			alter table "task"
+			add column "recipient_account_number" varchar(50) default null;
+
+			comment on column "task"."recipient_account_number" is 'Acquiring Account Identifier in case of transaction task';
+		</sql>
+	</changeSet>
+	<changeSet id="0_6_0_ADD_RECIPIENT_ACCOUNT_NUMBER_COLUMN_TO_USERS" author="fragkise" context="migrate">
+		<comment>Adds the recipient account number column to task table</comment>
+		<sql>
+			alter table "users"
+			add column "disclosed_name" character varying(255) default null;
+
+			comment on column "users"."disclosed_name" is 'contains the name that is displayed for confidentiality reasons.';
+		</sql>
+	</changeSet>
+	<changeSet id="0_6_0_ADD_UNIT_TYPE_TO_ACCOUNT" author="chortism" context="migrate">
+		<comment>Adds the unit type column to account table</comment>
+		<sql>
+			alter table "account"
+			add column "unit_type" VARCHAR(255);
+
+			comment on column "account"."unit_type" is 'Unit type of the available unit balance (i.e. AAU, MULTIPLE etc.)';
+		</sql>
+	</changeSet>
+	<changeSet id="0_6_0_TABLE_TRANSACTION_RESPONSE" author="pougouniasn" context="migrate">
+		<comment>Introduces table "Transaction Response"</comment>
+		<sql>
+			create sequence transaction_response_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "transaction_response"
+			("id" bigint,
+			"error_code" bigint,
+			"transaction_id" bigint not null,
+
+			constraint "pk_transaction_response" primary key("id"));
+
+			alter table "transaction_response" add constraint "fk_tra_res_tra" foreign key ("transaction_id")
+			references "transaction" ("id");
+
+			comment on table "transaction_response" is 'Stores error codes related to transactions, either returned by ITL or due to business check errors just before the transaction finalisation.';
+			comment on column "transaction_response"."id" is 'The primary key';
+			comment on column "transaction_response"."error_code" is 'The error code';
+			comment on column "transaction_response"."transaction_id" is 'Foreign key to transactions.';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_6_0_TABLE_TRANSACTION_RESPONSE_BLOCK" author="pougouniasn" context="migrate">
+		<comment>Introduced table "Transaction Response Block"</comment>
+		<sql>
+			create sequence transaction_response_block_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "transaction_response_block"
+			("id" bigint,
+			"transaction_response_id" bigint not null,
+			"transaction_block_id" bigint not null,
+
+			constraint "pk_transaction_response_block" primary key("id"));
+
+			alter table "transaction_response_block" add constraint "fk_tra_res_blo_tra_res" foreign key ("transaction_response_id")
+			references "transaction_response" ("id");
+
+			alter table "transaction_response_block" add constraint "fk_tra_res_blo_tra_blo" foreign key ("transaction_block_id")
+			references "transaction_block" ("id");
+
+			comment on table "transaction_response_block" is 'Stores error codes returned by ITL, related to specific transaction blocks.';
+			comment on column "transaction_response_block"."id" is 'The primary key';
+			comment on column "transaction_response_block"."transaction_response_id" is 'Foreign key to transaction response.';
+			comment on column "transaction_response_block"."transaction_block_id" is 'Foreign key to transaction block.';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_6_0_UPDATES_AFTER_DATABASE_REVIEW" author="pougouniasn" context="migrate">
+		<comment>Implements database review actions</comment>
+		<sql>
+			alter table "unit_block"
+			add column "project_number" varchar(255),
+			add column "project_track" varchar(255),
+			add column "sop" boolean default false;
+
+			comment on column "unit_block"."project_number" is 'The Kyoto Protocol unique project number (e.g. BO12345)';
+			comment on column "unit_block"."project_track" is 'The Kyoto Protocol project track; one of {TRACK_1, TRACK_2}.';
+			comment on column "unit_block"."sop" is 'Whether this block is subject to SOP (AAUs) or was converted for SOP (ERUs).';
+
+
+			alter table "transaction_block"
+			add column "project_number" varchar(255),
+			add column "project_track" varchar(255),
+			add column "sop" boolean default false;
+
+			comment on column "transaction_block"."project_number" is 'The Kyoto Protocol unique project number (e.g. BO12345)';
+			comment on column "transaction_block"."project_track" is 'The Kyoto Protocol project track; one of {TRACK_1, TRACK_2}.';
+			comment on column "transaction_block"."sop" is 'Whether this block is subject to SOP (AAUs) or was converted for SOP (ERUs).';
+
+			alter table "account"
+			rename "status" TO "request_status";
+
+			comment on column "account"."request_status" is 'The request status, e.g. REQUESTED, ACTIVE etc.';
+
+
+			alter table "transaction"
+			add column "execution_date" date;
+
+			comment on column "transaction"."execution_date" is 'The estimated time for transaction execution taking into account the business delay, bank holidays and weekends where applicable.';
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_6_0_ENTITLEMENT_AAU_TRANSFER" author="pougouniasn" context="migrate">
+		<comment>Adds entitlement for AAU Transfer</comment>
+		<sql>
+			insert into registry_level(id, type, unit_type, commitment_period, initial, consumed, pending)
+			values (nextval('registry_level_seq'), 'AAU_TRANSFER', 'AAU', 'CP2', 0, 0, 0);
+		</sql>
+	</changeSet>
+
+	<changeSet id="0_6_0_NOTIFICATION_IDENTIFIER" author="pougouniasn" context="migrate">
+
+		<comment>Adds notification identifier to transaction</comment>
+		<sql>
+			alter table "transaction"
+			add column "notification_identifier" bigint;
+		</sql>
+
+	</changeSet>
+
+
+</databaseChangeLog>
+

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<Match>
+		<Class name="gov.uk.ets.registry.api.transaction.service.TransactionPersistenceService" />
+		<Bug pattern="SQL_INJECTION_JPA" />
+	</Match>
+	<Match>
+		<Class name="gov.uk.ets.registry.api.transaction.exception.TransactionExecutionException" />
+		<Bug pattern="CRLF_INJECTION_LOGS" />
+	</Match>
+</FindBugsFilter>

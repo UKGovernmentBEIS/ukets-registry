@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_18_0_ADD_REPLACED_TO_UNIT_BLOCK" author="georgopoulosp" context="migrate">
+
+        <comment>Adds replaced to unit block table.</comment>
+        <sql>
+            alter table unit_block add column replaced bool NULL DEFAULT false;
+            comment on column "unit_block"."replaced" is 'This flag will identify units which have been replaced during a Replacement transaction. This flag should be set to true during the finalisation of a Replacement transaction.';
+        </sql>
+
+        <rollback>
+            <sql>
+                alter table unit_block drop column replaced;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_18_0_ADD_RESERVED_FOR_REPLACEMENT_TO_UNIT_BLOCK" author="georgopoulosp" context="migrate">
+
+        <comment>Adds reserved_for_replacement to unit block table.</comment>
+        <sql>
+            alter table unit_block add column reserved_for_replacement varchar(255) NULL;
+            comment on column "unit_block"."reserved_for_replacement" is 'Stores the identifier of the Replacement transaction for which these units are marked as candidates to be replaced. This field should be set upon unit reservation during a transaction proposal.';
+        </sql>
+
+        <rollback>
+            <sql>
+                alter table unit_block drop column reserved_for_replacement;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_18_0_UPDATE_TRANSACTION_BLOCKS_ORIGINAL_AND_APPLICABLE_PERIODS_TO_CP0_FOR_UK_ALLOWANCES" author="BilisS" context="migrate">
+        <comment>Update transaction_block columns original_period and applicable_period to 'CP0' for UK ALLOWANCES</comment>
+        <sql>
+            update unit_block ub set original_period = 'CP0', applicable_period = 'CP0' where ub.unit_type = 'ALLOWANCE';
+            update transaction_block tb set original_period = 'CP0', applicable_period = 'CP0' where tb.unit_type = 'ALLOWANCE';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_18_0_REMOVE_MIGRATED_COLUMN" author="pougouniasn" context="migrate">
+        <comment>Removes the boolean flag which depicts whether an entity participated in a migration.</comment>
+        <sql>
+            alter table transaction drop column if exists migrated;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_18_0_ADD_ACCOUNT_HOLDER_FIRST_AND_LAST_NAME_COLUMNS" author="kkaravitis" context="migrate">
+        <comment>Add first and last name columns into account_holder</comment>
+        <sql>
+            alter table account_holder
+            add first_name varchar(256) default null,
+            add column last_name varchar(40) default null;
+
+            create index "idx_ah_fn" on "account_holder"("first_name");
+
+            create index "idx_ah_ln" on "account_holder"("last_name");
+        </sql>
+    </changeSet>
+    
+    <changeSet id="0_18_0_ITL_NOTIFICATION_HISTORY_TARGET_VALUE_NULLABLE" author="fragkise" context="migrate">
+        <comment>ITL Notifications target_value made nullable.</comment>
+        <sql>
+            alter table itl_notification_history alter column target_value drop not null;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_18_0_ACCOUNT_TYPE_LABEL_INCREASE_SIZE_TO_100" author="tsallase" context="migrate">
+        <comment>Change account type label column length.</comment>
+        <sql>
+            alter table account alter column type_label type varchar(100);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

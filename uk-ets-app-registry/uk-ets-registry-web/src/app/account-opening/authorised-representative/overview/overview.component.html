@@ -1,0 +1,129 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="
+    ((authorisedRepresentativeViewOrCheck$ | async) === viewOrCheck.VIEW
+      ? 'View '
+      : 'Check ') + 'your answers'
+  "
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-form-group">
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl"
+              >Add an Αuthorised representative</span
+            >
+            {{
+              (authorisedRepresentativeViewOrCheck$ | async) ===
+              viewOrCheck.VIEW
+                ? 'View '
+                : 'Check '
+            }}your answers
+          </h1>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="currentAuthorisedRepresentative$ | async">
+      <div
+        class="govuk-summary-list"
+        [class.govuk-summary-list--no-border]="
+          (authorisedRepresentativeViewOrCheck$ | async) === viewOrCheck.VIEW
+        "
+      >
+        <div class="govuk-summary-list__row">
+          <div class="govuk-summary-list__key">
+            <h2 class="govuk-heading-l govuk-!-margin-bottom-0">
+              Authorised Representative
+            </h2>
+          </div>
+        </div>
+      </div>
+      <dl
+        class="
+          govuk-summary-list govuk-summary-list--no-border
+          govuk-!-margin-bottom-9
+        "
+      >
+        <div
+          class="govuk-summary-list__row"
+          *ngIf="currentAuthorisedRepresentative$ | async as ar"
+        >
+          <dt class="govuk-summary-list__key">Name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ ar | arDisplayName }}
+          </dd>
+          <dd class="govuk-summary-list__actions"></dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">User ID</dt>
+          <dd class="govuk-summary-list__value">
+            {{ (currentAuthorisedRepresentative$ | async).urid }}
+          </dd>
+          <dd class="govuk-summary-list__actions"></dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Permissions</dt>
+          <dd class="govuk-summary-list__value">
+            {{ (accessRightText$ | async).text }}
+            <span class="govuk-hint">
+              {{ (accessRightText$ | async).hint }}
+            </span>
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <a
+              *ngIf="
+                (authorisedRepresentativeViewOrCheck$ | async) ===
+                viewOrCheck.CHECK
+              "
+              class="govuk-link"
+              [routerLink]="authorisedRepresentativeWizardRoutes.ACCESS_RIGHTS"
+              skipLocationChange="true"
+            >
+              Change
+            </a>
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+
+    <div class="govuk-form-group">
+      <button
+        *ngIf="
+          (authorisedRepresentativeViewOrCheck$ | async) === viewOrCheck.VIEW
+        "
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="input"
+        (click)="onEdit()"
+      >
+        Edit
+      </button>
+      <button
+        *ngIf="
+          (authorisedRepresentativeViewOrCheck$ | async) === viewOrCheck.CHECK
+        "
+        class="govuk-button govuk-!-margin-right-3"
+        data-module="govuk-button"
+        type="input"
+        (click)="onApply()"
+        id="continue"
+      >
+        Continue
+      </button>
+      <button
+        *ngIf="
+          (authorisedRepresentativeViewOrCheck$ | async) === viewOrCheck.VIEW
+        "
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        type="input"
+        (click)="onDelete()"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+<div class="govuk-warning-text" *ngIf="hasReversalRequests()">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    {{ hasReversalRequests() }}
+  </strong>
+</div>
+<div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+  <h2 class="govuk-heading-m">Transaction details</h2>
+</div>
+<ng-container *ngIf="transactionDetails">
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Transaction account</dt>
+      <dd class="govuk-summary-list__value">
+        <div
+          *ngIf="
+            !transactionDetails.externalTransferringAccount &&
+              transactionDetails.hasAccessToTransferringAccount;
+            else elseBlockTransferringAccount
+          "
+        >
+          <div
+            *ngIf="
+              !(
+                transactionDetails?.transferringAccountStatus === 'SUSPENDED' &&
+                !isAdmin
+              );
+              else elseBlockTransferringAccount
+            "
+          >
+            <a
+              [routerLink]="[
+                '/account',
+                transactionDetails.transferringAccountIdentifier
+              ]"
+              data-testid="transferring-account-link"
+              >{{ transactionDetails.transferringAccountName }}</a
+            >
+          </div>
+        </div>
+        <ng-template #elseBlockTransferringAccount>{{
+          transactionDetails.transferringAccountName
+        }}</ng-template>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Transaction type</dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          transactionDetails.type | apiEnumTypes: ApiEnumTypes.TransactionType
+        }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Total quantity</dt>
+      <dd class="govuk-summary-list__value">
+        {{ transactionDetails.quantity | number }}
+        {{ transactionDetails.unitType }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Acquiring account</dt>
+      <dd class="govuk-summary-list__value">
+        <div
+          *ngIf="
+            !transactionDetails.externalAcquiringAccount &&
+              transactionDetails.hasAccessToAcquiringAccount;
+            else elseBlockAcquiringAccount
+          "
+        >
+          <div
+            *ngIf="
+              !(
+                transactionDetails?.acquiringAccountStatus === 'SUSPENDED' &&
+                !isAdmin
+              );
+              else elseBlockAcquiringAccount
+            "
+          >
+            <a
+              [routerLink]="[
+                '/account',
+                transactionDetails.acquiringAccountIdentifier
+              ]"
+              data-testid="acquiring-account-link"
+              >{{ transactionDetails.acquiringAccountName }}</a
+            >
+          </div>
+        </div>
+        <ng-template #elseBlockAcquiringAccount>{{
+          transactionDetails.acquiringAccountName
+        }}</ng-template>
+      </dd>
+    </div>
+  </dl>
+  <div
+    class="govuk-fieldset__legend govuk-fieldset__legend--xl"
+    *ngIf="showAllocationBasedInfo()"
+  >
+    <h2 class="govuk-heading-m">
+      {{ isExcess() ? 'Year of return' : 'Allocation Year' }}
+    </h2>
+    <p class="govuk-body">
+      {{
+        transactionDetails.attributes | transactionAtrributes: 'AllocationYear'
+      }}
+    </p>
+  </div>
+  <div
+    class="govuk-fieldset__legend govuk-fieldset__legend--xl"
+    *ngIf="showAllocationBasedInfo()"
+  >
+    <h2 class="govuk-heading-m">Allocation Type</h2>
+    <p class="govuk-body">
+      {{
+        transactionDetails.attributes | transactionAtrributes: 'AllocationType'
+      }}
+    </p>
+  </div>
+  <app-transaction-connection-summary
+    *ngIf="transactionDetails.transactionConnectionSummary"
+    [transactionConnectionSummary]="
+      transactionDetails.transactionConnectionSummary
+    "
+  >
+  </app-transaction-connection-summary>
+</ng-container>
+<ng-container *ngIf="transactionDetails?.itlNotification">
+  <app-itl-notification-summary
+    [itlNotification]="transactionDetails?.itlNotification"
+  ></app-itl-notification-summary>
+</ng-container>

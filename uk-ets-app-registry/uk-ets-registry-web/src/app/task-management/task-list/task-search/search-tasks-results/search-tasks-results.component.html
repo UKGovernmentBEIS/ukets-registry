@@ -1,0 +1,317 @@
+<table
+  (sorting)="sort.emit($event)"
+  appSortableTable
+  class="govuk-table"
+  aria-describedby="search-task-results"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">
+        <div class="govuk-checkboxes__item">
+          <input
+            (change)="$event ? masterToggle() : null"
+            [checked]="isAllSelected()"
+            [indeterminate]="isIndeterminate()"
+            class="govuk-checkboxes__input"
+            id="global-check"
+            type="checkbox"
+          />
+          <label
+            class="govuk-label govuk-checkboxes__label no-padding"
+            for="global-check"
+          ></label>
+        </div>
+      </th>
+      <th
+        scope="col"
+        [sortField]="'requestId'"
+        [sortDirection]="
+          sortParameters?.sortField === 'requestId'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Request ID
+      </th>
+      <th
+        scope="col"
+        [sortField]="'taskType'"
+        [sortDirection]="
+          sortParameters?.sortField === 'taskType'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Task type
+      </th>
+      <th
+        scope="col"
+        [sortField]="'initiator'"
+        [sortDirection]="
+          sortParameters?.sortField === 'initiator'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Initiator
+      </th>
+      <th
+        scope="col"
+        [sortField]="'claimant'"
+        [sortDirection]="
+          sortParameters?.sortField === 'claimant'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Claimant
+      </th>
+      <th
+        scope="col"
+        [sortField]="'accountNumber'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountNumber'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Account number
+      </th>
+      <th
+        scope="col"
+        [sortField]="'accountType'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountType'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Account type
+      </th>
+      <th
+        scope="col"
+        [sortField]="'accountHolder'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountHolder'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Account Holder
+      </th>
+      <th
+        scope="col"
+        *ngIf="'urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async"
+        [sortField]="'authorisedRepresentative'"
+        [sortDirection]="
+          sortParameters?.sortField === 'authorisedRepresentative'
+            ? sortParameters.sortDirection
+            : null
+        "
+        class="min-width-90"
+        appSortableColumn
+      >
+        User
+      </th>
+      <th
+        scope="col"
+        *ngIf="'urn:uk-ets-registry-api:actionForNonAdmin' | protect | async"
+        [sortField]="'recipientAccountNumber'"
+        [sortDirection]="
+          sortParameters?.sortField === 'recipientAccountNumber'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Acquiring account number
+      </th>
+      <th
+        *ngIf="'urn:uk-ets-registry-api:actionForNonAdmin' | protect | async"
+        scope="col"
+        [sortField]="'transactionId'"
+        [sortDirection]="
+          sortParameters?.sortField === 'transactionId'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Transaction ID
+      </th>
+      <th
+        scope="col"
+        [sortField]="'createdOn'"
+        [sortDirection]="
+          sortParameters?.sortField === 'createdOn'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Created on
+      </th>
+      <th
+        scope="col"
+        [sortField]="'taskStatus'"
+        [sortDirection]="
+          sortParameters?.sortField === 'taskStatus'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Task status
+      </th>
+      <th
+        scope="col"
+        [sortField]="'requestStatus'"
+        [sortDirection]="
+          sortParameters?.sortField === 'requestStatus'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Outcome
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let task of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <div class="govuk-checkboxes__item">
+          <input
+            (change)="toggle($event.target.checked, task)"
+            (click)="$event.stopPropagation()"
+            [checked]="isSelected(task)"
+            class="govuk-checkboxes__input"
+            id="{{ task.requestId }}"
+            type="checkbox"
+          />
+          <label
+            class="govuk-label govuk-checkboxes__label no-padding"
+            for="{{ task.requestId }}"
+          ></label>
+        </div>
+      </td>
+      <td class="govuk-table__cell">
+        <a
+          (click)="navigateToTask(task.requestId, $event)"
+          href=""
+          title="{{ task.requestId }}"
+          class="disabled"
+          >{{ task.requestId }}</a
+        >
+      </td>
+      <td class="govuk-table__cell">{{ getTaskTypeLabel(task.taskType) }}</td>
+      <td class="govuk-table__cell break-word-cell">
+        {{ task.initiatorName }}
+      </td>
+      <td class="govuk-table__cell break-word-cell">{{ task.claimantName }}</td>
+      <td class="govuk-table__cell">
+        <div *ngIf="task.userHasAccess; else elseBlockAccount">
+          <a
+            [routerLink]="[]"
+            (click)="
+              goToAccountDetailsAndChangeLocationState(
+                task.accountNumber,
+                $event
+              )
+            "
+            class="disabled"
+          >
+            {{
+              hideLabelForAllocateAllowancesProposal(
+                task.taskType,
+                task.accountFullIdentifier
+              )
+            }}
+          </a>
+        </div>
+        <ng-template #elseBlockAccount>
+          {{
+            hideLabelForAllocateAllowancesProposal(
+              task.taskType,
+              task.accountFullIdentifier
+            )
+          }}
+        </ng-template>
+      </td>
+      <td class="govuk-table__cell">
+        {{
+          hideLabelForAllocateAllowancesProposal(
+            task.taskType,
+            getAccountTypeLabel(task.accountType)
+          )
+        }}
+      </td>
+      <td class="govuk-table__cell">
+        {{
+          hideLabelForAllocateAllowancesProposal(
+            task.taskType,
+            task.accountHolder
+          )
+        }}
+      </td>
+      <td
+        *ngIf="'urn:uk-ets-registry-api:actionForAnyAdmin' | protect | async"
+        class="govuk-table__cell break-word-cell"
+      >
+        <span *ngIf="task.authorizedRepresentativeUserId; else linkToArUser">
+          <a
+            [routerLink]="[]"
+            (click)="
+              goToUserDetailsAndChangeLocationState(
+                task.authorizedRepresentativeUserId,
+                $event
+              )
+            "
+            class="govuk-link"
+            >{{ task.authorisedRepresentative }}</a
+          >
+        </span>
+      </td>
+      <td
+        *ngIf="'urn:uk-ets-registry-api:actionForNonAdmin' | protect | async"
+        class="govuk-table__cell"
+      >
+        {{ task.recipientAccountNumber }}
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="'urn:uk-ets-registry-api:actionForNonAdmin' | protect | async"
+      >
+        {{ task.transactionId }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ task.createdOn | gdsDateTimeShort }}
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag [color]="taskStatusMap[task.taskStatus].color">
+          {{ taskStatusMap[task.taskStatus].label }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag
+          *ngIf="task.requestStatus !== TaskOutcome.SUBMITTED_NOT_YET_APPROVED"
+          [color]="requestStatusMap[task.requestStatus].color"
+        >
+          {{ requestStatusMap[task.requestStatus].label }}
+        </app-govuk-tag>
+      </td>
+      <ng-template #linkToArUser>
+        <span>
+          {{ task.authorisedRepresentative }}
+        </span>
+      </ng-template>
+    </tr>
+  </tbody>
+</table>

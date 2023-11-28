@@ -1,0 +1,146 @@
+<ng-container [formGroup]="nestedForm">
+  <div
+    class="govuk-form-group"
+    [id]="compositeFormGroupId"
+    [class.govuk-form-group--error]="this.showErrors && formControl.invalid"
+  >
+    <span
+      *ngIf="this.showErrors && formControl.invalid"
+      id="event-name-error"
+      class="govuk-error-message"
+      role="alert"
+      [attr.aria-describedby]="compositeFormGroupId"
+    >
+      <span class="govuk-visually-hidden">Error:</span>
+      <span *ngFor="let errorCode of getObjectKeys(formControl.errors)">
+        {{ validationErrorMessages[errorCode] || errorCode }}
+      </span>
+    </span>
+
+    <span
+      *ngIf="hint && !showOnlyUserIdInput"
+      id="ar-selection-hint"
+      [ngClass]="hintClass"
+    >
+      {{ hint }}
+    </span>
+
+    <div
+      *ngIf="!showOnlyUserIdInput"
+      class="govuk-radios govuk-radios--conditional"
+    >
+      <div class="govuk-radios__item">
+        <input
+          class="govuk-radios__input"
+          id="existing-from-list"
+          type="radio"
+          [value]="arSelectionTypes.FROM_LIST"
+          formControlName="selectionTypeRadio"
+          (click)="selectType(arSelectionTypes.FROM_LIST)"
+        />
+        <label class="govuk-label govuk-radios__label" for="existing-from-list">
+          From the list below
+        </label>
+      </div>
+
+      <div
+        class="govuk-radios__conditional"
+        id="conditional-how-contacted-conditional"
+        [class.govuk-radios__conditional--hidden]="
+          arSelectionType !== arSelectionTypes.FROM_LIST
+        "
+      >
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="selection-from-dropdown">
+            Select one person
+          </label>
+          <select
+            class="govuk-select"
+            [class.govuk-input--error]="this.showErrors && formControl.invalid"
+            [attr.aria-label]="'Please select an authorised representative'"
+            id="selection-from-dropdown"
+            name="selection-from-dropdown"
+            formControlName="listSelect"
+          >
+            <!--NOTE: value should be null initially (and not empty string),
+            otherwise the option might not be selected-->
+            <option [value]="null" disabled selected>Please select</option>
+            <option
+              *ngFor="let ar of authorisedRepresentatives"
+              [value]="ar.urid"
+            >
+              {{ ar | arDisplayName }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="govuk-radios__item">
+        <input
+          class="govuk-radios__input"
+          id="existing-by-id"
+          type="radio"
+          [value]="arSelectionTypes.BY_ID"
+          formControlName="selectionTypeRadio"
+          (click)="selectType(arSelectionTypes.BY_ID)"
+        />
+        <label
+          class="govuk-label govuk-radios__label"
+          for="existing-by-id"
+          aria-describedby="ar-selection-by-ID-hint"
+        >
+          By user ID
+        </label>
+      </div>
+
+      <ng-container *ngTemplateOutlet="searchUserId"></ng-container>
+    </div>
+
+    <div *ngIf="showOnlyUserIdInput">
+      <label
+        class="govuk-label"
+        for="selection-by-id"
+        aria-describedby="ar-selection-by-ID-hint"
+      >
+        {{ hint }}
+      </label>
+      <ng-container *ngTemplateOutlet="searchUserId"></ng-container>
+    </div>
+  </div>
+
+  <ng-template #searchUserId>
+    <div
+      [ngClass]="{ 'govuk-radios__conditional': !showOnlyUserIdInput }"
+      id="conditional-select-from-search"
+      [class.govuk-radios__conditional--hidden]="
+        arSelectionType !== arSelectionTypes.BY_ID && !showOnlyUserIdInput
+      "
+    >
+      <span *ngIf="!showOnlyUserIdInput">
+        <label class="govuk-label" for="selection-by-id">
+          Enter a user ID
+        </label>
+      </span>
+      <span id="ar-selection-by-ID-hint" class="govuk-hint">
+        Your representative must create a registry sign in for the UK Emissions
+        Trading Registry and tell you their user ID, for example UK39664797446
+      </span>
+      <div
+        class="govuk-form-group"
+        [ngClass]="{ 'govuk-!-margin-bottom-4': showOnlyUserIdInput }"
+      >
+        <input
+          class="govuk-input"
+          [class.govuk-input--error]="this.showErrors && formControl.invalid"
+          [attr.aria-label]="showOnlyUserIdInput ? null : 'User ID'"
+          id="selection-by-id"
+          name="selection-by-id"
+          type="text"
+          ngDefaultControl
+          formControlName="userIdInput"
+          placeholder="User ID"
+        />
+      </div>
+    </div>
+  </ng-template>
+</ng-container>

@@ -1,0 +1,66 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title" *ngIf="!confirmationMessageTitle">
+        {{
+          submittedIdentifier
+            ? 'An update request has been submitted.'
+            : 'The account has been updated'
+        }}
+      </h1>
+      <h1 class="govuk-panel__title" *ngIf="confirmationMessageTitle">
+        {{ confirmationMessageTitle }}
+      </h1>
+      <div
+        class="govuk-panel__body"
+        *ngIf="submittedIdentifier && !confirmationMessageBody"
+      >
+        The request ID is<br /><strong>{{ submittedIdentifier }}</strong>
+      </div>
+      <div class="govuk-panel__body" *ngIf="confirmationMessageBody">
+        {{ confirmationMessageBody }}<br /><strong>{{
+          submittedIdentifier
+        }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row" *ngIf="submittedIdentifier">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      <span *ngIf="showOnlyAdminMessage; else messages"
+        >The registry administrator will review your request.</span
+      >
+      <ng-template #messages>
+        <span *ngIf="isAdmin"
+          >The registry administrator will review your request.</span
+        >
+        <span *ngIf="!isAdmin"
+          >An authorised representative will review your request.</span
+        >
+      </ng-template>
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row" *ngIf="customWhatHappensNext">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      <span>{{ customWhatHappensNext }}</span>
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="toBeLoggedOut ? '' : path"
+        (click)="toBeLoggedOut ? navigateTo() : ''"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >{{ goBack }}</a
+      >
+    </p>
+  </div>
+</div>

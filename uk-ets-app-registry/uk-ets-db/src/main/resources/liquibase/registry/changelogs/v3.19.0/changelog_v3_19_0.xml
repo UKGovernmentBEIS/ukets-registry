@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="3_19_0_ADD_ALLOCATION_CATEGORY_FIELD" author="piliotid" context="migrate">
+        <comment>Adds allocation category to allocation_job table.</comment>
+        <sql>
+            alter table allocation_job add column category varchar(256) default null;
+
+            comment on column allocation_job.category is 'The category of the allocation job';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

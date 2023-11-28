@@ -1,0 +1,39 @@
+<div class="govuk-grid-row govuk-!-margin-top-5">
+  <div class="govuk-grid-column-full">
+    <app-summary-list
+      [class]="'govuk-summary-list--no-border'"
+      [summaryListItems]="getNotificationType()"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-summary-list>
+
+    <app-summary-list
+      [class]="'govuk-summary-list--no-border'"
+      [summaryListItems]="getActivationDetailsItems()"
+      (navigateToEmitter)="navigateTo($event)"
+    ></app-summary-list>
+
+    <!--TODO adjust app-summary-list in order to support [innerHTML] -->
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-heading-m">
+          Notification details
+        </dt>
+        <dd class="govuk-summary-list__value"></dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Title</dt>
+        <dd class="govuk-summary-list__value">
+          {{ this.notificationDetails?.contentDetails?.subject }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Content</dt>
+        <dd class="govuk-summary-list__value">
+          <app-notification-renderer
+            [content]="this.notificationDetails?.contentDetails.content"
+          ></app-notification-renderer>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>

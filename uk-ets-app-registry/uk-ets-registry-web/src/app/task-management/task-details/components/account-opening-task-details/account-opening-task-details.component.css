@@ -1,0 +1,8 @@
+.disabled {
+  color: grey;
+}
+
+.icon-disabled {
+  background: grey;
+  border: grey;
+}

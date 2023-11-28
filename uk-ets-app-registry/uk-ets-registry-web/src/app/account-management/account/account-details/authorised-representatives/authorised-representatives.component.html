@@ -1,0 +1,54 @@
+<ng-container *ngIf="isAdmin && !isReadOnlyAdmin">
+  <h2 class="govuk-heading-m">AR Changes since Account Opening</h2>
+  <p class="govuk-body">
+    ARs Added : {{ addedARs }}
+    <br />
+    ARs Removed : {{ removedARs }}
+  </p>
+</ng-container>
+<ng-container *ngIf="getAvailableAuthorisedReps().length === 0">
+  <span class="govuk-hint"> No items added.</span>
+</ng-container>
+<ng-container *ngIf="getAuthorisedRepsByState('ACTIVE').length > 0">
+  <h2 class="govuk-heading-m">Active representatives</h2>
+  <app-shared-authorised-representative-table
+    [authorisedReps]="getAuthorisedRepsByState('ACTIVE')"
+    [accountId]="accountId"
+    [displayNameLink]="true"
+    [displayedColumns]="displayedColumns"
+  ></app-shared-authorised-representative-table>
+</ng-container>
+<ng-container
+  *ngIf="getAuthorisedRepsByState('SUSPENDED').length > 0 && isAdmin"
+>
+  <h1 class="govuk-heading-m">Suspended representatives</h1>
+  <app-shared-authorised-representative-table
+    [authorisedReps]="getAuthorisedRepsByState('SUSPENDED')"
+    [accountId]="accountId"
+    [displayNameLink]="true"
+    [displayedColumns]="displayedColumns"
+  ></app-shared-authorised-representative-table>
+</ng-container>
+<!-- TODO Remove this wrapper div when this feature is to be released in production -->
+<div style="display: none">
+  <ng-container *ngIf="getPendingArs().length > 0">
+    <h1 class="govuk-heading-m">Requests pending approval</h1>
+    <app-shared-authorised-representative-table
+      [authorisedReps]="getPendingArs()"
+      [customColumns]="[generateCustomRequestColumn()]"
+      [accountId]="accountId"
+      [displayNameLink]="true"
+      [displayedColumns]="displayedColumns"
+    ></app-shared-authorised-representative-table>
+  </ng-container>
+</div>
+<div *ngIf="canRequestUpdate">
+  <button
+    (click)="goToRequestUpdate()"
+    style="margin-bottom: 0"
+    class="govuk-button govuk-!-margin-right-1"
+    data-module="govuk-button"
+  >
+    Request update
+  </button>
+</div>

@@ -1,0 +1,116 @@
+@import '_variables';
+
+/* ==========================================================================
+   #IDENTITY BAR
+   ========================================================================== */
+.hmcts-identity-bar {
+  background-color: govuk-colour('light-grey');
+  box-shadow: inset 0 -1px 0 0 govuk-colour('mid-grey');
+  /* Takes up no space */
+  color: govuk-colour('black');
+  padding-bottom: 9px;
+  /* Negative by 1px to compensate */
+  margin-top: -10px;
+  padding-top: 10px;
+}
+
+.hmcts-identity-bar:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.hmcts-identity-bar__container {
+  max-width: 1320px;
+  margin: 0 15px;
+  font-size: 0;
+  /* Hide whitespace between elements */
+}
+
+@media (min-width: 40.0625em) {
+  .hmcts-identity-bar__container {
+    margin: 0 30px;
+  }
+}
+
+@media (min-width: 1020px) {
+  .hmcts-identity-bar__container {
+    margin: 0 auto;
+  }
+}
+
+.hmcts-identity-bar__container:after {
+  content: '';
+  display: inline-block;
+  width: 100%;
+}
+
+.hmcts-identity-bar__title {
+  font-family: 'GDS Transport', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 1.14286;
+  display: inline-block;
+  vertical-align: top;
+}
+
+@media print {
+  .hmcts-identity-bar__title {
+    font-family: sans-serif;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .hmcts-identity-bar__title {
+    font-size: 16px;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+}
+
+@media print {
+  .hmcts-identity-bar__title {
+    font-size: 14pt;
+    line-height: 1.2;
+  }
+}
+
+.hmcts-identity-bar__details {
+  margin-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+@media (min-width: 40.0625em) {
+  .hmcts-identity-bar__details {
+    display: inline-block;
+    vertical-align: top;
+    padding-top: 11px;
+    /* Alignment tweaks */
+    padding-bottom: 9px;
+    /* Alignment tweaks */
+  }
+}
+
+.hmcts-identity-bar__actions {
+  margin-bottom: -10px;
+}
+
+@media (min-width: 40.0625em) {
+  .hmcts-identity-bar__actions {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+.hmcts-identity-bar__menu {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.hmcts-identity-bar__menu:last-child {
+  margin-right: 0;
+}

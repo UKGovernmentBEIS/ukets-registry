@@ -1,0 +1,47 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr class="govuk-section-break govuk-section-break--visible" />
+  </div>
+  <div class="govuk-grid-row">
+    <app-account-summary
+      header="Account info"
+      [accountInfo]="authoriseRepresentativeTaskDetails?.accountInfo"
+      [hasAccountAccess]="true"
+      [selectedSideMenu]="MenuItemEnum.ACCOUNT_DETAILS"
+    ></app-account-summary>
+  </div>
+  <div
+    class="govuk-grid-row"
+    *ngIf="
+      authoriseRepresentativeTaskDetails &&
+      (authoriseRepresentativeTaskDetails.newUser ||
+        authoriseRepresentativeTaskDetails.currentUser)
+    "
+  >
+    <app-ar-update-user
+      [updateType]="authoriseRepresentativeTaskDetails.arUpdateType"
+      [newUser]="authoriseRepresentativeTaskDetails.newUser"
+      [currentUser]="authoriseRepresentativeTaskDetails.currentUser"
+      [taskNotYetApproved]="
+        authoriseRepresentativeTaskDetails.requestStatus === taskNotYetApproved
+      "
+      [isTaskDetailsPage]="true"
+      [currentUserClaimant]="
+        authoriseRepresentativeTaskDetails.currentUserClaimant
+      "
+      (requestDocumentEmitter)="onUserRequestDocuments($event)"
+      [displayedChangeLink]="false"
+      [addAndRemoveTextDisplayed]="false"
+    ></app-ar-update-user>
+    <app-ar-update-access-rights
+      *ngIf="
+        authoriseRepresentativeTaskDetails.arUpdateType !==
+          updateTypes.REMOVE &&
+        authoriseRepresentativeTaskDetails.arUpdateType !== updateTypes.SUSPEND
+      "
+      [updateType]="authoriseRepresentativeTaskDetails.arUpdateType"
+      [accessRights]="authoriseRepresentativeTaskDetails.arUpdateAccessRight"
+      [displayedChangeLink]="false"
+    ></app-ar-update-access-rights>
+  </div>
+</div>

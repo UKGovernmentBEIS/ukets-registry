@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="0_17_0_MAKE_ITL_RECONCILIATION_PHASE_NULLABLE" author="trifyllisa" context="migrate">
+        <comment>ITL Reconciliation Phase should be nullable.</comment>
+        <sql>
+            alter table itl_reconciliation_log alter column recon_phase_code drop not null;
+        </sql>
+
+        <rollback>
+            <sql>
+                alter table itl_reconciliation_log alter column recon_phase_code set not null;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_17_0_ADD_BLOCK_ROLE_TO_TRANSACTION_BLOCK" author="fragkise" context="migrate">
+
+        <comment>Adds block role to transaction unit block table.</comment>
+        <sql>
+            alter table transaction_block add column block_role varchar(12);
+            comment on column "transaction_block"."block_role" is 'Identifier field for unit blocks used for replacement (replaced or to be replaced).';
+        </sql>
+
+        <rollback>
+            <sql>
+                alter table transaction_block drop column block_role;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_17_0_CREATE_RECON_AUDIT_TRAIL_TX_LOG_TABLE" author="fragkise" context="migrate">
+        <comment>Contains a single record of each transaction that is submitted for validation to the ITL.</comment>
+        <sql>
+            create sequence itl_recon_audit_trail_tx_log_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+            --------------------------------------------------------
+            -- Table itl_recon_audit_trail_tx_log
+            --------------------------------------------------------
+
+            create table "itl_recon_audit_trail_tx_log" 
+            (    
+            id bigint not null, 
+            recon_id varchar(20) not null, 
+            transaction_id varchar(255) not null, 
+            transaction_type varchar(255) not null, 
+            transaction_date timestamp, 
+            acquiring_registry_account bigint, 
+            acquiring_registry_code varchar(255), 
+            acquiring_account_type varchar(255), 
+            transferring_registry_account bigint, 
+            transferring_registry_code varchar(255) not null, 
+            transferring_account_type varchar(255),
+            notification_identifier bigint,
+            constraint "pk_itl_recon_audit_trail_tx_log" primary key("id")
+            );
+
+            comment on column "itl_recon_audit_trail_tx_log"."id" is 'A unique identifier associated to each row of this table';
+            comment on column "itl_recon_audit_trail_tx_log"."recon_id" is 'Reference to the corresponding reconciliation.';
+            comment on column "itl_recon_audit_trail_tx_log"."transaction_id" is 'Unique identifier for a transaction.';
+            comment on column "itl_recon_audit_trail_tx_log"."transaction_type" is 'Code indicating the type of transaction';
+            comment on column "itl_recon_audit_trail_tx_log"."transaction_date" is 'Date on which a transaction was submitted.';
+            comment on column "itl_recon_audit_trail_tx_log"."acquiring_registry_account" is 'Account for acquiring registry.';
+            comment on column "itl_recon_audit_trail_tx_log"."acquiring_registry_code" is 'Code identifying the acquiring registry.';
+            comment on column "itl_recon_audit_trail_tx_log"."acquiring_account_type" is 'Code identifying the acquiring account type.';
+            comment on column "itl_recon_audit_trail_tx_log"."transferring_registry_account" is 'Account for transferring registry.';
+            comment on column "itl_recon_audit_trail_tx_log"."transferring_registry_code" is 'Code identifying the transferring registry.';
+            comment on column "itl_recon_audit_trail_tx_log"."transferring_account_type" is 'Code identifying the transferring account type.';
+            comment on column "itl_recon_audit_trail_tx_log"."notification_identifier" is 'The ITL Notice related with this transaction.';
+            comment on table "itl_recon_audit_trail_tx_log" is 'Contains a single record of each transaction that is submitted for validation to the ITL.';
+            alter table "itl_recon_audit_trail_tx_log" add constraint "fk_attl_rl" foreign key ("recon_id") references "itl_reconciliation_log" ("recon_id");
+        </sql>
+
+        <rollback>
+            <sql>
+                drop table if exists "itl_recon_audit_trail_tx_log" cascade;
+                drop sequence if exists "itl_recon_audit_trail_tx_log_seq";
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_17_0_CREATE_RECON_AUDIT_TRAIL_TX_BLOCK_TABLE" author="fragkise" context="migrate">
+        <comment>Contains all of the units (defined by start and end blocks) which have been found inconsistent during request Unit Blocks.</comment>
+        <sql>
+            create sequence itl_recon_audit_trail_tx_block_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+            --------------------------------------------------------
+            -- Table itl_recon_audit_trail_tx_block
+            --------------------------------------------------------
+
+            create table "itl_recon_audit_trail_tx_block" 
+            (    
+            id bigint not null, 
+            audit_trail_tx_log_id bigint not null, 
+            start_block bigint not null, 
+            end_block bigint not null, 
+            track varchar(255), 
+            expiry_date timestamp, 
+            project_id varchar(255), 
+            unit_type varchar(255) not null, 
+            originating_country_code varchar(255) not null, 
+            applicable_period varchar(255) not null, 
+            original_period varchar(255) not null, 
+            acquiring_account_type varchar(255), 
+            transferring_account_type varchar(255),
+            lulucf_code int, 
+            block_role varchar(12), 
+            installation_id bigint, 
+            year_in_commitment_period int,
+            constraint "pk_itl_recon_audit_trail_tx_block" primary key("id")
+            );
+
+            comment on column "itl_recon_audit_trail_tx_block"."id" is 'Unique identifier of a unit block.';
+            comment on column "itl_recon_audit_trail_tx_block"."audit_trail_tx_log_id" is 'Reference to the corresponding .audit_trail_trans entry';
+            comment on column "itl_recon_audit_trail_tx_block"."start_block" is 'Number indicating the beginning of a range of serial numbers.';
+            comment on column "itl_recon_audit_trail_tx_block"."end_block" is 'Number indicating the end of a range of serial numbers.';
+            comment on column "itl_recon_audit_trail_tx_block"."track" is 'Code identifying project track.';
+            comment on column "itl_recon_audit_trail_tx_block"."expiry_date" is 'Date on which lcers or tcers expire.';
+            comment on column "itl_recon_audit_trail_tx_block"."project_id" is 'Unique identifier for a project.';
+            comment on column "itl_recon_audit_trail_tx_block"."unit_type" is 'Code indicating the type of units in a block.';
+            comment on column "itl_recon_audit_trail_tx_block"."originating_country_code" is 'Code identifying the registry.';
+            comment on column "itl_recon_audit_trail_tx_block"."applicable_period" is 'Code indicating the currently applicable commitment period of the units in the block.';
+            comment on column "itl_recon_audit_trail_tx_block"."original_period" is 'Code indicating the original commitment period of the units in the block.';
+            comment on column "itl_recon_audit_trail_tx_block"."acquiring_account_type" is 'Numeric code indicating the type of acquiring account';
+            comment on column "itl_recon_audit_trail_tx_block"."transferring_account_type" is 'Numeric code indicating the type of transferring account';
+            comment on column "itl_recon_audit_trail_tx_block"."lulucf_code" is 'Code identifying the lulucf activity associated with the units in the block.';
+            comment on column "itl_recon_audit_trail_tx_block"."block_role" is 'Identifier field for unit blocks used for replacement (replaced or to be replaced).';
+            comment on column "itl_recon_audit_trail_tx_block"."installation_id" is 'Identifier of installation.';
+            comment on column "itl_recon_audit_trail_tx_block"."year_in_commitment_period" is 'Given year within a Commitment Period. Values are 2018, 2019, 2020, etc.';
+            comment on table "itl_recon_audit_trail_tx_block" is 'Contains all of the units (defined by start and end blocks) which have been found inconsistent during request Unit Blocks.';
+            alter table "itl_recon_audit_trail_tx_block" add constraint "fk_attb_attl" foreign key ("audit_trail_tx_log_id") references "itl_recon_audit_trail_tx_log" ("id");
+        </sql>
+
+        <rollback>
+            <sql>
+                drop table if exists "itl_recon_audit_trail_tx_block" cascade;
+                drop sequence if exists "itl_recon_audit_trail_tx_block_seq";
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="0_17_0_ITL_NOTIFICATION_MODEL_UPDATES" author="pougouniasn" context="migrate">
+        <comment>Performs some minor updates in the model of ITL Notifications.</comment>
+        <sql>
+            -- Remove any test data, since this functionality has not been deployed in production yet.
+            delete from notice_unit_identifier where 1 = 1;
+            delete from notice_log_history where 1 = 1;
+            delete from notice_log where 1 = 1;
+
+            -- Store enumerated string values instead of ordinals
+            alter table notice_log_history
+            alter column notice_type set data type varchar(255);
+
+            alter table notice_log_history
+            alter column notice_status set data type varchar(255);
+
+            alter table notice_log_history
+            alter column unit_type set data type varchar(255);
+
+            alter table notice_log_history
+            alter column luluc_f_activity set data type varchar(255);
+
+            alter table notice_log_history
+            alter column commitment_period set data type varchar(255);
+
+            -- Rename columns to keep consistency with the rest of the application
+            alter table notice_log
+            rename column notification_identity to identifier;
+
+            alter table notice_log_history
+            rename column notice_type to type;
+
+            alter table notice_log_history
+            rename column notice_status to status;
+
+            alter table notice_log_history
+            rename column luluc_f_activity to environmental_activity;
+
+            -- Rename tables
+            alter table notice_log
+            rename to itl_notification;
+
+            alter table notice_log_history
+            rename to itl_notification_history;
+
+            alter table notice_unit_identifier
+            rename to itl_notification_block;
+
+            -- Rename sequences
+            alter sequence notice_log_seq rename to itl_notification_seq;
+            alter sequence notice_log_history_seq rename to itl_notification_history_seq;
+            alter sequence notice_unit_identifier_seq rename to itl_notification_block_seq;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ITL_NOTIFICATION_MODEL_UPDATES_2" author="pougouniasn" context="migrate">
+        <comment>Performs some minor updates in the model of ITL Notifications.</comment>
+        <sql>
+            alter table itl_notification add column type varchar(255) not null;
+            alter table itl_notification add column status varchar(255) not null;
+
+            comment on column itl_notification.type is 'The notification type (e.g. Net source cancellation)';
+            comment on column itl_notification.status is 'The notification current status (e.g. Open, Completed)';
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_ITL_NOTIFICATION_MODEL_UPDATES_3" author="pougouniasn" context="migrate">
+        <comment>Performs some minor updates in the model of ITL Notifications.</comment>
+        <sql>
+            alter table itl_notification_history alter column project_number drop not null;
+            alter table itl_notification_history alter column unit_type drop not null;
+            alter table itl_notification_history alter column target_date drop not null;
+            alter table itl_notification_history alter column commitment_period drop not null;
+        </sql>
+    </changeSet>
+
+    <changeSet id="0_17_0_DROP_COLUMN_MONITORING_PLAN_FIRST_YEAR_APP" author="fragkise" context="migrate">
+        <comment>Column monitoring_plan_first_year_app should be dropped.</comment>
+        <sql>
+            alter table aircraft_operator drop column monitoring_plan_first_year_app;
+        </sql>
+
+        <rollback>
+            <sql>
+                alter table aircraft_operator add column monitoring_plan_first_year_app date;
+            </sql>
+        </rollback>
+    </changeSet>
+      
+</databaseChangeLog>
