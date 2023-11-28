@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "transactionlog.service.username",
+    "type": "java.lang.String",
+    "description": "Username for ITL Basic authentication"
+  },
+  {
+    "name": "transactionlog.service.password",
+    "type": "java.lang.String",
+    "description": "Passwd for ITL Basic authentication"
+  },
+  {
+    "name": "transactionlog.service.url",
+    "type": "java.lang.String",
+    "description": "URL of ITL web services"
+  }
+]}
