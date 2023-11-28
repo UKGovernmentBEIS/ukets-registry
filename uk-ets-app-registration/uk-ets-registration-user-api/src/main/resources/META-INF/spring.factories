@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    gov.uk.ets.commons.logging.Config,\
+    gov.uk.ets.commons.ratelimiter.Config,\
+    gov.uk.ets.commons.cloudwatch.metrics.MetricsConfig,\
+    gov.uk.ets.commons.cloudwatch.metrics.HealthMetricsExportConfiguration
+

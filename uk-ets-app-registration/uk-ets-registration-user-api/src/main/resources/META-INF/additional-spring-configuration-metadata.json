@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "user.registration.keycloak.serverUrl",
+    "type": "java.lang.String",
+    "description": "The url the keycloak server is running."
+  },
+  {
+    "name": "user.registration.keycloak.realm",
+    "type": "java.lang.String",
+    "description": "The Keycloak realm the user shall be created."
+  },
+  {
+    "name": "user.registration.keycloak.username",
+    "type": "java.lang.String",
+    "description": "A user with role manage-users in realm mgmt Role Mapping"
+  },
+  {
+    "name": "user.registration.keycloak.pasword",
+    "type": "java.lang.String",
+    "description": "The password for user with role manage-users in realm mgmt Role Mapping"
+  },
+  {
+    "name": "user.registration.keycloak.clientId",
+    "type": "java.lang.String",
+    "description": "The client id tha invokes the user creation (admin-cli)."
+  },
+  {
+    "name": "user.registration.keycloak.verifyEmailRedirectUrl",
+    "type": "java.lang.String",
+    "description": "The url of the web-app the user should be redirected for email-confirmation'"
+  },
+  {
+    "name": "user.registration.keycloak.verifyEmailExpiration",
+    "type": "java.lang.String",
+    "description": "Time duration in minutes that the verification link is active"
+  }
+]}
