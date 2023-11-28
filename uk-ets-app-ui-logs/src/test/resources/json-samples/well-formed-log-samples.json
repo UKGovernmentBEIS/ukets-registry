@@ -1,0 +1,74 @@
+[
+  {
+    "mdc": {
+      "app_name": "uk-ets-registry-api"
+    },
+    "logger_name": "Transactions-link",
+    "timestamp": "Wed Nov 10 2021 12:07:05 GMT+0200 (Eastern European Standard Time)",
+    "ets_user_id": "UK873533391953",
+    "user_id": "95002998-d8aa-41ba-86c2-67fe84b62e6c",
+    "actions": [
+      {
+        "type": "[UI logs] Check logs length",
+        "interaction_identifier": "930a9ad7-1d1b-430b-b7e1-1a0c717661ab"
+      },
+      {
+        "type": "@ngrx/router-store/navigation",
+        "interaction_identifier": "930a9ad7-1d1b-430b-b7e1-1a0c717661ab"
+      },
+      {
+        "type": "[Shared] Can Go Back",
+        "interaction_identifier": "930a9ad7-1d1b-430b-b7e1-1a0c717661ab"
+      }
+    ],
+    "exception": [
+      {
+        "exception_message": "Http failure response for http://localhost:8080/api-registry/transactions.list.filters: 401 OK",
+        "exception_class": "HttpErrorResponse",
+        "stacktrace": "http://localhost:8080/api-registry/transactions.list.filters"
+      },
+      {
+        "exception_message": "Http failure response for http://localhost:8080/api-registry/transactions.list?page=0&pageSize=10&sortField=lastUpdated&sortDirection=DESC: 401 OK",
+        "exception_class": "HttpErrorResponse",
+        "stacktrace": "http://localhost:8080/api-registry/transactions.list?page=0&pageSize=10&sortField=lastUpdated&sortDirection=DESC"
+      }
+    ],
+    "session_identifier": "cb01e7ac-2308-46ce-8452-11c9b298ac97"
+  },
+  {
+    "mdc": {
+      "app_name": "uk-ets-registry-api"
+    },
+    "logger_name": "Transactions-link",
+    "timestamp": "Wed Nov 10 2021 12:07:05 GMT+0200 (Eastern European Standard Time)",
+    "ets_user_id": "UK873533391953",
+    "user_id": "95002998-d8aa-41ba-86c2-67fe84b62e6c",
+    "actions": [
+      {
+        "type": "[UI logs] Check logs length",
+        "interaction_identifier": "930a9ad7-1d1b-430b-b7e1-1a0c717661ab"
+      },
+      {
+        "type": "@ngrx/router-store/navigation",
+        "interaction_identifier": "930a9ad7-1d1b-430b-b7e1-1a0c717661ab"
+      },
+      {
+        "type": "[Shared] Can Go Back",
+        "interaction_identifier": "930a9ad7-1d1b-430b-b7e1-1a0c717661ab"
+      }
+    ],
+    "exception": [
+      {
+        "exception_message": "Http failure response for http://localhost:8080/api-registry/transactions.list.filters: 401 OK",
+        "exception_class": "HttpErrorResponse",
+        "stacktrace": "http://localhost:8080/api-registry/transactions.list.filters"
+      },
+      {
+        "exception_message": "Http failure response for http://localhost:8080/api-registry/transactions.list?page=0&pageSize=10&sortField=lastUpdated&sortDirection=DESC: 401 OK",
+        "exception_class": "HttpErrorResponse",
+        "stacktrace": "http://localhost:8080/api-registry/transactions.list?page=0&pageSize=10&sortField=lastUpdated&sortDirection=DESC"
+      }
+    ],
+    "session_identifier": "cb01e7ac-2308-46ce-8452-11c9b298ac97"
+  }
+]

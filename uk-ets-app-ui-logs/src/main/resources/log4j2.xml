@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <LogstashLayout dateTimeFormatPattern="yyyy-MM-dd'T'HH:mm:ss.SSSZZZ"
+                            eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json"
+                            prettyPrintEnabled="false"
+                            maxByteCount="32768"
+                            maxStringLength="8192"
+            />
+
+        </Console>
+        <Console name="UI_LOGS" target="SYSTEM_OUT">
+            <PatternLayout disableAnsi="false"
+                           pattern="%m%n"/>
+        </Console>
+
+    </Appenders>
+    <Loggers>
+        <Logger name="gov.uk.ets.ui.logs.web.LogsController" level="info" additivity="false">
+            <AppenderRef ref="UI_LOGS" />
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+    </Loggers>
+</Configuration>

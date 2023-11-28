@@ -1,0 +1,44 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [
+    {
+      "name": "Logging Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Logging Resource",
+      "attributes": {},
+      "uris": [
+        "/api-ui-logs/logs.submit"
+      ]
+    },
+    {
+      "name": "Actuator endpoints",
+      "ownerManagedAccess": false,
+      "displayName": "Actuator endpoints",
+      "attributes": {},
+      "uris": ["/api-ui-logs/actuator/*"]    
+    }],
+  "policies": [
+    {
+      "name": "Any UK ETS User",
+      "description": "Defines that all UK ETS users can do something",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"ets_user\",\"required\":true}]"
+      }
+    },
+    {
+      "name": "Logging Resource Permission",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"Logging Resource\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    }
+  ],
+  "decisionStrategy": "UNANIMOUS"
+}
