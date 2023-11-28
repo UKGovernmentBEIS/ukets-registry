@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0_0_1_COMPLIANCE_TABLE_CREATION" author="tsallase">
+
+        <comment>Initial creation of Compliance table</comment>
+        <sql>
+
+            CREATE TABLE "dynamic_compliance_entity" (
+            "compliant_entity_id" BIGINT NOT NULL PRIMARY KEY,
+            "dynamic_compliance" TEXT NOT NULL );
+
+            COMMENT ON TABLE "dynamic_compliance_entity" IS 'Dynamic Compliance Entity';
+            COMMENT ON COLUMN "dynamic_compliance_entity"."compliant_entity_id" IS 'The compliant entity id is also the
+            primary id of the table';
+            COMMENT ON COLUMN "dynamic_compliance_entity"."dynamic_compliance" IS 'A unique account identifier';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "dynamic_compliance_entity" CASCADE;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="0_0_1_COMPLIANCE_OUTBOX_TABLE_CREATION" author="trifyllisa">
+
+        <comment>Initial creation of Compliance Outbox</comment>
+        <sql>
+
+            create sequence compliance_outbox_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            CREATE TABLE compliance_outbox
+            (
+            id BIGINT NOT NULL PRIMARY KEY,
+            originating_event_id uuid not null,
+            compliant_entity_id BIGINT NOT NULL,
+            type VARCHAR(50) NOT NULL,
+            payload VARCHAR NOT NULL,
+            generated_on TIMESTAMP NOT NULL,
+            status varchar(20) NOT NULL
+
+            );
+
+            COMMENT ON TABLE "compliance_outbox" IS 'Compliance Outbox Entity';
+            COMMENT ON COLUMN "compliance_outbox"."payload" IS 'The compliance event payload in json format';
+            COMMENT ON COLUMN "compliance_outbox"."status" IS 'The status can be either CREATED or SENT';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "compliance_outbox" CASCADE;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="0_0_1_TABLE_SHEDLOCK" author="trifyllisa">
+
+        <comment>Initial creation of shedlock table</comment>
+
+        <sql>
+            CREATE TABLE shedlock
+            (
+            name VARCHAR(64) NOT NULL,
+            lock_until TIMESTAMP NOT NULL,
+            locked_at TIMESTAMP NOT NULL,
+            locked_by VARCHAR(255) NOT NULL,
+            PRIMARY KEY (name)
+            );
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "shedlock" CASCADE;
+            </sql>
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>
