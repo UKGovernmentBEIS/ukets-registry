@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="uk-ets-sample-server" />
+        <module name="uk-ets-itl-ws-stubs" />
+        <module name="uk-ets-itl-ws-webapp" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="uk-ets-itl-ws-stubs" target="11" />
+      <module name="uk-ets-itl-ws-webapp" target="11" />
+      <module name="uk-ets-sample-server" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="uk-ets-itl-ws-stubs" options="-parameters" />
+      <module name="uk-ets-itl-ws-webapp" options="-parameters" />
+      <module name="uk-ets-sample-server" options="-parameters" />
+    </option>
+  </component>
+</project>

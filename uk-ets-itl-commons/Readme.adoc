@@ -1,0 +1,4 @@
+= ITL Commons
+
+Contains common types used in communication between the Registry and the ITL.
+Some generated artifacts were manually moved and manipulated to other projects.

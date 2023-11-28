@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="RegistryService" targetNamespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0" xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0" xmlns:typens="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+	<import namespace="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" location="common.wsdl"/>
+	<portType name="RegistryPort">
+		<operation name="initiateReconciliation">
+			<input message="typens:initiateReconciliationRequest"/>
+			<output message="typens:initiateReconciliationResponse"/>
+		</operation>
+		<operation name="provideTime">
+			<input message="typens:provideTimeRequest"/>
+			<output message="typens:provideTimeResponse"/>
+		</operation>
+		<operation name="acceptMessage">
+			<input message="typens:acceptMessageRequest"/>
+			<output message="typens:acceptMessageResponse"/>
+		</operation>
+		<operation name="acceptProposal">
+			<input message="typens:acceptProposalRequest"/>
+			<output message="typens:acceptProposalResponse"/>
+		</operation>
+		<operation name="acceptNotification">
+			<input message="typens:acceptNotificationRequest"/>
+			<output message="typens:acceptNotificationResponse"/>
+		</operation>
+		<operation name="acceptITLNotice">
+			<input message="typens:acceptITLNoticeRequest"/>
+			<output message="typens:acceptITLNoticeResponse"/>
+		</operation>
+		<operation name="receiveReconciliationResult">
+			<input message="typens:receiveReconciliationResultRequest"/>
+			<output message="typens:receiveReconciliationResultResponse"/>
+		</operation>
+		<operation name="provideAuditTrail">
+			<input message="typens:provideAuditTrailRequest"/>
+			<output message="typens:provideAuditTrailResponse"/>
+		</operation>
+		<operation name="provideTotals">
+			<input message="typens:provideTotalsRequest"/>
+			<output message="typens:provideTotalsResponse"/>
+		</operation>
+		<operation name="provideUnitBlocks">
+			<input message="typens:provideUnitBlocksRequest"/>
+			<output message="typens:provideUnitBlocksResponse"/>
+		</operation>
+	</portType>
+	<binding name="RegistryBinding" type="tns:RegistryPort">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/>
+		<operation name="initiateReconciliation">
+			<soap:operation soapAction="initiateReconciliation" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="provideTime">
+			<soap:operation soapAction="provideTime" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="acceptMessage">
+			<soap:operation soapAction="acceptMessage" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="acceptProposal">
+			<soap:operation soapAction="acceptProposal" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="acceptNotification">
+			<soap:operation soapAction="acceptNotification" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="acceptITLNotice">
+			<soap:operation soapAction="acceptITLNotice" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="receiveReconciliationResult">
+			<soap:operation soapAction="receiveReconciliationResult" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="provideAuditTrail">
+			<soap:operation soapAction="provideAuditTrail" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="provideTotals">
+			<soap:operation soapAction="provideTotals" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+		<operation name="provideUnitBlocks">
+			<soap:operation soapAction="provideUnitBlocks" style="rpc"/>
+			<input>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</input>
+			<output>
+				<soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="RegistryService">
+		<port name="RegistryPort" binding="tns:RegistryBinding">
+			<soap:address location="http://REPLACE.WITH.ACTUAL.URL"/>
+		</port>
+	</service>
+</definitions>

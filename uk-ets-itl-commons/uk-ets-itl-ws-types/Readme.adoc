@@ -1,0 +1,11 @@
+Generated (Apache Axis) stubs & skeletons for the KP web services (client & server)
+--------------------------------------------------------------
+
+This project generates the common types as well as the stubs (for client side) & skeletons (server side)
+for both the registry and the transaction log wsdl's.
+
+The (re)generate of the sources is done via maven profiles:
+
+Profile registry-build (re)generates the registry related sources: mvn clean install -Dbuild=registry
+
+Profile transactionlog-build (re)generates the transactionlog related sources: mvn clean install -Dbuild=transactionlog

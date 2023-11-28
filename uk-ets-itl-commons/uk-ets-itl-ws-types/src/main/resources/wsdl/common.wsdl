@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="RegistryService" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:typens="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" targetNamespace="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" xmlns="http://schemas.xmlsoap.org/wsdl/">
+	<types>
+		<schema targetNamespace="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+			<complexType name="ArrayOfInt">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="int[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="Transaction">
+				<sequence>
+					<element name="transactionIdentifier" type="string"/>
+					<element name="transactionType" type="int"/>
+					<element name="suppTransactionType" type="int" minOccurs="0"/>
+					<element name="transactionStatusDateTime" type="dateTime"/>
+					<element name="transferringRegistryCode" type="string"/>
+					<element name="transferringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="transferringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="acquiringRegistryCode" type="string"/>
+					<element name="acquiringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="acquiringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="notificationIdentifier" type="long" minOccurs="0"/>
+					<element name="transactionBlocks" type="typens:ArrayOfReconciliationTransactionUnitBlock"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfTransaction">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:Transaction[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="ProposalTransaction">
+				<sequence>
+					<element name="transactionIdentifier" type="string"/>
+					<element name="transactionType" type="int"/>
+					<element name="suppTransactionType" type="int" minOccurs="0"/>
+					<element name="transferringRegistryCode" type="string"/>
+					<element name="transferringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="transferringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="acquiringRegistryCode" type="string"/>
+					<element name="acquiringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="acquiringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="notificationIdentifier" type="long" minOccurs="0"/>
+					<element name="proposalUnitBlocks" type="typens:ArrayOfTransactionUnitBlock"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReconciliationUnitBlockIdentifier">
+				<sequence>
+					<element name="unitSerialBlockStart" type="long"/>
+					<element name="unitSerialBlockEnd" type="long"/>
+					<element name="originatingRegistryCode" type="string"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfReconciliationUnitBlockIdentifier">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:ReconciliationUnitBlockIdentifier[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="UnitBlockIdentifier">
+				<sequence>
+					<element name="unitSerialBlockStart" type="long"/>
+					<element name="unitSerialBlockEnd" type="long"/>
+					<element name="originatingRegistryCode" type="string"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfUnitBlockIdentifier">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:UnitBlockIdentifier[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="UnitBlock">
+				<sequence>
+					<element name="unitSerialBlockStart" type="long"/>
+					<element name="unitSerialBlockEnd" type="long"/>
+					<element name="originatingRegistryCode" type="string"/>
+					<element name="unitType" type="int"/>
+					<element name="suppUnitType" type="int" minOccurs="0"/>
+					<element name="accountType" type="int"/>
+					<element name="accountIdentifier" type="long" minOccurs="0"/>
+					<element name="applicableCommitPeriod" type="int"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfUnitBlock">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:UnitBlock[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="ReconciliationTransactionUnitBlock">
+				<sequence>
+					<element name="unitSerialBlockStart" type="long"/>
+					<element name="unitSerialBlockEnd" type="long"/>
+					<element name="originatingRegistryCode" type="string"/>
+					<element name="unitType" type="int"/>
+					<element name="suppUnitType" type="int" minOccurs="0"/>
+					<element name="originalCommitPeriod" type="int"/>
+					<element name="applicableCommitPeriod" type="int"/>
+					<element name="LULUCFActivity" type="int" minOccurs="0"/>
+					<element name="projectIdentifier" type="int" minOccurs="0"/>
+					<element name="track" type="int" minOccurs="0"/>
+					<element name="blockRole" type="string" minOccurs="0"/>
+					<element name="transferringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="transferringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="acquiringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="acquiringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="yearInCommitmentPeriod" type="int" minOccurs="0"/>
+					<element name="installationIdentifier" type="long" minOccurs="0"/>
+					<element name="expiryDate" type="date" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfReconciliationTransactionUnitBlock">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:ReconciliationTransactionUnitBlock[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="TransactionUnitBlock">
+				<sequence>
+					<element name="unitSerialBlockStart" type="long"/>
+					<element name="unitSerialBlockEnd" type="long"/>
+					<element name="originatingRegistryCode" type="string"/>
+					<element name="unitType" type="int"/>
+					<element name="suppUnitType" type="int" minOccurs="0"/>
+					<element name="originalCommitPeriod" type="int"/>
+					<element name="applicableCommitPeriod" type="int"/>
+					<element name="LULUCFActivity" type="int" minOccurs="0"/>
+					<element name="projectIdentifier" type="int" minOccurs="0"/>
+					<element name="track" type="int" minOccurs="0"/>
+					<element name="blockRole" type="string" minOccurs="0"/>
+					<element name="transferringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="transferringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="acquiringRegistryAccountType" type="int" minOccurs="0"/>
+					<element name="acquiringRegistryAccountIdentifier" type="long" minOccurs="0"/>
+					<element name="yearInCommitmentPeriod" type="int" minOccurs="0"/>
+					<element name="installationIdentifier" type="long" minOccurs="0"/>
+					<element name="expiryDate" type="date" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfTransactionUnitBlock">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:TransactionUnitBlock[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="Total">
+				<sequence>
+					<element name="accountType" type="int"/>
+					<element name="accountIdentifier" type="long" minOccurs="0"/>
+					<element name="accountCommitPeriod" type="int"/>
+					<element name="unitType" type="int"/>
+					<element name="suppUnitType" type="int" minOccurs="0"/>
+					<element name="unitCount" type="long"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfTotal">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:Total[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="UnitBlockRequest">
+				<sequence>
+					<element name="unitType" type="int" minOccurs="0"/>
+					<element name="suppUnitType" type="int" minOccurs="0"/>
+					<element name="accountCommitPeriod" type="int" minOccurs="0"/>
+					<element name="accountType" type="int" minOccurs="0"/>
+					<element name="accountIdentifier" type="long" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfUnitBlockRequest">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:UnitBlockRequest[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="EvaluationResult">
+				<sequence>
+					<element name="responseCode" type="int"/>
+					<element name="unitBlockIdentifiers" type="typens:ArrayOfUnitBlockIdentifier" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfEvaluationResult">
+				<complexContent>
+					<restriction base="soapenc:Array">
+						<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:EvaluationResult[]"/>
+					</restriction>
+				</complexContent>
+			</complexType>
+			<complexType name="ProvideTimeRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="ITLSystemTime" type="dateTime"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProvideTimeResponse">
+				<sequence>
+					<element name="systemTime" type="dateTime"/>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="MessageRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="messageContent" type="string"/>
+					<element name="messageDateTime" type="dateTime"/>
+				</sequence>
+			</complexType>
+			<complexType name="MessageResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProposalRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="proposedTransaction" type="typens:ProposalTransaction"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProposalResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="NotificationRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="transactionIdentifier" type="string"/>
+					<element name="transactionStatus" type="int"/>
+					<element name="partyType" type="int"/>
+					<element name="evaluationResult" type="typens:ArrayOfEvaluationResult"/>
+				</sequence>
+			</complexType>
+			<complexType name="NotificationResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ITLNoticeRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="messageContent" type="string"/>
+					<element name="messageDate" type="dateTime"/>
+					<element name="notificationType" type="int"/>
+					<element name="notificationIdentifier" type="long"/>
+					<element name="notificationStatus" type="int"/>
+					<element name="projectNumber" type="string" minOccurs="0"/>
+					<element name="unitType" type="int" minOccurs="0"/>
+					<element name="targetValue" type="long" minOccurs="0"/>
+					<element name="targetDate" type="date" minOccurs="0"/>
+					<element name="LULUCFActivity" type="long" minOccurs="0"/>
+					<element name="commitPeriod" type="int" minOccurs="0"/>
+					<element name="actionDueDate" type="date" minOccurs="0"/>
+					<element name="unitBlockIdentifiers" type="typens:ArrayOfUnitBlockIdentifier" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ITLNoticeResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReconciliationResultRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="reconciliationStatus" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReconciliationResultResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProvideTotalsRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="reconciliationSnapshotDatetime" type="dateTime"/>
+					<element name="reconciliationStatus" type="int"/>
+					<element name="unitType" type="int" minOccurs="0"/>
+					<element name="suppUnitType" type="int" minOccurs="0"/>
+					<element name="accountCommitPeriod" type="int" minOccurs="0"/>
+					<element name="accountType" type="int" minOccurs="0"/>
+					<element name="byAccountFlag" type="int" minOccurs="0"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProvideTotalsResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProvideUnitBlocksRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="reconciliationSnapshotDatetime" type="dateTime"/>
+					<element name="unitBlockRequests" type="typens:ArrayOfUnitBlockRequest"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProvideUnitBlocksResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProvideAuditTrailRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="auditTrailBeginDatetime" type="dateTime"/>
+					<element name="auditTrailEndDatetime" type="dateTime"/>
+					<element name="accountType" type="int" minOccurs="0"/>
+					<element name="accountIdentifier" type="long" minOccurs="0"/>
+					<element name="accountCommitPeriod" type="int" minOccurs="0"/>
+					<element name="unitType" type="int" minOccurs="0"/>
+					<element name="suppUnitType" type="int" minOccurs="0"/>
+					<element name="unitBlockIdentifiers" type="typens:ArrayOfReconciliationUnitBlockIdentifier" minOccurs="0"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ProvideAuditTrailResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReceiveTotalsRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="totals" type="typens:ArrayOfTotal"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReceiveTotalsResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="TransactionStatusRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="transactionIdentifier" type="string"/>
+				</sequence>
+			</complexType>
+			<complexType name="TransactionStatusResponse">
+				<sequence>
+					<element name="transactionIdentifier" type="string"/>
+					<element name="transactionStatus" type="int"/>
+					<element name="transactionStatusDateTime" type="dateTime"/>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReceiveAuditTrailRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="transactions" type="typens:ArrayOfTransaction"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReceiveAuditTrailResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReceiveUnitBlocksRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="unitBlocks" type="typens:ArrayOfUnitBlock"/>
+				</sequence>
+			</complexType>
+			<complexType name="ReceiveUnitBlocksResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+			<complexType name="InitiateReconciliationRequest">
+				<sequence>
+					<element name="from" type="string"/>
+					<element name="to" type="string"/>
+					<element name="majorVersion" type="int"/>
+					<element name="minorVersion" type="int"/>
+					<element name="reconciliationIdentifier" type="string"/>
+					<element name="snapshotDatetime" type="dateTime"/>
+				</sequence>
+			</complexType>
+			<complexType name="InitiateReconciliationResponse">
+				<sequence>
+					<element name="resultIdentifier" type="int"/>
+					<element name="responseCodes" type="typens:ArrayOfInt" minOccurs="0"/>
+				</sequence>
+			</complexType>
+		</schema>
+	</types>
+	<message name="provideTimeRequest">
+		<part name="provideTimeRequest" type="typens:ProvideTimeRequest"/>
+	</message>
+	<message name="provideTimeResponse">
+		<part name="provideTimeResponse" type="typens:ProvideTimeResponse"/>
+	</message>
+	<message name="acceptMessageRequest">
+		<part name="acceptMessageRequest" type="typens:MessageRequest"/>
+	</message>
+	<message name="acceptMessageResponse">
+		<part name="acceptMessageResponse" type="typens:MessageResponse"/>
+	</message>
+	<message name="acceptProposalRequest">
+		<part name="acceptProposalRequest" type="typens:ProposalRequest"/>
+	</message>
+	<message name="acceptProposalResponse">
+		<part name="acceptProposalResponse" type="typens:ProposalResponse"/>
+	</message>
+	<message name="acceptNotificationRequest">
+		<part name="acceptNotificationRequest" type="typens:NotificationRequest"/>
+	</message>
+	<message name="acceptNotificationResponse">
+		<part name="acceptNotificationResponse" type="typens:NotificationResponse"/>
+	</message>
+	<message name="acceptITLNoticeRequest">
+		<part name="acceptITLNoticeRequest" type="typens:ITLNoticeRequest"/>
+	</message>
+	<message name="acceptITLNoticeResponse">
+		<part name="acceptITLNoticeResponse" type="typens:ITLNoticeResponse"/>
+	</message>
+	<message name="receiveReconciliationResultRequest">
+		<part name="receiveReconciliationResultRequest" type="typens:ReconciliationResultRequest"/>
+	</message>
+	<message name="receiveReconciliationResultResponse">
+		<part name="receiveReconciliationResultResponse" type="typens:ReconciliationResultResponse"/>
+	</message>
+	<message name="provideAuditTrailRequest">
+		<part name="provideAuditTrailRequest" type="typens:ProvideAuditTrailRequest"/>
+	</message>
+	<message name="provideAuditTrailResponse">
+		<part name="provideAuditTrailResponse" type="typens:ProvideAuditTrailResponse"/>
+	</message>
+	<message name="provideTotalsRequest">
+		<part name="provideTotalsRequest" type="typens:ProvideTotalsRequest"/>
+	</message>
+	<message name="provideTotalsResponse">
+		<part name="provideTotalsResponse" type="typens:ProvideTotalsResponse"/>
+	</message>
+	<message name="provideUnitBlocksRequest">
+		<part name="provideUnitBlocksRequest" type="typens:ProvideUnitBlocksRequest"/>
+	</message>
+	<message name="provideUnitBlocksResponse">
+		<part name="provideUnitBlocksResponse" type="typens:ProvideUnitBlocksResponse"/>
+	</message>
+	<message name="getTransactionStatusRequest">
+		<part name="getTransactionStatusRequest" type="typens:TransactionStatusRequest"/>
+	</message>
+	<message name="getTransactionStatusResponse">
+		<part name="getTransactionStatusResponse" type="typens:TransactionStatusResponse"/>
+	</message>
+	<message name="receiveAuditTrailRequest">
+		<part name="receiveAuditTrailRequest" type="typens:ReceiveAuditTrailRequest"/>
+	</message>
+	<message name="receiveAuditTrailResponse">
+		<part name="receiveAuditTrailResponse" type="typens:ReceiveAuditTrailResponse"/>
+	</message>
+	<message name="receiveTotalsRequest">
+		<part name="receiveTotalsRequest" type="typens:ReceiveTotalsRequest"/>
+	</message>
+	<message name="receiveTotalsResponse">
+		<part name="receiveTotalsResponse" type="typens:ReceiveTotalsResponse"/>
+	</message>
+	<message name="receiveUnitBlocksRequest">
+		<part name="receiveUnitBlocksRequest" type="typens:ReceiveUnitBlocksRequest"/>
+	</message>
+	<message name="receiveUnitBlocksResponse">
+		<part name="receiveUnitBlocksResponse" type="typens:ReceiveUnitBlocksResponse"/>
+	</message>
+	<message name="initiateReconciliationRequest">
+		<part name="initiateReconciliationRequest" type="typens:InitiateReconciliationRequest"/>
+	</message>
+	<message name="initiateReconciliationResponse">
+		<part name="initiateReconciliationResponse" type="typens:InitiateReconciliationResponse"/>
+	</message>
+</definitions>
