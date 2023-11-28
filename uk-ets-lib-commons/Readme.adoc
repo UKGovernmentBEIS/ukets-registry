@@ -1,0 +1,27 @@
+= Common libraries across UK ETS services
+
+== Usage
+This library can be used to develop commonn libraries and custom Spring-boot starters. 
+
+Custom Spring boot starters can be incorporated in a spring boot application by following the process bellow:
+
+First include the dependency:
+
+    <dependency>
+        <groupId>uk.gov.ets</groupId>
+        <artifactId>uk-ets-lib-commons-your-great-library</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+
+in the pom.xml of the target application and then add:
+
+    org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    gov.uk.ets.commons.package.name.to.your.library
+
+in its META-INF/spring.factories file.
+
+For more information you can refer to the uk-ets-lib-commons-dynamic-json-schemas module.
+
+Please refer to a child module for more information ion specific libraries.
+
+- xref:uk-ets-lib-commons-rate-limiter/Readme.adoc[Rate limiter (Throttling filter)]

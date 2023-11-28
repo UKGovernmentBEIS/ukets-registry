@@ -1,0 +1,37 @@
+package gov.uk.ets.commons.logging;
+
+public enum ErrorCode {
+    UNKNOWN("ETS-0000"),
+    NPE("ETS-0001"),
+    ILLEGAL_ARG("ETS-0002"),
+    RUNTIME("ETS-0003"),
+    METHOD_NOT_SUPPORTED("ETS-0004"),
+    SPRING_BIND("ETS-0005"),
+    SPRING_SEC_REQUEST_REJECTED("ETS-0006"),
+    SPRING_CANNOT_CREATE_TX("ETS-0007"),
+    TOMCAT_CLIENT_ABORT("ETS-0008"),
+    TOMCAT_MALFORMED_STREAM("ETS-0009"),
+    TOMCAT_NO_RESPONSE("ETS-00010"),
+    DB_PSQL("ETS-0011"),
+    DB_PERSISTENCE("ETS-0012"),
+    DB_BATCH_UPDATE("ETS-0013"),
+    KAFKA_REBALANCE_IN_PROGRESS("ETS-0014"),
+    KAFKA_NOT_LEADER_FOLLOWER("ETS-0015"),
+    ETS_TX_EXEC("ETS-0016"),
+    ETS_CLAMAV("ETS-0017"),
+    JWT_TOKEN_EXPIRED("ETS-0018"),
+    SPRING_WEB_RESOURCE_ACCESS("ETS-0019"),
+    SPRING_TX_DATA_INTEGRITY_VIOLATION("ETS-0020"),
+    JDBC_CONNECTION("ETS-0021");
+
+
+    private final String code;
+
+    ErrorCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+}

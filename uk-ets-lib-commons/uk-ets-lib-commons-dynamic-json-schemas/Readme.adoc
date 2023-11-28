@@ -1,0 +1,42 @@
+= Dynamic JSON Schema Validation
+
+== Purpose
+Assume you meet the following conditions:
+
+- You want to validate incoming requests with JSON payload
+- You do not have a JSON schema handy and you do not want to write it down
+- You do not want to write intrusive validation code
+
+Then you use the current library.
+
+== Under the hood
+=== On startup
+The library works on Controllers. On startup, it scans the spring context for any Controller method with:
+- One of the following method level annotations:
+-- PostMapping
+-- PutMapping
+-- DeleteMapping
+-- PatchMapping
+- Parameters annotated with @ValidJson
+
+For each such parameter, it creates an entry in a cache with the Class as key and the actual Json schema as the value.
+
+=== During requests
+Each time a request comes (involving the already processed methods) a custom HandlerMethodArgumentResolver is used
+to validate the incoming Json payload before the actual value is deserialized.
+
+== Usage
+This library can be used as a Spring-boot starter. One needs to just include the dependency:
+
+    <dependency>
+        <groupId>uk.gov.ets</groupId>
+        <artifactId>uk-ets-lib-commons-dynamic-json-schemas</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+
+in the pom.xml and then add:
+
+    org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    gov.uk.ets.commons.dschemas.DynamicJsonSchemasConfiguration
+
+in the META-INF/spring.factories file.

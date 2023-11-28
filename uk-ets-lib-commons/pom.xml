@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.10</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>uk.gov.ets</groupId>
+    <artifactId>uk-ets-lib-commons</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+
+    <modules>
+        <module>uk-ets-lib-commons-logging</module>
+        <module>uk-ets-lib-commons-dynamic-json-schemas</module>
+        <module>uk-ets-lib-commons-validation</module>
+        <module>uk-ets-lib-commons-kafka-clients</module>
+        <module>uk-ets-lib-commons-kafka-dead-letter</module>
+        <module>uk-ets-lib-commons-kafka-configuration</module>
+        <module>uk-ets-lib-commons-rate-limiter</module>
+        <module>uk-ets-lib-commons-authorizations-loader</module>
+        <module>uk-ets-lib-commons-s3-client</module>
+        <module>uk-ets-lib-commons-cloudwatch-metrics</module>
+        <module>uk-ets-itl-internal-exchange</module>
+        <module>uk-ets-lib-commons-clamav-service</module>
+    </modules>
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+        <log4j2.logstash.layout.version>1.0.5</log4j2.logstash.layout.version>
+        <zxcvbn.version>1.4.0</zxcvbn.version>
+        <bucket4j-core.version>6.0.1</bucket4j-core.version>
+        <guava.version>30.0-jre</guava.version>
+        <clamav.client.version>2.0.2</clamav.client.version>
+        <aws.sdk.version>2.20.42</aws.sdk.version>
+        <testcontainers.version>1.18.0</testcontainers.version>
+        <aws.java.sdk.v1.version>1.11.977</aws.java.sdk.v1.version>
+    </properties>
+
+</project>

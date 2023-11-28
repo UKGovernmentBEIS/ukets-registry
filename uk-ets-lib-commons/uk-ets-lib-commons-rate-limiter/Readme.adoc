@@ -1,0 +1,54 @@
+= Rate limiter (Throttling filter)
+
+== Usage
+This library provides a generic filter that can be used to throttle requests.
+
+Generic filter that can be used to throttle REST API requests. Implementation uses bucket4j.
+
+There are two configuration options:
+
+- overdraft
+- refillRatePerSecond
+
+=== Overdraft
+This is the max burst of requests that can be supported. It resembles the concept of the bucket.
+Initially the bucket is filled with tokens and every request made reduces one token from the bucket.
+When there are no more tokens in the bucket, any excess request is rejected.
+
+=== Refill rate per second
+In order to make sure that usual requests are properly served, we use the concept of bucket refilling rate.
+Every second, the bucket is refilled with an amount of tokens.
+This means that we refill the amount of available tokens in the bucket.
+
+=== Example
+Assuming that:
+
+- overdraft = 50
+- refill rate per second = 10
+- client rate = 10 requests per second
+
+then the client will never be throttled.
+Moreover, the client has overdraft equals to 50 calls which can be used if the average is a bit
+higher than 10 call/sec for a short time period.
+
+On the other hand, if the values are the following:
+
+- overdraft = 50
+- refill rate per second = 10
+- client rate = 20 requests per second
+
+then after 5 seconds the bucket will be empty and at the 6th second the client won't be able to produce
+more than 10 requests (throttled).
+
+|===
+|Start |Second 1 |Second 2 |Second 3 |Second 4 |Second 5 |Second 6
+|50
+|50 - 20 + 10 = *40*
+|40 - 20 + 10 = *30*
+|30 - 20 + 10 = *20*
+|20 - 20 + 10 = *10*
+|10 - 20 + 10 = *0*
+|0 - 20 + 10 = *-10*
+|===
+
+

@@ -1,0 +1,7 @@
+= Authorizations Loader
+
+== Purpose
+Reloads Keycloak authorization data from a json file, for a given Keycloak client.
+
+This process has been extracted from registry-api.
+

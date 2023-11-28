@@ -1,0 +1,34 @@
+= ClamAV shared library
+
+== Purpose
+This library acts as a central point that handles the virus scanning of a file that is uploaded through an API.
+
+== Under the hood
+The library defines a Spring Boot service that instantiates a ClamavClient instance using a server host name and a server port.
+
+== Usage
+In order to use the library in a Spring Boot application, one needs to include this dependency:
+
+    <dependency>
+        <groupId>uk.gov.ets</groupId>
+        <artifactId>uk-ets-lib-commons-clamav-service</artifactId>
+        <version>${uk-ets-lib-commons.version}</version>
+    </dependency>
+
+in the pom.xml, where uk-ets-lib-commons.version the current lib-commons version.
+
+Also in the META-INF/spring.factories file under the:
+
+    org.springframework.boot.autoconfigure.EnableAutoConfiguration=
+
+add the line
+
+    gov.uk.ets.file.upload.services.ClamavService
+
+and define the
+
+    clamav.server.hostname
+    clamav.server.port
+
+properties in the application.properties file.
+

@@ -1,0 +1,29 @@
+= Common Logging Mechanism for kafka clients errors
+
+== Purpose
+This library offers a central point of handling the asynchronous kafka clients errors during message sending to the kafka server.
+It automatically adds an error entry to the application log file whenever an error happens during kafka message sending.
+
+== Under the hood
+The library defines a Spring AOP aspect and declares an advice around of every execution of the method
+
+`KafkaOperations<K, V>.send(String topic, V message)`
+
+The Spring framework creates a JDK proxy to intercept the execution of the above kafka client method.
+
+== Usage
+
+This library can be used as a Spring-boot starter. One needs to just include the dependency:
+
+    <dependency>
+        <groupId>uk.gov.ets</groupId>
+        <artifactId>uk-ets-lib-commons-kafka-clients</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+
+in the pom.xml and then add:
+
+    org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    uk.ets.lib.commons.kafkaclients.KafkaClientsConfiguration
+
+in the META-INF/spring.factories file.

@@ -1,0 +1,23 @@
+= Kafka Dead Letter support
+
+== Purpose
+This library can be used from a spring boot application to automatically publish/recover every message that a kafka consumer was failed to handle to the application dead-letter topic.
+
+The dead-letter topic automatically takes its name from the name of the application (the spring.application.name property) concatenated with the '.DLT' suffix.
+For example, if the registry-api application uses this library, it will be sending the failed messages to the 'registry-api.DLT' topic.
+
+== Usage
+This library can be used as a Spring-boot starter. One needs to just include the dependency:
+
+    <dependency>
+        <groupId>uk.gov.ets</groupId>
+        <artifactId>uk-ets-lib-commons-kafka-dead-letter</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+
+in the pom.xml of the target application and then add:
+
+    org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    uk.ets.lib.kafka.deadletter.DeadLetterConfig
+
+in its META-INF/spring.factories file.
