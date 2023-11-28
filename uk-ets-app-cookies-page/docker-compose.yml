@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  uk-ets-app-cookies-page-custom:
+    image: uk-ets-app-cookies-page-custom:latest
+    deploy:
+      replicas: 1
+    ports:
+      - 8090:80
