@@ -1,0 +1,41 @@
+= uk-ets-app-itl-receiving-endpoint
+
+This folder contains the source code for the uk-ets web services part where the Registry plays the role of ws-server.
+Many parts where hooked together manually after generating the sources via the wsdl2java maven plugin.
+The app is using the Apache Axis SOAP ("Simple Object Access Protocol") v1.4.
+XML configuration of the Spring Bean Kafka template is used in order to send messages to a Kafka topic.
+
+== Running uk-ets-app-itl-receiving-endpoint
+
+uk-ets-app-itl-receiving-endpoint is broken into a multi-module Maven project. To build the full project, use `mvn` at the command line like this:
+
+[source,sh]
+----
+% ./mvn clean package
+----
+
+You can run the executable JAR file from the `uk-ets-itl-receiving-endpoint` project:
+
+[source,sh]
+----
+% ./mvn spring-boot:run
+----
+
+Once the application has started:
+- The wsdl can be found at http://127.0.0.1:${server.port}/itl-ws/services/RegistryPort?wsdl
+
+== uk-ets-app-itl-receiving-endpoint modules
+
+The multi-module Maven project is made up of the following modules:
+
+ - `uk-ets-itl-ws-webapp` : The Axis web app that contains the Servlet which receives the SOAP messages from the ITL and sends them to Kafka. 
+ - `uk-ets-itl-receiving-endpoint` : A spring boot application that will run that Axis war (the project above) in the embedded Tomcat .
+
+== Debugging uk-ets-app-itl-receiving-endpoint
+
+You can use remote debugging by using the following commands to startup the application in debug mode.
+
+[source.sh]
+----
+% cd uk-ets-itl-receiving-endpoint
+% mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" -Dorg.apache.commons.logging.LogFactory=org.apache.commons.logging.impl.LogFactoryImpl

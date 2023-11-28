@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>uk.gov.ets</groupId>
+    <artifactId>uk-ets-app-itl-receiving-endpoint</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.10</version>
+        <relativePath />
+    </parent>
+
+    <modules>
+        <module>uk-ets-itl-ws-webapp</module>
+        <module>uk-ets-itl-receiving-endpoint</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+        <maven.versions.plugin>2.7</maven.versions.plugin>
+        <maven.checkstyle.plugin>3.1.0</maven.checkstyle.plugin>
+        <maven.pmd.plugin>3.15.0</maven.pmd.plugin>
+        <maven.spotbugs.plugin>4.5.2.0</maven.spotbugs.plugin>
+        <maven.javadoc.plugin>3.1.1</maven.javadoc.plugin>
+        <maven.project.info.reports.plugin>3.0.0</maven.project.info.reports.plugin>
+        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+        <failsafeArgLine>--illegal-access=permit</failsafeArgLine>
+        <surefireArgLine>--illegal-access=permit</surefireArgLine>
+        <commons.discovery.version>0.2</commons.discovery.version>
+        <commons.logging.version>1.0.4</commons.logging.version>
+        <axis.version>1.4</axis.version>
+        <axis.wsdl4j.version>1.5.1</axis.wsdl4j.version>
+        <javabeans.activation.version>1.0.2</javabeans.activation.version>
+        <log4j.version>1.2.8</log4j.version>
+        <spring.remoting.version>2.0.8</spring.remoting.version>
+        <itl.common.types.version>0.5.0-SNAPSHOT</itl.common.types.version>
+        <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
+        <jacoco.skip>true</jacoco.skip>
+        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>instrument</id>
+            <properties>
+                <jacoco.skip>false</jacoco.skip>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.axis</groupId>
+                <artifactId>axis</artifactId>
+                <version>${axis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-discovery</groupId>
+                <artifactId>commons-discovery</artifactId>
+                <version>${commons.discovery.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons.logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>axis</groupId>
+                <artifactId>axis-jaxrpc</artifactId>
+                <version>${axis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.axis</groupId>
+                <artifactId>axis-saaj</artifactId>
+                <version>${axis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>axis</groupId>
+                <artifactId>axis-wsdl4j</artifactId>
+                <version>${axis.wsdl4j.version}</version>
+            </dependency>
+			<dependency>
+			    <groupId>javax.activation</groupId>
+			    <artifactId>activation</artifactId>
+			    <version>${javabeans.activation.version}</version>
+			</dependency>            
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>axistools-maven-plugin</artifactId>
+                    <version>1.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.maven.plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+	xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+	<globalConfiguration>
+		<parameter name="adminPassword" value="admin" />
+		<parameter name="enableNamespacePrefixOptimization"
+			value="false" />
+		<parameter name="dotNetSoapEncFix" value="true" />
+		<parameter name="disablePrettyXML" value="true" />
+		<parameter name="attachments.implementation"
+			value="org.apache.axis.attachments.AttachmentsImpl" />
+		<parameter name="sendXsiTypes" value="true" />
+		<parameter name="sendMultiRefs" value="false" />
+		<parameter name="sendXMLDeclaration" value="true" />
+		<requestFlow>
+			<handler type="java:org.apache.axis.handlers.JWSHandler">
+				<parameter name="scope" value="session" />
+			</handler>
+			<handler type="java:org.apache.axis.handlers.JWSHandler">
+				<parameter name="scope" value="request" />
+				<parameter name="extension" value=".jwr" />
+			</handler>
+		</requestFlow>
+	</globalConfiguration>
+	<handler name="URLMapper"
+		type="java:org.apache.axis.handlers.http.URLMapper" />
+	<handler name="Authenticate"
+		type="java:org.apache.axis.handlers.SimpleAuthenticationHandler" />
+	<handler name="LocalResponder"
+		type="java:org.apache.axis.transport.local.LocalResponder" />
+	<service name="RegistryPort" provider="java:RPC" style="rpc"
+		use="encoded">
+		<parameter name="wsdlTargetNamespace"
+			value="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0" />
+		<parameter name="wsdlServiceElement" value="RegistryService" />
+		<parameter name="schemaUnqualified"
+			value="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		<parameter name="wsdlServicePort" value="RegistryPort" />
+		<parameter name="className"
+			value="uk.gov.ets.kp.webservices.registry.RegistryBindingImpl" />
+		<parameter name="wsdlPortType" value="RegistryPort" />
+		<parameter name="typeMappingVersion" value="1.2" />
+		<operation name="initiateReconciliation"
+			qname="operNS:initiateReconciliation"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="initiateReconciliationResponse"
+			returnType="rtns:InitiateReconciliationResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="initiateReconciliation">
+			<parameter qname="initiateReconciliationRequest"
+				type="tns:InitiateReconciliationRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="provideTime" qname="operNS:provideTime"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="provideTimeResponse"
+			returnType="rtns:ProvideTimeResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="provideTime">
+			<parameter qname="provideTimeRequest"
+				type="tns:ProvideTimeRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="acceptMessage" qname="operNS:acceptMessage"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="acceptMessageResponse" returnType="rtns:MessageResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="acceptMessage">
+			<parameter qname="acceptMessageRequest"
+				type="tns:MessageRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="acceptProposal"
+			qname="operNS:acceptProposal"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="acceptProposalResponse"
+			returnType="rtns:ProposalResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="acceptProposal">
+			<parameter qname="acceptProposalRequest"
+				type="tns:ProposalRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="acceptNotification"
+			qname="operNS:acceptNotification"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="acceptNotificationResponse"
+			returnType="rtns:NotificationResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="acceptNotification">
+			<parameter qname="acceptNotificationRequest"
+				type="tns:NotificationRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="acceptITLNotice"
+			qname="operNS:acceptITLNotice"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="acceptITLNoticeResponse"
+			returnType="rtns:ITLNoticeResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="acceptITLNotice">
+			<parameter qname="acceptITLNoticeRequest"
+				type="tns:ITLNoticeRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="receiveReconciliationResult"
+			qname="operNS:receiveReconciliationResult"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="receiveReconciliationResultResponse"
+			returnType="rtns:ReconciliationResultResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="receiveReconciliationResult">
+			<parameter qname="receiveReconciliationResultRequest"
+				type="tns:ReconciliationResultRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="provideAuditTrail"
+			qname="operNS:provideAuditTrail"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="provideAuditTrailResponse"
+			returnType="rtns:ProvideAuditTrailResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="provideAuditTrail">
+			<parameter qname="provideAuditTrailRequest"
+				type="tns:ProvideAuditTrailRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="provideTotals" qname="operNS:provideTotals"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="provideTotalsResponse"
+			returnType="rtns:ProvideTotalsResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="provideTotals">
+			<parameter qname="provideTotalsRequest"
+				type="tns:ProvideTotalsRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<operation name="provideUnitBlocks"
+			qname="operNS:provideUnitBlocks"
+			xmlns:operNS="urn:KyotoProtocol:RegistrySystem:ITL:1.0:0.0"
+			returnQName="provideUnitBlocksResponse"
+			returnType="rtns:ProvideUnitBlocksResponse"
+			xmlns:rtns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			soapAction="provideUnitBlocks">
+			<parameter qname="provideUnitBlocksRequest"
+				type="tns:ProvideUnitBlocksRequest"
+				xmlns:tns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0" />
+		</operation>
+		<parameter name="allowedMethods"
+			value="acceptMessage provideAuditTrail initiateReconciliation provideUnitBlocks acceptProposal provideTotals acceptITLNotice provideTime acceptNotification receiveReconciliationResult" />
+
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:NotificationRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.NotificationRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<arrayMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ArrayOfEvaluationResult"
+			type="java:uk.gov.ets.kp.webservices.shared.types.EvaluationResult[]"
+			innerType="cmp-ns:EvaluationResult"
+			xmlns:cmp-ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:MessageRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.MessageRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ITLNoticeResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ITLNoticeResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:TransactionUnitBlock"
+			type="java:uk.gov.ets.kp.webservices.shared.types.TransactionUnitBlock"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideTimeResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideTimeResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:EvaluationResult"
+			type="java:uk.gov.ets.kp.webservices.shared.types.EvaluationResult"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:MessageResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.MessageResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ReconciliationResultRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ReconciliationResultRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideAuditTrailResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideAuditTrailResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:InitiateReconciliationResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.InitiateReconciliationResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ReconciliationUnitBlockIdentifier"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ReconciliationUnitBlockIdentifier"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProposalResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProposalResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideUnitBlocksRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideUnitBlocksRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:UnitBlockRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.UnitBlockRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:UnitBlockIdentifier"
+			type="java:uk.gov.ets.kp.webservices.shared.types.UnitBlockIdentifier"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideTotalsRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideTotalsRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideTotalsResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideTotalsResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<arrayMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ArrayOfUnitBlockIdentifier"
+			type="java:uk.gov.ets.kp.webservices.shared.types.UnitBlockIdentifier[]"
+			innerType="cmp-ns:UnitBlockIdentifier"
+			xmlns:cmp-ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideTimeRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideTimeRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideUnitBlocksResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideUnitBlocksResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:InitiateReconciliationRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.InitiateReconciliationRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<arrayMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ArrayOfTransactionUnitBlock"
+			type="java:uk.gov.ets.kp.webservices.shared.types.TransactionUnitBlock[]"
+			innerType="cmp-ns:TransactionUnitBlock"
+			xmlns:cmp-ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<arrayMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ArrayOfReconciliationUnitBlockIdentifier"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ReconciliationUnitBlockIdentifier[]"
+			innerType="cmp-ns:ReconciliationUnitBlockIdentifier"
+			xmlns:cmp-ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProvideAuditTrailRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProvideAuditTrailRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<arrayMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ArrayOfUnitBlockRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.UnitBlockRequest[]"
+			innerType="cmp-ns:UnitBlockRequest"
+			xmlns:cmp-ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProposalRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProposalRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ReconciliationResultResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ReconciliationResultResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ITLNoticeRequest"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ITLNoticeRequest"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ProposalTransaction"
+			type="java:uk.gov.ets.kp.webservices.shared.types.ProposalTransaction"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<arrayMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:ArrayOfInt" type="java:int[]" innerType="cmp-ns:int"
+			xmlns:cmp-ns="http://www.w3.org/2001/XMLSchema"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+		<typeMapping
+			xmlns:ns="urn:KyotoProtocol:RegistrySystem:ITL:Types:1.0:0.0"
+			qname="ns:NotificationResponse"
+			type="java:uk.gov.ets.kp.webservices.shared.types.NotificationResponse"
+			serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+			deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+			encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+	</service>
+	<transport name="http">
+		<requestFlow>
+			<handler type="URLMapper" />
+			<handler
+				type="java:org.apache.axis.handlers.http.HTTPAuthHandler" />
+		</requestFlow>
+		<parameter name="qs:list"
+			value="org.apache.axis.transport.http.QSListHandler" />
+		<parameter name="qs:wsdl"
+			value="org.apache.axis.transport.http.QSWSDLHandler" />
+		<parameter name="qs:method"
+			value="org.apache.axis.transport.http.QSMethodHandler" />
+	</transport>
+	<transport name="local">
+		<responseFlow>
+			<handler type="LocalResponder" />
+		</responseFlow>
+	</transport>
+</deployment>

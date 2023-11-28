@@ -1,0 +1,7 @@
+{"properties": [
+  {
+    "name": "axis.path",
+    "type": "java.lang.String",
+    "description": "The context mapping to use for axis deployed web services"
+  }
+]}
