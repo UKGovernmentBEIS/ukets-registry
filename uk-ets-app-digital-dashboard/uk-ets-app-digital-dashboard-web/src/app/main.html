@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en" class="govuk-template ">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0c0c">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta property="og:image" content="/assets/images/govuk-opengraph-image.png">
+
+    <title>UK Emissions Trading Registry - GOV.UK</title>
+
+    <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/assets/images/favicon.ico" type="image/x-icon">
+    <link rel="mask-icon" href="/assets/images/govuk-mask-icon.svg" color="#0b0c0c">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/govuk-apple-touch-icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/govuk-apple-touch-icon-167x167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/govuk-apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" href="/assets/images/govuk-apple-touch-icon.png">
+
+    <link
+      href="../../resources/css/govuk-frontend-3.9.1.min.css"
+      rel="stylesheet"
+    />
+    <link href="../../resources/css/cookies.css" rel="stylesheet" />
+
+    <link href="../../resources/css/styles.css" rel="stylesheet" />
+
+    <script
+      src="../../resources/js/gov.uk-frontend-3.9.1.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="../../resources/js/cookies.js"
+      type="text/javascript"
+    ></script>
+    <link href="../../resources/css/spotlight-03ded8c31862a0b9751fafe28c2236c0.css" media="all" rel="stylesheet" type="text/css">
+
+    <meta property="og:image" content="../../resources/img/govuk-opengraph-image.png">
+  </head>
+
+  <body
+    class="govuk-template__body  js-enabled"
+    onload="checkIfCookiesNotAccepted()"
+  >
+    <div
+      id="global-cookie-message-to-accept"
+      class="gem-c-cookie-banner"
+      role="region"
+      aria-label="cookie banner"
+      style="display: none;"
+    >
+      <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <div>
+              <h2 class="govuk-heading-m">
+                Tell us whether you accept cookies
+              </h2>
+              <p class="govuk-body">
+                We use
+                <a
+                  class="govuk-link"
+                  href="javascript:void(0);"
+                  onclick="goToSetPreferences()"
+                  >cookies to collect information</a
+                >
+                about how you use GOV.UK. We use this information to make the
+                website work as well as possible and improve government
+                services.
+              </p>
+            </div>
+            <div>
+              <div class="govuk-grid-column-one-half-from-desktop">
+                <button
+                  class="govuk-button govuk-cookie-button"
+                  id="acceptAllCookiesBtn"
+                  onclick="acceptAllCookies()"
+                >
+                  Accept all cookies
+                </button>
+              </div>
+              <div class="govuk-grid-column-one-half-from-desktop">
+                <button
+                  class="govuk-button govuk-cookie-button"
+                  id="setPreferencesCookiesBtn"
+                  onclick="goToSetPreferences()"
+                >
+                  Set cookie preferences
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="global-cookie-message-approval"
+      class="gem-c-cookie-banner govuk-clearfix"
+      style="display: none;"
+    >
+      <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <p>
+              You have accepted all cookies. You can
+              <a
+                class="govuk-link"
+                href="javascript:void(0);"
+                onclick="goToSetPreferences()"
+                >change your cookie settings</a
+              >
+              at any time.
+            </p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <p>
+              <button
+                class="gem-c-cookie-banner__hide-button"
+                onclick="hideCookieMessage()"
+              >
+                Hide
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <header class="govuk-header " role="banner" data-module="govuk-header">
+      <div class="govuk-header__container govuk-width-container">
+        <div class="govuk-header__logo">
+          <a
+            href="https://www.gov.uk/"
+            class="govuk-header__link govuk-header__link--homepage govuk-header__link--home-custom"
+          >
+            <span class="govuk-header__logotype">
+              <svg
+                role="presentation"
+                focusable="false"
+                class="govuk-header__logotype-crown"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 132 97"
+                height="30"
+                width="36"
+              >
+                <path
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  d="M25 30.2c3.5 1.5 7.7-.2 9.1-3.7 1.5-3.6-.2-7.8-3.9-9.2-3.6-1.4-7.6.3-9.1 3.9-1.4 3.5.3 7.5 3.9 9zM9 39.5c3.6 1.5 7.8-.2 9.2-3.7 1.5-3.6-.2-7.8-3.9-9.1-3.6-1.5-7.6.2-9.1 3.8-1.4 3.5.3 7.5 3.8 9zM4.4 57.2c3.5 1.5 7.7-.2 9.1-3.8 1.5-3.6-.2-7.7-3.9-9.1-3.5-1.5-7.6.3-9.1 3.8-1.4 3.5.3 7.6 3.9 9.1zm38.3-21.4c3.5 1.5 7.7-.2 9.1-3.8 1.5-3.6-.2-7.7-3.9-9.1-3.6-1.5-7.6.3-9.1 3.8-1.3 3.6.4 7.7 3.9 9.1zm64.4-5.6c-3.6 1.5-7.8-.2-9.1-3.7-1.5-3.6.2-7.8 3.8-9.2 3.6-1.4 7.7.3 9.2 3.9 1.3 3.5-.4 7.5-3.9 9zm15.9 9.3c-3.6 1.5-7.7-.2-9.1-3.7-1.5-3.6.2-7.8 3.7-9.1 3.6-1.5 7.7.2 9.2 3.8 1.5 3.5-.3 7.5-3.8 9zm4.7 17.7c-3.6 1.5-7.8-.2-9.2-3.8-1.5-3.6.2-7.7 3.9-9.1 3.6-1.5 7.7.3 9.2 3.8 1.3 3.5-.4 7.6-3.9 9.1zM89.3 35.8c-3.6 1.5-7.8-.2-9.2-3.8-1.4-3.6.2-7.7 3.9-9.1 3.6-1.5 7.7.3 9.2 3.8 1.4 3.6-.3 7.7-3.9 9.1zM69.7 17.7l8.9 4.7V9.3l-8.9 2.8c-.2-.3-.5-.6-.9-.9L72.4 0H59.6l3.5 11.2c-.3.3-.6.5-.9.9l-8.8-2.8v13.1l8.8-4.7c.3.3.6.7.9.9l-5 15.4v.1c-.2.8-.4 1.6-.4 2.4 0 4.1 3.1 7.5 7 8.1h.2c.3 0 .7.1 1 .1.4 0 .7 0 1-.1h.2c4-.6 7.1-4.1 7.1-8.1 0-.8-.1-1.7-.4-2.4V34l-5.1-15.4c.4-.2.7-.6 1-.9zM66 92.8c16.9 0 32.8 1.1 47.1 3.2 4-16.9 8.9-26.7 14-33.5l-9.6-3.4c1 4.9 1.1 7.2 0 10.2-1.5-1.4-3-4.3-4.2-8.7L108.6 76c2.8-2 5-3.2 7.5-3.3-4.4 9.4-10 11.9-13.6 11.2-4.3-.8-6.3-4.6-5.6-7.9 1-4.7 5.7-5.9 8-.5 4.3-8.7-3-11.4-7.6-8.8 7.1-7.2 7.9-13.5 2.1-21.1-8 6.1-8.1 12.3-4.5 20.8-4.7-5.4-12.1-2.5-9.5 6.2 3.4-5.2 7.9-2 7.2 3.1-.6 4.3-6.4 7.8-13.5 7.2-10.3-.9-10.9-8-11.2-13.8 2.5-.5 7.1 1.8 11 7.3L80.2 60c-4.1 4.4-8 5.3-12.3 5.4 1.4-4.4 8-11.6 8-11.6H55.5s6.4 7.2 7.9 11.6c-4.2-.1-8-1-12.3-5.4l1.4 16.4c3.9-5.5 8.5-7.7 10.9-7.3-.3 5.8-.9 12.8-11.1 13.8-7.2.6-12.9-2.9-13.5-7.2-.7-5 3.8-8.3 7.1-3.1 2.7-8.7-4.6-11.6-9.4-6.2 3.7-8.5 3.6-14.7-4.6-20.8-5.8 7.6-5 13.9 2.2 21.1-4.7-2.6-11.9.1-7.7 8.8 2.3-5.5 7.1-4.2 8.1.5.7 3.3-1.3 7.1-5.7 7.9-3.5.7-9-1.8-13.5-11.2 2.5.1 4.7 1.3 7.5 3.3l-4.7-15.4c-1.2 4.4-2.7 7.2-4.3 8.7-1.1-3-.9-5.3 0-10.2l-9.5 3.4c5 6.9 9.9 16.7 14 33.5 14.8-2.1 30.8-3.2 47.7-3.2z"
+                ></path>
+                <image
+                  src="/auth/resources/ubvnx/login/uk-ets-theme/img/govuk-logotype-crown.png"
+                  xlink:href=""
+                  class="govuk-header__logotype-crown-fallback-image"
+                  width="36"
+                  height="32"
+                ></image>
+              </svg>
+              <span class="govuk-header__logotype-text">
+                GOV.UK
+              </span>
+            </span>
+          </a>
+        </div>
+        <div id="header" tabindex="-1" class="govuk-header__content">
+          <a
+            class="govuk-header__link govuk-header__link--service-name govuk-header__link--service-custom"
+            href="/"
+          >
+            UK Emissions Trading Registry
+          </a>
+        </div>
+      </div>
+    </header>
+
+    
+    <div class="govuk-width-container">
+      <main class="govuk-main-wrapper" id="main-content" role="main">
+    
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-two-thirds">
+            <span class="govuk-caption-xl">Dashboard</span>
+            <h1 class="govuk-heading-xl">UK Emissions Trading Registry</h1>
+            <p class="govuk-body-s">This dashboard shows information about how the UK Emissions trading Registry service is currently performing.</p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <aside class="app-related-items" role="complementary">
+              <h2 class="govuk-heading-m" id="subsection-title">
+                Visit the service
+              </h2>
+              <nav role="navigation" aria-labelledby="subsection-title">
+                <ul class="govuk-list govuk-!-font-size-16 govuk-list--spaced">
+                  <li>
+                    <a
+                      class="govuk-link govuk-!-font-size-24 govuk-!-font-weight-bold"
+                      href="/"
+                    >
+                      UK Emissions Trading Registry
+                    </a>
+                  </li>                  
+                </ul>
+              </nav>
+            </aside>
+          </div>
+        </div>
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Transactions per year</h1>
+            <div class="visualisation">
+              <div class="visualisation-inner">
+               <div class="stat">
+                <p class="single-stat-headline impact-number">
+                 <strong>
+                  <abbr aria-label="634,517" title="634,517">
+                   0.6m
+                  </abbr>
+                 </strong>
+                </p>                
+               </div>               
+              </div>              
+             </div>            
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Cost per transaction</h1>
+            <div class="visualisation">
+              <div class="visualisation-inner">
+               <div class="stat">
+                <p class="single-stat-headline impact-number">
+                 <strong>
+                  <abbr aria-label="To be confirmed" title="To be confirmed">
+                    TBC
+                  </abbr>
+                 </strong>
+                </p>                
+               </div>               
+              </div>              
+             </div>                  
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Total cost</h1>
+            <div class="visualisation">
+              <div class="visualisation-inner">
+               <div class="stat">
+                <p class="single-stat-headline impact-number">
+                 <strong>
+                  <abbr aria-label="To be confirmed" title="To be confirmed">
+                    TBC
+                  </abbr>
+                 </strong>
+                </p>                
+               </div>               
+              </div>              
+             </div>               
+          </div>
+        </div>
+
+
+        <!--Transactions per type-->
+        <!--
+        <hr>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              Transactions per type
+            </h1>
+            <p class="govuk-body">Total number of transactions each quarter.</p>
+          </div>
+        </div>
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-full">
+
+            <table class="govuk-table">              
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header" style="color: #1d70b8;">Date</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="color: #1d70b8;">Trusted accounts</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="color: #1d70b8;">Non-trusted accounts</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="color: #1d70b8;">ETS transactions</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="color: #1d70b8;">KP transactions</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 January to 31 March 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1,100,000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">730,00</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1.450.000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">365,000</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 April to 30 June 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1,100,000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">730,00</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1.450.000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">365,000</td>                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 July to 30 September 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1,100,000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">730,00</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1.450.000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">365,000</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 October to 31 december 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1,100,000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">730,00</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1.450.000</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">365,000</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+        -->
+
+        <!--Requests initiated by Registry Administrators-->
+        <!--
+        <hr>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              Requests initiated by Registry Administrators
+            </h1>
+            <p class="govuk-body">Measure how cost-efficient the service.</p>
+          </div>
+        </div>
+
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="float-summary">
+              <hr>
+              <h1 class="govuk-heading-s">Total requests</h1>
+              <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold tooltip">
+                2m
+                <span class="tooltiptext">2,003,236</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-full">
+
+            <table class="govuk-table">              
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">Date</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Open Registry account</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Requested documents</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Initiate transaction</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Add user to account</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Other</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 January to 31 March 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 April to 30 June 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 July to 30 September 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 October to 31 december 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+        -->
+
+        <!--Tasks approved/rejected by Registry Administrators-->
+        <!--
+        <hr>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              Tasks approved/rejected by Registry Administrators
+            </h1>
+            <p class="govuk-body">Measure how cost-efficient the service.</p>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="float-summary">
+              <hr>
+              <h1 class="govuk-heading-s">Total tasks</h1>
+              <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold tooltip">
+                1,8m
+                <span class="tooltiptext">1,803,236</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-full">
+
+            <table class="govuk-table">              
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">Date</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Open Registry account</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Registry activation code</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Approved transaction</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Account management request</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Other</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 January to 31 March 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 April to 30 June 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 July to 30 September 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 October to 31 december 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">138,249</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">102,897</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+        -->
+
+        <!--Number of Helpdesk tickets-->
+
+        <!--
+        <hr>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              Number of Helpdesk tickets
+            </h1>            
+          </div>
+        </div>
+        
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="float-summary">
+              <hr>
+              <h1 class="govuk-heading-s">Total tickets</h1>
+              <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold" style="color: #1d70b8;">1,639</p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-full">
+
+            <table class="govuk-table">              
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">Date</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">P1</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">P2</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">P3</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 January to 31 March 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 April to 30 June 2010</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 July to 30 September 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 October to 31 december 2021</th>                  
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">126</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+       -->
+
+        <!--User satisfaction-->
+        <hr class="divider-blue">
+
+        <div class="govuk-grid-row govuk-!-margin-top-6">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              User satisfaction
+            </h1>   
+            <p class="govuk-body-s">Average score rating from 0% (very dissatisfied) to 100% (very satisfied).</p>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="float-summary">
+              <div class="single-decker-graph">
+                <div class="impact-number">
+                  <div class="volumetrics-completion-selected">
+                   <span class="summary" style="font-size: 16px;">
+                    User satisfaction rate
+                   </span>
+                   <strong>
+                    41.0%
+                   </strong>
+                  </div>
+                  <p class="total-responses">
+                  </p>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-full">
+
+            <table class="govuk-table">              
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">Period</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">User satisfaction rate</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Very satisfied</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Satisfied</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Neither satisfied nor dissatisfied</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Dissatisfied</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Very dissatisfied</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">                
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">6 April to 30 June 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">58.3%</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">2</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 July to 30 September 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">57.5%</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">3</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">2</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 October to 31 December 2021</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">30.0%</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">2</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">4</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 January to 31 March 2022</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">25.0%</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                </tr>
+                
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">1 April to 30 June 2022</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">17.5%</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">0</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">1</td>
+                </tr>                
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+        <!--Completion rate-->
+        <hr class="divider-blue">
+        <div class="govuk-grid-row govuk-!-margin-top-6">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              Completion rate
+            </h1>   
+            <p class="govuk-body-s">The number of digital transactions (user journeys) completed as a percentage of the total number of digital transactions initiated.</p>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="float-summary">
+              <div class="single-decker-graph">
+                <div class="impact-number">
+                  <div class="volumetrics-completion-selected">
+                   <span class="summary" style="font-size: 16px;">
+                    Average completion rate
+                   </span>
+                   <strong>
+                    17.1%
+                   </strong>
+                  </div>
+                  <p class="total-responses">
+                  </p>
+                 </div>
+              </div>              
+            </div>
+          </div>
+        </div>
+
+
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-full">
+
+            <table class="govuk-table">              
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">Transaction type</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Completion rate</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">User registration</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">71.8%</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">User sign in</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">3.2%</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">Account opening request</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">33.5%</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">Submission of documentation</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">19.5%</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">Addition/update of authorised representative</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">66.9%</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">Emission unit transfer proposals</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">81.1%</td>
+                </tr>
+
+
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+
+        <!--Average time per user journey-->
+        <hr class="divider-blue">
+         <div class="govuk-grid-row govuk-!-margin-top-6">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              Average time per user journey (in minutes)
+            </h1>               
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Time spent in the registry</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">24m</p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Create user account</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">10m</p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">First time sign in</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">3m</p>
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Submit documents</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">6m</p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Open registry account</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">10m</p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Add authorised representative</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">1m</p>
+          </div>
+        </div>
+        <div class="govuk-grid-row  govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Emission unit transfer proposal requests</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">2m</p>
+          </div>
+        </div>
+
+        <!--
+        <hr class="divider-blue">
+        <div class="govuk-grid-row  govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Total logins</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">30m</p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">UK residents logins</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">10m</p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <hr>
+            <h1 class="govuk-heading-m">Non-UK residents logins</h1>
+            <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold">15m</p>
+          </div>
+        </div>
+        -->
+
+        <!--Digital take-up-->
+        <!--
+        <hr>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m">
+              Digital take-up
+            </h1>   
+            <p class="govuk-body">Digital take-up rates each quarter.</p>         
+          </div>
+        </div>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="float-summary">
+              <hr>
+              <h1 class="govuk-heading-s">Average digital take-up</h1>
+              <p class="govuk-body govuk-!-font-size-48 govuk-!-font-weight-bold" style="color: #1d70b8;">98%</p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <div class="tabs">
+              <input type="radio" name="tabs" id="tabone" checked="checked">
+              <label for="tabone"><h1 class="govuk-heading-s">Devices</h1></label>
+              <div class="tab">
+                <h1 class="govuk-heading-m">Devices</h1>
+                <div class="govuk-grid-row">
+                  <div class="govuk-grid-column-full">
+        
+                    <table class="govuk-table">              
+                      <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                          <th scope="col" class="govuk-table__header">Date</th>
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Desktop</th>
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Mobile</th>
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Tablet</th>                          
+                        </tr>
+                      </thead>
+                      <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 January to 31 March 2010</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 April to 30 June 2010</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 July to 30 September 2021</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 October to 31 december 2021</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+        
+                  </div>
+                </div>
+              </div>
+              
+              <input type="radio" name="tabs" id="tabtwo">
+              <label for="tabtwo"><h1 class="govuk-heading-s">Browsers</h1></label>
+              <div class="tab">
+                <h1 class="govuk-heading-m">Browsers</h1>  
+                <div class="govuk-grid-row">
+                  <div class="govuk-grid-column-full">
+        
+                    <table class="govuk-table">              
+                      <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                          <th scope="col" class="govuk-table__header">Date</th>
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Google Chrome</th>
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Internet Explorer (IE9+)</th>
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Internet Explorer (pre IE9)</th>                          
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Safari</th>                          
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Firefox</th>                          
+                          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Other</th>                          
+                        </tr>
+                      </thead>
+                      <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 January to 31 March 2010</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">0%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 April to 30 June 2010</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">0%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 July to 30 September 2021</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">0%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                          <th scope="row" class="govuk-table__header">1 October to 31 december 2021</th>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">0%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                          <td class="govuk-table__cell govuk-table__cell--numeric">93%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+        
+                  </div>
+                </div>              
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        -->
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <aside class="app-related-items" role="complementary">
+              <h2 class="govuk-heading-s" id="subsection-title">
+               Improve this dashboard
+              </h2>
+              <p class="govuk-body-s">If you work on this service, we can help you add more data to this dashboard.</p>
+              <p class="govuk-body-s">Email: <a href="mailto:ukets-registry@beis.gov.uk">ukets-registry@beis.gov.uk</a></p>
+            </aside>
+            <!-- <aside class="app-related-items" role="complementary">
+              <h2 class="govuk-heading-s govuk-!-font-weight-regular" id="subsection-title">
+                Visit the service
+              </h2>
+              <nav role="navigation" aria-labelledby="subsection-title">
+                <ul class="govuk-list govuk-!-font-size-16 govuk-list--spaced">
+                  <li>
+                    <a
+                      class="govuk-link govuk-!-font-size-24 govuk-!-font-weight-bold"
+                      href=""
+                    >
+                      UK Emissions Trading Registry
+                    </a>
+                  </li>                  
+                </ul>
+              </nav>
+            </aside> -->
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-s govuk-!-font-weight-regular" id="subsection-title">
+              Ministerial department:
+            </h2>
+            <p class="govuk-body-l govuk-!-font-weight-bold">
+              Department for Business, Energy and Industrial Strategy
+            </p>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            &nbsp;
+          </div>
+        </div>
+
+      </main>
+
+      <div class="govuk-!-margin-bottom-9"></div>
+      <a
+        class="govuk-link govuk-link--no-visited-state app-back-to-top__link"
+        href="#top"
+      >
+        <svg
+          role="presentation"
+          focusable="false"
+          class="app-back-to-top__icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="13"
+          height="17"
+          viewBox="0 0 13 17"
+        >
+          <path
+            fill="currentColor"
+            d="M6.5 0L0 6.5 1.4 8l4-4v12.7h2V4l4.3 4L13 6.4z"
+          ></path>
+        </svg>
+        Back to top
+      </a>
+      <div class="govuk-!-margin-bottom-9"></div>
+    </div>
+    <footer class="govuk-footer " role="contentinfo">
+      <div class="govuk-width-container ">
+        <div class="govuk-footer__meta">
+          <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+            <h2 class="govuk-visually-hidden">Support links</h2>
+            <ul class="govuk-footer__inline-list">
+              <li class="govuk-footer__inline-list-item">
+                <a class="govuk-footer__link" href="/uketr-rules">
+                  Terms and Conditions
+                </a>
+              </li>
+              <li class="govuk-footer__inline-list-item">
+                <a class="govuk-footer__link" href="/privacy">
+                  Privacy Notice
+                </a>
+              </li>
+              <li class="govuk-footer__inline-list-item">
+                <a class="govuk-footer__link" href="/contact-us">
+                  Contact us
+                </a>
+              </li>
+              <li class="govuk-footer__inline-list-item">
+                <a class="govuk-footer__link" href="/accessibility">
+                  Accessibility Statement
+                </a>
+              </li>
+            </ul>
+            <svg
+              role="presentation"
+              focusable="false"
+              class="govuk-footer__licence-logo"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 483.2 195.7"
+              height="17"
+              width="41"
+            >
+              <path
+                fill="currentColor"
+                d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+              ></path>
+            </svg>
+            <span class="govuk-footer__licence-description">
+              All content is available under the
+              <a
+                class="govuk-footer__link"
+                href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+                rel="license"
+                >Open Government Licence v3.0</a
+              >, except where otherwise stated
+            </span>
+          </div>
+          <div class="govuk-footer__meta-item">
+            <a
+              class="govuk-footer__link govuk-footer__copyright-logo"
+              href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+              >© Crown copyright</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
