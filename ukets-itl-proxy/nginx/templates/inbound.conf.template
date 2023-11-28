@@ -1,0 +1,24 @@
+# Config for inbound connection from ITL
+
+resolver ${RESOLVER_ADDRESS} valid=10s;
+
+server {
+    listen      443 ssl;
+    server_name ${INBOUND_LISTEN_HOSTNAME};
+    
+    set $backend "${RECEIVING_CONTAINER_ADDRESS}";
+
+    ssl_certificate         /etc/ssl/certs/server.pem;
+    ssl_certificate_key     /etc/ssl/certs/server.key;
+    ssl_client_certificate  /etc/ssl/certs/client_ca.pem;
+
+    ssl_verify_client       on;
+    proxy_ssl_verify_depth  2;
+    proxy_ssl_session_reuse on;
+    proxy_ssl_protocols     TLSv1.2 TLSv1.3;
+
+    location / {
+        proxy_pass $backend;
+        access_log /var/log/nginx/access.log upstream_logging;
+    }
+}
