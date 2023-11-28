@@ -1,0 +1,27 @@
+# UK ETS Compliance Calculation Service
+
+==== Kafkacat
+
+Here are some sample instructions to test the uk-ets-app-compliance-calculation-service application locally with kafkacat.
+Of course any other tool that can send messages to the local kafka broker the application listens to generate reports can be used.
+
+. Install https://github.com/edenhill/kafkacat[kafkacat].
+. Start kafka locally using docker compose
+. Start the application with Maven `mvn spring-boot:run` or UkEtsAppReportsGeneratorApplication from your IDE
+. Verify that Kafka is up by Reading the kafka metadata locally
++
+[source,bash]
+----
+kafkacat -L -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext
+----
+
+. Send report request to compliance.events.in.topic
+
+[source,bash]
+----
+kafkacat -P -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t compliance.events.in.topic -p 0 test-data/account-creation-event.json
+
+kafkacat -P -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t compliance.events.in.topic -p 0 test-data/update-last-year-of-verified-emissions-event.json
+
+kafkacat -P -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t compliance.events.in.topic -p 0 test-data/update-verified-emissions-event.json
+----
