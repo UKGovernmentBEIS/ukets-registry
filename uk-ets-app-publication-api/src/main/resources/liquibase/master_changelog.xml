@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="changelogs/v0.0.1/changelog_v0_0_1.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v3.3.0/changelog_v3_3_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v3.3.1/changelog_v3_3_1.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v3.4.0/changelog_v3_4_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v3.9.3/changelog_v3_9_3.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.0.0/changelog_v4_0_0.xml" relativeToChangelogFile="true"/>
+    <!-- Include here new files -->
+
+    <!-- This changeSet should be executed at the end-->
+
+</databaseChangeLog>

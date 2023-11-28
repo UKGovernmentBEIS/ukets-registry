@@ -1,0 +1,6 @@
+gov.uk.ets.commons.s3.client.S3ClientConfiguration
+gov.uk.ets.commons.ratelimiter.Config
+uk.ets.lib.kafka.deadletter.DeadLetterConfig
+gov.uk.ets.commons.cloudwatch.metrics.MetricsConfig
+gov.uk.ets.commons.cloudwatch.metrics.HealthMetricsExportConfiguration
+gov.uk.ets.file.upload.services.ClamavService

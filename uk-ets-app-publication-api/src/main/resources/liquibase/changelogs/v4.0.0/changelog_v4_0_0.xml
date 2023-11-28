@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="4_0_0_HTML_MIGRATOR_RERUN" author="piliotid" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='PUBLICATION_SITE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>Forces the HTML publication migrator to run again.</comment>
+        <sql>
+            DELETE FROM migrator_history WHERE migrator_name  ='PUBLICATION_SITE_MIGRATOR';
+        </sql>
+    </changeSet>
+
+    <changeSet id="4_0_0_HTML_PUBLICATION_MIGRATOR_RERUN" author="piliotid" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='PUBLICATION_SITE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>Forces the HTML publication migrator to run again.</comment>
+        <sql>
+            DELETE FROM migrator_history WHERE migrator_name  ='PUBLICATION_SITE_MIGRATOR';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

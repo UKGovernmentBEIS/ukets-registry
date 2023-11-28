@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+	
+    <changeSet id="3_4_0_REMOVE_ADMIN_COMPLIANCE_REPORTS" author="fragkise" context="migrate">
+        <comment>Removes from publication R0033 and  R0032 sections.</comment>
+        <sql>
+                DELETE FROM publication_schedule where section_id in (select id from section where report_type in ('R0032','R0033'));
+                DELETE FROM section where report_type in ('R0032','R0033');
+                DELETE FROM migrator_history;
+        </sql>
+    </changeSet>
+    
+    <changeSet id="3_4_1_REMOVE_R0015" author="fragkise" context="migrate">
+        <comment>Removes from publication R0015 and forces the HTML publication migrator to run again.</comment>
+        <sql>
+                DELETE FROM report_file where section_id in (select id from section where report_type in ('R0015'));
+                DELETE FROM publication_schedule where section_id in (select id from section where report_type in ('R0015'));
+                DELETE FROM section where report_type in ('R0015');
+                DELETE FROM migrator_history;
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

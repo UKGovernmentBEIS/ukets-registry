@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+	
+	<changeSet id="0_0_1_PUBLISH_R0015" author="fragkise" context="migrate">
+		<comment>Make "Total Volume of Allowances within Registry" Report publishable</comment>
+		<sql>
+			insert into section (id, section_type, report_type, title, summary, display_order, display_type, published_on, last_updated, status)
+			values 
+			(nextval('section_seq'), 'ETS', 'R0015', 'UK ETS Registry Holdings', 
+			        'The report includes the total number of allowances held in the UK ETS Registry in all user accounts on the previous day.',
+					8, 'ONE_FILE', null, now(), null);
+					
+					
+			insert into publication_schedule (id, section_id, publication_frequency, start_date, next_report_date, every_x_days, generation_date)
+			values 
+            (nextval('publication_schedule_seq'), (select id from section where report_type = 'R0015'), 'DAILY', 
+            date_trunc('day', current_timestamp) + interval '24 hours', date_trunc('day', current_timestamp) + interval '48 hours', null, null);
+		</sql>
+
+		<rollback>
+			<sql>
+			    DELETE FROM publication_schedule where section_id=(SELECT id FROM section where report_type='R0015');
+				DELETE FROM section where report_type='R0015';
+			</sql>
+		</rollback>
+	</changeSet>
+
+    <changeSet id="0_0_2_FORCE_MIGRATION" author="fragkise" context="migrate">
+        <comment>Delete the row from migrator history to rerun migration again.</comment>
+        <sql>
+                DELETE FROM migrator_history;
+        </sql>
+    </changeSet>
+    
+        <changeSet id="0_0_3_UPDATE_R0015_SCHEDULE" author="fragkise" context="migrate">
+        <comment>Update the execution time of Total Volume of Allowances within Registry</comment>
+        <sql>
+				update publication_schedule set start_date=date_trunc('day', current_timestamp) + interval '23 hours', 
+				next_report_date = date_trunc('day', current_timestamp) + interval '47 hours'
+				where section_id = (select id from section where report_type='R0015');
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

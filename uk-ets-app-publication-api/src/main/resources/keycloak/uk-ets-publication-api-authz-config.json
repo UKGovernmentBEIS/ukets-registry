@@ -1,0 +1,56 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [{
+    "name": "Publication Resource",
+    "ownerManagedAccess": false,
+    "displayName": "Publication Resource",
+    "attributes": {},
+    "uris": [
+      "/api-publication/sections.get",
+      "/api-publication/sections.list",
+      "/api-publication/sections.update",
+      "/api-publication/sections.upload-file",
+      "/api-publication/sections.submit-file",
+      "/api-publication/sections.unpublish-file",
+      "/api-publication/sections.download-file",
+      "/api-publication/sections.list-files"
+    ],
+    "scopes": [{
+      "name": "urn:uk-ets-publication-api:anyPublicationAction"
+    }]
+  },
+  {
+    "name": "Actuator endpoints",
+    "ownerManagedAccess": false,
+    "displayName": "Actuator endpoints",
+    "attributes": {},
+    "uris": ["/api-publication/actuator/*"]
+  }],
+  "policies": [{
+    "name": "Site Publisher Policy",
+    "description": "Defines that only Site Publisher can access section endpoints",
+    "type": "role",
+    "logic": "POSITIVE",
+    "decisionStrategy": "UNANIMOUS",
+    "config": {
+      "roles": "[{\"id\":\"uk-ets-publication-api/site-publisher\",\"required\":true}]"
+    }
+  },
+  {
+    "name": "Any Publication Action Scope Permission",
+    "description": "Any Publication Action Scope Permission",
+    "type": "scope",
+    "logic": "POSITIVE",
+    "decisionStrategy": "UNANIMOUS",
+    "config": {
+      "scopes": "[\"urn:uk-ets-publication-api:anyPublicationAction\"]",
+      "applyPolicies": "[\"Site Publisher Policy\"]"
+    }
+  }
+  ],
+  "scopes": [{
+    "name": "urn:uk-ets-publication-api:anyPublicationAction"
+  }],
+  "decisionStrategy": "UNANIMOUS"
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+	
+    <changeSet id="3_3_1_ADMIN_COMPLIANCE_REPORTS" author="fragkise" context="migrate">
+        <comment>Populates R0033 and  R0032 sections with their initial data.</comment>
+        <sql>
+            insert into section (id, section_type, report_type, title, summary, display_order, display_type, published_on, last_updated, status)
+            values
+            (nextval('section_seq'), 'ETS', 'R0033', 'Compliance Report - Emissions (only)', 
+                    'This report shows details of Emissions and Surrenders for all OHA and AOHA accounts.',
+                    4, 'ONE_FILE', null, now(), null),
+            (nextval('section_seq'), 'ETS', 'R0032', 'Compliance Report - Surrendered Emissions (only)', 
+                    'This report shows details of Verified Emissions for all OHA and AOHA accounts.',
+                    5, 'ONE_FILE', null, now(), null);
+                    
+                    
+            insert into publication_schedule (id, section_id, publication_frequency, start_date, next_report_date, every_x_days, generation_date)
+            values 
+            (nextval('publication_schedule_seq'), (select id from section where report_type = 'R0033'), 'YEARLY', 
+            make_timestamp(2022, 4, 8, 1, 00, 00) , make_timestamp(2023, 4, 8, 1, 00, 00), null, make_timestamp(2022, 4, 6, 23, 30, 00)),
+            (nextval('publication_schedule_seq'), (select id from section where report_type = 'R0032'), 'YEARLY', 
+            make_timestamp(2022, 5, 6, 1, 00, 00) , make_timestamp(2023, 5, 6, 1, 00, 00), null, make_timestamp(2022, 5, 1, 23, 30, 00));
+        </sql>
+
+        <rollback>
+            <sql>
+                DELETE FROM publication_schedule where section_id in (select id from section where report_type in ('R0032','R0033'));
+                DELETE FROM section where report_type in ('R0032','R0033');
+            </sql>
+        </rollback>
+    </changeSet>
+    
+</databaseChangeLog>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="0_0_1_SECTION_AND REPORT_FILE_TABLE_CREATION" author="apostolouk" context="migrate">
+
+        <comment>Initial creation of Section table</comment>
+        <sql>
+            create sequence section_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+			
+            CREATE TABLE "section" (
+            id BIGINT NOT NULL PRIMARY KEY,
+            section_type VARCHAR(50) NOT NULL,
+			report_type VARCHAR(50) NOT NULL,
+			title VARCHAR(255) NOT NULL,
+			summary TEXT,
+			display_order INTEGER,
+			display_type VARCHAR(50) NOT NULL,
+			published_on TIMESTAMP,
+			last_updated TIMESTAMP,
+			status VARCHAR(50)
+			);
+
+            COMMENT ON TABLE "section" IS 'The sections included in the public site.';
+            COMMENT ON COLUMN "section"."id" IS 'The section id is also the primary id of the table';
+            COMMENT ON COLUMN "section"."section_type" IS 'The section type, can be KP or ETS.';
+			COMMENT ON COLUMN "section"."report_type" IS 'The report type associated with the section.';
+			COMMENT ON COLUMN "section"."title" IS 'The title of the section';
+			COMMENT ON COLUMN "section"."summary" IS 'A summary of the section.';
+			COMMENT ON COLUMN "section"."display_order" IS 'The position of the section in the public site.';
+			COMMENT ON COLUMN "section"."display_type" IS 'The amount of the reports that are published in this section,
+			can be ONE_FILE, ONE_FILE_PER_YEAR or MANY_FILES.';
+			COMMENT ON COLUMN "section"."status" IS 'The publication status of the section,
+			can be PUBLISHING, or PUBLISHED.';
+			
+			create sequence publication_schedule_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+			
+			CREATE TABLE "publication_schedule" (
+            id BIGINT NOT NULL PRIMARY KEY,
+            section_id BIGINT
+                    CONSTRAINT fk_section references section,
+			publication_frequency VARCHAR(50) NOT NULL,			
+			start_date TIMESTAMP,
+			next_report_date TIMESTAMP,
+			every_x_days INTEGER,
+			generation_date TIMESTAMP
+			);
+
+            COMMENT ON TABLE "publication_schedule" IS 'The publication schedule details.';
+            COMMENT ON COLUMN "publication_schedule"."id" IS 'The publication schedule id is also the primary id of the table';
+            COMMENT ON COLUMN "publication_schedule"."section_id" IS 'The section associated with the publication schedule.';
+			COMMENT ON COLUMN "publication_schedule"."publication_frequency" IS 'The publication frequency, 
+			can be DAILY, YEARLY, EVERY_X_DAYS or DISABLED';
+			COMMENT ON COLUMN "publication_schedule"."start_date" IS 'The date when the automatic publication will start.';
+			COMMENT ON COLUMN "publication_schedule"."next_report_date" IS 'The date when the next report should be published.';
+			
+			create sequence report_file_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+			
+			CREATE TABLE "report_file" (
+            id BIGINT NOT NULL PRIMARY KEY,
+            section_id BIGINT
+                    CONSTRAINT fk_section references section,
+			file_name VARCHAR(255) NOT NULL,
+			generated_on TIMESTAMP,
+			published_on TIMESTAMP,
+			applicable_for_year INTEGER,
+			file_location VARCHAR(600),			
+			type VARCHAR(255),
+			file_data BYTEA,
+			file_size VARCHAR(255),
+			file_status VARCHAR(50)
+			);
+
+            COMMENT ON TABLE "report_file" IS 'The report files that will be published in the sections of the public site.';
+            COMMENT ON COLUMN "report_file"."id" IS 'The report file id is also the primary id of the table';
+            COMMENT ON COLUMN "report_file"."section_id" IS 'The section associated with the file.';
+			COMMENT ON COLUMN "report_file"."file_name" IS 'The name of the report file.';
+			COMMENT ON COLUMN "report_file"."applicable_for_year" IS 'The year for which the report file will be published.';
+			COMMENT ON COLUMN "report_file"."file_location" IS 'The S3 bucket where the report file is stored.';
+			COMMENT ON COLUMN "report_file"."file_data" IS 'The data of the report file.';
+			COMMENT ON COLUMN "report_file"."file_size" IS 'The size of the report file.';
+			COMMENT ON COLUMN "report_file"."file_status" IS 'The status fo the file eg. NON_SUBMITTED.';
+
+        </sql>
+
+        <rollback>
+            <sql>           				
+				DROP TABLE IF EXISTS "report_file" CASCADE;
+				DROP TABLE IF EXISTS "publication_schedule" CASCADE;
+				DROP TABLE IF EXISTS "section" CASCADE;
+            </sql>
+        </rollback>
+
+    </changeSet>
+	<changeSet id="0_0_1_SCHEDULED_TASKS_LOCKING" author="koukoulakisg" context="migrate">
+		<comment>Introduces the shedlock table, for synchronising concurrent scheduled tasks.</comment>
+		<sql>
+			create table "shedlock"(
+									   "name" varchar(64),
+									   "lock_until" timestamp,
+									   "locked_at" timestamp,
+									   "locked_by" varchar(255),
+
+									   constraint "pk_shedlock" primary key("name"));
+
+			comment on table "shedlock" is 'Technical table used for synchronising properly concurrent scheduled jobs.';
+            comment on column "shedlock"."name" is 'The name of the scheduled task; primary key.';
+            comment on column "shedlock"."lock_until" is 'When the lock will be released.';
+            comment on column "shedlock"."locked_at" is 'When the lock started.';
+            comment on column "shedlock"."locked_by" is 'Which process performed this lock.';
+		</sql>
+	</changeSet>
+	
+	<changeSet id="0_0_1_DROP_NOT_NULL_CONSTRAINT_ON_REPORT_TYPE" author="apostolouk" context="migrate">
+		<comment>Drop not null constraint on report_type column"</comment>
+		<sql>
+			alter table section alter column report_type drop not null;
+		</sql>
+		
+		<rollback>
+		    alter table section alter column report_type set not null;
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="0_0_1_INITIALIZE_SECTIONS" author="apostolouk" context="migrate">
+		<comment>Populates all KP and ETS sections with their initial data.</comment>
+		<sql>
+			insert into section (id, section_type, report_type, title, summary, display_order, display_type, published_on, last_updated, status)
+			values 
+			(nextval('section_seq'), 'ETS', 'R0013', 'UK ETS Registry Participants and Allocations (OHA)', 
+			        'The report includes the Account Holders and the Allocations per year for Operator Holding Accounts of the UK Emissions Trading Registry.',
+					1, 'ONE_FILE_PER_YEAR', null, now(), null),
+			(nextval('section_seq'), 'ETS', 'R0014', 'UK ETS Registry Participants and Allocations (AOHA)', 
+			        'The report includes the Account Holders and the Allocations per year for Aircraft Operator Holding Accounts of the UK Emissions Trading Registry.',
+			        2, 'ONE_FILE_PER_YEAR', null, now(), null),
+			(nextval('section_seq'), 'ETS', 'R0012', 'UK ETS Trading Accounts', 
+			        'The report includes the Account Holders of the Trading Accounts of the UK Emissions Trading Registry.',
+			        3, 'ONE_FILE', null, now(), null),
+			(nextval('section_seq'), 'ETS', 'R0031', 'Compliance Report - Emissions (only)', 
+			        'This report shows details of Emissions and Surrenders for all OHA and AOHA accounts.',
+			        4, 'ONE_FILE', null, now(), null),
+			(nextval('section_seq'), 'ETS', 'R0028', 'Compliance Report - Surrendered Emissions (only)', 
+			        'This report shows details of Verified Emissions for all OHA and AOHA accounts.',
+			        5, 'ONE_FILE', null, now(), null),
+			(nextval('section_seq'), 'ETS', 'R0025', 'Compliance 10 year report', 
+			        'This report shows all OHA and AOHA accounts linked to a compliant Installation or Aircraft Operator.',
+			        6, 'ONE_FILE', null, now(), null),
+			(nextval('section_seq'), 'ETS', 'R0017', 'Transaction List', 
+			        'This report shows all completed transactions between ETS accounts.',
+			        7, 'ONE_FILE', null, now(), null),
+			(nextval('section_seq'), 'KP', 'R0011', 'Account Information (Paragraph 45)', 
+			        'Certain information listed in paragraph 45 of the Decision is considered confidential. 
+					This is in line with the data protection requirements of Regulation EUR2016/279 as amended by the Data Protection, 
+					Privacy and Electronic Communications (Amendments etc) (EU Exit) Regulations 2019; the Data Protection Act 2018; 
+					and Article 110 of EUR389/2013 as amended by the Greenhouse Gas Emissions (Kyoto Protocol Registry) Regulations 2021.',
+			        1, 'ONE_FILE', null, now(), null),
+			(nextval('section_seq'), 'KP', null, 'Joint Implementation Project Information (Paragraph 46)', 
+			        'No Article 6 (Joint Implementation) project is reported as conversion to an ERU under an Article 6 project did not occur in the specified period. 
+					The United Kingdom has taken the decision not to host any domestic Joint Implementation projects.',
+			        2, 'MANY_FILES', null, now(), null),
+			(nextval('section_seq'), 'KP', null, 'Unit Holding and Transaction Information (Paragraph 47)', 
+			        'Holding and transaction information pursuant to paragraph 47 is provided on holding type level. 
+					The detailed information on transactions is considered confidential according to Article 110 of EUR389/2013 
+					as amended by the Greenhouse Gas Emissions (Kyoto Protocol Registry) Regulations 2021.',
+			        3, 'MANY_FILES', null, now(), null),
+			(nextval('section_seq'), 'KP', 'R0010', 'Entities Authorised to hold Units (Paragraph 48)', 
+			        'The legal entity contact information required by paragraph 48 is considered confidential. 
+					This is in line with the data protection requirements of Regulation EUR2016/279 as amended by the Data Protection, 
+					Privacy and Electronic Communications (Amendments etc) (EU Exit) Regulations 2019; the Data Protection Act 2018; 
+					and Article 110 of EUR389/2013 as amended by the Greenhouse Gas Emissions (Kyoto Protocol Registry) Regulations 2021.',
+			        4, 'ONE_FILE', null, now(), null);
+					
+					
+			insert into publication_schedule (id, section_id, publication_frequency, start_date, next_report_date, every_x_days, generation_date)
+			values 
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0013'), 'DAILY', 
+			current_date + interval '1 day' + interval '1 hour', current_date + interval '2 days' + interval '1 hour', null, null),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0014'), 'DAILY', 
+			current_date + interval '1 day' + interval '1 hour', current_date + interval '2 days' + interval '1 hour', null, null),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0012'), 'DAILY', 
+			current_date + interval '1 day' + interval '1 hour', current_date + interval '2 days' + interval '1 hour', null, null),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0031'), 'YEARLY', 
+			make_timestamp(2022, 4, 8, 1, 00, 00) , make_timestamp(2023, 4, 8, 1, 00, 00), null, make_timestamp(2022, 4, 6, 23, 30, 00)),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0028'), 'YEARLY', 
+			make_timestamp(2022, 5, 6, 1, 00, 00) , make_timestamp(2023, 5, 6, 1, 00, 00), null, make_timestamp(2022, 5, 1, 23, 30, 00)),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0025'), 'YEARLY', 
+			make_timestamp(2023, 5, 5, 1, 00, 00) , make_timestamp(2024, 5, 5, 1, 00, 00), null, make_timestamp(2023, 5, 1, 23, 30, 00)),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0017'), 'YEARLY', 
+			make_timestamp(2024, 5, 3, 1, 00, 00) , make_timestamp(2025, 5, 3, 1, 00, 00), null, make_timestamp(2024, 5, 1, 23, 30, 00)),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0011'), 'EVERY_X_DAYS', 
+			current_date + interval '1 day' + interval '1 hour', current_date + interval '15 days' + interval '1 hour', 14, null),
+			(nextval('publication_schedule_seq'), (select id from section where title = 'Joint Implementation Project Information (Paragraph 46)'), 
+			'DISABLED', null, null, null, null),
+			(nextval('publication_schedule_seq'), (select id from section where title = 'Unit Holding and Transaction Information (Paragraph 47)'), 
+			'DISABLED', null, null, null, null),
+			(nextval('publication_schedule_seq'), (select id from section where report_type = 'R0010'), 'EVERY_X_DAYS', 
+			current_date + interval '1 day' + interval '1 hour', current_date + interval '15 days' + interval '1 hour', 14, null);
+		</sql>
+
+		<rollback>
+			<sql>
+			    DELETE FROM publication_schedule;
+				DELETE FROM section;
+			</sql>
+		</rollback>
+	</changeSet>
+	
+    <changeSet id="0_0_1_DROP_NOT_NULL_CONSTRAINT_ON_FILE_NAME" author="apostolouk" context="migrate">
+		<comment>Drop not null constraint on file_name column"</comment>
+		<sql>
+			alter table report_file alter column file_name drop not null;
+		</sql>
+		
+		<rollback>
+		    alter table report_file alter column file_name set not null;
+		</rollback>
+	</changeSet>
+		
+	<changeSet id="0_0_1_ADD_BATCH_ID_COLUMN" author="apostolouk" context="migrate">
+		<comment>Adds batch_id column in report_file table.</comment>
+		<sql>
+			alter table report_file add column batch_id varchar(255) null;
+
+			comment on column report_file.batch_id is 'The id of the batch that was generated from the scheduler. 
+			It is comprised of the section id and the generation timestamp. Applicable only for one-file-per-year display type.';
+		</sql>
+		<rollback>
+	        alter table report_file drop column batch_id;
+	    </rollback>
+	</changeSet>
+
+	<changeSet id="0_0_1_CREATE_MIGRATOR_HISTORY_TABLE" author="koukoulakisg" context="migrate">
+		<comment>
+			Create the Migrator History table in order to list migrator runs that have been executed.
+		</comment>
+		<sql>
+			create sequence migrator_history_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+			create table "migrator_history"
+			("id" bigint,
+			 "migrator_name" varchar (40),
+			 "created_on" timestamp not null,
+			 constraint "pk_migrator_history" primary key(id)
+			);
+
+			comment on table "migrator_history" is 'Lists migrator runs that have been executed.';
+            comment on column "migrator_history"."id" is 'The primary key.';
+            comment on column "migrator_history"."migrator_name" is 'The migrator name.';
+            comment on column "migrator_history"."created_on" is 'The migration date.';
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>
