@@ -33,7 +33,7 @@ describe('NotesListComponent', () => {
     fixture = TestBed.createComponent(NotesListComponent);
     component = fixture.componentInstance;
     component.isSeniorAdmin = true;
-    component.accountNotes = [
+    component.notes = [
       {
         id: 1,
         domainId: '1',

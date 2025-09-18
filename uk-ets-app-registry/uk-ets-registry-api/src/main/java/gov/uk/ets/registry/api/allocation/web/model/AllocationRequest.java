@@ -2,8 +2,8 @@ package gov.uk.ets.registry.api.allocation.web.model;
 
 
 import gov.uk.ets.registry.api.allocation.type.AllocationCategory;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -19,6 +19,7 @@ import {
 } from '@account-opening/authorised-representative/authorised-representative.selector';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { take } from 'rxjs/operators';
+import { selectErrorSummary } from '@shared/shared.selector';
 
 @Component({
   selector: 'app-selection-container',
@@ -31,6 +32,7 @@ import { take } from 'rxjs/operators';
         fetchedAuthorisedRepresentatives$ | async
       "
       (output)="onContinue($event)"
+      [errorSummary]="errorSummary$ | async"
       (errorDetails)="onError($event)"
     ></app-selection>
   `,
@@ -46,6 +48,7 @@ export class SelectionContainerComponent implements OnInit {
   fetchedAuthorisedRepresentatives$: Observable<AuthorisedRepresentative[]>;
 
   authorisedRepresentatives$: Observable<AuthorisedRepresentative[]>;
+  errorSummary$: Observable<ErrorSummary>;
 
   constructor(
     private _router: Router,
@@ -80,6 +83,7 @@ export class SelectionContainerComponent implements OnInit {
         })
       );
     });
+    this.errorSummary$ = this.store.select(selectErrorSummary);
   }
 
   onError(value: ErrorDetail[]) {

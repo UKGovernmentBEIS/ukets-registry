@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.security.GenerateTokenCommand;
 import gov.uk.ets.registry.api.common.security.TokenVerifier;
+import gov.uk.ets.registry.api.common.security.UsedTokenService;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.user.admin.service.UserStatusService;
 import gov.uk.ets.registry.api.user.admin.web.model.UserStatusChangeDTO;
@@ -21,23 +22,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Log4j2
 public class CommonEmergencyChangeService {
+
+    private static final String CONFIGURE_OTP_REQUIRED_ACTION = "CONFIGURE_TOTP";
     private final TokenVerifier tokenVerifier;
     private final String applicationUrl;
-    private final LostTokenTaskService lostTokenTaskService;
+    private final UsedTokenService usedTokenService;
     private final LostPasswordAndTokenTaskService lostPasswordAndTokenTaskService;
     private final UserService userService;
     private final UserStatusService userStatusService;
     private final ServiceAccountAuthorizationService serviceAccountAuthorizationService;
 
     public CommonEmergencyChangeService(TokenVerifier tokenVerifier, @Value("${application.url}") String applicationUrl,
-                                        LostTokenTaskService lostTokenTaskService,
+                                        UsedTokenService usedTokenService,
                                         LostPasswordAndTokenTaskService lostPasswordAndTokenTaskService,
                                         UserService userService,
                                         UserStatusService userStatusService,
                                         ServiceAccountAuthorizationService serviceAccountAuthorizationService) {
         this.tokenVerifier = tokenVerifier;
         this.applicationUrl = applicationUrl;
-        this.lostTokenTaskService = lostTokenTaskService;
+        this.usedTokenService = usedTokenService;
         this.lostPasswordAndTokenTaskService = lostPasswordAndTokenTaskService;
         this.userService = userService;
         this.userStatusService = userStatusService;
@@ -73,18 +76,25 @@ public class CommonEmergencyChangeService {
      */
     @Transactional
     public EmergencyOtpChangeTaskResponse confirmChange(EmergencyOtpChangeTaskRequest request) {
+
+        String token = request.getToken();
+        if (usedTokenService.isTokenAlreadyUsed(token)) {
+            return new EmergencyOtpChangeTaskResponse(null, true);
+        }
+
         try {
-            String email = tokenVerifier.getPayload(request.getToken());
+            String email = tokenVerifier.getPayload(token);
 
             User user = userService.findByEmailNotInStatuses(email, UserStatus.SUSPENDED, UserStatus.UNENROLLED,
                 UserStatus.UNENROLLEMENT_PENDING, UserStatus.DEACTIVATION_PENDING, UserStatus.DEACTIVATED)
                 .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
 
-            String requestId = lostTokenTaskService.proposeRequest(user, email, RequestType.LOST_TOKEN);
-            serviceAccountAuthorizationService.invalidateUserSessions(user.getIamIdentifier());
-            userStatusService.changeUserStatus(createSuspendedUserChange(user),
-                serviceAccountAuthorizationService.obtainAccessToken().getToken());
-            return new EmergencyOtpChangeTaskResponse(requestId, false);
+            serviceAccountAuthorizationService
+                .addRequiredActionToUser(user.getIamIdentifier(), CONFIGURE_OTP_REQUIRED_ACTION);
+
+            usedTokenService.saveToken(token, tokenVerifier.getExpiredAt(token));
+
+            return new EmergencyOtpChangeTaskResponse(null, false);
 
         } catch (TokenExpiredException e) {
             return new EmergencyOtpChangeTaskResponse(null, true);

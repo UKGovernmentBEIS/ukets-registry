@@ -1,0 +1,143 @@
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-heading-m">
+      <span *ngIf="headingPrefix">{{ headingPrefix }}</span>
+      {{ getPrimaryOrAlternativeContactLabel() }}
+    </h2>
+    <span
+      class="govuk-heading-m"
+      *ngIf="showAccountHolderContactFullNameHeading"
+      >{{ getNameDetails() }}</span
+    >
+    <div class="govuk-summary-list__actions">
+      <a
+        *ngIf="!accountHolderExisting.valueOf()"
+        class="govuk-link govuk-link--no-visited-state"
+        [routerLink]="[]"
+        (click)="navigateToContactDetails()"
+        (keypress)="navigateToContactDetails()"
+      >
+        Change<span class="govuk-visually-hidden"> organisation</span>
+      </a>
+    </div>
+  </div>
+</dl>
+
+<ng-container>
+  <div class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__key">
+        <h2
+          class="govuk-heading-m"
+          [ngClass]="{
+            'govuk-!-margin-bottom-0': !accountHolderExisting.valueOf(),
+          }"
+        >
+          {{ getPrimaryOrAlternativeContactLabel() }} details
+        </h2>
+      </div>
+    </div>
+  </div>
+  <dl
+    class="govuk-summary-list govuk-summary-list--no-border"
+    *ngIf="accountHolderContact.details"
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">First and middle names</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountHolderContact.details?.firstName }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Last name</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountHolderContact.details?.lastName }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        I confirm that the {{ getTypeText() }} is aged 18 or over
+      </dt>
+      <dd class="govuk-summary-list__value">Yes</dd>
+    </div>
+  </dl>
+  <div class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__key">
+        <h2
+          class="govuk-heading-m"
+          [ngClass]="{
+            'govuk-!-margin-bottom-0': !accountHolderExisting.valueOf(),
+          }"
+        >
+          {{ getPrimaryOrAlternativeContactLabel() }} work details
+        </h2>
+      </div>
+    </div>
+  </div>
+  <dl
+    class="govuk-summary-list govuk-summary-list--no-border"
+    *ngIf="accountHolderContact.address"
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Company position</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountHolderContact.positionInCompany }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountHolderContact.address.buildingAndStreet }}
+        <ng-container
+          *ngIf="
+            accountHolderContact.address.buildingAndStreet2 ||
+            accountHolderContact.address.buildingAndStreet3
+          "
+        >
+          <br />
+          {{ accountHolderContact.address.buildingAndStreet2 }}
+        </ng-container>
+        <ng-container *ngIf="accountHolderContact.address.buildingAndStreet3">
+          <br />{{
+            accountHolderContact.address.buildingAndStreet3
+          }}</ng-container
+        >
+        <br />
+        {{ accountHolderContact.address.townOrCity }}
+        <br />
+        {{ accountHolderContact.address.stateOrProvince }}
+        <br />
+        {{ contactCountry }}
+        <br />
+        {{ accountHolderContact.address.postCode }}
+      </dd>
+    </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="accountHolderContact.phoneNumber?.phoneNumber1"
+    >
+      <dt class="govuk-summary-list__key">Phone number 1</dt>
+      <dd class="govuk-summary-list__value">
+        +{{ accountHolderContact.phoneNumber.countryCode1
+        }}{{ accountHolderContact.phoneNumber.phoneNumber1 }}
+      </dd>
+    </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="accountHolderContact.phoneNumber?.phoneNumber2"
+    >
+      <dt class="govuk-summary-list__key">Phone number 2</dt>
+      <dd class="govuk-summary-list__value">
+        +{{ accountHolderContact.phoneNumber.countryCode2
+        }}{{ accountHolderContact.phoneNumber.phoneNumber2 }}
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Email address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountHolderContact.emailAddress?.emailAddress }}
+      </dd>
+    </div>
+  </dl>
+</ng-container>

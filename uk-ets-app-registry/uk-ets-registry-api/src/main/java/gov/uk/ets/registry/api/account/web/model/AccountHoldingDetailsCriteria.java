@@ -1,7 +1,7 @@
 package gov.uk.ets.registry.api.account.web.model;
 
 import java.io.Serializable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 

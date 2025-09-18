@@ -82,6 +82,18 @@ public class TaskSearchCriteria {
     private Date completedOnTo;
 
     /**
+     * When the task was completed (from).
+     */
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private Date deadlineFrom;
+
+    /**
+     * When the task was completed (to).
+     */
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private Date deadlineTo;
+
+    /**
      * The transaction identifier.
      */
     private String transactionId;

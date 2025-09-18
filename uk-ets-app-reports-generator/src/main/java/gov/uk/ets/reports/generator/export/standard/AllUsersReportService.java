@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +15,6 @@ import org.springframework.stereotype.Service;
 public class AllUsersReportService implements ReportTypeService<AllUsersReportData> {
 
     private final ReportDataMapper<AllUsersReportData> mapper;
-
-    @Override
-    public List<AllUsersReportData> generateReportData(ReportCriteria reportCriteria) {
-        return mapper.mapData(reportCriteria);
-    }
 
     @Override
     public List<AllUsersReportData> generateReportData(ReportQueryInfoWithMetadata reportQueryInfo) {
@@ -52,8 +46,10 @@ public class AllUsersReportService implements ReportTypeService<AllUsersReportDa
         data.add(reportData.getKeycloakUser().getTownOrCity());
         data.add(reportData.getKeycloakUser().getStateOrProvince());
         data.add(reportData.getKeycloakUser().getWorkCountry());
-        data.add(reportData.getKeycloakUser().getWorkCountryCode());
-        data.add(reportData.getKeycloakUser().getWorkPhoneNumber());
+        data.add(reportData.getKeycloakUser().getWorkMobileCountryCode());
+        data.add(reportData.getKeycloakUser().getWorkMobilePhoneNumber());
+        data.add(reportData.getKeycloakUser().getWorkAlternativeCountryCode());
+        data.add(reportData.getKeycloakUser().getWorkAlternativePhoneNumber());
         data.add(reportData.getKeycloakUser().getWorkBuildingAndStreet());
         data.add(reportData.getKeycloakUser().getWorkBuildingAndStreetOptional());
         data.add(reportData.getKeycloakUser().getWorkBuildingAndStreetOptional2());
@@ -87,8 +83,10 @@ public class AllUsersReportService implements ReportTypeService<AllUsersReportDa
             "Town Or City",
             "State Or Province",
             "Work Country",
-            "Work Country Code",
-            "Work Phone Number",
+            "Work Mobile Country Code",
+            "Work Mobile Phone Number",
+            "Work Alternative Country Code",
+            "Work Alternative Phone Number",
             "Work Building And Street",
             "Work Building And Street Optional",
             "Work Building And Street Optional 2",

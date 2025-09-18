@@ -17,8 +17,9 @@ public class ReplicationUpdateEventListener implements PostUpdateEventListener {
         replicationEventService.updateSearchMetadata(event);
     }
 
-    @Override
-    public boolean requiresPostCommitHanding(EntityPersister persister) {
-        return false;
-    }
+	@Override
+	public boolean requiresPostCommitHandling(EntityPersister persister) {
+		return false;
+	}
+
 }

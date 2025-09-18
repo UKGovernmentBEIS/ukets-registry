@@ -8,6 +8,7 @@ import { AircraftOperator } from '@shared/model/account';
       [aircraft]="aircraft"
       [canRequestUpdate]="canRequestUpdate"
       [hasOperatorUpdatePendingApproval]="hasOperatorUpdatePendingApproval"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"           
       (requestAircraftUpdateEmitter)="goToRequestUpdate()"
     ></app-shared-aircraft-operator>
   `,
@@ -19,7 +20,9 @@ export class AircraftOperatorComponent {
   canRequestUpdate: boolean;
   @Input()
   hasOperatorUpdatePendingApproval: boolean;
-
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+  
   @Output()
   readonly requestAircraftUpdateEmitter = new EventEmitter();
 

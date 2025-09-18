@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import gov.uk.ets.registry.api.ar.domain.ARAccountAccessRepository;
 import gov.uk.ets.registry.api.ar.infrastructure.ARAccountAccessRepositoryImpl;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ import org.springframework.test.context.jdbc.Sql;
     "spring.jpa.hibernate.ddl-auto=create"
 })
 @Sql({"/test-data/search_ars_by_account_holder.sql"})
-public class GetAccountHoldersTest {
+class GetAccountHoldersTest {
 
     @PersistenceContext
     private EntityManager entityManager;

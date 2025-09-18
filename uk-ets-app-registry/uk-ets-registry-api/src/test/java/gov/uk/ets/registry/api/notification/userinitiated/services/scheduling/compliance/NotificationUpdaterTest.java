@@ -10,6 +10,8 @@ import gov.uk.ets.registry.api.notification.userinitiated.domain.Notification;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.NotificationSchedule;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.types.NotificationStatus;
 import java.time.LocalDateTime;
+
+import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.NotificationUpdater;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;

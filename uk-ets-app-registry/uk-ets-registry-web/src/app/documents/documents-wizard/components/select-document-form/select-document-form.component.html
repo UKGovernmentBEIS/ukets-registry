@@ -1,0 +1,87 @@
+<div
+  appScreenReaderPageAnnounce
+  [pageTitle]="selectDocumentGroupInfo.radioGroupHeading"
+></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onContinue()" [formGroup]="selectDocumentFormGroup">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="showErrors"
+      >
+        <fieldset
+          class="govuk-fieldset"
+          aria-describedby="account-holder-selection-hint"
+        >
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl">Update documents</span>
+              Select document
+            </h1>
+          </legend>
+          <p
+            *ngFor="let error of getErrors()"
+            class="govuk-error-message"
+            [attr.id]="'account-holder-selection-error-label'"
+            [hidden]="!showErrors"
+          >
+            <span class="govuk-visually-hidden">Error:</span>{{ error }}
+          </p>
+          <div *ngFor="let category of categories">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [id]="'radio-' + category.id"
+                (click)="selectCategory(category)"
+                type="radio"
+                name="categoryId"
+                formControlName="categoryId"
+                [value]="category.id"
+              />
+              <label
+                class="govuk-label govuk-radios__label"
+                [for]="'radio-' + category.id"
+              >
+                {{ category.name }}
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional govuk-radios__conditional--hidden"
+              [class.govuk-radios__conditional--hidden]="
+                selectDocumentFormGroup?.value?.categoryId !== category.id
+              "
+              id="conditional-select-from-dropdown"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="selection-from-dropdown">
+                  Select document
+                </label>
+                <select
+                  class="govuk-select min-width-60pc"
+                  id="selection-from-dropdown"
+                  name="selectDocument"
+                  formControlName="selectDocument"
+                >
+                  <option
+                    *ngFor="let document of selectedCategory?.documents"
+                    [value]="document.id"
+                  >
+                    {{ document.title || document.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

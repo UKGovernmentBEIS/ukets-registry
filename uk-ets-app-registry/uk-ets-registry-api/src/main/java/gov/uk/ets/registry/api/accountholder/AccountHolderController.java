@@ -19,28 +19,18 @@ import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderTypeAheadSea
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInput;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInputType;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanSubmitUpdateWhenAccountAccessIsNotSuspended;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanSubmitUpdateWhenAccountHasSpecificStatus;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanSubmitUpdateWhenUserStatusIsEnrolled;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanViewAccountWhenAccountAccessIsNotSuspended;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanViewAccountWhenAccountHasSpecificStatus;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanViewAccountWhenUserStatusIsEnrolled;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanViewRequestsOnlyForAccountsWithAccess;
-import gov.uk.ets.registry.api.authz.ruleengine.features.AdminsWithAccountAccessRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.AffectedUserCannotPerformActionRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.AuthoritiesWithAccountAccessRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.CannotSubmitRequestWhenAccountIsTransferPendingStatusRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.ReadOnlyAdministratorsCannotSubmitRequest;
-import gov.uk.ets.registry.api.authz.ruleengine.features.RegistryAdministratorsCanSubmitUpdateWhenAccountHasSpecificStatus;
-import gov.uk.ets.registry.api.authz.ruleengine.features.SeniorOrJuniorAdministratorRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.*;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.rules.CannotApplyDuplicateAccountHolderUpdateAlternativePrimaryContactDetailsOnAccount;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.rules.CannotApplyDuplicateAccountHolderUpdateDetailsOnAccount;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.rules.CannotApplyDuplicateAccountHolderUpdatePrimaryContactDetailsOnAccount;
+
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.validation.Valid;
+import java.util.stream.Stream;
+
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -105,6 +95,23 @@ public class AccountHolderController {
         result = new ResponseEntity<>(holders, HttpStatus.OK);
         return result;
     }
+    
+    @GetMapping(path = "account-holder.get.by-name-or-identifier", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AccountHolderTypeAheadSearchResultDTO>> getAccountHoldersByNameOrIdentifier(@RequestParam String name,
+                                                                                         @RequestParam
+                                                                                             AccountHolderType type) {
+        ResponseEntity<List<AccountHolderTypeAheadSearchResultDTO>> result;
+        List<AccountHolderTypeAheadSearchResultDTO> holdersByName =
+            accountHolderService.getAccountHolders(name.toUpperCase(), type);
+        List<AccountHolderTypeAheadSearchResultDTO> holdersByIdentifier =
+            accountHolderService.getAccountHolders(name, Set.of(type));
+        List<AccountHolderTypeAheadSearchResultDTO> holders = Stream
+                .concat(holdersByName.stream(), holdersByIdentifier.stream())
+                .toList();
+
+        result = new ResponseEntity<>(holders, HttpStatus.OK);
+        return result;
+    }
 
     /**
      * Creates a task for the Account holder details update.
@@ -134,6 +141,21 @@ public class AccountHolderController {
             accountHolderUpdateService.submitAccountHolderDetailsUpdateRequest(body, accountIdentifier);
         return new ResponseEntity<>(taskRequestId, HttpStatus.OK);
     }
+
+//    @Protected({
+//        ReadOnlyAdministratorsCannotSubmitRequest.class,
+//        RegistryAdministratorsCanSubmitUpdateWhenAccountHasSpecificStatus.class,
+//        SeniorOrJuniorAdministratorRule.class,
+//        PendingTALRequestsRule.class,
+//        AdminsWithAccountAccessRule.class,
+//    })
+//    @PostMapping(path = "change-account-holder.perform", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Boolean> changeAccountHolderPerform(@RequestBody @Valid AccountHolderChangeDTO accountHolderChangeDTO,
+//            												  @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam Long accountIdentifier) {
+//        Boolean updated =
+//            accountHolderUpdateService.submitChangeAccountHolderRequest(accountHolderChangeDTO);
+//        return new ResponseEntity<>(updated, HttpStatus.OK);
+//    }
 
     /**
      * Creates a task for the Account holder primary contact details update.

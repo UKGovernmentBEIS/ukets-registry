@@ -17,9 +17,11 @@ export type CreateNoteDTO = {
 export enum NoteType {
   ACCOUNT,
   ACCOUNT_HOLDER,
+  TASK,
 }
 
 export const NoteTypeLabel = {
   [NoteType.ACCOUNT]: 'Account',
   [NoteType.ACCOUNT_HOLDER]: 'Account Holder',
+  [NoteType.TASK]: 'Task',
 };

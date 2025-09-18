@@ -2,8 +2,8 @@ package uk.gov.ets.password.validator.api.web;
 
 import gov.uk.ets.commons.logging.SecurityLog;
 import java.util.Iterator;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

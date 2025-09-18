@@ -22,7 +22,7 @@ import gov.uk.ets.registry.api.tal.service.TransactionRuleUpdateService;
 import gov.uk.ets.registry.api.transaction.domain.data.TrustedAccountListRulesDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

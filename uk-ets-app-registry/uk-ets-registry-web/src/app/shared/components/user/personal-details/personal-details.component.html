@@ -108,6 +108,19 @@
           controlName="postCode"
           [autocomplete]="'postal-code'"
         ></app-form-control-text>
+        <div *ngIf="showDifferentCountryLastFiveYears">
+          <legend class="govuk-fieldset__legend">
+            Have you lived in another country the last five years?
+          </legend>
+          <app-uk-radio-input
+            controlName="differentCountryLastFiveYears"
+            [formRadioGroupInfo]="formRadioGroupInfo"
+            [validationErrorMessage]="
+              this.validationErrorMessage.differentCountryLastFiveYears
+            "
+          >
+          </app-uk-radio-input>
+        </div>
       </fieldset>
       <fieldset class="govuk-fieldset" aria-live="polite">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">

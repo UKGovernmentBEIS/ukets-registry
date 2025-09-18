@@ -1,0 +1,33 @@
+<app-allocation-job-status-filters
+  [hideCriteria]="hideCriteria$ | async"
+  [storedCriteria]="storedCriteria$ | async"
+  (toggleCriteria)="toggleCriteria()"
+  (search)="onSearch($event, sortParameters)"
+  (submitClick)="onSubmit()"
+  (errorDetails)="onError($event)"
+></app-allocation-job-status-filters>
+
+<app-allocation-job-status-results
+  *ngIf="resultsLoaded$ | async"
+  [results]="results$ | async"
+  [sortParameters]="sortParameters$ | async"
+  (sort)="onSort($event)"
+></app-allocation-job-status-results>
+<app-empty-search-results
+  *ngIf="(resultsLoaded$ | async) === false || (results$ | async)?.length === 0"
+>
+</app-empty-search-results>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-paginator
+      [pagination]="pagination$ | async"
+      [pageSizeOptions]="pageSizeOptions"
+      (selectFirstPage)="goToFirstPageOfResults($event)"
+      (selectLastPage)="goToLastPageOfResults($event)"
+      (selectNextPage)="goToNextPageOfResults($event)"
+      (selectPreviousPage)="goToPreviousPageOfResults($event)"
+      (changePageSize)="onChangePageSize($event)"
+    >
+    </app-paginator>
+  </div>
+</div>

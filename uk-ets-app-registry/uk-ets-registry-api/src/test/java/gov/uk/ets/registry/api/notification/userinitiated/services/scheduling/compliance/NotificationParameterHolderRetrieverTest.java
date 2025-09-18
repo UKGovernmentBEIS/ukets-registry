@@ -1,8 +1,5 @@
 package gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.compliance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.compliance.service.ComplianceService;
@@ -20,9 +17,6 @@ import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.domain.UserWorkContact;
 import gov.uk.ets.registry.api.user.domain.UserWorkContactRepository;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +25,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -65,7 +66,7 @@ class NotificationParameterHolderRetrieverTest {
     private ComplianceService complianceService;
 
     @InjectMocks
-    private NotificationParameterRetriever cut;
+    private ComplianceNotificationParameterRetriever cut;
 
     Notification n1;
 
@@ -120,7 +121,7 @@ class NotificationParameterHolderRetrieverTest {
         contact2.setUrid(URID_2);
         contact2.setEmail(EMAIL_2);
 
-        when(userWorkContactRepository.fetch(Set.of(URID_1, URID_2), true)).thenReturn(List.of(
+        when(userWorkContactRepository.fetchUserWorkContactsInBatches(Set.of(URID_1, URID_2))).thenReturn(List.of(
             contact1, contact2
         ));
 

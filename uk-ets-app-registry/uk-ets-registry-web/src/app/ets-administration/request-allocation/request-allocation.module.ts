@@ -16,8 +16,6 @@ import {
   CheckAllocationRequestContainerComponent,
   RequestAllocationComponent,
   RequestAllocationContainerComponent,
-  CancelPendingAllocationsComponent,
-  PendingRequestAllocationWarningComponent,
 } from '@request-allocation/components';
 
 @NgModule({
@@ -29,8 +27,6 @@ import {
     CancelAllocationRequestContainerComponent,
     AllocationRequestSubmittedComponent,
     AllocationRequestSubmittedContainerComponent,
-    CancelPendingAllocationsComponent,
-    PendingRequestAllocationWarningComponent,
   ],
   imports: [
     RequestAllocationRoutingModule,

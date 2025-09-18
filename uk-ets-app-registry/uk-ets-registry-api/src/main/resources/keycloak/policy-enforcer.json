@@ -1,0 +1,144 @@
+{
+  "realm": "uk-ets",
+  "resource": "uk-ets-registry-api",
+  "enforcement-mode": "PERMISSIVE",
+  "lazy-load-paths": "true",
+  "user-managed-access": {},
+  "paths": [
+    {
+      "path": "/*",
+      "enforcement-mode": "DISABLED",
+      "static": "true"
+    },
+    {
+      "path": "/api-registry/*",
+      "enforcement-mode": "ENFORCING",
+      "static": "true"
+    },
+    {
+      "path": "/api-registry/users.create",
+      "enforcement-mode": "DISABLED",
+      "static": "true"
+    },
+    {
+      "path": "/api-registry/configuration",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/forgot-password.request.link",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/user-profile.confirm.email",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/token-change.request.link",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/user-profile.emergency.otp.request",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/user-profile.emergency.otp.task",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/forgot-password.validate.token",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/forgot-password.reset.password",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/user-profile.emergency.password-otp.request",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/user-profile.emergency.password-otp.task",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "path": "/api-registry/actuator/health",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "path": "/payment/*",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "GET"
+        }
+      ]
+    }
+  ]
+}

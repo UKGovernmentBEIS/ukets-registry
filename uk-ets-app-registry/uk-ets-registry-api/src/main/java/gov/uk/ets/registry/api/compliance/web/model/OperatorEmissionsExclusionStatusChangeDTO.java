@@ -1,7 +1,7 @@
 package gov.uk.ets.registry.api.compliance.web.model;
 
 import java.io.Serializable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,5 +22,10 @@ public class OperatorEmissionsExclusionStatusChangeDTO  implements Serializable 
      */
     @NotNull(message = "The exclusion status is mandatory")
     private boolean excluded;
+
+    /**
+     * Indicates the reason for this operation.
+     */
+    private String reason;
     
 }

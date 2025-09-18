@@ -13,23 +13,21 @@ describe('MemorablePhraseComponent', () => {
   let component: MemorablePhraseComponent;
   let fixture: ComponentFixture<MemorablePhraseComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
-        declarations: [
-          ConnectFormDirective,
-          MemorablePhraseComponent,
-          UkProtoFormTextareaComponent,
-          ScreenReaderPageAnnounceDirective,
-        ],
-        providers: [
-          { provide: APP_BASE_HREF, useValue: '/' },
-          { provide: FormBuilder, useValue: formBuilder },
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
+      declarations: [
+        ConnectFormDirective,
+        MemorablePhraseComponent,
+        UkProtoFormTextareaComponent,
+        ScreenReaderPageAnnounceDirective,
+      ],
+      providers: [
+        { provide: APP_BASE_HREF, useValue: '/' },
+        { provide: FormBuilder, useValue: formBuilder },
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MemorablePhraseComponent);
@@ -52,10 +50,11 @@ describe('MemorablePhraseComponent', () => {
       country: '',
       birthDate: { day: '', month: '', year: '' },
       countryOfBirth: '',
-      workCountryCode: '',
-      workPhoneNumber: '',
-      workEmailAddress: '',
-      workEmailAddressConfirmation: '',
+      workMobileCountryCode: '',
+      workMobilePhoneNumber: '',
+      workAlternativeCountryCode: '',
+      workAlternativePhoneNumber: '',
+      noMobilePhoneNumberReason: '',
       workBuildingAndStreet: '',
       workBuildingAndStreetOptional: '',
       workBuildingAndStreetOptional2: '',

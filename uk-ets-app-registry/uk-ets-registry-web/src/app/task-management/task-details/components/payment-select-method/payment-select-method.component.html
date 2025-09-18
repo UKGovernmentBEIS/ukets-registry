@@ -1,0 +1,20 @@
+<div class="govuk-grid-row" *ngIf="formRadioGroupInfo.options">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onContinue()" [formGroup]="formGroup">
+      <app-uk-radio-input
+        controlName="paymentMethod"
+        [formRadioGroupInfo]="formRadioGroupInfo"
+        [validationErrorMessage]="this.validationErrorMessage.paymentMethod"
+      >
+      </app-uk-radio-input>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

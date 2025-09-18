@@ -13,7 +13,7 @@ public class ComplianceReportData extends ReportData {
     String accountHolderName;
     String accountType;
     String accountStatus;
-    Long installationIdentifier;
+    Long operatorId;
     String permitOrMonitoringPlanId;
     String installationName;
     String firstYearOfVerifiedEmissions;

@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.uk.ets.registry.api.compliance.domain.ExcludeEmissionsEntry;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

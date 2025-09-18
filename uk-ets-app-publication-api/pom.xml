@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.10</version>
+        <version>3.2.2</version>
         <relativePath />
     </parent>
 
@@ -19,7 +19,8 @@
         <java.version>17</java.version>
         <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
         <uk-ets-lib-reporting-commons.version>0.0.1-SNAPSHOT</uk-ets-lib-reporting-commons.version>
-		<keycloak.version>21.1.2</keycloak.version>
+        <keycloak.admin.client.version>26.0.4</keycloak.admin.client.version>
+        <keycloak.policy.enforcer.version>26.0.4</keycloak.policy.enforcer.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <maven.spotbugs.plugin>4.7.2.1</maven.spotbugs.plugin>
         <maven.pmd.plugin>3.20.0</maven.pmd.plugin>
@@ -28,14 +29,12 @@
         <maven.javadoc.plugin>3.1.1</maven.javadoc.plugin>
         <dependency.check.maven.version>5.3.0</dependency.check.maven.version>
         <maven.project.info.reports.plugin>3.0.0</maven.project.info.reports.plugin>
-        <org.testcontainers.version>1.18.0</org.testcontainers.version>
         <apache.tika.version>1.28</apache.tika.version>
         <fastexcel.version>0.12.12</fastexcel.version>
         <re2j.version>1.6</re2j.version>
         <shedlock.version>4.18.0</shedlock.version>
-        <log4j2.version>2.17.1</log4j2.version>
         <checkstyle.version>8.45.1</checkstyle.version>
-        <springdoc.openapi.ui.version>1.7.0</springdoc.openapi.ui.version>
+        <springdoc.openapi.ui.version>2.3.0</springdoc.openapi.ui.version>
     </properties>
 
     <dependencies>
@@ -100,12 +99,13 @@
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-spring-boot-starter</artifactId>
-        </dependency>
+            <artifactId>keycloak-policy-enforcer</artifactId>
+            <version>${keycloak.policy.enforcer.version}</version>
+        </dependency>        
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
-            <version>${keycloak.version}</version>
+            <version>${keycloak.admin.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -181,6 +181,11 @@
         </dependency>
         <dependency>
             <groupId>uk.gov.ets</groupId>
+            <artifactId>uk-ets-lib-commons-security</artifactId>
+            <version>${uk-ets-lib-commons.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>uk.gov.ets</groupId>
             <artifactId>uk-ets-lib-reporting-commons-model</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -192,6 +197,13 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
+            <exclusions>
+                <!-- avoid: LoggerFactory is not a Logback LoggerContext but Logback is on the classpath -->
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>            
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -199,17 +211,15 @@
             <artifactId>uk-ets-lib-commons-authorizations-loader</artifactId>
             <version>${uk-ets-lib-commons.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.openapi.ui.version}</version>
         </dependency>        
         
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -247,6 +257,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.maven.plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>gov/uk/ets/publication/api/security/OAuth2ResourceServerSecurityConfiguration.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -263,8 +278,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>                
             </plugin>
         </plugins>
         <pluginManagement>
@@ -349,17 +364,4 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.keycloak.bom</groupId>
-                <artifactId>keycloak-adapter-bom</artifactId>
-                <version>${keycloak.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 </project>

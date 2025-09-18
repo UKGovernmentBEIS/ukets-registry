@@ -24,6 +24,9 @@ export class OverviewInstallationComponent {
   @Input()
   regulatorChanged: boolean;
 
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;  
+
   operatorWizardRoutes = OperatorWizardRoutes;
   activityTypes = InstallationActivityType;
   regulatorMap = regulatorMap;
@@ -31,7 +34,7 @@ export class OverviewInstallationComponent {
   constructor(private formatUkDatePipe: FormatUkDatePipe) {}
 
   getInstallationSummaryListItems(): SummaryListItem[] {
-    return [
+    const summary = [
       {
         key: { label: 'Installation name' },
         value: { label: this.installation.name },
@@ -45,6 +48,10 @@ export class OverviewInstallationComponent {
       {
         key: { label: 'Installation activity type' },
         value: { label: this.activityTypes[this.installation.activityType] },
+      },
+      {
+        key: { label: 'Emitter ID' },
+        value: { label: this.installation.emitterId },
       },
       {
         key: { label: 'Permit ID' },
@@ -67,5 +74,9 @@ export class OverviewInstallationComponent {
         value: { label: this.installation.lastYear },
       },
     ];
+
+    return !this.isSeniorOrJuniorAdmin ?
+      summary.filter( next => next.key.label != 'Emitter ID') :
+        summary;  
   }
 }

@@ -47,6 +47,7 @@ describe('AircraftOperatorComponent', () => {
       monitoringPlan: {
         id: '10000',
       },
+      emitterId: '5653357886HT5'
     } as AircraftOperator;
     fixture.detectChanges();
   });

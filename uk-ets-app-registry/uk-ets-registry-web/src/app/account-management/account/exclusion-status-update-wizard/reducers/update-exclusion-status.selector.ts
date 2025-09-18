@@ -4,9 +4,10 @@ import {
   UpdateExclusionStatusState,
 } from './update-exclusion-status.reducer';
 
-const selectUpdateExclusionStatusState = createFeatureSelector<UpdateExclusionStatusState>(
-  updateExclusionStatusFeatureKey
-);
+const selectUpdateExclusionStatusState =
+  createFeatureSelector<UpdateExclusionStatusState>(
+    updateExclusionStatusFeatureKey
+  );
 
 export const selectCurrentAccountEmissionDetails = createSelector(
   selectUpdateExclusionStatusState,
@@ -21,4 +22,9 @@ export const selectExclusionYear = createSelector(
 export const selectExclusionStatus = createSelector(
   selectUpdateExclusionStatusState,
   (state) => state.excluded
+);
+
+export const selectExclusionReason = createSelector(
+  selectUpdateExclusionStatusState,
+  (state) => state.reason
 );

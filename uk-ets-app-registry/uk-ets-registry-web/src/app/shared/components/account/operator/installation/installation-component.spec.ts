@@ -51,6 +51,7 @@ describe('InstallationComponent', () => {
         id: '1',
         date: null,
       },
+      emitterId:'35675656767HT',
     } as Installation;
     fixture.detectChanges();
   });

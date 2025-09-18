@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import {
   AircraftOperatorContainerComponent,
+  MaritimeOperatorContainerComponent,
   InstallationContainerComponent,
   InstallationTransferInputComponent,
   IsItAnInstallationTransferComponent,
@@ -18,11 +19,13 @@ import { OPERATOR_ROUTES } from './operator.routes';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { FormatUkDatePipe } from '@shared/pipes';
+import { OverviewMaritimeOperatorComponent } from '@account-opening/operator/components/overview/overview-maritime-operator.component';
 
 @NgModule({
   declarations: [
     InstallationContainerComponent,
     AircraftOperatorContainerComponent,
+    MaritimeOperatorContainerComponent,
     IsItAnInstallationTransferComponent,
     InstallationTransferInputComponent,
     IsItAnInstallationTransferContainerComponent,
@@ -31,6 +34,7 @@ import { FormatUkDatePipe } from '@shared/pipes';
     OverviewInstallationComponent,
     OverviewAircraftOperatorComponent,
     OverviewInstallationTransferComponent,
+    OverviewMaritimeOperatorComponent,
   ],
   imports: [
     RouterModule.forChild(OPERATOR_ROUTES),
@@ -46,6 +50,7 @@ import { FormatUkDatePipe } from '@shared/pipes';
     OverviewAircraftOperatorComponent,
     OverviewAircraftOperatorComponent,
     OverviewInstallationComponent,
+    OverviewMaritimeOperatorComponent,
   ],
 })
 export class OperatorModule {}

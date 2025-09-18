@@ -23,14 +23,12 @@ describe('Directive: SortableColumnDirective', () => {
   let fixture: ComponentFixture<SortableColumnWrapperComponent>;
   let thElem: DebugElement;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [SortableColumnDirective, SortableColumnWrapperComponent],
-        providers: [SortService],
-      });
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [SortableColumnDirective, SortableColumnWrapperComponent],
+      providers: [SortService],
+    });
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SortableColumnWrapperComponent);
@@ -46,10 +44,10 @@ describe('Directive: SortableColumnDirective', () => {
   test(`aria-sort th element's attribute value should be toggled between ascending and descending values on th element click.`, () => {
     // given
     const getAriaSortValue = function () {
-      return thElem.nativeElement.children[0].getAttribute('aria-sort');
+      return thElem.nativeElement.children[0].getAttribute('sort');
     };
     // then
-    expect(getAriaSortValue()).toBe('');
+    expect(getAriaSortValue()).toBe('none');
 
     // when
     thElem.nativeElement.click();

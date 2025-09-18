@@ -10,18 +10,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <dl
-          class="
-            govuk-summary-list govuk-summary-list--no-border
-            sub-header-list
-          "
+          class="govuk-summary-list govuk-summary-list--no-border sub-header-list"
         >
           <div class="govuk-summary-list__row">
             <dt
-              class="
-                govuk-summary-list__key
-                sub-header-list__key
-                govuk-heading-m
-              "
+              class="govuk-summary-list__key sub-header-list__key govuk-heading-m"
             >
               {{ section?.title }}
             </dt>
@@ -33,7 +26,7 @@
             <dd class="govuk-summary-list__value sub-header-list__value">
               {{
                 section?.lastUpdated
-                  | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+                  | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00'
                   | gdsDateTime
               }}
             </dd>

@@ -13,6 +13,9 @@ import { StoreModule } from '@ngrx/store';
 import { AircraftInputComponent } from '@shared/components/account/operator/aircraft-input/aircraft-input.component';
 import { OperatorType, Regulator } from '@shared/model/account';
 import { By } from '@angular/platform-browser';
+import { ExistingEmitterIdAsyncValidator } from '@registry-web/shared/validation/existing-emitter-id-async-validator';
+import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 const routerSpy = jest.fn().mockImplementation((): Partial<Router> => ({}));
 const activatedRouteSpy = jest
@@ -42,8 +45,10 @@ describe('AircraftInputComponent', () => {
           { provide: Router, useValue: routerSpy },
           { provide: ActivatedRoute, useValue: activatedRouteSpy },
           { provide: FormBuilder, useValue: formBuilder },
+          { provide: UK_ETS_REGISTRY_API_BASE_URL, useValue: 'https://apiBaseUrl' },
+          ExistingEmitterIdAsyncValidator,
         ],
-        imports: [StoreModule.forRoot(initialState), ReactiveFormsModule],
+        imports: [StoreModule.forRoot(initialState), ReactiveFormsModule, HttpClientTestingModule],
       }).compileComponents();
       fixture = TestBed.createComponent(AircraftInputComponent);
       component = fixture.debugElement.componentInstance;
@@ -61,6 +66,7 @@ describe('AircraftInputComponent', () => {
       monitoringPlan: {
         id: '12345DD',
       },
+      emitterId:'35675656767HT',
       regulator: Regulator.DAERA,
       changedRegulator: Regulator.DAERA,
       firstYear: null,
@@ -85,6 +91,7 @@ describe('AircraftInputComponent', () => {
       monitoringPlan: {
         id: '12345DD',
       },
+      emitterId:'35675656767HT',
       regulator: Regulator.DAERA,
       changedRegulator: Regulator.DAERA,
       firstYear: '2020',
@@ -109,6 +116,7 @@ describe('AircraftInputComponent', () => {
       monitoringPlan: {
         id: '12345DD',
       },
+      emitterId:'35675656767HT',
       regulator: Regulator.DAERA,
       changedRegulator: Regulator.DAERA,
       firstYear: '2101',
@@ -133,6 +141,7 @@ describe('AircraftInputComponent', () => {
       monitoringPlan: {
         id: '12345DD',
       },
+      emitterId:'35675656767HT',
       regulator: Regulator.DAERA,
       changedRegulator: Regulator.DAERA,
       firstYear: '21xy',

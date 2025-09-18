@@ -2,9 +2,9 @@
   <label class="govuk-label" [attr.for]="id" [attr.id]="labelId">
     {{ label }}
   </label>
-  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+  <div *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
     {{ hint }}
-  </span>
+  </div>
   <input
     class="govuk-input"
     [attr.id]="id"

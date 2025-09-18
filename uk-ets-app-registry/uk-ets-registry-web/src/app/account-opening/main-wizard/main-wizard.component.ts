@@ -15,8 +15,10 @@ import { Store } from '@ngrx/store';
 import {
   selectAccountType,
   selectIsAOHA,
+  selectIsMOHA,
   selectIsOHA,
   selectIsOHAOrAOHA,
+  selectIsOHAOrAOHAorMOHA,
   selectMaxNumberOfARs,
   selectMinNumberOfARs,
 } from '../account-opening.selector';
@@ -87,7 +89,13 @@ export class MainWizardComponent implements OnInit {
 
   isAOHA$: Observable<boolean> = this.store.select(selectIsAOHA);
 
+  isMOHA$: Observable<boolean> = this.store.select(selectIsMOHA);
+
   isOHAorAOHA$: Observable<boolean> = this.store.select(selectIsOHAOrAOHA);
+
+  isOHAorAOHAorMOHA$: Observable<boolean> = this.store.select(
+    selectIsOHAOrAOHAorMOHA
+  );
 
   maxNumberOfARs$: Observable<number> = this.store.select(selectMaxNumberOfARs);
   minNumberOfARs$: Observable<number> = this.store.select(selectMinNumberOfARs);
@@ -181,16 +189,16 @@ export class MainWizardComponent implements OnInit {
       } else {
         if (
           accountType === AccountType.OPERATOR_HOLDING_ACCOUNT ||
-          accountType === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT
+          accountType === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ||
+          accountType === AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
         ) {
           this.showAuthorisedRepresentativeLink$ = this.operatorCompleted$;
           this.submitButtonEnabled$ = combineLatest([
             this.accountHolderCompleted$,
             this.accountHolderContactCompleted$,
             this.accountDetailsCompleted$,
-            this.trustedAccountListCompleted$,
             this.operatorCompleted$,
-          ]).pipe(map(([a, b, c, d, e]) => a && b && c && d && e));
+          ]).pipe(map(([a, b, c, d]) => a && b && c && d));
         } else {
           this.showAuthorisedRepresentativeLink$ =
             this.trustedAccountListCompleted$;
@@ -198,9 +206,8 @@ export class MainWizardComponent implements OnInit {
             this.accountHolderCompleted$,
             this.accountHolderContactCompleted$,
             this.accountDetailsCompleted$,
-            this.trustedAccountListCompleted$,
             this.authorisedRepresentativesCompleted$,
-          ]).pipe(map(([a, b, c, d, e]) => a && b && c && d && e));
+          ]).pipe(map(([a, b, c, d]) => a && b && c && d));
         }
       }
     });

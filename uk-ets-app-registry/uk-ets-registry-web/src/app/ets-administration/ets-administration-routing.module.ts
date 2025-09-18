@@ -55,6 +55,13 @@ const routes: Routes = [
         './recalculate-compliance-status/recalculate-compliance-status.module'
       ).then((m) => m.RecalculateComplianceStatusModule),
   },
+  {
+    path: 'view-allocation-job-status',
+    loadChildren: () =>
+      import('./allocation-job-status/allocation-job-status.module').then(
+        (m) => m.AllocationJobStatusModule
+      ),
+  },
 ];
 
 @NgModule({

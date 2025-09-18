@@ -13,7 +13,6 @@ import gov.uk.ets.reports.generator.domain.AllocationTransactionsReportData;
 import gov.uk.ets.reports.generator.domain.Transaction;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -57,11 +56,6 @@ public class AllocationTransactionsJdbcMapper
     		+ "     where objtc.type = 'REVERSES' and objtc.object_transaction_id = t.id and subt.id = objtc.subject_transaction_id and subt.status  = 'COMPLETED') subject on 1=1\r\n"
     		+ "where t.type in ('AllocateAllowances', 'ExcessAllocation', 'ReverseAllocateAllowances')\r\n"
     		+ "order by t.last_updated desc";
-
-    @Override
-    public List<AllocationTransactionsReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<AllocationTransactionsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {    	

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-manually-cancel-transaction',
@@ -12,13 +12,9 @@ export class ManuallyCancelTransactionComponent
 {
   @Output() readonly comment = new EventEmitter<string>();
 
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
-
   protected getFormModel(): any {
     return {
-      comment: ['', { validators: Validators.required }],
+      comment: ['', { validators: Validators.required, updateOn: 'change' }],
     };
   }
 

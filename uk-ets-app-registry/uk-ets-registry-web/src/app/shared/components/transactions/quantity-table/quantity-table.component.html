@@ -1,7 +1,7 @@
 <ng-container
   *ngIf="transactionBlocks != null && transactionBlocks.length === 0"
 >
-  <span class="govuk-hint"> No items added.</span>
+  <div class="govuk-hint">No items added.</div>
 </ng-container>
 <ng-container *ngIf="transactionBlocks != null && transactionBlocks.length > 0">
   <ng-container *ngIf="!isEtsTransaction; else etsTransactionTemplate">
@@ -48,10 +48,7 @@
               {{ block.applicablePeriod }}
             </td>
             <td
-              class="
-                govuk-table__cell govuk-table__cell--numeric
-                panel-display-quantity
-              "
+              class="govuk-table__cell govuk-table__cell--numeric panel-display-quantity"
             >
               {{ block.quantity | number }}
             </td>
@@ -61,8 +58,8 @@
                 block.environmentalActivity == null
                   ? ''
                   : block.projectNumber == null
-                  ? (block.environmentalActivity | environmentalActivity)
-                  : block.projectNumber
+                    ? (block.environmentalActivity | environmentalActivity)
+                    : block.projectNumber
               }}
             </td>
           </tr>

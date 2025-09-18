@@ -6,7 +6,6 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
 import { UkFormComponent } from '@registry-web/shared/form-controls/uk-form.component';
 import { PasswordStrengthAsyncValidator } from '@shared/validation/password-strength-async-validator';
 import { PasswordBlacklistAsyncValidator } from '@shared/validation/password-blacklist-async-validator';
@@ -28,7 +27,6 @@ export class ChoosePasswordComponent extends UkFormComponent implements OnInit {
   passwordMinChars: number;
 
   constructor(
-    protected formBuilder: UntypedFormBuilder,
     private passwordStrengthAsyncValidator: PasswordStrengthAsyncValidator,
     private passwordBlacklistAsyncValidator: PasswordBlacklistAsyncValidator
   ) {

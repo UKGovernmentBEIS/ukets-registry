@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.AddOrReplaceARTasksReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -102,11 +101,6 @@ public class AddOrReplaceARTasksMapper implements ReportDataMapper<AddOrReplaceA
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<AddOrReplaceARTasksReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
-
-    @Override
     public List<AddOrReplaceARTasksReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
         return jdbcTemplate.query(REPORT_QUERY, this);
     }
@@ -117,7 +111,7 @@ public class AddOrReplaceARTasksMapper implements ReportDataMapper<AddOrReplaceA
             AddOrReplaceARTasksReportData.builder()
                 .taskRequestIdentifier(resultSet.getLong("Task"))
                 .requestType(resultSet.getString("Task_type"))
-                .initiatedDate(LocalDateTime.parse(resultSet.getString("Initiated"), formatter))
+                .initiatedDate(LocalDateTime.parse(resultSet.getString("Initiated"), inputFormatter))
                 .taskWeeks(resultSet.getLong("Task_weeks"))
                 .accountHolderName(resultSet.getString("AH_name"))
                 .accountType(resultSet.getString("Account_type"))

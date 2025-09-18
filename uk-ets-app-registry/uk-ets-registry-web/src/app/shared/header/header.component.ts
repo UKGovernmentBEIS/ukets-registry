@@ -28,13 +28,16 @@ export class HeaderComponent implements OnInit {
 
   readonly menuRoutes = MENU_ROUTES;
 
-  constructor(private store: Store, private router: Router) {}
+  constructor(
+    private store: Store,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.store.dispatch(IsLoggedInCheck());
     const $header = document.querySelector('#header');
     if ($header) {
-      new Header($header).init();
+      new Header($header);
     }
 
     this.urid$ = this.store.select(selectUrid);

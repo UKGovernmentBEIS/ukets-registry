@@ -45,7 +45,7 @@ import gov.uk.ets.registry.api.user.domain.UserRole;
 import gov.uk.ets.registry.api.user.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

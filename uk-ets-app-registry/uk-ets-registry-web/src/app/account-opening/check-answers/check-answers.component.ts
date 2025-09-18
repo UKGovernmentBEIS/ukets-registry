@@ -18,6 +18,7 @@ import {
   AccountType,
   AccountTypeMap,
   getRuleLabel,
+  OperatorType,
   operatorTypeMap,
 } from '@shared/model/account';
 import {
@@ -35,7 +36,6 @@ import {
   Installation,
   InstallationActivityType,
   Operator,
-  OperatorType,
   Regulator,
 } from '../../shared/model/account/operator';
 import {
@@ -83,6 +83,7 @@ import {
   nextPage,
 } from '@account-opening/account-holder/account-holder.actions';
 import { regulatorMap } from '@account-management/account-list/account-list.model';
+import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
 
 @Component({
   selector: 'app-check-answers',
@@ -151,11 +152,13 @@ export class CheckAnswersComponent implements OnInit, AfterViewInit {
   completeInformation$: Observable<boolean>;
 
   isOHAorAOHA$: Observable<boolean> = this.store.select(selectIsOHAOrAOHA);
+  isSeniorOrJuniorAdmin$: Observable<boolean> = this.store.select(isSeniorOrJuniorAdmin);
+
 
   accountTypeText: string;
   accountHolderTypes = AccountHolderType;
   operatorType = OperatorType;
-  installationOrAircraftOperatorText: string;
+  operatorText: string;
   activityTypes = InstallationActivityType;
   mainWizardRoutes = MainWizardRoutes;
   authorisedRepresentativeOverviewWizardLink =
@@ -193,8 +196,7 @@ export class CheckAnswersComponent implements OnInit, AfterViewInit {
       this.accountHolderCompleted$,
       this.accountHolderContactCompleted$,
       this.accountDetailsCompleted$,
-      this.trustedAccountListCompleted$,
-    ]).pipe(map(([a, b, c, d]) => a && b && c && d));
+    ]).pipe(map(([a, b, c]) => a && b && c));
     this.store.dispatch(
       canGoBack({
         goBackRoute: MainWizardRoutes.TASK_LIST,
@@ -209,8 +211,7 @@ export class CheckAnswersComponent implements OnInit, AfterViewInit {
           this.completeInformation$,
           this.operatorCompleted$,
         ]).pipe(map(([a, b]) => a && b));
-        this.installationOrAircraftOperatorText =
-          operatorTypeMap[OperatorType.INSTALLATION];
+        this.operatorText = operatorTypeMap[OperatorType.INSTALLATION];
       } else if (
         accountType === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT
       ) {
@@ -218,8 +219,15 @@ export class CheckAnswersComponent implements OnInit, AfterViewInit {
           this.completeInformation$,
           this.operatorCompleted$,
         ]).pipe(map(([a, b]) => a && b));
-        this.installationOrAircraftOperatorText =
-          operatorTypeMap[OperatorType.AIRCRAFT_OPERATOR];
+        this.operatorText = operatorTypeMap[OperatorType.AIRCRAFT_OPERATOR];
+      } else if (
+        accountType === AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+      ) {
+        this.completeInformation$ = combineLatest([
+          this.completeInformation$,
+          this.operatorCompleted$,
+        ]).pipe(map(([a, b]) => a && b));
+        this.operatorText = operatorTypeMap[OperatorType.MARITIME_OPERATOR];
       } else {
         this.completeInformation$ = combineLatest([
           this.completeInformation$,

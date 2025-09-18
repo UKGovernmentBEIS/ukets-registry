@@ -179,7 +179,7 @@ class AllocationSchedulerTest {
         BusinessCheckResult resultWithoutErrors = new BusinessCheckResult();
 
         BusinessCheckResult resultWithErrors = new BusinessCheckResult();
-        resultWithErrors.setErrors(List.of(new BusinessCheckError()));
+        resultWithErrors.setErrors(List.of(new BusinessCheckError(-1, "General Error")));
 
         AllocationOverview overview = new AllocationOverview();
 

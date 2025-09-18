@@ -6,6 +6,7 @@
       notificationRequest === NotificationRequestEnum.UPDATE
     "
     [showRequestUpdate]="false"
+    [showCancelUpdate]="false"
     [showClone]="false"
     [showBackToList]="false"
   ></app-notification-header
@@ -15,7 +16,9 @@
     <span class="govuk-caption-xl">{{
       notificationRequest === NotificationRequestEnum.NEW ||
       notificationRequest === NotificationRequestEnum.CLONE
-        ? 'New ' + notificationTypeLabels[newNotification?.type].label
+        ? 'New ' +
+          notificationTypeLabels[newNotification?.type].label +
+          ' Notification'
         : 'Request to update the notification'
     }}</span>
     <fieldset class="govuk-fieldset">
@@ -33,6 +36,12 @@
           *ngIf="notificationId"
           [class]="'govuk-summary-list--no-border'"
           [summaryListItems]="getNotificationType()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list'"
+          [summaryListItems]="getNotificationRecipientHeaderItems()"
           (navigateToEmitter)="navigateTo($event)"
         ></app-summary-list>
 
@@ -63,48 +72,21 @@
         <!--TODO adjust app-summary-list in order to support [innerHTML] -->
         <dl class="govuk-summary-list">
           <div class="govuk-summary-list__row">
-            <dt
-              class="
-                govuk-summary-list__key
-                govuk-summary-list-width-thirty__key
-              "
-            >
-              Field
-            </dt>
-            <dd
-              class="
-                govuk-summary-list__value
-                govuk-!-font-weight-bold
-                govuk-summary-list-width-thirty-five__value
-              "
-            >
+            <dt class="govuk-summary-list__key">Field</dt>
+            <dd class="govuk-summary-list__value govuk-!-font-weight-bold">
               Current value
             </dd>
-            <dd
-              class="
-                govuk-summary-list__value
-                govuk-!-font-weight-bold
-                govuk-summary-list-width-thirty-five__value
-              "
-            >
+            <dd class="govuk-summary-list__value govuk-!-font-weight-bold">
               Changed value
             </dd>
           </div>
           <div class="govuk-summary-list__row">
             <dt
-              class="
-                govuk-summary-list__key
-                govuk-summary-list-width-thirty__key
-              "
+              class="govuk-summary-list__key govuk-summary-list-width-thirty__key"
             >
               Title
             </dt>
-            <dd
-              class="
-                govuk-summary-list__value
-                govuk-summary-list-width-thirty-five__value
-              "
-            >
+            <dd class="govuk-summary-list__value">
               {{ this.currentNotification?.contentDetails?.subject }}
             </dd>
             <dd
@@ -119,19 +101,11 @@
           </div>
           <div class="govuk-summary-list__row">
             <dt
-              class="
-                govuk-summary-list__key
-                govuk-summary-list-width-thirty__key
-              "
+              class="govuk-summary-list__key govuk-summary-list-width-thirty__key"
             >
               Content
             </dt>
-            <dd
-              class="
-                govuk-summary-list__value
-                govuk-summary-list-width-thirty-five__value
-              "
-            >
+            <dd class="govuk-summary-list__value">
               <app-notification-renderer
                 [content]="this.currentNotification?.contentDetails?.content"
               ></app-notification-renderer>
@@ -158,6 +132,12 @@
         <app-summary-list
           [class]="'govuk-summary-list--no-border'"
           [summaryListItems]="getNotificationTypeItems()"
+          (navigateToEmitter)="navigateTo($event)"
+        ></app-summary-list>
+
+        <app-summary-list
+          [class]="'govuk-summary-list'"
+          [summaryListItems]="getNotificationRecipientHeaderItems()"
           (navigateToEmitter)="navigateTo($event)"
         ></app-summary-list>
 

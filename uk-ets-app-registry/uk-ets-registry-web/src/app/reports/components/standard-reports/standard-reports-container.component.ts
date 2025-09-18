@@ -2,10 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { clearErrors, errors } from '@shared/shared.action';
-import {
-  ReportCreationRequest,
-  StandardReport,
-} from '@reports/model';
+import { ReportCreationRequest, StandardReport } from '@reports/model';
 import { createReportRequest, loadReportTypes } from '@reports/actions';
 import { Observable } from 'rxjs';
 import {
@@ -13,6 +10,7 @@ import {
   selectStandardReportsForRole,
 } from '@reports/selectors';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-standard-reports-list-container',
@@ -33,7 +31,13 @@ export class StandardReportsContainerComponent implements OnInit {
   }
   ngOnInit() {
     this.store.dispatch(loadReportTypes());
-    this.reports$ = this.store.select(selectStandardReportsForRole);
+    this.reports$ = this.store
+      .select(selectStandardReportsForRole)
+      .pipe(
+        map((reports) =>
+          reports.slice().sort((a, b) => a.label.localeCompare(b.label))
+        )
+      );
   }
 
   onReportGenerated(payload: ReportCreationRequest) {
@@ -43,7 +47,7 @@ export class StandardReportsContainerComponent implements OnInit {
 
   onError(details: ErrorDetail[]) {
     const summary: ErrorSummary = {
-      errors: details
+      errors: details,
     };
     this.store.dispatch(errors({ errorSummary: summary }));
   }

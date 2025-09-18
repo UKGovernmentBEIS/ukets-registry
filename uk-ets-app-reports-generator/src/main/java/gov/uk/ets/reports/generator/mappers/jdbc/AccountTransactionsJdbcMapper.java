@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import gov.uk.ets.reports.generator.domain.AccountTransactionsReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -64,11 +63,6 @@ public class AccountTransactionsJdbcMapper implements ReportDataMapper<AccountTr
         + "where t.\"status\"  = 'COMPLETED' and (t.transferring_account_full_identifier = ? or t.acquiring_account_full_identifier = ?)\r\n"
         + "group by a.account_name,ah.\"name\" ,a.registry_account_type , a.kyoto_account_type, oa.registry_account_type ,oa.kyoto_account_type , t.last_updated , t.identifier , other_account_identifier , t.\"type\" , t.unit_type , quantity_outgoing , quantity_incoming , tb.project_number ,running_balance,oa.account_name, objt.identifier, subject.reversed_by_identifier \r\n"
         + "order by last_updated desc";
-        
-    @Override
-    public List<AccountTransactionsReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<AccountTransactionsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

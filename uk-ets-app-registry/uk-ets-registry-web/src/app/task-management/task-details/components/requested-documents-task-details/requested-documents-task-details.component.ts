@@ -18,14 +18,12 @@ import { AuthModel } from '@registry-web/auth/auth.model';
   templateUrl: './requested-documents-task-details.component.html',
 })
 export class RequestedDocumentsTaskDetailsComponent implements OnInit {
-  @Input()
-  loggedInUser: AuthModel;
+  @Input() loggedInUser: AuthModel;
   @Input() taskDetails: RequestedDocumentUploadTaskDetails;
   @Input() configuration: Configuration[];
   @Input() taskActionsVisibility: boolean;
   @Output() readonly downloadTemplateFile = new EventEmitter<FileDetails>();
   @Output() readonly downloadRequestDocumentFile = new EventEmitter<FileBase>();
-
   @Output() readonly userDecision = new EventEmitter<{
     taskOutcome: TaskOutcome;
     taskType: RequestType;

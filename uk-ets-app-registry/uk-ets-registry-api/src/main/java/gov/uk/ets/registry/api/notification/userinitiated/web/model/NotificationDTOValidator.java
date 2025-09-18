@@ -2,8 +2,8 @@ package gov.uk.ets.registry.api.notification.userinitiated.web.model;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class NotificationDTOValidator implements ConstraintValidator<ValidNotification, NotificationDTO> {
     @Override

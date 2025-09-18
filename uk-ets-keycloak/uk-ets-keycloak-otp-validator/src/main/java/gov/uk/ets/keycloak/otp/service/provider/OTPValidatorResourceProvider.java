@@ -2,15 +2,15 @@ package gov.uk.ets.keycloak.otp.service.provider;
 
 import java.util.Optional;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import org.jboss.resteasy.annotations.cache.NoCache;
+import org.jboss.resteasy.reactive.NoCache;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.credential.OTPCredentialProvider;
 import org.keycloak.models.KeycloakSession;
@@ -144,7 +144,7 @@ public class OTPValidatorResourceProvider implements RealmResourceProvider {
     	RealmModel realm = session.getContext().getRealm();
         if (realm.isBruteForceProtected()) {
             if (user != null) {
-                protector.failedLogin(realm, user, session.getContext().getConnection());
+                protector.failedLogin(realm, user, session.getContext().getConnection(), session.getContext().getUri());
             }
         }
     }
@@ -157,7 +157,7 @@ public class OTPValidatorResourceProvider implements RealmResourceProvider {
     	RealmModel realm = session.getContext().getRealm();
         if (realm.isBruteForceProtected()) {
             if (user != null) {
-                protector.successfulLogin(realm, user, session.getContext().getConnection());
+                protector.successfulLogin(realm, user, session.getContext().getConnection(), session.getContext().getUri());
             }
         }
     }

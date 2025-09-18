@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_12_0_TABLE_PAYMENT" author="fragkise" context="migrate">
+        <comment>Defines the payment table</comment>
+        <sql>
+            create sequence payment_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "payment"
+            ("id" bigint,
+            "reference_number" int8,
+            "payment_id" varchar(255),
+            "amount_requested" numeric not null,
+            "amount_paid" numeric,
+            "description" varchar(255) not null,
+            "url_suffix" varchar(255) not null,
+            "method" varchar(255),
+            "status" varchar(255),
+            "created" timestamp not null,
+            "updated" timestamp,
+            constraint "pk_payment" primary key("id"));
+
+            comment on table "payment" is 'Represents a payment.';
+
+            comment on column "payment"."id" is 'The primary key.';
+            comment on column "payment"."reference_number" is 'The related task request_identifier or other business identifier.';
+            comment on column "payment"."payment_id" is 'The identifier of the payment in the GOV.UK Pay Digital Service.';
+            comment on column "payment"."amount_requested" is 'The requested amount to pay.';
+            comment on column "payment"."amount_paid" is 'The actually paid amount.';
+            comment on column "payment"."description" is 'The payment description.';
+            comment on column "payment"."url_suffix" is 'The payment url uuid suffix.';    
+            comment on column "payment"."method" is 'The payment method (BACS, CARD_OR_DIGITAL_WALLET).';
+            comment on column "payment"."status" is 'The payment status (created, started, submitted, capturable, success, failed, cancelled, error).';
+            comment on column "payment"."created" is 'When this payment was created.';
+            comment on column "payment"."updated" is 'When this payment was last updated.';
+            
+            create index "pay_task_idx" on "payment" ("reference_number");
+            create unique index "pay_url_idx" on "payment" ("url_suffix");
+        </sql>
+
+        <rollback>
+            <sql>
+                drop table payment;
+                drop sequence payment_seq;
+            </sql>
+        </rollback>
+    </changeSet>
+    <changeSet id="5_12_0_ALTER_TABLE_PAYMENT_ADD_COLUMNS" author="pkouris" context="migrate">
+            <comment>Adds paid_by, paid_on, and contact_id columns to payment table</comment>
+            <sql>
+                alter table payment add column paid_on date;
+                comment on column payment.paid_on is 'When this payment was actually paid.';
+
+                alter table payment add column paid_by varchar(255);
+                comment on column payment.paid_by is 'Identifier of the person or system that made the payment.';
+
+                alter table payment add column contact_id bigint;
+                alter table payment add constraint fk_payment_contact
+                    foreign key (contact_id) references contact(id);
+                create index idx_payment_contact_id on payment(contact_id);
+                comment on column payment.contact_id is 'Reference to contact who made the payment.';
+            </sql>
+
+            <rollback>
+                <sql>
+                    alter table payment drop constraint if exists fk_payment_contact;
+                    alter table payment drop column if exists contact_id;
+                    alter table payment drop column if exists paid_on;
+                    alter table payment drop column if exists paid_by;
+                </sql>
+            </rollback>
+    </changeSet>
+    <changeSet id="5_12_0_CREATE_TABLE_PAYMENT_HISTORY" author="pkouris" context="migrate">
+            <comment>Adds paid_by, paid_on, and contact_id columns to payment table</comment>
+            <sql>
+                create sequence payment_history_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+                create table "payment_history"
+                (
+                    "id" bigint,
+                    "reference_number" int8,
+                    "payment_id" varchar(255),
+                    "amount" numeric,
+                    "type" varchar(255) not null,
+                    "method" varchar(255),
+                    "status" varchar(255),
+                    "created" timestamp not null,
+                    "updated" timestamp,
+                    constraint "pk_payment_history" primary key("id")
+                );
+
+                comment on table "payment_history"
+                        is 'Represents a payment history entry. Includes regular payments, refunds, and dispute payments linked to a business Reference Number.';
+
+                comment on column "payment_history"."id" is 'The primary key for this payment history record.';
+                comment on column "payment_history"."reference_number" is 'Business Reference Number associated with this payment.';
+                comment on column "payment_history"."payment_id" is 'Unique identifier of the payment in the external payment system (e.g., GOV.UK Pay).';
+                comment on column "payment_history"."amount" is 'The amount of the payment.';
+                comment on column "payment_history"."type" is 'Type of payment: regular, refund, or dispute.';
+                comment on column "payment_history"."method" is 'Payment method used: Bank Transfer, Card, or Digital Wallet.';
+                comment on column "payment_history"."status" is 'Final state of the payment as defined in the technical guide.';
+                comment on column "payment_history"."created" is 'Timestamp when the payment record was first created in the system.';
+                comment on column "payment_history"."updated" is 'Timestamp when the payment record was last updated.';
+
+                create index "payment_history_idx" on "payment_history" ("reference_number");
+                create index "payment_history_payment_idx" on "payment_history" ("payment_id");
+
+            </sql>
+            <rollback>
+                <sql>
+                    drop table payment_history;
+                    drop sequence payment_history_seq;
+                </sql>
+            </rollback>
+    </changeSet>
+
+    <changeSet id="5_12_0_ALTER_TABLE_PAYMENT_DROP_COLUMN_CONTACT_ID" author="fragkise" context="migrate">
+            <comment>Drops contact_id column from payment table</comment>
+            <sql>
+                alter table payment drop constraint if exists fk_payment_contact;
+                alter table payment drop column if exists contact_id;
+            </sql>
+    </changeSet>
+
+</databaseChangeLog>

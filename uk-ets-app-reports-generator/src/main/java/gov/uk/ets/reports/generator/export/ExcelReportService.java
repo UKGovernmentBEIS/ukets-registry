@@ -1,5 +1,7 @@
 package gov.uk.ets.reports.generator.export;
 
+import static gov.uk.ets.reports.generator.export.util.ComplianceReportTypeHelper.*;
+
 import gov.uk.ets.reports.generator.ReportGeneratorException;
 import gov.uk.ets.reports.generator.domain.ReportData;
 import gov.uk.ets.reports.model.ReportType;
@@ -12,16 +14,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.dhatim.fastexcel.Color;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
 import org.springframework.stereotype.Service;
 
-import static gov.uk.ets.reports.generator.export.util.ComplianceReportTypeHelper.*;
-
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ExcelReportService {
@@ -59,8 +57,8 @@ public class ExcelReportService {
                     throw new ReportGeneratorException("Row and header data do not match");
                 }
                 for (int column = 0; column < reportDataRow.size(); column++) {
-                     writeValue(ws, reportDataRow.get(column), row + 1, column, emissionComplianceColumns);
-                     setColor(reportTypeService, ws, row + 1, column, reportDataRow.get(column));
+                    writeValue(ws, reportDataRow.get(column), row + 1, column, emissionComplianceColumns);
+                    setColor(reportTypeService, ws, row + 1, column, reportDataRow.get(column));
                 }
             }
             //set Name to Header column
@@ -100,14 +98,14 @@ public class ExcelReportService {
                 ws.value(row, column, (String) value);
             }
         } else if (value instanceof Boolean) {
-               ws.value(row, column, (Boolean) value);
+            ws.value(row, column, (Boolean) value);
         } else if (value instanceof Number) {
             ws.value(row, column, (Number) value);
         } else if (value instanceof Date) {
             ws.value(row, column, (Date) value);
         } else if (value instanceof LocalDate) {
             ws.value(row, column, (LocalDate) value);
-            ws.style(row, column).format("yyyy-MM-dd").set();
+            ws.style(row, column).format("d MMMM yyyy").set();
         } else if (value instanceof LocalDateTime) {
             ws.value(row, column, (LocalDateTime) value);
             ws.style(row, column).format("yyyy-MM-dd H:mm:ss").set();

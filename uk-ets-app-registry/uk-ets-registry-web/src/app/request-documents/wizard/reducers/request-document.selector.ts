@@ -1,14 +1,17 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
+  convertDateForDatepicker,
+  convertDateToUkDate,
+} from '@registry-web/shared/shared.util';
+import {
   requestDocumentFeatureKey,
   RequestDocumentState,
 } from '@request-documents/wizard/reducers/request-document.reducer';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
 import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-documents-origin';
 
-export const selectRequestDocumentsState = createFeatureSelector<RequestDocumentState>(
-  requestDocumentFeatureKey
-);
+export const selectRequestDocumentsState =
+  createFeatureSelector<RequestDocumentState>(requestDocumentFeatureKey);
 
 export const selectRequestDocumentsOrigin = createSelector(
   selectRequestDocumentsState,
@@ -38,6 +41,21 @@ export const selectParentRequestId = createSelector(
 export const selectDocumentsRequestType = createSelector(
   selectRequestDocumentsState,
   (state) => state.documentsRequestType
+);
+
+export const selectDeadline = createSelector(
+  selectRequestDocumentsState,
+  (state) => convertDateForDatepicker(state.deadline)
+);
+
+export const selectDeadlineUKDate = createSelector(
+  selectRequestDocumentsState,
+  (state) => convertDateToUkDate(state.deadline)
+);
+
+export const selectDeadlineDate = createSelector(
+  selectRequestDocumentsState,
+  (state) => state.deadline
 );
 
 export const displayUserCommentsPage = createSelector(
@@ -126,6 +144,7 @@ export const selectDocumentsRequest = createSelector(
   selectRecipientUrid,
   selectComment,
   selectAccountFullIdentifier,
+  selectDeadlineDate,
   (
     requestDocumentsOrigin,
     parentRequestId,
@@ -134,7 +153,8 @@ export const selectDocumentsRequest = createSelector(
     accountHolderIdentifier,
     recipientUrid,
     comment,
-    accountFullIdentifier
+    accountFullIdentifier,
+    deadline
   ) => {
     return {
       type: documentsRequestType,
@@ -146,6 +166,7 @@ export const selectDocumentsRequest = createSelector(
       comment,
       parentRequestId,
       accountFullIdentifier,
+      deadline,
     };
   }
 );

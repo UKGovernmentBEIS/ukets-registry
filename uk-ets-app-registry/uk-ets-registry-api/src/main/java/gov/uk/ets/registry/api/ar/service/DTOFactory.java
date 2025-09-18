@@ -169,12 +169,15 @@ public class DTOFactory {
             .workBuildingAndStreetOptional(userWorkContact.getWorkBuildingAndStreetOptional())
             .workBuildingAndStreetOptional2(userWorkContact.getWorkBuildingAndStreetOptional2())
             .workCountry(userWorkContact.getWorkCountry())
-            .workCountryCode(userWorkContact.getWorkCountryCode())
-            .workPhoneNumber(userWorkContact.getWorkPhoneNumber())
             .workEmailAddress(userWorkContact.getEmail())
             .workPostCode(userWorkContact.getWorkPostCode())
             .workTownOrCity(userWorkContact.getWorkTownOrCity())
             .workStateOrProvince(userWorkContact.getWorkStateOrProvince())
+            .workMobileCountryCode(userWorkContact.getWorkMobileCountryCode())
+            .workMobilePhoneNumber(userWorkContact.getWorkMobilePhoneNumber())
+            .workAlternativeCountryCode(userWorkContact.getWorkAlternativeCountryCode())
+            .workAlternativePhoneNumber(userWorkContact.getWorkAlternativePhoneNumber())
+            .noMobilePhoneNumberReason(userWorkContact.getNoMobilePhoneNumberReason())
             .build();
     }
 }

@@ -3,7 +3,7 @@ package gov.uk.ets.registry.api.helper.persistence;
 import gov.uk.ets.registry.api.transaction.domain.TransactionAccountBalance;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import java.util.Date;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.boot.test.context.TestComponent;

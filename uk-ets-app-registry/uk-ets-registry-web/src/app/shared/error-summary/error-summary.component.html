@@ -15,9 +15,9 @@
         }
   "
 >
-  <h2 class="govuk-error-summary__title" id="error-summary-title">
+  <h1 class="govuk-error-summary__title" id="error-summary-title">
     There is a problem
-  </h2>
+  </h1>
   <div class="govuk-error-summary__body">
     <ul
       class="govuk-list govuk-error-summary__list"
@@ -42,9 +42,12 @@
   </div>
 </div>
 
-<div *ngIf="_goBackToErrorBasedPath" class="govuk-grid-columns-two-thirds">
+<div
+  *ngIf="_goBackToErrorBasedPath"
+  class="govuk-grid-columns-two-thirds govuk-!-margin-bottom-9"
+>
   <a
-    class="govuk-link"
+    class="govuk-link govuk-link--no-visited-state"
     [routerLink]="[]"
     (click)="navigateToAccountDetails($event)"
   >

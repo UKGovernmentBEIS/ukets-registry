@@ -15,6 +15,7 @@ import {
   copy,
   timeNow,
 } from '@registry-web/shared/shared.util';
+import { NotificationsFile } from '@shared/model/file';
 
 @Component({
   selector: 'app-notification-check-and-submit',
@@ -34,6 +35,8 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
   newNotification: Notification;
   @Input()
   tentativeRecipients: number;
+  @Input()
+  recipientsEmailsFile: NotificationsFile;
   @Output() readonly cancelEmitter = new EventEmitter();
   @Output() readonly navigateToEmitter = new EventEmitter<string>();
   @Output() readonly submitRequest = new EventEmitter<{
@@ -220,9 +223,12 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
         key: { label: 'Expires by' },
         value: [
           {
-            label: this.gdsDatePipe.transform(
-              this.newNotification?.activationDetails?.expirationDate
-            ),
+            label:
+              this.newNotification?.activationDetails?.expirationDate == null
+                ? ''
+                : this.gdsDatePipe.transform(
+                    this.newNotification?.activationDetails?.expirationDate
+                  ),
           },
         ],
       });
@@ -232,9 +238,12 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
         key: { label: 'Expiration date' },
         value: [
           {
-            label: this.gdsDatePipe.transform(
-              this.newNotification?.activationDetails?.expirationDate
-            ),
+            label:
+              this.newNotification?.activationDetails?.expirationDate == null
+                ? ''
+                : this.gdsDatePipe.transform(
+                    this.newNotification?.activationDetails?.expirationDate
+                  ),
           },
         ],
       });
@@ -360,14 +369,21 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
         key: { label: 'Expires by' },
         value: [
           {
-            label: this.gdsDatePipe.transform(
-              this.currentNotification?.activationDetails?.expirationDate
-            ),
+            label:
+              this.currentNotification?.activationDetails?.expirationDate ==
+              null
+                ? ''
+                : this.gdsDatePipe.transform(
+                    this.currentNotification?.activationDetails?.expirationDate
+                  ),
           },
           {
-            label: this.gdsDatePipe.transform(
-              this.changedValues['activationDetails']['expirationDate']
-            ),
+            label:
+              this.changedValues['activationDetails']['expirationDate'] == null
+                ? ''
+                : this.gdsDatePipe.transform(
+                    this.changedValues['activationDetails']['expirationDate']
+                  ),
             class:
               this.changedValues['activationDetails']['expirationDate'] !=
               undefined
@@ -382,14 +398,21 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
         key: { label: 'Expiration date' },
         value: [
           {
-            label: this.gdsDatePipe.transform(
-              this.currentNotification?.activationDetails?.expirationDate
-            ),
+            label:
+              this.currentNotification?.activationDetails?.expirationDate ==
+              null
+                ? ''
+                : this.gdsDatePipe.transform(
+                    this.currentNotification?.activationDetails?.expirationDate
+                  ),
           },
           {
-            label: this.gdsDatePipe.transform(
-              this.changedValues['activationDetails']['expirationDate']
-            ),
+            label:
+              this.changedValues['activationDetails']['expirationDate'] == null
+                ? ''
+                : this.gdsDatePipe.transform(
+                    this.changedValues['activationDetails']['expirationDate']
+                  ),
             class: this.changedValues['activationDetails']['expirationDate']
               ? 'summary-list-change-notification'
               : '',
@@ -427,7 +450,7 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
     this.cancelEmitter.emit();
   }
 
-  getNotificationRecipientItems(): SummaryListItem[] {
+  getNotificationRecipientHeaderItems(): SummaryListItem[] {
     return [
       {
         key: { label: 'Recipients', class: 'govuk-heading-m' },
@@ -436,7 +459,21 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
             label: '',
           },
         ],
+        action:
+          this.newNotification?.type === NotificationType.AD_HOC_EMAIL
+            ? {
+                label: 'Change',
+                visible: true,
+                visuallyHidden: '',
+                clickEvent: NotificationsWizardPathsModel.ADHOC_EMAIL,
+              }
+            : null,
       },
+    ];
+  }
+
+  getNotificationRecipientItems(): SummaryListItem[] {
+    const notificationRecipientItems: SummaryListItem[] = [
       {
         key: { label: 'Total number of tentative recipients', class: '' },
         value: [
@@ -446,5 +483,22 @@ export class NotificationCheckAndSubmitComponent implements OnInit {
         ],
       },
     ];
+    if (this.newNotification?.type === NotificationType.AD_HOC_EMAIL) {
+      notificationRecipientItems.splice(1, 0, {
+        key: { label: 'File uploaded', class: '' },
+        value: {
+          label: '',
+          class: 'forcibly-hide',
+        },
+        action: {
+          label: this.recipientsEmailsFile.fileName,
+          visible: true,
+          visuallyHidden: '',
+          clickEvent: 'download-emails-file',
+          class: 'summary-list-link',
+        },
+      });
+    }
+    return notificationRecipientItems;
   }
 }

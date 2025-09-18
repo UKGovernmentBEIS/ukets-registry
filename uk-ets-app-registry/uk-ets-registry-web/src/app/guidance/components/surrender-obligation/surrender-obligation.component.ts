@@ -2,10 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { canGoBack } from '@shared/shared.action';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import {
-  selectRegistrationConfigurationProperty,
-  selectRegistryConfigurationProperty,
-} from '@shared/shared.selector';
+import { selectRegistryConfigurationProperty } from '@shared/shared.selector';
 import { environment } from '../../../../environments/environment';
 
 @Component({

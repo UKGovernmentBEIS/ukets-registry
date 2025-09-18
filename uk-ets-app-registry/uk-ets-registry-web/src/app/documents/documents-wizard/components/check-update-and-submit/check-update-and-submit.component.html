@@ -1,0 +1,35 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Upload new file'"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Update documents</span>
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-fieldset__heading">Check the update and submit</h1>
+      </legend>
+
+      <app-summary-list
+        class="govuk-summary-list"
+        [summaryListItems]="typeSummaryList"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+
+      <br />
+
+      <app-summary-list
+        [class]="'govuk-summary-list'"
+        [summaryListItems]="valuesSummaryList"
+        (navigateToEmitter)="navigateTo($event)"
+      ></app-summary-list>
+    </fieldset>
+
+    <button
+      id="submit"
+      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="submitChanges()"
+    >
+      Submit
+    </button>
+  </div>
+</div>

@@ -10,7 +10,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -66,12 +65,6 @@ public class TransactionDetailsReportService implements ReportTypeService<Transa
                 "Project Number*",
                 "Commitment Period*"
             );
-    }
-
-    @Override
-    public List<TransactionDetailsReportData> generateReportData(
-        ReportCriteria criteria) {
-        return List.of();
     }
 
     @Override

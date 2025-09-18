@@ -34,7 +34,10 @@ export class ConfirmUserStatusActionComponent
       ? {
           comment: [
             '',
-            { validators: Validators.required, updateOn: 'change' },
+            {
+              validators: [Validators.required, Validators.minLength(3)],
+              updateOn: 'change',
+            },
           ],
         }
       : {
@@ -47,6 +50,7 @@ export class ConfirmUserStatusActionComponent
       ? {
           comment: {
             required: 'You must enter a comment',
+            minlength: 'Comment must be 3 characters or more',
           },
         }
       : {

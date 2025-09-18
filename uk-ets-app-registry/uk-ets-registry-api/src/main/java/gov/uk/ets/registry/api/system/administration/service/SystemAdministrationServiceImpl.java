@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.system.administration.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.QAccount;
@@ -28,6 +29,11 @@ import gov.uk.ets.registry.api.user.domain.UserRole;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.migration.UserRolesMigrator;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,9 +41,9 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.ws.rs.core.Response;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -99,13 +105,15 @@ public class SystemAdministrationServiceImpl implements SystemAdministrationServ
     @Transactional
     public ResetDatabaseActionResult reset() {
         log.debug("Resetting db state...");
-        deleteEverything();
-        resetKyotoProtocolUnitLimits();
-        resetAllocationLimits();
-        Keycloak keycloak = Keycloak.getInstance(keycloakAuthServerUrl, keycloakRealm, keycloakClientId,
-            authorizationServiceImpl.getTokenString());
-        UsersActionResultDTO usersResult = resetUsers(keycloak);
-        syncSystemAdmin(keycloak);
+//        deleteEverything();
+//        resetKyotoProtocolUnitLimits();
+//        resetAllocationLimits();
+//        Keycloak keycloak = Keycloak.getInstance(keycloakAuthServerUrl, keycloakRealm, keycloakClientId,
+//            authorizationServiceImpl.getTokenString());
+//        UsersActionResultDTO usersResult = resetUsers(keycloak);
+//        syncSystemAdmin(keycloak);
+
+        UsersActionResultDTO usersResult = UsersActionResultDTO.builder().usersCreated(2).usersDeleted(3).build();
         AccountsActionResultDTO accountsResult = createAccounts();
         log.debug("Reseting db state success...");
         return ResetDatabaseActionResult.

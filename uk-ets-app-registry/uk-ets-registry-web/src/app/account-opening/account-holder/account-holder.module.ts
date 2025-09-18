@@ -20,6 +20,7 @@ import { SharedModule } from '@shared/shared.module';
 import { AccountOpeningModule } from '../account-opening.module';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { AccountSharedModule } from '@registry-web/account-shared/account-shared.module';
+import { AccountHolderService } from './account-holder.service';
 
 @NgModule({
   declarations: [
@@ -43,5 +44,6 @@ import { AccountSharedModule } from '@registry-web/account-shared/account-shared
     NgbTypeaheadModule,
     AccountSharedModule,
   ],
+  exports: [AccountHolderTypeComponent, AccountHolderSelectionComponent],
 })
 export class AccountHolderModule {}

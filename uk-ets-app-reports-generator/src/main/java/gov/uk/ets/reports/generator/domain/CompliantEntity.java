@@ -14,8 +14,13 @@ public class CompliantEntity {
     private String installationActivity;
     private String installationPermitId;
 
-    private Long aircraftOperatorId;
-    private String monitoringPlanId;
     private Long firstYearOfVerifiedEmissionSubmission;
     private Long lastYearOfVerifiedEmissionSubmission;
+
+    private Long aircraftOperatorId;
+    private String aircraftMonitoringPlanId;
+
+    private Long maritimeOperatorId;
+    private String maritimeMonitoringPlanId;
+    private String imo;
 }

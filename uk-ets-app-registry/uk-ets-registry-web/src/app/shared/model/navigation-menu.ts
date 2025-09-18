@@ -3,6 +3,7 @@ import { SearchMode } from '@shared/resolvers/search.resolver';
 
 export enum MENU_ROUTES {
   DASHBOARD = '/dashboard',
+  RECOVERY = '/dashboard/recovery',
   UNDER_CONSTRUCTION = '/under-construction',
 
   ACCOUNT_SEARCH = '/account-list',
@@ -30,6 +31,7 @@ export enum MENU_ROUTES {
   ETS_ADMINISTRATION_UPLOAD_EMISSIONS_TABLE = '/ets-administration/emissions-table',
   ETS_ADMINISTRATION_RECONCILIATION = '/ets-administration/reconciliation',
   ETS_ADMINISTRATION_RECALCULATE_COMPLIANCE_STATUS = '/ets-administration/recalculate-compliance-status',
+  ETS_ADMINISTRATION_VIEW_ALLOCATION_JOB_STATUS = '/ets-administration/view-allocation-job-status',
 
   REGISTRY_ADMINISTRATION = '/registry-administration',
   NOTIFICATIONS = '/notifications',
@@ -40,6 +42,7 @@ export enum MENU_ROUTES {
   ETS_REPORT_PUBLICATION = '/reports/ets-report-publication',
   KP_REPORT_PUBLICATION = '/reports/kp-report-publication',
   ABOUT = '/about',
+  DOCUMENTS = '/documents',
 }
 
 export enum MENU_SCOPES {
@@ -300,6 +303,14 @@ export const MENU_ITEMS = function (
             { name: MENU_SCOPES.RECALCULATE_COMPLIANCE_STATUS },
           ],
         },
+        {
+          label: 'View allocation job status',
+          routerLink: MENU_ROUTES.ETS_ADMINISTRATION_VIEW_ALLOCATION_JOB_STATUS,
+          protectedScopes: [
+            { name: MENU_SCOPES.RECALCULATE_COMPLIANCE_STATUS },
+          ],
+          queryParams: { mode: SearchMode.INITIAL_LOAD },
+        },
       ],
     },
     {
@@ -381,6 +392,12 @@ export const MENU_ITEMS = function (
       protectedScopes: [
         { name: MENU_SCOPES.NOTIFICATION_ADMINISTRATION, isPermission: true },
       ],
+    },
+    {
+      label: 'Documents',
+      routerLink: MENU_ROUTES.DOCUMENTS,
+      activeMenuItem: HeaderItem.DOCUMENTS,
+      checkAuthenticated: true,
     },
     {
       label: 'About',

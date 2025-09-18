@@ -121,21 +121,42 @@ class UserRegistrationValidatorTest {
     }
 
     @Test
-    @DisplayName("user representation with invalid phone number should throw exception")
-    void testValidateWorkPhoneNumber() {
-        UserRepresentation userRepresentation = mockValidUserRepresentation();
-        assertAll(() -> validator.validate(userRepresentation));
-        when(userRepresentation.getAttributes().get("workPhoneNumber")).thenReturn(List.of("3232"));
-        assertThrows(UserSubmissionValidationException.class, () -> validator.validate(userRepresentation));
-    }
-
-    @Test
     @DisplayName("user representation without invalid URID should throw exception")
     void testValidateURID() {
         UserRepresentation userRepresentation = mockValidUserRepresentation();
         assertAll(() -> validator.validate(userRepresentation));
         when(userRepresentation.getAttributes().get("urid")).thenReturn(List.of("urid"));
         assertThrows(UserSubmissionValidationException.class, () -> validator.validate(userRepresentation));
+    }
+
+    @Test
+    @DisplayName("user representation without mobile phone number should throw exception")
+    void testValidateWorkMobilePhoneNumber() {
+        UserRepresentation userRepresentation = mockValidUserRepresentation();
+        assertAll(() -> validator.validate(userRepresentation));
+        when(userRepresentation.getAttributes().get("workMobilePhoneNumber")).thenReturn(null);
+        assertThrows(UserSubmissionValidationException.class, () -> validator.validate(userRepresentation));
+    }
+
+    @Test
+    @DisplayName("user representation with reason but no mobile phone and no alternative phone should throw exception")
+    void testValidateNoWorkMobilePhoneReasonNoAlternativePhoneNumber() {
+        UserRepresentation userRepresentation = mockValidUserRepresentation();
+        assertAll(() -> validator.validate(userRepresentation));
+        when(userRepresentation.getAttributes().get("workMobilePhoneNumber")).thenReturn(null);
+        when(userRepresentation.getAttributes().get("workAlternativePhoneNumber")).thenReturn(null);
+        when(userRepresentation.getAttributes().get("noMobilePhoneNumberReason")).thenReturn(List.of("Reason"));
+        assertThrows(UserSubmissionValidationException.class, () -> validator.validate(userRepresentation));
+    }
+
+    @Test
+    @DisplayName("user representation with reason and alternative phone number is valid")
+    void testValidateNoWorkMobilePhoneReasonWithAlternativePhoneNumber() {
+        UserRepresentation userRepresentation = mockValidUserRepresentation();
+        assertAll(() -> validator.validate(userRepresentation));
+        when(userRepresentation.getAttributes().get("workMobilePhoneNumber")).thenReturn(null);
+        when(userRepresentation.getAttributes().get("noMobilePhoneNumberReason")).thenReturn(List.of("Reason"));
+        assertAll(() -> validator.validate(userRepresentation));
     }
 
     private UserRepresentation mockValidUserRepresentation() {
@@ -146,12 +167,8 @@ class UserRegistrationValidatorTest {
         when(userRepresentation.getLastName()).thenReturn("a last name");
         when(userRepresentation.getEmail()).thenReturn("email@email.email");
         Map<String, List<String>> attributes = mock(Map.class);
-        when(attributes.get("workEmailAddress")).thenReturn(List.of("workEmailAddress@workEmailAddress.com"));
         when(attributes.get("workCountry")).thenReturn(List.of("UK"));
         when(attributes.get("workPostCode")).thenReturn(List.of("56789"));
-        when(attributes.get("workCountryCode")).thenReturn(List.of("UK (44)"));
-        when(attributes.get("workPhoneNumber")).thenReturn(List.of("7911123456"));
-        when(attributes.get("workEmailAddressConfirmation")).thenReturn(List.of("workEmailAddress@workEmailAddress.com"));
         when(attributes.get("workBuildingAndStreet")).thenReturn(List.of("workBuildingAndStreet"));
         when(attributes.get("workTownOrCity")).thenReturn(List.of("workTownOrCity"));
         when(attributes.get("workStateOrProvince")).thenReturn(List.of("workStateOrProvince"));
@@ -164,6 +181,10 @@ class UserRegistrationValidatorTest {
         when(attributes.get("countryOfBirth")).thenReturn(List.of("countryOfBirth"));
         when(attributes.get("state")).thenReturn(List.of("state"));
         when(attributes.get("birthDate")).thenReturn(List.of("12/12/1980"));
+        when(attributes.get("workMobileCountryCode")).thenReturn(List.of("UK (44)"));
+        when(attributes.get("workMobilePhoneNumber")).thenReturn(List.of("7911123456"));
+        when(attributes.get("workAlternativeCountryCode")).thenReturn(List.of("UK (44)"));
+        when(attributes.get("workAlternativePhoneNumber")).thenReturn(List.of("7911123457"));
         when(userRepresentation.getAttributes()).thenReturn(attributes);
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setValue("test55@test55");

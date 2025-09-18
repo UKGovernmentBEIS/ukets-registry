@@ -7,6 +7,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.assign.UserRequestedDocumentsCannotBeAssignedToDifferentUserRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.UserRequestedDocumentsCannotBeClaimedByDifferentUserRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.UserRequestedDocumentsCannotBeCompletedByDifferentUserRule;
+import gov.uk.ets.registry.api.common.DateUtils;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.display.DisplayNameUtils;
 import gov.uk.ets.registry.api.file.reference.domain.type.ReferenceFileType;
@@ -16,7 +17,10 @@ import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.domain.RequestDocumentsTaskDifference;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsService;
+import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.task.domain.types.TaskUpdateAction;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskActionError;
 import gov.uk.ets.registry.api.task.service.TaskServiceException;
 import gov.uk.ets.registry.api.task.service.TaskTypeService;
@@ -30,6 +34,7 @@ import gov.uk.ets.registry.api.user.service.UserService;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -49,6 +54,7 @@ public class RequestDocumentUploadTaskService implements TaskTypeService<Request
     private final RequestedDocsService requestedDocsService;
     private final ReferenceFileService referenceFileService;
     private final UploadedFilesRepository uploadedFilesRepository;
+    private final TaskRepository taskRepository;
     private final Mapper mapper;
     private final DomainEventEntityRepository domainEventEntityRepository;
 
@@ -143,5 +149,28 @@ public class RequestDocumentUploadTaskService implements TaskTypeService<Request
         return auditEventDTOS.isEmpty()
                 ? ""
                 : auditEventDTOS.get(0).getDescription();
+    }
+
+    @Override
+    @Transactional
+    @EmitsGroupNotifications(GroupNotificationType.DEADLINE_UPDATE)
+    public RequestDocumentUploadTaskDetailsDTO updateTask(String updateInfo, TaskDetailsDTO taskDetailsDTO,
+                                                          TaskUpdateAction taskUpdateAction) {
+
+        if (taskUpdateAction != TaskUpdateAction.UPDATE_DEADLINE) {
+            return null;
+        }
+
+        Date date = DateUtils.parseIso(updateInfo);
+        DateUtils.validateFutureDate(date);
+
+        taskDetailsDTO.setDeadline(date);
+
+        Task task = taskRepository.findByRequestId(taskDetailsDTO.getRequestId());
+        task.setDeadline(date);
+        Optional.ofNullable(task.getParentTask())
+            .ifPresent(parent -> parent.setDeadline(DateUtils.getMax(date, parent.getDeadline())));
+
+        return getDetails(taskDetailsDTO);
     }
 }

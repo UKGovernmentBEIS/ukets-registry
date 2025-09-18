@@ -4,6 +4,7 @@ import {
   NotificationsWizardState,
 } from '@notifications/notifications-wizard/reducers/notifications-wizard.reducer';
 import { NotificationsUtils } from '@shared/utils/notifications.utils';
+import { UploadStatus } from '@shared/model/file';
 
 const selectNotificationWizardState =
   createFeatureSelector<NotificationsWizardState>(
@@ -58,5 +59,31 @@ export const selectTentativeRecipients = createSelector(
   (state) =>
     state.notificationId
       ? state.notification.tentativeRecipients
-      : state.notificationDefinition.tentativeRecipients
+      : state.notificationDefinition ?
+          state.notificationDefinition.tentativeRecipients ?
+            state.notificationDefinition.tentativeRecipients
+      : state.fileHeader ?
+          state.fileHeader.tentativeRecipients
+          : null  
+      : null
+);
+
+export const selectUploadFileProgress = createSelector(
+  selectNotificationWizardState,
+  (state) => state.progress
+);
+
+export const selectUploadFileIsInProgress = createSelector(
+  selectNotificationWizardState,
+  (state) => state.status === UploadStatus.Started && state.progress >= 0
+);
+
+export const selectRecipientsEmailsFile = createSelector(
+  selectNotificationWizardState,
+  (state) => state.fileHeader
+);
+
+export const selectNotificationType = createSelector(
+  selectNotificationWizardState,
+  (state) => state.notificationNew?.type
 );

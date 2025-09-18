@@ -21,14 +21,25 @@ public class UserPersonalInfo implements Serializable {
     private String workCountry;
     private String workCountryCode;
     private String workPhoneNumber;
+    private String workMobileCountryCode;
+    private String workMobilePhoneNumber;
+    private String workAlternativeCountryCode;
+    private String workAlternativePhoneNumber;
+    private String noMobilePhoneNumberReason;
+    private String recoveryCountryCode;
+    private String recoveryPhoneNumber;
+    private String recoveryEmailAddress;
+    private String hideRecoveryMethodsNotification;
     private String email;
 
     @QueryProjection
     public UserPersonalInfo(String urid, String firstName, String lastName, 
     		String alsoKnownAs, String workBuildingAndStreet, String workBuildingAndStreetOptional,
     		String workBuildingAndStreetOptional2, String workPostCode, String workTownOrCity, 
-    		String workStateOrProvince, String workCountry, String workCountryCode, String workPhoneNumber, 
-    		String email) {
+    		String workStateOrProvince, String workCountry, String workCountryCode, String workPhoneNumber,
+            String workMobileCountryCode, String workMobilePhoneNumber, String workAlternativeCountryCode,
+            String workAlternativePhoneNumber, String noMobilePhoneNumberReason, String recoveryCountryCode,
+            String recoveryPhoneNumber, String recoveryEmailAddress, String hideRecoveryMethodsNotification, String email) {
         this.urid = urid; 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -42,6 +53,15 @@ public class UserPersonalInfo implements Serializable {
         this.workCountry = workCountry;
         this.workCountryCode = workCountryCode;
         this.workPhoneNumber = workPhoneNumber;
+        this.workMobileCountryCode = workMobileCountryCode;
+        this.workMobilePhoneNumber = workMobilePhoneNumber;
+        this.workAlternativeCountryCode = workAlternativeCountryCode;
+        this.workAlternativePhoneNumber = workAlternativePhoneNumber;
+        this.noMobilePhoneNumberReason = noMobilePhoneNumberReason;
+        this.recoveryCountryCode = recoveryCountryCode;
+        this.recoveryPhoneNumber = recoveryPhoneNumber;
+        this.recoveryEmailAddress = recoveryEmailAddress;
+        this.hideRecoveryMethodsNotification = hideRecoveryMethodsNotification;
         this.email = email;
     }
 
@@ -61,6 +81,15 @@ public class UserPersonalInfo implements Serializable {
             ", workCountry='" + workCountry + '\'' +
             ", workCountryCode='" + workCountryCode + '\'' +
             ", workPhoneNumber='" + workPhoneNumber + '\'' +
+            ", workMobileCountryCode='" + workMobileCountryCode + '\'' +
+            ", workMobilePhoneNumber='" + workMobilePhoneNumber + '\'' +
+            ", workAlternativeCountryCode='" + workAlternativeCountryCode + '\'' +
+            ", workAlternativePhoneNumber='" + workAlternativePhoneNumber + '\'' +
+            ", noMobilePhoneNumberReason='" + noMobilePhoneNumberReason + '\'' +
+            ", recoveryCountryCode='" + recoveryCountryCode + '\'' +
+            ", recoveryPhoneNumber='" + recoveryPhoneNumber + '\'' +
+            ", recoveryEmailAddress='" + recoveryEmailAddress + '\'' +
+            ", hideRecoveryMethodsNotification='" + hideRecoveryMethodsNotification + '\'' +
             ", email='" + email + '\'' +
             '}';
     }

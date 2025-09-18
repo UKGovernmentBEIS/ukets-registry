@@ -1,6 +1,6 @@
 package gov.uk.ets.keycloak.users.service.adapter.rest;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -2,9 +2,8 @@ package gov.uk.ets.registry.api.allocation.data;
 
 import gov.uk.ets.registry.api.allocation.type.AllocationStatusType;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
-import java.io.Serializable;
-
 import gov.uk.ets.registry.api.allocation.util.AllocationUtils;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,8 +44,27 @@ public class AllocationSummary implements Serializable {
         this.year = year;
         this.entitlement = entitlement;
     }
-
+    
+    /**
+     * @deprecated use AllocationSummary(Long compliantEntityId, Integer year, Long entitlement, Long allocated, AllocationStatusType status,  Boolean excluded) instead
+     * @param year
+     * @param entitlement
+     * @param allocated
+     * @param status
+     * @param excluded
+     */
+    @Deprecated(forRemoval = true)
     public AllocationSummary(Integer year, Long entitlement, Long allocated, AllocationStatusType status, Boolean excluded) {
+        this.year = year;
+        this.entitlement = entitlement;
+        this.allocated = allocated;
+        this.remaining = AllocationUtils.calculateRemainingValue(entitlement, allocated, excluded);
+        this.status = status;
+        this.excluded = excluded;
+    }
+    
+    public AllocationSummary(Long compliantEntityId, Integer year, Long entitlement, Long allocated, AllocationStatusType status,  Boolean excluded) {
+        this.compliantEntityId = compliantEntityId;
         this.year = year;
         this.entitlement = entitlement;
         this.allocated = allocated;
@@ -66,6 +84,15 @@ public class AllocationSummary implements Serializable {
         this.type = type;
     }
 
+    /**
+     * @deprecated use AllocationSummary(Long compliantEntityId, Integer year, Long entitlement, Long allocated, AllocationStatusType status,  Boolean excluded) instead
+     * @param year
+     * @param entitlement
+     * @param allocated
+     * @param status
+     * @param excluded
+     */
+    @Deprecated(forRemoval = true)
     public AllocationSummary(Long compliantEntityId, Long entitlement, Long allocated, AllocationStatusType status,  Boolean excluded) {
         this.compliantEntityId = compliantEntityId;
         this.entitlement = entitlement;

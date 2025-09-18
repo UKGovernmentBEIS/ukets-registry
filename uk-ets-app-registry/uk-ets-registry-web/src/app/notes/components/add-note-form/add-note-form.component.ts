@@ -1,15 +1,28 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  Validators,
+} from '@angular/forms';
 import { UkFormComponent } from '@registry-web/shared/form-controls/uk-form.component';
-import { FormRadioGroupInfo } from '@registry-web/shared/form-controls/uk-radio-input/uk-radio.model';
+import {
+  FormRadioGroupInfo,
+  FormRadioOption,
+} from '@registry-web/shared/form-controls/uk-radio-input/uk-radio.model';
+import { SharedModule } from '@registry-web/shared/shared.module';
 
 @Component({
+  standalone: true,
   selector: 'app-add-note-form',
   templateUrl: './add-note-form.component.html',
+  imports: [ReactiveFormsModule, SharedModule],
 })
 export class AddNoteFormComponent extends UkFormComponent implements OnInit {
   @Input()
   storedNote: string;
+
+  @Input()
+  options: FormRadioOption[];
 
   @Output()
   handleSubmit = new EventEmitter<string>();
@@ -17,16 +30,7 @@ export class AddNoteFormComponent extends UkFormComponent implements OnInit {
   @Output()
   handleCancel = new EventEmitter<string>();
 
-  formRadioGroupInfo: FormRadioGroupInfo = {
-    radioGroupHeading: 'Select entity',
-    radioGroupHeadingCaption: 'Add Note',
-    radioGroupHint: 'Select one option',
-    key: 'noteDescription',
-    options: [
-      { label: 'Account', value: 'ACCOUNT', enabled: true },
-      { label: 'Account Holder', value: 'ACCOUNT_HOLDER', enabled: true },
-    ],
-  };
+  formRadioGroupInfo: FormRadioGroupInfo;
 
   constructor(protected formBuilder: UntypedFormBuilder) {
     super();

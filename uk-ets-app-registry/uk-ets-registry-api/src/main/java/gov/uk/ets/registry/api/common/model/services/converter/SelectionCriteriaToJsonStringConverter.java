@@ -4,7 +4,7 @@ import gov.uk.ets.registry.api.notification.userinitiated.domain.SelectionCriter
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Converter;
+import jakarta.persistence.Converter;
 
 @Component
 @Converter
@@ -16,7 +16,6 @@ public class SelectionCriteriaToJsonStringConverter extends ObjectToJsonStringCo
         try {
             return objectMapper.readValue(dbData, SelectionCriteria.class);
         } catch (Exception ex) {
-            log.warn("No SelectionCriteria found", ex);
             return null;
         }
     }

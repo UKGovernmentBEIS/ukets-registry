@@ -7,7 +7,6 @@ import gov.uk.ets.reports.generator.domain.AccountsNoARsReportData;
 import gov.uk.ets.reports.generator.domain.CompliantEntity;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -44,6 +43,11 @@ public class AccountsNoARsJdbcMapper
             "       i.installation_name                                                     as installation_name,\n" +
             "       i.activity_type                                                         as installation_activity,\n" +
             "       i.permit_identifier                                                     as installation_permit_id,\n" +
+            "       case when ao.compliant_entity_id IS NOT NULL then ce.identifier end     as aircraft_operator_id,\n" +
+            "       ao.monitoring_plan_identifier                                           as aircraft_monitoring_plan_id,\n" +
+            "       case when mo.compliant_entity_id IS NOT NULL then ce.identifier end     as maritime_operator_id,\n" +
+            "       mo.maritime_monitoring_plan_identifier                                  as maritime_monitoring_plan_id,\n" +
+            "       mo.imo                                                                  as imo,\n" +
             "       ce.regulator                                                            as regulator,\n" +
             "       ce.start_year                                                           as first_year_verified_emission_submission,\n" +
             "       ce.end_year                                                             as last_year_verified_emission_submission,\n" +
@@ -52,6 +56,8 @@ public class AccountsNoARsJdbcMapper
             "         inner join account_holder ah on a.account_holder_id = ah.id\n" +
             "         left join compliant_entity ce on a.compliant_entity_id = ce.id\n" +
             "         left join installation i on ce.id = i.compliant_entity_id\n" +
+            "         left join aircraft_operator ao on ce.id = ao.compliant_entity_id\n" +
+            "         left join maritime_operator mo on ce.id = mo.compliant_entity_id\n" +
             "where not exists(\n" +
             "        select aa.id\n" +
             "        from account_access aa\n" +
@@ -66,15 +72,17 @@ public class AccountsNoARsJdbcMapper
             "          and t.type = 'AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST'\n" +
             "          and t.status = 'SUBMITTED_NOT_YET_APPROVED'\n" +
             "    )\n" +
+            "  and (" +
+            "    a.registry_account_type in ('OPERATOR_HOLDING_ACCOUNT', 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT', 'MARITIME_OPERATOR_HOLDING_ACCOUNT')\n" +
+            "    or (\n" +
+            "      a.registry_account_type = 'NONE' and \n" +
+            "      a.kyoto_account_type in ('PERSON_HOLDING_ACCOUNT', 'FORMER_OPERATOR_HOLDING_ACCOUNT')\n" +
+            "    )\n" +
+            "  )\n" +
             "  and a.account_status not in ('CLOSED', 'PROPOSED', 'REJECTED')\n" +
             "order by holder_name, account_number";
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Override
-    public List<AccountsNoARsReportData> mapData(ReportCriteria criteria) {
-        return jdbcTemplate.query(REPORT_QUERY, this);
-    }
 
     @Override
     public List<AccountsNoARsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
@@ -94,7 +102,7 @@ public class AccountsNoARsJdbcMapper
                     .name(resultSet.getString("account_name"))
                     .status(resultSet.getString("account_status"))
                     .type(resultSet.getString("account_type"))
-                    .openingDate(LocalDateTime.parse(resultSet.getString("opening_date"), formatter))
+                    .openingDate(LocalDateTime.parse(resultSet.getString("opening_date"), inputFormatter))
                     .complianceStatus(resultSet.getString("compliance_status"))
                     .build())
                 .compliantEntity(CompliantEntity.builder()
@@ -103,6 +111,12 @@ public class AccountsNoARsJdbcMapper
                     .installationName(resultSet.getString("installation_name"))
                     .installationActivity(resultSet.getString("installation_activity"))
                     .installationPermitId(resultSet.getString("installation_permit_id"))
+                    .aircraftMonitoringPlanId(resultSet.getString("aircraft_monitoring_plan_id"))
+                    .maritimeMonitoringPlanId(resultSet.getString("maritime_monitoring_plan_id"))
+
+
+
+                    .imo(resultSet.getString("imo"))
                     .firstYearOfVerifiedEmissionSubmission(Util.getNullableLong(resultSet, "first_year_verified_emission_submission"))
                     .lastYearOfVerifiedEmissionSubmission(Util.getNullableLong(resultSet, "last_year_verified_emission_submission"))
                     .build())

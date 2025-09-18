@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.task.domain.types;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
+import gov.uk.ets.registry.api.payment.domain.Payment;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.transaction.domain.Transaction;
 import gov.uk.ets.registry.api.user.domain.User;
@@ -77,6 +78,8 @@ public enum EventType {
     USER_ROLE_REMOVED(User.class),
     USER_ROLE_ADDED(User.class),
     USER_MINOR_DETAILS_UPDATED(User.class),
+    USER_RECOVERY_METHOD_UPDATED(User.class),
+    USER_RECOVERY_METHOD_DELETED(User.class),
     /**
      * NAP UploadedFile related.
      */
@@ -108,13 +111,19 @@ public enum EventType {
     COMPLIANT_ENTITY_CALCULATION_ERROR(CompliantEntity.class),
 
     /**
+     * Payment related.
+     */
+    PAYMENT_TASK_REQUESTED(Payment.class),
+    
+    /**
      * Keycloak events.
      */
     INVALID_LOGIN_ATTEMPT(User.class),
     VERIFY_EMAIL(User.class),
     OTP_UPDATED(User.class),
 
-    NOTIFICATION_SENT(Account.class);
+    NOTIFICATION_SENT(Account.class),
+    USER_INACTIVITY_NOTIFICATION_SENT(User.class);
 
     private Class<?> clazz;
 

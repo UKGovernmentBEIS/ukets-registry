@@ -1,20 +1,13 @@
 package gov.uk.ets.registry.api.account.domain;
 
-import gov.uk.ets.registry.api.account.domain.types.PermitStatus;
 import gov.uk.ets.registry.api.common.model.services.converter.StringTrimConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
 
 /**
  * Represents an installation.
@@ -45,24 +38,10 @@ public class Installation extends CompliantEntity {
     private String installationName;
 
     /**
-     * The permit expiry date.
-     */
-    @Column(name = "permit_expiry_date")
-    @Temporal(TemporalType.DATE)
-    private Date permitExpiryDate;
-
-    /**
      * The permit identifier.
      */
     @Column(name = "permit_identifier")
     @Convert(converter = StringTrimConverter.class)
     private String permitIdentifier;
-
-    /**
-     * The permit status.
-     */
-    @Column(name = "permit_status")
-    @Enumerated(EnumType.STRING)
-    private PermitStatus permitStatus;
 
 }

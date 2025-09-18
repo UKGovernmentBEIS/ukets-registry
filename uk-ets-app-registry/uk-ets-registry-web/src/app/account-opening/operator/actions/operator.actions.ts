@@ -3,8 +3,10 @@ import {
   AircraftOperator,
   Installation,
   InstallationTransfer,
+  MaritimeOperator,
   Operator,
 } from '@shared/model/account';
+import { ApiErrorDetail } from '@shared/api-error';
 
 export const completeWizard = createAction(
   '[Operator Wizard] Complete',
@@ -22,14 +24,14 @@ export const setOperator = createAction(
 export const fetchExistsMonitoringPlan = createAction(
   '[Operator Wizard] - Verify If Monitoring Plan Exists',
   props<{
-    aircraftOperator: AircraftOperator;
+    operator: AircraftOperator | MaritimeOperator;
   }>()
 );
 
 export const fetchExistsMonitoringPlanSuccess = createAction(
   '[Operator Wizard] - Verify If Monitoring Plan Exists Success',
   props<{
-    aircraftOperator: AircraftOperator;
+    operator: AircraftOperator | MaritimeOperator;
   }>()
 );
 
@@ -73,5 +75,26 @@ export const initialPermitId = createAction(
   '[Operator Wizard] - Set initial permit id',
   props<{
     permitID: string;
+  }>()
+);
+
+export const fetchExistsImoAndMonitoringPlan = createAction(
+  '[Operator Wizard] - Verify If Monitoring plan and Imo Exists',
+  props<{
+    operator: MaritimeOperator;
+  }>()
+);
+
+export const fetchExistsMonitoringPlanAndImoSuccess = createAction(
+  '[Operator Wizard] - Verify If Monitoring plan and Imo Exists Success',
+  props<{
+    operator: MaritimeOperator;
+  }>()
+);
+
+export const fetchExistsMonitoringPlanAndImoFailure = createAction(
+  '[Operator Wizard] - Verify If Monitoring plan and Imo Exists Failure',
+  props<{
+    errorSummaries: any;
   }>()
 );

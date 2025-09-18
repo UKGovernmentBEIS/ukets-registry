@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import {
   AircraftOperator,
+  MaritimeOperator,
   Installation,
   Operator,
 } from '@shared/model/account';
@@ -19,6 +20,9 @@ export enum OperatorUpdateActionTypes {
   SUBMIT_UPDATE_REQUEST_SUCCESS = '[Operator Update Wizard] Submit update request success',
   FETCH_EXISTS_INSTALLATION_PERMIT_ID = '[Operator Update Wizard] - Check if exists Installation Permit ID',
   FETCH_EXISTS_MONITORING_PLAN = '[Operator Update Wizard] - Check if exists Aircraft Monitoring Plan ID',
+  FETCH_EXISTS_MARITIME_IMO = '[Operator Update Wizard] - Check if exists Monitoring Plan and IMO',
+  FETCH_EXISTS_MARITIME_IMO_SUCCESS = '[Operator Update Wizard] - Check if exists Monitoring Plan and IMO success',
+  FETCH_EXISTS_MARITIME_IMO_FAILURE = '[Operator Update Wizard] - Check if exists Monitoring Plan and IMO failure',
 }
 
 export const navigateTo = createAction(
@@ -77,5 +81,26 @@ export const checkIfExistsAircraftMonitoringPlanId = createAction(
   OperatorUpdateActionTypes.FETCH_EXISTS_MONITORING_PLAN,
   props<{
     operator: AircraftOperator;
+  }>()
+);
+
+export const checkIfExistsMaritimeImoAndMonitorinfPlan = createAction(
+  OperatorUpdateActionTypes.FETCH_EXISTS_MARITIME_IMO,
+  props<{
+    operator: MaritimeOperator;
+  }>()
+);
+
+export const checkIfExistsMaritimeImoAndMonitoringPlanSuccess = createAction(
+  OperatorUpdateActionTypes.FETCH_EXISTS_MARITIME_IMO_SUCCESS,
+  props<{
+    operator: MaritimeOperator;
+  }>()
+);
+
+export const checkIfExistsMaritimeImoAndMonitoringPlanFailure = createAction(
+  OperatorUpdateActionTypes.FETCH_EXISTS_MARITIME_IMO_FAILURE,
+  props<{
+    errorSummaries: any;
   }>()
 );

@@ -2,12 +2,10 @@
 <Configuration status="warn">
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
-            <LogstashLayout dateTimeFormatPattern="yyyy-MM-dd'T'HH:mm:ss.SSSZZZ"
-                            eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json"
-                            prettyPrintEnabled="false"
-                            maxByteCount="32768"
-                            maxStringLength="8192"
-            />
+            <JsonTemplateLayout eventTemplateUri="classpath:ApplicationLogJsonLayout.json"
+                                locationInfoEnabled="true"
+                                stackTraceEnabled="true"
+                                maxStringLength="32768"/>
 
         </Console>
         <Console name="UI_LOGS" target="SYSTEM_OUT">

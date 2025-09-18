@@ -13,24 +13,22 @@ describe('PersonalDetailsSummaryChangesComponent', () => {
   let component: PersonalDetailsSummaryChangesComponent;
   let fixture: ComponentFixture<PersonalDetailsSummaryChangesComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        imports: [RouterTestingModule],
-        declarations: [
-          PersonalDetailsSummaryChangesComponent,
-          FormGroupDirective,
-          ConnectFormDirective,
-        ],
-        providers: [
-          { provide: FormBuilder, useValue: formBuilder },
-          FormatUkDatePipe,
-          CountryNamePipe,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [RouterTestingModule],
+      declarations: [
+        PersonalDetailsSummaryChangesComponent,
+        FormGroupDirective,
+        ConnectFormDirective,
+      ],
+      providers: [
+        { provide: FormBuilder, useValue: formBuilder },
+        FormatUkDatePipe,
+        CountryNamePipe,
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PersonalDetailsSummaryChangesComponent);
@@ -47,10 +45,11 @@ describe('PersonalDetailsSummaryChangesComponent', () => {
       lastName: '',
       alsoKnownAs: '',
       countryOfBirth: '',
-      workCountryCode: '',
-      workPhoneNumber: '',
-      workEmailAddress: '',
-      workEmailAddressConfirmation: '',
+      workMobileCountryCode: '',
+      workMobilePhoneNumber: '',
+      workAlternativeCountryCode: '',
+      workAlternativePhoneNumber: '',
+      noMobilePhoneNumberReason: '',
       workBuildingAndStreet: '',
       workBuildingAndStreetOptional: '',
       workBuildingAndStreetOptional2: '',

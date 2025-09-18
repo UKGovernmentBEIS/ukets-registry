@@ -8,6 +8,7 @@ import {
 } from '@task-management/model';
 import { DomainEvent } from '@shared/model/event';
 import { Account } from '@shared/model/account';
+import { PaymentMethod, PaymentStatus } from '@request-payment/model';
 
 export const prepareNavigationToTask = createAction(
   `
@@ -22,6 +23,12 @@ export const fetchTask = createAction(
   [Task Details Effect]
   Fetch task details`,
   props<{ taskId: string }>()
+);
+
+export const resetState = createAction(
+  `
+  [Task Details Effect]
+  Reset task details state`
 );
 
 export const loadTask = createAction(
@@ -88,7 +95,7 @@ export const approveTaskDecision = createAction(
 );
 
 export const approveTaskDecisionForCompleteOnlyTask = createAction(
-  '[Task Details] Approve  a complete only task and stay on the task details screen',
+  '[Task Details] Approve a complete only task and stay on the task details screen',
   props<{ userDecision: TaskOutcome.APPROVED }>()
 );
 
@@ -132,6 +139,11 @@ export const uploadSelectedFileSuccess = createAction(
   props<{ fileId: number; fileUploadIndex: number }>()
 );
 
+export const uploadSelectedFileError = createAction(
+  '[Task Details File Upload API] Error',
+  props<{ errorMessage: string; fileUploadIndex: number }>()
+);
+
 export const loadTaskFromList = createAction(
   '[Task List] Load Task triggered from list',
   props<{ taskId: string }>()
@@ -155,4 +167,58 @@ export const deleteSelectedFile = createAction(
 export const deleteSelectedFileSuccess = createAction(
   '[Task Details] Delete selected file success',
   props<{ fileId: number }>()
+);
+
+export const updateTaskDeadline = createAction(
+  '[Task Details] Update task deadline',
+  props<{ deadline: Date }>()
+);
+
+export const cancelChangeTaskDeadline = createAction(
+  '[Task Details] Cancel change task deadline'
+);
+
+export const submitChangedTaskDeadline = createAction(
+  '[Task Details] Submit changed task deadline'
+);
+
+export const submitChangedTaskDeadlineSuccess = createAction(
+  '[Task Details] Submit changed task deadline success',
+  props<{ result: TaskDetails }>()
+);
+
+export const resetSubmittedApproveTask = createAction(
+  '[Task Details] Reset Submitted Approve Task'
+);
+
+export const submitMakePayment = createAction(
+  '[Task Details] Submit make payment',
+  props<{ method: PaymentMethod }>()
+);
+
+export const submitMakePaymentSuccess = createAction(
+  '[Task Details] Submit make payment success',
+  props<{ nextUrl: string }>()
+);
+
+export const downloadPaymentReceipt = createAction(
+  '[Task Details] Download Payment Receipt'
+);
+
+export const downloadPaymentReceiptSuccess = createAction(
+  '[Task Details] Download Payment Receipt Success',
+  props<{ invoice: Blob }>()
+);
+
+export const bacsPaymentCompleteOrCancelled = createAction(
+  '[Task API] Complete or Reject BACS payment',
+  props<{ status: Extract<PaymentStatus, 'SUBMITTED' | 'CANCELLED'> }>()
+);
+
+export const bacsPaymentCompleteSuccess = createAction(
+  '[Task API] Complete BACS payment success'
+);
+
+export const bacsPaymentCancelledSuccess = createAction(
+  '[Task API] Cancelled BACS payment success'
 );

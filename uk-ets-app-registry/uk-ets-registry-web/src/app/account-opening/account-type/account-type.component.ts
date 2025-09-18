@@ -68,6 +68,13 @@ export class AccountTypeComponent implements OnInit {
               infoTemplate: !this.isAdmin ? this.infoTemplate : null,
             },
             {
+              label: 'Maritime Operator Holding Account',
+              value: AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
+              hint: 'Used for compliance and trading UK ETS allowances',
+              enabled: this.isAdmin,
+              infoTemplate: !this.isAdmin ? this.infoTemplate : null,
+            },
+            {
               label: 'Trading Account',
               value: AccountType.TRADING_ACCOUNT,
               hint: 'Used for holding and trading UK ETS allowances',

@@ -24,8 +24,8 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +50,7 @@ class AccountSearchRepositoryTest {
     AddAccountCommand addAccountCommand;
     AddUserToAccountAccessCommand addAuthorizedRepresentativeToAccountCommand;
     AddInstallationEntityToAccountCommand addInstallationEntityToAccountCommand;
+    AccountModelTestHelper.AddMaritimeEntityToAccountCommand addMaritimeEntityToAccountCommand;
 
     @BeforeEach
     public void setUp() {
@@ -411,7 +412,7 @@ class AccountSearchRepositoryTest {
                 .builder()
                 .hasLimitedScope(true)
                 .authorizedRepresentativeUrid(addAuthorizedRepresentativeToAccountCommand.getUrid())
-                .installationOrAircraftOperatorId(term).build();
+                .operatorId(term).build();
             Page<AccountProjection> accounts = accountRepository.search(filter, pageable);
             assertEquals(1L, accounts.getTotalElements());
         };
@@ -429,6 +430,32 @@ class AccountSearchRepositoryTest {
                 .build();
         helper.addAircraftToAccount(addAircraftEntityToAccountCommand);
         term = addAircraftEntityToAccountCommand.getIdentifier().toString();
+        verifySuccessSearch.accept(term);
+    }
+
+    @Test
+    void test_search_with_MaritimeOperatorId() {
+        Consumer<String> verifySuccessSearch = term -> {
+            Pageable pageable = PageRequest.of(0,10);
+            AccountFilter filter = AccountFilter
+                    .builder()
+                    .hasLimitedScope(true)
+                    .authorizedRepresentativeUrid(addAuthorizedRepresentativeToAccountCommand.getUrid())
+                    .operatorId(term).build();
+            Page<AccountProjection> accounts = accountRepository.search(filter, pageable);
+            assertEquals(1L, accounts.getTotalElements());
+        };
+
+        AccountModelTestHelper.AddMaritimeEntityToAccountCommand addMaritimeEntityToAccountCommand =
+                AccountModelTestHelper.AddMaritimeEntityToAccountCommand.builder()
+                        .account(addInstallationEntityToAccountCommand.getAccount())
+                        .identifier(1234567L)
+                        .monitoringPlanId("monitoring-plan")
+                        .name("aircraft")
+                        .regulatorType(RegulatorType.DAERA)
+                        .build();
+        helper.addMaritimeToAccount(addMaritimeEntityToAccountCommand);
+        String term = addMaritimeEntityToAccountCommand.getIdentifier().toString();
         verifySuccessSearch.accept(term);
     }
 

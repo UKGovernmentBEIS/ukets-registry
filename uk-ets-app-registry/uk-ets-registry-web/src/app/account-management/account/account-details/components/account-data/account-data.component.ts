@@ -65,7 +65,8 @@ export class AccountDataComponent implements OnInit {
   }
 
   @Input() isSeniorAdmin: boolean;
-  @Input() isOHAOrAOHA: boolean;
+  @Input() isSeniorOrJuniorAdmin: boolean;
+  @Input() isOHAOrAOHAorMOHA: boolean;
   @Input() isKyotoAccountType: boolean;
   @Input() countries: IUkOfficialCountry[];
   @Input() accountNotes: Note[];
@@ -94,7 +95,8 @@ export class AccountDataComponent implements OnInit {
     accountHolderName: string;
   }>();
   @Output()
-  readonly trustedAccountFullIdentifierDescriptionUpdate = new EventEmitter<TrustedAccount>();
+  readonly trustedAccountFullIdentifierDescriptionUpdate =
+    new EventEmitter<TrustedAccount>();
   @Output() readonly includeInBilling = new EventEmitter();
 
   readonly menuItems = MenuItemEnum;

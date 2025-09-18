@@ -8,6 +8,7 @@ import gov.uk.ets.registry.api.note.domain.Note;
 import gov.uk.ets.registry.api.note.domain.NoteDomainType;
 import gov.uk.ets.registry.api.note.repository.NoteRepository;
 import gov.uk.ets.registry.api.note.web.model.NoteDto;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import java.util.Date;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class NoteService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final AccountHolderRepository accountHolderRepository;
+    private final TaskRepository taskRepository;
     private final AuthorizationService authorizationService;
 
     // Contains the validations for the domain objects.
@@ -41,17 +43,19 @@ public class NoteService {
         entityCheck = new EnumMap<>(NoteDomainType.class);
         entityCheck.put(NoteDomainType.ACCOUNT, id -> accountRepository.findByIdentifier(Long.parseLong(id)).isPresent());
         entityCheck.put(NoteDomainType.ACCOUNT_HOLDER, id -> accountHolderRepository.getAccountHolder(Long.parseLong(id)) != null);
+        entityCheck.put(NoteDomainType.TASK, id -> taskRepository.findByRequestId(Long.parseLong(id)) != null);
     }
 
     /**
-     * Retrieve notes for an Account and it's Account Holder.
+     * Retrieve notes for a specific DomainId and DomainType.
      *
-     * @param accountIdentifier the identifier of the account
+     * @param domainId domain id
+     * @param domainType domain type
      * @return a list of notes
      */
-    public List<NoteDto> findNotesForAccount(Long accountIdentifier) {
+    public List<NoteDto> findNotes(String domainId, NoteDomainType domainType) {
 
-        return noteRepository.findByAccountIdentifierWithAccountHolder(accountIdentifier).stream()
+        return noteRepository.findByDomainIdAndDomainTypeOrderByCreationDateDesc(domainId, domainType).stream()
             .map(this::convert)
             .toList();
     }

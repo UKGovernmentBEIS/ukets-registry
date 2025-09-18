@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.ZonedDateTime;
 
-@WebMvcTest(controllers = BulkArUploadController.class)
+@WebMvcTest(controllers = BulkArUploadController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 class BulkArUploadControllerTest {
 
     @Autowired

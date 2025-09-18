@@ -13,7 +13,7 @@ export interface KeycloakLoginCheckResponse {
   roles: string[];
   firstName: string;
   lastName: string;
-  knownAs: string;
+  knownAs: string | unknown;
 }
 
 export interface AuthState {

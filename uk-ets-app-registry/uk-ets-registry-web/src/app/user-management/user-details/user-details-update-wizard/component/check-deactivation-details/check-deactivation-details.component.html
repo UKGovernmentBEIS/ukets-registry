@@ -18,14 +18,14 @@
     >
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
         User is associated with one or more accounts.
       </strong>
     </div>
     <div class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
         <ng-container *ngIf="isLoggedInUserSameAsDeactivated; else other">
           When you submit this request, you will be automatically signed out by
           the system and you will no longer have access to the Registry.
@@ -39,12 +39,7 @@
     <div class="govuk-body">
       <h2 class="govuk-heading-m">Type of update</h2>
       <hr
-        class="
-          govuk-section-break
-          govuk-section-break--m
-          govuk-section-break--visible
-          govuk-!-margin-bottom-2
-        "
+        class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-2"
       />
       <p class="govuk-hint">
         {{ this.userUpdateDetailsType | userDetailsUpdateType }}

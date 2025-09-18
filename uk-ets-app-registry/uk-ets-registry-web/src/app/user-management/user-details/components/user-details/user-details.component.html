@@ -1,6 +1,8 @@
-<app-banner [type]="BannerType.SUCCESS" *ngIf="fileDeleted">
-  <span> {{ fileDeleted }} has been deleted </span>
-</app-banner>
+<div aria-live="polite">
+  <app-banner [type]="BannerType.SUCCESS" *ngIf="fileDeleted">
+    <span> {{ fileDeleted }} has been deleted </span>
+  </app-banner>
+</div>
 <div class="govuk-width-container">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -9,7 +11,7 @@
         [menuItems]="sideMenuItems"
         [selectedItem]="currentItem"
         (selectItem)="currentItem = $event"
-      ></app-side-menu>
+      />
       <div
         [ngClass]="
           currentViewMode === viewMode.USER_DETAILS
@@ -37,11 +39,22 @@
           </div>
         </div>
         <div class="govuk-grid-row">
+          <ng-container *ngIf="showRecoveryMessage">
+            <div class="govuk-warning-text">
+              <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+              <strong class="govuk-warning-text__text">
+                <span class="govuk-visually-hidden">Warning</span>
+                Not all account recovery methods have been added yet. You are
+                advised to use one or both of the recovery methods mentioned
+                below.
+              </strong>
+            </div>
+          </ng-container>
           <ng-container *ngIf="hasUserDetailsPendingTask">
             <div class="govuk-warning-text">
               <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
               <strong class="govuk-warning-text__text">
-                <span class="govuk-warning-text__assistive">Warning</span>
+                <span class="govuk-visually-hidden">Warning</span>
                 There are update requests pending approval
               </strong>
             </div>
@@ -57,7 +70,7 @@
                   user?.attributes?.lastLoginDate &&
                   user.attributes.lastLoginDate.length > 0
                     ? (user.attributes.lastLoginDate[0]
-                      | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00'
+                      | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00'
                       | gdsDateTimeShort)
                     : 'Not available'
                 }}
@@ -68,43 +81,51 @@
 
         <app-registration-details
           [user]="user"
-          [isVisible]="isSeniorAdmin"
+          [isVisible]="isSeniorOrJuniorAdmin"
           [enrolmentKeyDetails]="enrolmentKeyDetails"
           [currentViewMode]="currentViewMode"
           (emailChange)="onEmailChange()"
           (tokenChange)="onTokenChange()"
           (passwordChange)="onPasswordChange()"
           *ngSwitchCase="'User details'"
-        ></app-registration-details>
-        <app-personal-details
-          [user]="user"
-          *ngSwitchCase="'User details'"
-        ></app-personal-details>
+        />
+        <div #recoveryMethods>
+          <app-recovery-methods
+            [user]="user"
+            [initiatorUrid]="initiatorUrid"
+            (initUpdateRecoveryPhone)="onUpdateRecoveryPhone()"
+            (initRemoveRecoveryPhone)="onRemoveRecoveryPhone()"
+            (initUpdateRecoveryEmail)="onUpdateRecoveryEmail()"
+            (initRemoveRecoveryEmail)="onRemoveRecoveryEmail()"
+            *ngSwitchCase="'User details'"
+          />
+        </div>
+        <app-personal-details [user]="user" *ngSwitchCase="'User details'" />
         <app-work-contact-details
           [user]="user"
           *ngSwitchCase="'User details'"
-        ></app-work-contact-details>
+        />
         <app-identification-documentation
           [user]="user"
-          *ngSwitchCase="'User details'"
           [documents]="documents"
+          [canDeleteFile]="canDeleteFile"
           (requestDocuments)="onRequestDocuments()"
           (downloadFileEmitter)="onDownloadFile($event)"
           (deleteFileEmitter)="onDeleteFile($event)"
-          [canDeleteFile]="canDeleteFile"
-        ></app-identification-documentation>
+          *ngSwitchCase="'User details'"
+        />
         <app-ar-in-accounts
           [arInAccount]="arInAccount"
           *ngSwitchCase="'User details'"
-        ></app-ar-in-accounts>
+        />
         <app-domain-events
           [domainEvents]="domainEvents"
           [isAdmin]="isAdmin"
           (navigate)="navigateToUserPage($event)"
           *ngSwitchCase="'History and comments'"
-        ></app-domain-events>
+        />
       </div>
     </div>
-    <app-back-to-top></app-back-to-top>
+    <app-back-to-top />
   </div>
 </div>

@@ -38,6 +38,13 @@
           [label]="'Installation activity type'"
         ></app-form-control-select>
         <app-form-control-text
+          *ngIf="isSeniorOrJuniorAdmin"
+          [label]="'Emitter ID'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.emitterId"
+          controlName="emitter.emitterId"
+        ></app-form-control-text>
+        <app-form-control-text
           [label]="'Permit ID'"
           [maxlength]="256"
           [validationErrorMessage]="validationErrorMessage.id"

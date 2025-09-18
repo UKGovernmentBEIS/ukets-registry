@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.TradingAccountReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -48,11 +47,6 @@ public class TradingAccountJdbcMapper
             "where registry_account_type = 'TRADING_ACCOUNT' \n" +
             " and ac.account_status <>  'REJECTED' \n"+
             "order by account_holder";
-
-    @Override
-    public List<TradingAccountReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<TradingAccountReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

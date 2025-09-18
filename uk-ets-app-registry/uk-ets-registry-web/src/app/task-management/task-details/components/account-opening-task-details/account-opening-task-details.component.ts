@@ -24,6 +24,7 @@ import { DocumentsRequestType } from '@shared/model/request-documents/documents-
 import { empty } from '@shared/shared.util';
 import { SummaryListItem } from '@shared/summary-list/summary-list.info';
 import { regulatorMap } from '@account-management/account-list/account-list.model';
+import { enterRequestPaymentWizard } from '@request-payment/store/actions';
 
 @Component({
   selector: 'app-account-opening-task-details',
@@ -33,8 +34,12 @@ import { regulatorMap } from '@account-management/account-list/account-list.mode
 export class AccountOpeningTaskDetailsComponent {
   @Input()
   taskDetails: AccountOpeningTaskDetails;
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+
   @Output()
-  readonly triggerTaskUpdate: EventEmitter<TaskUpdateDetails> = new EventEmitter();
+  readonly triggerTaskUpdate: EventEmitter<TaskUpdateDetails> =
+    new EventEmitter();
   isCompleted: boolean;
   operatorType = OperatorType;
   accountHolderTypes = AccountHolderType;
@@ -48,7 +53,10 @@ export class AccountOpeningTaskDetailsComponent {
     this.isCompleted = this.taskDetails.taskStatus === 'COMPLETED';
   }
 
-  constructor(private store: Store, private router: Router) {}
+  constructor(
+    private store: Store,
+    private router: Router
+  ) {}
 
   isInstallationTransfer() {
     return (
@@ -80,6 +88,14 @@ export class AccountOpeningTaskDetailsComponent {
       this.taskDetails.account.accountType === 'OPERATOR_HOLDING_ACCOUNT' ||
       this.taskDetails.account.accountType ===
         'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT'
+    );
+  }
+
+  get isOHAOrAOHAorMOHA() {
+    return (
+      this.taskDetails.account.accountType === 'OPERATOR_HOLDING_ACCOUNT' ||
+      this.taskDetails.account.accountType ===
+        'MARITIME_OPERATOR_HOLDING_ACCOUNT'
     );
   }
 
@@ -119,7 +135,7 @@ export class AccountOpeningTaskDetailsComponent {
         },
       },
     ];
-    if (this.isOHAOrAOHA) {
+    if (this.isOHAOrAOHAorMOHA) {
       return transactionRules;
     }
     transactionRules.splice(2, 1);
@@ -183,6 +199,22 @@ export class AccountOpeningTaskDetailsComponent {
         documentsRequestType: DocumentsRequestType.USER,
         recipientName,
         recipientUrid,
+      })
+    );
+  }
+
+  onRequestPayment() {
+    const candidateRecipients = [];
+    this.taskDetails.account.authorisedRepresentatives?.forEach((rep) => {
+      candidateRecipients.push({ ...rep.user, urid: rep.urid });
+    });
+
+    this.store.dispatch(
+      enterRequestPaymentWizard({
+        origin: 'ACCOUNT_OPENING',
+        originatingPath: this.router.url,
+        parentRequestId: this.taskDetails.requestId,
+        candidateRecipients: candidateRecipients,
       })
     );
   }

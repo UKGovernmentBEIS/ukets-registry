@@ -1,4 +1,4 @@
-import { Component, forwardRef, Injector, Input } from '@angular/core';
+import { Component, forwardRef, inject, Input } from '@angular/core';
 import {
   AbstractControl,
   ControlContainer,
@@ -49,14 +49,7 @@ export class UkDateControlComponent
   @Input() maxAge: number;
 
   stringNumberRegex = new RegExp('^[0-9]+$');
-
-  constructor(
-    protected parentF: FormGroupDirective,
-    private fb: UntypedFormBuilder,
-    protected injector: Injector
-  ) {
-    super(parentF, injector);
-  }
+  private fb = inject(UntypedFormBuilder);
 
   protected getDefaultErrorMessageMap(): { [key: string]: string } {
     return {

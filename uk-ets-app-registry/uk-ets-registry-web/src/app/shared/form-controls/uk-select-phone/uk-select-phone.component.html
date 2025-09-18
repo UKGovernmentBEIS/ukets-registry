@@ -4,7 +4,7 @@
     [id]="compositeFormGroupId"
     [class.govuk-form-group--error]="this.showErrors && formControl.invalid"
   >
-    <span
+    <p
       *ngIf="this.showErrors && formControl.invalid"
       id="event-name-error"
       class="govuk-error-message"
@@ -17,10 +17,10 @@
           validationErrorMessages[errorCode] || formControl.errors[errorCode]
         }}
       </span>
-    </span>
+    </p>
 
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-quarter">
+    <div class="uk-select-phone-row">
+      <div class="uk-select-phone-row__country">
         <label class="govuk-label" [for]="controlName + '-country-code'">
           {{ countryCodeLabel }}
         </label>
@@ -40,7 +40,7 @@
           </option>
         </select>
       </div>
-      <div class="govuk-grid-column-one-half">
+      <div class="uk-select-phone-row__number">
         <label class="govuk-label" [for]="controlName + '-phone-number'">
           {{ phoneNumberLabel }}
         </label>

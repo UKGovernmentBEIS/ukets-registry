@@ -6,6 +6,7 @@ import { Account } from '@shared/model/account/account';
 import { DomainEvent } from '@shared/model/event';
 import {
   AOHA_ITEMS,
+  MOHA_ITEMS,
   NO_OPERATOR_ITEMS,
   OHAI_ITEMS,
 } from './model/account-side-menu.model';
@@ -26,7 +27,6 @@ import {
 } from '@account-shared/model';
 import { EmissionsSurrendersActions } from './store/actions';
 import * as TrustedAccountActions from './trusted-accounts/trusted-accounts.actions';
-import { Note, NoteType } from '@registry-web/shared/model/note';
 
 export const accountFeatureKey = 'account';
 
@@ -93,7 +93,7 @@ export const initialState: AccountState = {
   updateAccountDetails: null,
   accountId: null,
   accountHistory: [],
-  sideMenuItems: null,
+  sideMenuItems: [],
   accountHoldingsResult: null,
   allocation: null,
   verifiedEmissions: null,
@@ -114,6 +114,14 @@ const accountReducer = createReducer(
   mutableOn(AccountDetailsActions.fetchAccount, (state) => {
     state.accountDetailsLoaded = false;
   }),
+  mutableOn(
+    AccountDetailsActions.prepareNavigationToAccount,
+    (state, { accountId }) => {
+      if (state.accountId && state.accountId !== accountId) {
+        resetState(state);
+      }
+    }
+  ),
   mutableOn(
     AccountDetailsActions.loadAccountDetails,
     (state, { account, accountId }) => {
@@ -182,7 +190,12 @@ const accountReducer = createReducer(
       AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT
     ) {
       state.sideMenuItems = AOHA_ITEMS;
-    } else {
+    } else if (
+      state.account.accountType ===
+      AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+    ) {
+      state.sideMenuItems = MOHA_ITEMS;
+    }else {
       state.sideMenuItems = NO_OPERATOR_ITEMS;
     }
   }),
@@ -322,4 +335,10 @@ const accountReducer = createReducer(
 
 export function reducer(state: AccountState | undefined, action: Action) {
   return accountReducer(state, action);
+}
+
+function resetState(state: AccountState) {
+  Object.keys(state).forEach((key) => {
+    state[key] = initialState[key];
+  });
 }

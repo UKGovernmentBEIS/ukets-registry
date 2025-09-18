@@ -48,10 +48,18 @@
       taskOutcome === TaskOutcome.APPROVED
         ? 'Approve ' + headingText
         : taskOutcome === TaskOutcome.REJECTED
-        ? 'Reject ' + headingText
-        : 'Complete task'
+          ? 'Reject ' + headingText
+          : 'Complete task'
     }}
   </h1>
+  <app-form-control-text
+    *ngIf="amountPaidRequired()"
+    controlName="amountPaid"
+    [maxlength]="9"
+    [class]="'govuk-input--width-20'"
+    [label]="'Amount paid'"
+    [prefix]="'£'"
+  ></app-form-control-text>
   <app-form-comment-area
     controlName="comment"
     [label]="label$ | async"

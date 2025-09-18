@@ -6,12 +6,15 @@ import {
 import { Store } from '@ngrx/store';
 import { clearErrors } from '@shared/shared.action';
 import { updateTask } from '@task-details/actions/task-details.actions';
+import { Observable } from 'rxjs';
+import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
 
 @Component({
   selector: 'app-account-opening-task-details-container',
   template: `
     <app-account-opening-task-details
       [taskDetails]="taskDetails"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
       (triggerTaskUpdate)="updateTask($event)"
     ></app-account-opening-task-details>
   `,
@@ -19,6 +22,8 @@ import { updateTask } from '@task-details/actions/task-details.actions';
 export class AccountOpeningTaskDetailsContainerComponent {
   @Input()
   taskDetails: AccountOpeningTaskDetails;
+  
+  isSeniorOrJuniorAdmin$:Observable<boolean> = this.store.select(isSeniorOrJuniorAdmin);
 
   constructor(private store: Store) {}
 

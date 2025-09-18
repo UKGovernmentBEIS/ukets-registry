@@ -5,9 +5,9 @@ import {
 } from '@shared/model/account/authorised-representative';
 import { AuthModel } from '../../../auth/auth.model';
 import { AccountHolder } from '@shared/model/account/account-holder';
-import { ErrorDetail } from '@shared/error-summary';
+import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
-import { UntypedFormBuilder, ValidationErrors } from '@angular/forms';
+import { ValidationErrors } from '@angular/forms';
 
 @Component({
   selector: 'app-selection',
@@ -26,15 +26,14 @@ export class SelectionComponent extends UkFormComponent implements OnInit {
   @Input()
   authorisedRepresentatives: AuthorisedRepresentative[];
 
+  @Input()
+  errorSummary: ErrorSummary;
+
   @Output() readonly output = new EventEmitter<string>();
 
   @Output() readonly errorDetails = new EventEmitter<ErrorDetail[]>();
 
   validationErrorMessage: ValidationErrors = {};
-
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
 
   ngOnInit() {
     super.ngOnInit();

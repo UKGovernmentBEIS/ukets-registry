@@ -1,0 +1,68 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-form-group">
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-xl">{{
+              notificationRequest === NotificationRequestEnum.NEW ||
+              notificationRequest === NotificationRequestEnum.CLONE
+                ? 'New ' + notificationTypeLabels[newNotification?.type].label
+                : 'Request to update the notification'
+            }}</span>
+            Upload list of recipients
+          </h1>
+        </div>
+      </div>
+    </div>
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="showFileErrors()"
+        [attr.id]="'emailRecipients-label'"
+      >
+        <h1>
+          <span class="govuk-label">Upload a file</span>
+          <div class="govuk-hint">
+            The file must follow a set of rules:
+            <ul>
+              <li>The first column must be the user email</li>
+              <li>All columns must have headers</li>
+              <li>No duplicate header must be allowed</li>
+              <li>Headers must not include spaces</li>
+            </ul>
+          </div>
+        </h1>
+        <p
+          *ngIf="showFileErrors()"
+          class="govuk-error-message no-bullets"
+          [attr.id]="'emailRecipients-error-label'"
+        >
+          <li *ngFor="let error of errorSummary.errors">
+            {{ error.errorMessage }}
+          </li>
+        </p>
+        <fieldset class="govuk-fieldset">
+          <input
+            #fileInput
+            type="file"
+            class="govuk-file-upload"
+            [id]="'file-upload'"
+            [name]="'file-upload-name'"
+          />
+        </fieldset>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>
+<app-cancel-request-link
+  (goToCancelScreen)="onCancel()"
+></app-cancel-request-link>

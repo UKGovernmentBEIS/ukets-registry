@@ -1,9 +1,0 @@
-version: "3"
-
-services:
-  uk-ets-app-digital-dashboard-custom:
-    image: uk-ets-app-digital-dashboard-custom:latest
-    deploy:
-      replicas: 1
-    ports:
-      - 8090:80

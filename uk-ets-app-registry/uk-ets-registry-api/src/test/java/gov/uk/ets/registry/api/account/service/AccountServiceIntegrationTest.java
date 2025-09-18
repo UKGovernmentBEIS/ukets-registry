@@ -14,7 +14,6 @@ import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
-import gov.uk.ets.registry.api.common.model.types.Status;
 import gov.uk.ets.registry.api.common.test.RegistryIntegrationTest;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.user.domain.User;
@@ -23,8 +22,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import java.util.UUID;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -198,6 +199,8 @@ class AccountServiceIntegrationTest {
         } catch (IOException e) {
             throw new RuntimeException("Cannot read resource");
         }
+        // to avoid the error: This task cannot be approved as this emitter ID is used by another account
+        accountDTO.getOperator().setEmitterId(UUID.randomUUID().toString());
         return accountDTO;
     }
 

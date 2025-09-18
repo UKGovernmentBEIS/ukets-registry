@@ -1,9 +1,11 @@
 import { Inject, LOCALE_ID, Pipe, PipeTransform } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { dayjsFormatDate } from '../shared.util';
 
-const SHORT_SPACE_DATE_FORMAT = 'd LLL YYYY';
-const SHORT_SPACE_DATE_FORMAT_NO_YEAR = 'd LLL';
-const FULL_SPACE_DATE_FORMAT = 'd LLLL YYYY';
+const SHORT_SPACE_DATE_FORMAT = 'D MMM YYYY';
+const FULL_SPACE_DATE_FORMAT = 'D MMMM YYYY';
+const SHORT_SPACE_DATE_FORMAT_NO_YEAR = 'D MMM';
+
 const TIME_FORMAT = 'h:mma';
 const MIDNIGHT = 'midnight';
 const MIDDAY = 'midday';
@@ -39,14 +41,7 @@ export class GdsDateTimeShortPipe implements PipeTransform {
     } else if (input.getHours() === 12 && input.getMinutes() === 0) {
       time = MIDDAY;
     }
-    return `${new DatePipe(this.locale).transform(
-      value,
-      this.getDateFormat()
-    )}, ${time}`;
-  }
-
-  protected getDateFormat(): string {
-    return SHORT_SPACE_DATE_FORMAT;
+    return `${dayjsFormatDate(value, SHORT_SPACE_DATE_FORMAT)}, ${time}`;
   }
 }
 
@@ -65,12 +60,23 @@ export class GdsDateTimeShortPipe implements PipeTransform {
 @Pipe({
   name: 'gdsDateTime',
 })
-export class GdsDateTimePipe
-  extends GdsDateTimeShortPipe
-  implements PipeTransform
-{
-  protected getDateFormat(): string {
-    return FULL_SPACE_DATE_FORMAT;
+export class GdsDateTimePipe implements PipeTransform {
+  constructor(@Inject(LOCALE_ID) private readonly locale: string) {}
+
+  transform(value: any): string | null {
+    if (!value) {
+      return null;
+    }
+    const input: Date = new Date(value);
+    let time = new DatePipe(this.locale)
+      .transform(value, TIME_FORMAT)
+      .toLowerCase();
+    if (input.getHours() === 0 && input.getMinutes() === 0) {
+      time = MIDNIGHT;
+    } else if (input.getHours() === 12 && input.getMinutes() === 0) {
+      time = MIDDAY;
+    }
+    return `${dayjsFormatDate(value, FULL_SPACE_DATE_FORMAT)}, ${time}`;
   }
 }
 
@@ -88,7 +94,7 @@ export class GdsDateShortPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private readonly locale: string) {}
 
   transform(value: any) {
-    return new DatePipe(this.locale).transform(value, SHORT_SPACE_DATE_FORMAT);
+    return dayjsFormatDate(value, SHORT_SPACE_DATE_FORMAT);
   }
 }
 
@@ -106,7 +112,7 @@ export class GdsDatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private readonly locale: string) {}
 
   transform(value: any) {
-    return new DatePipe(this.locale).transform(value, FULL_SPACE_DATE_FORMAT);
+    return dayjsFormatDate(value, FULL_SPACE_DATE_FORMAT);
   }
 }
 
@@ -123,10 +129,7 @@ export class GdsDateShortNoYearPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private readonly locale: string) {}
 
   transform(value: any) {
-    return new DatePipe(this.locale).transform(
-      value,
-      SHORT_SPACE_DATE_FORMAT_NO_YEAR
-    );
+    return dayjsFormatDate(value, SHORT_SPACE_DATE_FORMAT_NO_YEAR);
   }
 }
 
@@ -213,14 +216,10 @@ export class GdsDateTimeUTCPipe implements PipeTransform {
     } else if (input.getHours() === 12 && input.getMinutes() === 0) {
       time = MIDDAY;
     }
-    return `${new DatePipe(this.locale).transform(
+    return `${dayjsFormatDate(
       value,
-      this.getDateFormat(),
-      'UTC'
+      FULL_SPACE_DATE_FORMAT,
+      true
     )}, ${time} UTC`;
-  }
-
-  protected getDateFormat(): string {
-    return FULL_SPACE_DATE_FORMAT;
   }
 }

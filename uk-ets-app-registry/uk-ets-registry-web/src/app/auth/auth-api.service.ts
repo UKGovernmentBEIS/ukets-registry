@@ -1,24 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Inject, Injectable } from '@angular/core';
 import { from, Observable, Observer, of } from 'rxjs';
 import { KeycloakLoginOptions, KeycloakProfile } from 'keycloak-js';
 import { KeycloakLoginCheckResponse } from './auth.reducer';
 import { KeycloakService } from 'keycloak-angular';
-import {
-  AuthorizationRequest,
-  KeycloakAuthorizationInstance,
-} from 'keycloak-js/dist/keycloak-authz';
+import KeycloakAuthorization, { AuthorizationRequest } from 'keycloak-js/authz';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, switchMap } from 'rxjs/operators';
 import 'core-js/features/url-search-params';
 import { AccountAccess } from './auth.model';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
 
-declare let KeycloakAuthorization: any;
-
 @Injectable()
 export class AuthApiService {
   // The Keycloak authorization client
-  private authorization: KeycloakAuthorizationInstance;
+  private authorization: KeycloakAuthorization;
   private accountAccessApiUrl: string;
 
   constructor(
@@ -34,9 +30,9 @@ export class AuthApiService {
    * @returns an observable of KeycloakLoginCheckResponse
    */
   isLoggedIn(): Observable<KeycloakLoginCheckResponse> {
-    const checkLogin: Promise<boolean> = this.keycloak.isLoggedIn();
     return new Observable((observer: Observer<KeycloakLoginCheckResponse>) => {
-      checkLogin.then((loggedIn) => {
+      try {
+        const loggedIn: boolean = this.keycloak.isLoggedIn();
         if (loggedIn) {
           this.keycloak.loadUserProfile().then((profile) => {
             observer.next({
@@ -54,8 +50,9 @@ export class AuthApiService {
             this.keycloak.getKeycloakInstance()
           );
         }
-      });
-      checkLogin.catch((data) => observer.error(data));
+      } catch (e) {
+        observer.error(e);
+      }
     });
   }
 

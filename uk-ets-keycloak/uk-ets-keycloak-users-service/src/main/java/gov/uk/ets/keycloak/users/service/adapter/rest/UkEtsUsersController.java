@@ -1,18 +1,14 @@
 package gov.uk.ets.keycloak.users.service.adapter.rest;
 
-
+import org.jboss.resteasy.reactive.NoCache;
 import java.util.List;
-
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
-import org.jboss.resteasy.annotations.cache.NoCache;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import org.keycloak.models.KeycloakSession;
-
 import gov.uk.ets.keycloak.users.service.application.UkEtsUsersApplicationException;
 import gov.uk.ets.keycloak.users.service.application.UkEtsUsersService;
 import gov.uk.ets.keycloak.users.service.application.domain.Pageable;

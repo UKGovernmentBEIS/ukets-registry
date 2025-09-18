@@ -1,25 +1,13 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import {
-  UntypedFormBuilder,
-  UntypedFormControl,
-  Validators,
-} from '@angular/forms';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 
 @Component({
   selector: 'app-email-address',
   templateUrl: './email-address.component.html',
 })
-export class EmailAddressComponent extends UkFormComponent implements OnInit {
+export class EmailAddressComponent extends UkFormComponent {
   @Output() readonly emailAddress = new EventEmitter<string>();
-
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
-
-  ngOnInit() {
-    super.ngOnInit();
-  }
 
   protected getFormModel(): any {
     return {

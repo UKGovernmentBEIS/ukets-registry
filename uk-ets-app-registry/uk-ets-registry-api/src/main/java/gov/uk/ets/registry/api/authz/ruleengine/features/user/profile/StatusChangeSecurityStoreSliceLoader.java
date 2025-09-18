@@ -1,6 +1,6 @@
 package gov.uk.ets.registry.api.authz.ruleengine.features.user.profile;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;

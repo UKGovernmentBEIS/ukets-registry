@@ -28,13 +28,17 @@ import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.task.service.TaskService;
+import gov.uk.ets.registry.api.task.web.model.AccountHolderUpdateTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.AccountOpeningTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.user.UserDTO;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import gov.uk.ets.registry.api.user.service.UserService;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +95,7 @@ class RequestDocumentsWizardServiceTest {
         documentsRequest.setAccountHolderIdentifier(100001L);
         documentsRequest.setRecipientUrid("UK12345");
         documentsRequest.setDocumentNames(testDocuments);
+        documentsRequest.setDeadline(Date.from(Instant.now().plus(28, ChronoUnit.DAYS)));
         //comment is not set during the submittion.
 
         given(userRepository.findByUrid(documentsRequest.getRecipientUrid())).willReturn(getTaskAssignee());
@@ -156,6 +161,83 @@ class RequestDocumentsWizardServiceTest {
         assertEquals(generatedTaskIdentifier, taskRequestId);
     }
 
+    @DisplayName("Test submit Account holder documents request with account holder Identifier under AH details update")
+    @Test
+    void test_submitDocumentsRequesUnderAccountHolderDetailsUpdate() throws JsonProcessingException {
+        List<String> testDocuments = List.of("Document 1", "Document 2");
+        DocumentsRequestDTO documentsRequest = new DocumentsRequestDTO();
+        documentsRequest.setType(DocumentsRequestType.ACCOUNT_HOLDER);
+        documentsRequest.setAccountHolderIdentifier(100001L);
+        documentsRequest.setRecipientUrid("UK12345");
+        documentsRequest.setDocumentNames(testDocuments);
+        documentsRequest.setParentRequestId(1234567890L);
+        documentsRequest.setDeadline(Date.from(Instant.now().plus(28, ChronoUnit.DAYS)));
+        //comment is not set during the submission.
+
+        given(userRepository.findByUrid(documentsRequest.getRecipientUrid())).willReturn(getTaskAssignee());
+
+        Long generatedTaskIdentifier = 10003L;
+        given(persistenceService.getNextBusinessIdentifier(Task.class)).willReturn(generatedTaskIdentifier);
+
+        given(userService.getCurrentUser()).willReturn(getCurrentUser());
+
+        Task parentTask = new Task();
+        parentTask.setId(123L);
+        parentTask.setRequestId(1234567890L);
+        Date parentDeadline = Date.from(Instant.now().plus(30, ChronoUnit.DAYS));
+        parentTask.setDeadline(parentDeadline);
+        given(taskRepository.findByRequestId(documentsRequest.getParentRequestId())).willReturn(parentTask);
+
+        AccountHolderUpdateTaskDetailsDTO taskDetailsDTO = new AccountHolderUpdateTaskDetailsDTO(new TaskDetailsDTO());
+        AccountDetailsDTO accountDetailsDTO = new AccountDetailsDTO();
+        String expectedAccountName = "Account Name";
+        accountDetailsDTO.setName(expectedAccountName);
+        taskDetailsDTO.setAccountDetails(accountDetailsDTO);
+        given(taskService.getTaskDetails(documentsRequest.getParentRequestId())).willReturn(taskDetailsDTO);
+
+        AccountHolderDTO accountHolder = new AccountHolderDTO();
+        DetailsDTO details = new DetailsDTO();
+        String expectedAccountHolderName = "Account Holder Name!";
+        details.setName(expectedAccountHolderName);
+        accountHolder.setDetails(details);
+        given(accountHolderService.getAccountHolder(documentsRequest.getAccountHolderIdentifier()))
+            .willReturn(accountHolder);
+
+        RequestDocumentsTaskDifference documentsTaskDifference = new RequestDocumentsTaskDifference();
+        documentsTaskDifference.setAccountHolderIdentifier(documentsRequest.getAccountHolderIdentifier());
+        documentsTaskDifference.setDocumentNames(testDocuments);
+        Map<String, Long> fileNameIdMap = new HashMap<>();
+        testDocuments.forEach(d -> fileNameIdMap.put(d, null));
+        documentsTaskDifference
+            .setUploadedFileNameIdMap(fileNameIdMap);
+        documentsTaskDifference.setAccountHolderName(expectedAccountHolderName);
+        documentsTaskDifference.setAccountName(expectedAccountName);
+
+        // when
+        when(mapper.convertToJson(documentsTaskDifference)).thenReturn(jacksonMapper.writeValueAsString(documentsTaskDifference));
+        Long taskRequestId = requestDocumentsWizardService.submitDocumentsRequest(documentsRequest);
+
+        // then
+
+        // Verify event creation
+        then(eventService).should(times(1)).createAndPublishEvent(null,
+            getCurrentUser().getUrid(), expectedAccountHolderName, EventType.ACCOUNT_TASK_REQUESTED,
+            "Documents requested for Account Holder.");
+
+        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
+
+        then(persistenceService).should(times(1)).save(captor.capture());
+        Task actualTask = captor.getValue();
+        log.info(actualTask.toString());
+        assertEquals(generatedTaskIdentifier, actualTask.getRequestId());
+        assertEquals(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD, actualTask.getType());
+        assertEquals(getCurrentUser(), actualTask.getInitiatedBy());
+        assertEquals(getTaskAssignee(), actualTask.getUser());
+        assertEquals(jacksonMapper.writeValueAsString(documentsTaskDifference), actualTask.getDifference());
+        assertEquals(generatedTaskIdentifier, taskRequestId);
+        assertEquals(parentDeadline, actualTask.getParentTask().getDeadline());
+    }
+
 
     @DisplayName("Test submit  user documents request")
     @Test
@@ -166,6 +248,7 @@ class RequestDocumentsWizardServiceTest {
         documentsRequest.setAccountHolderIdentifier(100001L);
         documentsRequest.setRecipientUrid("UK12345");
         documentsRequest.setDocumentNames(testDocuments);
+        documentsRequest.setDeadline(Date.from(Instant.now().plus(28, ChronoUnit.DAYS)));
 
         RequestDocumentsTaskDifference requestDocumentsTaskDifference = new RequestDocumentsTaskDifference();
         requestDocumentsTaskDifference.setDocumentNames(testDocuments);
@@ -244,6 +327,8 @@ class RequestDocumentsWizardServiceTest {
         documentsRequest.setAccountHolderIdentifier(null);
         documentsRequest.setRecipientUrid("UK12345");
         documentsRequest.setDocumentNames(testDocuments);
+        Date deadline = Date.from(Instant.now().plus(28, ChronoUnit.DAYS));
+        documentsRequest.setDeadline(deadline);
 
         RequestDocumentsTaskDifference requestDocumentsTaskDifference = new RequestDocumentsTaskDifference();
         requestDocumentsTaskDifference.setDocumentNames(testDocuments);
@@ -257,6 +342,7 @@ class RequestDocumentsWizardServiceTest {
         given(userService.getCurrentUser()).willReturn(getCurrentUser());
         Long parentTaskIdentifier = 1L;
         Task parentTask = new Task();
+        parentTask.setId(123L);
 
         parentTask.setType(RequestType.ACCOUNT_OPENING_INSTALLATION_TRANSFER_REQUEST);
         parentTask.setRequestId(parentTaskIdentifier);
@@ -324,7 +410,8 @@ class RequestDocumentsWizardServiceTest {
         assertEquals(expectedTask.getUser(), actualTask.getUser());
         assertEquals(expectedTask.getDifference(), actualTask.getDifference());
         assertEquals(generatedTaskIdentifier, taskRequestId);
-
+        assertEquals(deadline, actualTask.getDeadline());
+        assertEquals(deadline, actualTask.getParentTask().getDeadline());
     }
 
     private User getCurrentUser() {

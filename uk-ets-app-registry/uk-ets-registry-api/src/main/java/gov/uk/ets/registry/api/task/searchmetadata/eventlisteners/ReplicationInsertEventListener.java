@@ -18,8 +18,8 @@ public class ReplicationInsertEventListener implements PostInsertEventListener {
         replicationEventService.insertSearchMetadata(event);
     }
 
-    @Override
-    public boolean requiresPostCommitHanding(EntityPersister persister) {
-        return false;
-    }
+	@Override
+	public boolean requiresPostCommitHandling(EntityPersister persister) {
+		return false;
+	}
 }

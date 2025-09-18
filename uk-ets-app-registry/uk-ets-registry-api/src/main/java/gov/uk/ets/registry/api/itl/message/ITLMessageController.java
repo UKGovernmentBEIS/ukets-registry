@@ -19,7 +19,7 @@ import gov.uk.ets.registry.api.itl.message.web.model.ITLMessageSummary;
 import gov.uk.ets.registry.api.transaction.domain.data.TransactionSummary;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

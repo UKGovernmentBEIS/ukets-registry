@@ -1,10 +1,13 @@
 package gov.uk.ets.registry.api.common.keycloak;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import gov.uk.ets.commons.logging.MDCWrapper;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,7 +29,7 @@ public class KeycloakRestEndpointRepository<T> {
 
         HttpEntity<?> request = new HttpEntity<>(generateHeaders(token));
 
-        HttpEntity<T> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, request, resultType);
+        HttpEntity<T> response = restTemplate.exchange(builder.build().toUriString(), HttpMethod.GET, request, resultType);
 
         return response.getBody();
     }
@@ -35,7 +38,7 @@ public class KeycloakRestEndpointRepository<T> {
         UriComponentsBuilder builder = createURI(queryParamsMap);
         HttpEntity<?> request = new HttpEntity<>(generateHeaders(token));
 
-        return restTemplate.exchange(builder.toUriString(), HttpMethod.GET, request, requestType).getBody();
+        return restTemplate.exchange(builder.build().toUriString(), HttpMethod.GET, request, requestType).getBody();
     }
 
     protected T fetchDataById(String id, String token, Class<T> resultType) {
@@ -47,7 +50,7 @@ public class KeycloakRestEndpointRepository<T> {
         return response.getBody();
     }
 
-    protected HttpStatus update(String token, Class<T> resultType, T object, String id) {
+    protected HttpStatusCode update(String token, Class<T> resultType, T object, String id) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(endpoint);
         HttpEntity<?> request = new HttpEntity<>(object, generateHeaders(token));
 
@@ -70,9 +73,14 @@ public class KeycloakRestEndpointRepository<T> {
         queryParamsMap.forEach((key, value) -> {
             if (value != null) {
                 if (value instanceof Collection) {
-                    builder.queryParam(key, (Collection) value);
+                    List<String> values = ((Collection<?>) value).stream()
+                        .filter(Objects::nonNull)
+                        .map(Object::toString)
+                        .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8))
+                        .toList();
+                    builder.queryParam(key, values);
                 } else {
-                    builder.queryParam(key, value);
+                    builder.queryParam(key, URLEncoder.encode(value.toString(), StandardCharsets.UTF_8));
                 }
             }
         });

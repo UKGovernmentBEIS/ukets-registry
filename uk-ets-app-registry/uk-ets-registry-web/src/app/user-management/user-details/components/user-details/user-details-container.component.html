@@ -7,8 +7,7 @@
     [showRequestUpdate]="isSeniorOrJuniorAdmin$ | async"
     [goBackToListRoute]="goBackToListRoute$ | async"
     [goBackToListNavigationExtras]="goBackToListNavigationExtras$ | async"
-  >
-  </app-user-header>
+  />
 </app-feature-header-wrapper>
 <app-user-details
   [hasUserDetailsPendingTask]="hasUserDetailsPendingTask$ | async"
@@ -24,6 +23,10 @@
   (tokenChange)="startTokenChangeWizard($event)"
   (passwordChange)="startPasswordChangeWizard($event)"
   (userDetailsUpdateEmitter)="goToUpdateUserDetails($event)"
+  (updateRecoveryPhone)="startUpdateRecoveryPhoneWizard($event)"
+  (removeRecoveryPhone)="startRemoveRecoveryPhoneWizard()"
+  (updateRecoveryEmail)="startUpdateRecoveryEmailWizard($event)"
+  (removeRecoveryEmail)="startRemoveRecoveryEmailWizard()"
   [currentViewMode]="viewMode"
   [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
   [isSeniorAdmin]="isSeniorAdmin$ | async"
@@ -31,4 +34,4 @@
   [fileDeleted]="fileDeleted$ | async"
   (navigate)="navigateToUserPage($event)"
   [isAdmin]="isAdmin$ | async"
-></app-user-details>
+/>

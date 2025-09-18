@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_3_0_ADD_EMITTER_ID_TO_COMPLIANT_ENTITY" author="piliotid" context="migrate">
+        <comment>Add emitter_id column to compliant_entity table</comment>
+        <sql>
+            ALTER TABLE "compliant_entity" ADD COLUMN "emitter_id" VARCHAR(255) DEFAULT NULL;
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "compliant_entity"
+                DROP COLUMN "emitter_id";
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

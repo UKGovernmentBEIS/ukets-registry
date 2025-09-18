@@ -13,7 +13,6 @@ import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -163,5 +162,26 @@ class FileUploadServiceTest {
         // then
         verify(uploadedFilesRepository, times(1)).deleteAll(uploadedFiles);
         assertEquals(expectedDifference, task.getDifference());
+    }
+
+    @DisplayName("Files that are not submitted and are not linked with a task will be deleted.")
+    @Test
+    void test_notSubmittedFiles_withoutTask() {
+
+        // given
+        UploadedFile uploadedFile = new UploadedFile();
+        uploadedFile.setId(11L);
+        uploadedFile.setFileStatus(FileStatus.NOT_SUBMITTED);
+
+        List<UploadedFile> uploadedFiles = List.of(uploadedFile);
+
+        when(uploadedFilesRepository.findByFileStatusEqualsAndCreationDateIsBefore(eq(FileStatus.NOT_SUBMITTED), any(LocalDateTime.class)))
+            .thenReturn(uploadedFiles);
+
+        // when
+        fileUploadService.deleteNotSubmittedFiles();
+
+        // then
+        verify(uploadedFilesRepository, times(1)).deleteAll(uploadedFiles);
     }
 }

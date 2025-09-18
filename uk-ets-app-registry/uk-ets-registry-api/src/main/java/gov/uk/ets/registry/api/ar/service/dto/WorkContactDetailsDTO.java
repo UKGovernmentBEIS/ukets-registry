@@ -64,4 +64,29 @@ public class WorkContactDetailsDTO {
      */
     @JsonProperty("emailAddress")
     private String workEmailAddress;
+    /**
+     * The work mobile country code
+     */
+    @JsonProperty("mobileCountryCode")
+    private String workMobileCountryCode;
+    /**
+     * The work mobile phone number
+     */
+    @JsonProperty("mobilePhoneNumber")
+    private String workMobilePhoneNumber;
+    /**
+     * The work alternative country code
+     */
+    @JsonProperty("alternativeCountryCode")
+    private String workAlternativeCountryCode;
+    /**
+     * The work alternative phone number
+     */
+    @JsonProperty("alternativePhoneNumber")
+    private String workAlternativePhoneNumber;
+    /**
+     * The reason for not providing a mobile phone number
+     */
+    @JsonProperty("noMobilePhoneNumberReason")
+    private String noMobilePhoneNumberReason;
 }

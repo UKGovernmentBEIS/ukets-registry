@@ -22,3 +22,4 @@ export * from './country-name-async.pipe';
 export * from './keycloak-user-display-name.pipe';
 export * from './ar-display-name.pipe';
 export * from './allocation-category.pipe';
+export * from './is-past-date.pipe';

@@ -1,0 +1,19 @@
+@import '_variables';
+
+.separator {
+  border-bottom: 1px solid govuk-colour('mid-grey');
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.update-documents-button {
+  float: right;
+}
+
+.govuk-heading-l {
+  overflow-wrap: break-word;
+}
+
+.govuk-body {
+  overflow-wrap: break-word;
+}

@@ -8,7 +8,7 @@ import { Note } from '@registry-web/shared/model/note';
 })
 export class NotesListComponent {
   @Input()
-  accountNotes: Note[];
+  notes: Note[];
   @Input()
   isSeniorAdmin: boolean;
   @Output()

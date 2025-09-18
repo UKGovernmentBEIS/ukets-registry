@@ -22,9 +22,8 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
       <app-form-control-select
         controlName="reportType"
-        [options]="reportTypeOptions"
+        [options]="reports$ | async"
         [label]="'Report type'"
-        [readonly]="true"
       ></app-form-control-select>
       <app-form-control-text
         controlName="title"
@@ -43,7 +42,6 @@
         controlName="displayType"
         [options]="displayTypeOptions"
         [label]="'Display type'"
-        [readonly]="true"
       ></app-form-control-select>
       <button
         class="govuk-button"

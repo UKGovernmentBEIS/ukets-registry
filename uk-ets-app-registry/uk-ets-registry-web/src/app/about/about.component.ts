@@ -22,7 +22,9 @@ import { RouterModule } from '@angular/router';
             </div>
           </div>
         </div>
-        <div class="govuk-main-wrapper">
+        <div
+          class="govuk-width-container govuk-!-padding-top-7 govuk-!-padding-bottom-7"
+        >
           <div>
             <span class="govuk-caption-xl"
               >Information about the application version</span

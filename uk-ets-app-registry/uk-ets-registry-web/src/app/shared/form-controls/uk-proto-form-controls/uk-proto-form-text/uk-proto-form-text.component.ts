@@ -17,6 +17,7 @@ export class UkProtoFormTextComponent extends UkProtoFormComponent {
   @Input() autocomplete = 'on';
   @Input() disabled = false;
   @Input() showTextAfterInputElement: string;
+  @Input() prefix: string;
 
   onBlur(event): void {
     const val = event.target['value'];

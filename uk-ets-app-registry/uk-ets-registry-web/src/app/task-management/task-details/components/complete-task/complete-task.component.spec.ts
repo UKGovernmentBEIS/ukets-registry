@@ -92,10 +92,14 @@ describe('CompleteTaskComponent', () => {
       otpControl.setValue('123456');
       const commentControl = fixture.componentInstance.form.get('comment');
       commentControl.setValue('A comment to approve the task.');
+      const amountPaidControl =
+        fixture.componentInstance.form.get('amountPaid');
+      amountPaidControl.setValue(874.87);
       spyOn(component.completeTaskFormInfo, 'emit');
       component.submit();
       expect(component.completeTaskFormInfo.emit).toHaveBeenCalledWith({
         comment: 'A comment to approve the task.',
+        amountPaid: 874.87,
         otp: '123456',
       });
     });

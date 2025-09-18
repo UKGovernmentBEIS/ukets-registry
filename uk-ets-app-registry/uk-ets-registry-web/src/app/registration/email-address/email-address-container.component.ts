@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { canGoBack, errors } from '@shared/shared.action';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 
@@ -10,19 +10,14 @@ import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
     <app-email-address
       (emailAddress)="onContinue($event)"
       (errorDetails)="onError($event)"
-    >
-    </app-email-address>
+    />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmailAddressContainerComponent implements OnInit {
   readonly previousRoute = 'registration/emailInfo';
 
-  constructor(
-    private store: Store,
-    private route: ActivatedRoute,
-    private _router: Router
-  ) {}
+  constructor(private store: Store, private _router: Router) {}
 
   ngOnInit(): void {
     this.store.dispatch(canGoBack({ goBackRoute: this.previousRoute }));

@@ -2,9 +2,9 @@ import {
   Component,
   ElementRef,
   forwardRef,
-  Injector,
+  HostListener,
+  inject,
   Input,
-  OnInit,
   ViewChild,
 } from '@angular/core';
 import {
@@ -43,38 +43,55 @@ import { FileMimeTypes } from '@shared/model/file';
 })
 export class UkSelectFileComponent
   extends UkProtoFormCompositeComponent
-  implements Validator, OnInit
+  implements Validator
 {
-  @Input()
-  isInProgress: boolean;
-  @Input()
-  fileProgress: number;
-  @Input()
-  showErrors: boolean;
+  @Input() isInProgress: boolean;
+  @Input() fileProgress: number;
+  @Input() showErrors: boolean;
   @Input() hint = '';
   @Input() disableAllForms = false;
   @Input() fileType: string[];
-  @Input() isFileRequired: boolean;
   @Input() fileSize: number;
 
-  @ViewChild('fileInput', { static: false })
-  inputElement: ElementRef;
-
-  constructor(
-    private host: ElementRef<HTMLInputElement>,
-    protected parentF: FormGroupDirective,
-    private fb: UntypedFormBuilder,
-    protected injector: Injector
-  ) {
-    super(parentF, injector);
+  @Input() set isFileRequired(value: boolean) {
+    this._isFileRequired = value;
+    this.formControl?.updateValueAndValidity();
   }
+  get isFileRequired(): boolean {
+    return this._isFileRequired;
+  }
+  private _isFileRequired: boolean;
 
-  ngOnInit(): void {
-    super.ngOnInit();
+  @Input() set uploadErrorMessage(value: string) {
+    this._uploadErrorMessage = value;
+    this.formControl?.updateValueAndValidity();
+  }
+  get uploadErrorMessage(): string {
+    return this._uploadErrorMessage;
+  }
+  private _uploadErrorMessage: string;
+
+  @ViewChild('fileInput', { static: false }) inputElement: ElementRef;
+
+  private host = inject(ElementRef<HTMLInputElement>);
+  private fb = inject(UntypedFormBuilder);
+
+  @HostListener('change') onFileSelected() {
+    this.uploadErrorMessage = null;
   }
 
   onClick() {
+    this.clearInputText();
+  }
+
+  private clearInputText(): void {
     this.inputElement.nativeElement.value = '';
+  }
+
+  reset(): void {
+    this.formControl?.reset();
+    this.clearInputText();
+    this.formControl?.updateValueAndValidity();
   }
 
   writeValue(host: ElementRef<HTMLInputElement>) {
@@ -95,31 +112,26 @@ export class UkSelectFileComponent
       maxFileSizeExceeded: `The file must be smaller than ${
         this.fileSize / 1024
       }MB`,
+      uploadError: this.uploadErrorMessage || 'File upload failed',
     };
   }
 
   validate(control: AbstractControl): ValidationErrors | null {
     const file: File = control.value;
     if (this.isFileRequired && empty(file)) {
-      return {
-        selectFileRequired: this.getDefaultErrorMessageMap().selectFileRequired,
-      };
+      return { selectFileRequired: true };
     }
     if (!empty(file) && !this.fileType.includes(file.type.toLowerCase())) {
-      return {
-        invalidFileType: this.getDefaultErrorMessageMap().invalidFileType,
-      };
+      return { invalidFileType: true };
     }
     if (!empty(file) && file.size / 1024 > this.fileSize) {
-      return {
-        maxFileSizeExceeded:
-          this.getDefaultErrorMessageMap().maxFileSizeExceeded,
-      };
+      return { maxFileSizeExceeded: true };
     }
     if (!empty(file) && file.size == 0) {
-      return {
-        emptySelectedFile: this.getDefaultErrorMessageMap().emptySelectedFile,
-      };
+      return { emptySelectedFile: true };
+    }
+    if (this.uploadErrorMessage) {
+      return { uploadError: true };
     }
   }
 
@@ -131,6 +143,8 @@ export class UkSelectFileComponent
       case FileMimeTypes.JPG:
       case FileMimeTypes.PNG:
         return `The selected file must be PDF, PNG or JPG`;
+      default:
+        return `Invalid file type`;
     }
   }
 }

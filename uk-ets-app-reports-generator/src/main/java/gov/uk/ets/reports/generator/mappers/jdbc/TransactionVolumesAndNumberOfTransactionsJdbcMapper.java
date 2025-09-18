@@ -4,7 +4,6 @@ import gov.uk.ets.reports.generator.domain.TransactionVolumesAndNumberOfTransact
 import gov.uk.ets.reports.generator.export.util.DateRangeUtil;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -97,8 +96,37 @@ public class TransactionVolumesAndNumberOfTransactionsJdbcMapper
         "                     then 'Operator Holding Account (OHA) to Aircraft Operator Holding Account (AOHA)'\n" +
         "                 when tra.type_label = 'ETS - Trading account' and\n" +
         "                      aqa.type_label = 'ETS - Aircraft operator holding account'\n" +
-        "                     then 'Trading account to Aircraft Operator Holding Account (AOHA)' end as transaction_type,\n" +
-        "       " +
+        "                     then 'Trading account to Aircraft Operator Holding Account (AOHA)'\n" +
+
+        "                 when tra.type_label = 'ETS - Maritime operator holding account' and\n" +
+        "                      aqa.type_label = 'ETS - Trading account'\n" +
+        "                     then 'Maritime Operator Holding Account (MOHA) to Trading Account'\n" +
+        "                 when tra.type_label = 'ETS - Maritime operator holding account' and aqa.type_label in\n" +
+        "                                                                                     ('ETS - UK Total Quantity Account',\n" +
+        "                                                                                      'ETS - UK Deletion Account',\n" +
+        "                                                                                      'ETS - UK Auction Account',\n" +
+        "                                                                                      'ETS - UK Allocation Account',\n" +
+        "                                                                                      'ETS - UK Surrender Account',\n" +
+        "                                                                                      'ETS - UK New Entrants Reserve Account',\n" +
+        "                                                                                      'ETS - UK Market Stability Mechanism Account',\n" +
+        "                                                                                      'ETS - UK General Holding Account')\n" +
+        "                     then 'Maritime Operator Holding Account (MOHA) to Central Account'\n" +
+        "                 when tra.type_label = 'ETS - Maritime operator holding account' and\n" +
+        "                      aqa.type_label = 'ETS - Maritime operator holding account'\n" +
+        "                     then 'Maritime Operator Holding Account (MOHA) to Maritime Operator Holding Account (MOHA)'\n" +
+        "                 when tra.type_label = 'ETS - UK Auction delivery account' and\n" +
+        "                      aqa.type_label = 'ETS - Maritime operator holding account'\n" +
+        "                     then 'Auction Delivery Account to Maritime Operator Holding Account (MOHA)'\n" +
+        "                 when tra.type_label = 'ETS - Maritime operator holding account' and\n" +
+        "                      aqa.type_label = 'ETS - Operator holding account'\n" +
+        "                     then 'Maritime Operator Holding Account (MOHA) to Operator Holding Account to (OHA)'\n" +
+        "                 when tra.type_label = 'ETS - Operator holding account' and\n" +
+        "                      aqa.type_label = 'ETS - Maritime operator holding account'\n" +
+        "                     then 'Operator Holding Account (OHA) to Maritime Operator Holding Account (MOHA)'\n" +
+        "                 when tra.type_label = 'ETS - Trading account' and\n" +
+        "                      aqa.type_label = 'ETS - Maritime operator holding account'\n" +
+        "                     then 'Trading account to Maritime Operator Holding Account (MOHA)' end as transaction_type, \n" +
+
         "count(transact.id)                                                                    as number_of_transactions\n" +
         "      from \"transaction\" transact\n" +
         "               left join account aqa on aqa.identifier = transact.acquiring_account_identifier\n" +
@@ -110,7 +138,7 @@ public class TransactionVolumesAndNumberOfTransactionsJdbcMapper
         "        and ((tra.type_label = 'ETS - Trading account' and aqa.type_label = 'ETS - Trading account') or\n" +
         "             (tra.type_label = 'ETS - Trading account' and aqa.type_label = 'ETS - Operator holding account') or\n" +
         "             (tra.type_label = 'ETS - Trading account' and aqa.type_label in ('ETS - UK Total Quantity Account',\n" +
-        "                                                                              'ETS - UK Deletion Account',\n" +        
+        "                                                                              'ETS - UK Deletion Account',\n" +
         "                                                                              'ETS - UK Auction Account',\n" +
         "                                                                              'ETS - UK Allocation Account',\n" +
         "                                                                              'ETS - UK Surrender Account',\n" +
@@ -161,16 +189,23 @@ public class TransactionVolumesAndNumberOfTransactionsJdbcMapper
         "             (tra.type_label = 'ETS - Operator holding account' and\n" +
         "              aqa.type_label = 'ETS - Aircraft operator holding account') or\n" +
         "             (tra.type_label = 'ETS - Trading account' and\n" +
-        "              aqa.type_label = 'ETS - Aircraft operator holding account'))\n" +
+        "              aqa.type_label = 'ETS - Aircraft operator holding account') or \n" +
+
+        "      (tra.type_label = 'ETS - Maritime operator holding account' and aqa.type_label = 'ETS - Trading account') or\n" +
+        "      (tra.type_label = 'ETS - Maritime operator holding account' and aqa.type_label in (\n" +
+        "          'ETS - UK Total Quantity Account', 'ETS - UK Deletion Account', 'ETS - UK Auction Account',\n" +
+        "          'ETS - UK Allocation Account', 'ETS - UK Surrender Account', 'ETS - UK New Entrants Reserve Account',\n" +
+        "          'ETS - UK Market Stability Mechanism Account', 'ETS - UK General Holding Account')) or\n" +
+        "      (tra.type_label = 'ETS - Maritime operator holding account' and aqa.type_label = 'ETS - Maritime operator holding account') or\n" +
+        "      (tra.type_label = 'ETS - UK Auction delivery account' and aqa.type_label = 'ETS - Maritime operator holding account') or\n" +
+        "      (tra.type_label = 'ETS - Maritime operator holding account' and aqa.type_label = 'ETS - Operator holding account') or\n" +
+        "      (tra.type_label = 'ETS - Operator holding account' and aqa.type_label = 'ETS - Maritime operator holding account') or\n" +
+        "      (tra.type_label = 'ETS - Trading account' and aqa.type_label = 'ETS - Maritime operator holding account')) " +
+
         "group by transaction_type\n" +
         "order by number_of_units desc";
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Override
-    public List<TransactionVolumesAndNumberOfTransactionsReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<TransactionVolumesAndNumberOfTransactionsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

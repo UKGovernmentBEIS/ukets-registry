@@ -39,6 +39,8 @@ describe('SearchTasksUserCriteriaComponent', () => {
     'createdOnTo',
     'completedOnFrom',
     'completedOnTo',
+    'deadlineFrom',
+    'deadlineTo',
   ];
 
   const initialCriteria = {
@@ -54,6 +56,8 @@ describe('SearchTasksUserCriteriaComponent', () => {
     createdOnTo: null,
     completedOnFrom: null,
     completedOnTo: null,
+    deadlineFrom: null,
+    deadlineTo: null,
     transactionId: null,
     taskOutcome: null,
     initiatorName: null,
@@ -73,6 +77,8 @@ describe('SearchTasksUserCriteriaComponent', () => {
     createdOnTo: '2019-14-12',
     completedOnFrom: '2019-15-12',
     completedOnTo: '2019-16-12',
+    deadlineFrom: '2019-15-12',
+    deadlineTo: '2019-16-12',
     transactionId: 'transactionId',
     taskOutcome: 'taskOutcome',
     initiatorName: 'initiatorName',

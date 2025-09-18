@@ -42,10 +42,7 @@
         </div>
       </div>
       <dl
-        class="
-          govuk-summary-list govuk-summary-list--no-border
-          govuk-!-margin-bottom-9
-        "
+        class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
       >
         <div
           class="govuk-summary-list__row"
@@ -68,9 +65,9 @@
           <dt class="govuk-summary-list__key">Permissions</dt>
           <dd class="govuk-summary-list__value">
             {{ (accessRightText$ | async).text }}
-            <span class="govuk-hint">
+            <div class="govuk-hint">
               {{ (accessRightText$ | async).hint }}
-            </span>
+            </div>
           </dd>
           <dd class="govuk-summary-list__actions">
             <a

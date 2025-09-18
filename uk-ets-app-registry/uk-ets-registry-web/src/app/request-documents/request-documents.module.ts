@@ -31,6 +31,7 @@ import {
   UserDocumentAssigningCommentComponent,
   UserDocumentAssigningCommentContainerComponent,
 } from '@request-documents/wizard/components/user-document-assigning-comment';
+import { SetDocumentRequestDeadlineContainerComponent } from './wizard/components/set-document-request-deadline-container/set-document-request-deadline-container.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import {
     SelectDocumentsContainerComponent,
     SelectDocumentsComponent,
     SelectRecipientContainerComponent,
+    SetDocumentRequestDeadlineContainerComponent,
     SelectRecipientComponent,
     UserDocumentAssigningCommentContainerComponent,
     UserDocumentAssigningCommentComponent,

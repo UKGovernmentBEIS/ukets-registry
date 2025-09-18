@@ -1,18 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnInit,
-} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { clearErrors, errors } from '@shared/shared.action';
 import { requestUploadSelectedFileForDocumentRequest } from '@shared/file/actions/file-upload-form.actions';
 import { FileBase, UploadStatus } from '@shared/model/file';
-import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
+import { ErrorDetail } from '@shared/error-summary';
 
-import { Observable } from 'rxjs';
 import {
+  selectFileUploadErrorMessages,
+  selectSubmittedApproveTask,
   selectTask,
   selectUploadedFileDetails,
   selectUploadFileIsInProgress,
@@ -20,12 +15,9 @@ import {
 } from '@task-details/reducers/task-details.selector';
 import {
   RequestedDocumentsModel,
-  TaskDetails,
   TaskFileDownloadInfo,
 } from '@task-management/model';
 import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
-import { AuthModel } from '@registry-web/auth/auth.model';
-import { Configuration } from '@shared/configuration/configuration.interface';
 import { selectConfigurationRegistry } from '@shared/shared.selector';
 import {
   deleteSelectedFile,
@@ -37,57 +29,34 @@ import {
   selector: 'app-requested-documents-form-container',
   template: `
     <app-requested-documents-form
-      (fileEmitter)="sendFileForUpload($event)"
       [isInProgress]="isInProgress$ | async"
       [fileProgress]="fileProgress$ | async"
       [fileDetails]="fileDetails$ | async"
+      [fileUploadErrorMessages]="fileUploadErrorMessages$ | async"
       [loggedinUser]="loggedinUser$ | async"
       [configuration]="configuration$ | async"
       [taskDetails]="taskDetails$ | async"
-      [documentNames]="documentNames"
-      [comment]="comment"
-      [claimantURID]="claimantURID"
-      [requestStatus]="requestStatus"
-      [difference]="difference"
-      [uploadedFiles]="uploadedFiles"
+      [mayShowErrors]="submittedApproveTask$ | async"
+      (fileEmitter)="sendFileForUpload($event)"
       (errorDetails)="onError($event)"
       (commentEmitter)="onComment($event)"
       (removeRequestDocumentFile)="onRemoveRequestDocumentFile($event)"
       (downloadRequestDocumentFile)="onDownloadRequestDocumentFile($event)"
-    >
-    </app-requested-documents-form>
+    />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RequestedDocumentsFormContainerComponent implements OnInit {
-  @Input() documentNames: string[];
-  @Input() comment: string;
-  @Input() requestStatus: string;
-  @Input() claimantURID: string;
-  @Input() difference: string;
-  @Input() uploadedFiles: FileBase[];
+export class RequestedDocumentsFormContainerComponent {
+  isInProgress$ = this.store.select(selectUploadFileIsInProgress);
+  fileProgress$ = this.store.select(selectUploadFileProgress);
+  fileDetails$ = this.store.select(selectUploadedFileDetails);
+  fileUploadErrorMessages$ = this.store.select(selectFileUploadErrorMessages);
+  loggedinUser$ = this.store.select(selectLoggedInUser);
+  configuration$ = this.store.select(selectConfigurationRegistry);
+  taskDetails$ = this.store.select(selectTask);
+  submittedApproveTask$ = this.store.select(selectSubmittedApproveTask);
 
-  isInProgress$: Observable<boolean>;
-  fileProgress$: Observable<number>;
-  fileDetails$: Observable<RequestedDocumentsModel>;
-  loggedinUser$: Observable<AuthModel>;
-  configuration$: Observable<Configuration[]>;
-  taskDetails$: Observable<TaskDetails>;
-
-  constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private store: Store
-  ) {}
-
-  ngOnInit() {
-    this.isInProgress$ = this.store.select(selectUploadFileIsInProgress);
-    this.fileProgress$ = this.store.select(selectUploadFileProgress);
-    this.fileDetails$ = this.store.select(selectUploadedFileDetails);
-    this.loggedinUser$ = this.store.select(selectLoggedInUser);
-    this.configuration$ = this.store.select(selectConfigurationRegistry);
-    this.taskDetails$ = this.store.select(selectTask);
-  }
+  constructor(private store: Store) {}
 
   sendFileForUpload(fileInfo: RequestedDocumentsModel) {
     this.store.dispatch(clearErrors());
@@ -103,10 +72,7 @@ export class RequestedDocumentsFormContainerComponent implements OnInit {
   }
 
   onError(value: ErrorDetail[]) {
-    const summary: ErrorSummary = {
-      errors: value,
-    };
-    this.store.dispatch(errors({ errorSummary: summary }));
+    this.store.dispatch(errors({ errorSummary: { errors: value } }));
   }
 
   onComment(comment: string) {
@@ -118,11 +84,8 @@ export class RequestedDocumentsFormContainerComponent implements OnInit {
   }
 
   onDownloadRequestDocumentFile(taskFileInfo: TaskFileDownloadInfo) {
-    console.log(taskFileInfo);
     this.store.dispatch(
-      fetchTaskUserFile({
-        taskFileDownloadInfo: taskFileInfo,
-      })
+      fetchTaskUserFile({ taskFileDownloadInfo: taskFileInfo })
     );
   }
 }

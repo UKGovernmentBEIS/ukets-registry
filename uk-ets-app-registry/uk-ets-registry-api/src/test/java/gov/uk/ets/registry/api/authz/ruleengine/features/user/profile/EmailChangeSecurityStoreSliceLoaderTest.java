@@ -11,6 +11,7 @@ import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.authz.ruleengine.BusinessSecurityStore;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInputStore;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInputType;
+import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.user.admin.repository.KeycloakUserRepository;
 import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
@@ -80,9 +81,7 @@ class EmailChangeSecurityStoreSliceLoaderTest {
         given(emailChangeBooleanExpressionFactory.getCurrentUserPendingEmailChangesExpression()).willReturn(currentUserPendingEmailChangesExpression);
         given(taskRepository.count(currentUserPendingEmailChangesExpression)).willReturn(testCase.otherPendingEmailChangeByCurrentUserExists ? 1L : 0);
 
-        BooleanExpression sameNewEmailPendingEmailChangesExpression = Mockito.mock(BooleanExpression.class);
-        given(emailChangeBooleanExpressionFactory.getOfSameNewEmailPendingEmailChangesExpression(eq(newEmail))).willReturn(sameNewEmailPendingEmailChangesExpression);
-        given(taskRepository.count(sameNewEmailPendingEmailChangesExpression)).willReturn(testCase.otherPendingEmailChangeWithSameNewEmailExists ? 1L : 0);
+        given(taskRepository.findChangeEmailTasksByNewEmail(newEmail)).willReturn(testCase.otherPendingEmailChangeWithSameNewEmailExists ? List.of(new Task()) : List.of());
 
         given(userAdministrationService.userExists(any())).willReturn(testCase.otherUsersEmail);
 

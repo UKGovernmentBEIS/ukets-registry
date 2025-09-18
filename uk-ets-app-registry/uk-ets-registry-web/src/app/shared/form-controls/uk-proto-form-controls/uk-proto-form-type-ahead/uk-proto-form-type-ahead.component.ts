@@ -26,11 +26,12 @@ import {
 } from 'rxjs';
 
 import { NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
-import { ResultTemplateContext } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
+//import { ResultTemplateContext } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 import { TypeAheadService } from '@registry-web/shared/services';
 
 import { UkProtoFormComponent } from '../../uk-proto-form.component';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
+import { ResultTemplateContext } from 'node_modules/@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 @Component({
   selector: 'app-form-control-type-ahead',
   templateUrl: './uk-proto-form-type-ahead.component.html',

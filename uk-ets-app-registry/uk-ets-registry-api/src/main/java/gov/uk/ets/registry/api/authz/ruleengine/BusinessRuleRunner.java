@@ -2,7 +2,7 @@ package gov.uk.ets.registry.api.authz.ruleengine;
 
 import gov.uk.ets.registry.api.authz.ruleengine.features.BusinessRule;
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Business rule runner interface. Implement this class to define your own business rule execution/evaluation

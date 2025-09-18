@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import gov.uk.ets.reports.generator.domain.TransactionDetailsReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -59,20 +58,17 @@ public class TransactionDetailsJdbcMapper
         + "left join account ta on\r\n"
         + "    ta.identifier = t.transferring_account_identifier\r\n"
         + "left join account_ownership ao on\r\n"
-        + "    ao.account_id = ta.id\r\n"
+        + "    ao.account_id = ta.id and ao.status = 'ACTIVE'\r\n"
         + "left join account_holder ah on\r\n"
         + "    ao.account_holder_id = ah.id\r\n"
         + "left join account aa on\r\n"
         + "    aa.identifier = t.acquiring_account_identifier\r\n"
         + "left join account_ownership aao on\r\n"
-        + "    aao.account_id = aa.id\r\n"
+        + "    aao.account_id = aa.id and aao.status = 'ACTIVE'\r\n"
         + "left join account_holder aah on\r\n"
         + "    aao.account_holder_id = aah.id\r\n"
         + "where\r\n"
         + "    t.identifier = :transactionIdentifier\r\n"
-        + "    and (ao.status = 'ACTIVE'\r\n"
-        + "        and aao.status = 'ACTIVE'\r\n"
-        + "        or ah.name is null)\r\n"
         + "group by\r\n"
         + "    t.identifier ,\r\n"
         + "    t.status ,\r\n"
@@ -96,11 +92,6 @@ public class TransactionDetailsJdbcMapper
         + "    tb.applicable_period"; 
     
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Override
-    public List<TransactionDetailsReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<TransactionDetailsReportData> mapData(

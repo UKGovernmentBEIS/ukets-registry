@@ -45,6 +45,14 @@ export function getDayjs(date: UkDate, format?: string | string[]): Dayjs {
   );
 }
 
+export function dayjsFormatDate(
+  date: Date,
+  format: string,
+  isUTC = false
+): string {
+  return isUTC ? dayjs.utc(date).format(format) : dayjs(date).format(format);
+}
+
 export function dateTimeNowFormatted() {
   return dayjs().format('dddd, MMMM Do YYYY, h:mm:ss a');
 }
@@ -81,9 +89,35 @@ export function convertToUkDate(formattedUkDate: string): UkDate {
   };
 }
 
+export function convertDateForDatepicker(date: Date): string {
+  return dayjs(date).format('YYYY-MM-DD');
+}
+
+export function convertDateToUkDate(date: Date): UkDate {
+  date = new Date(date);
+  return {
+    day: String(date.getDate()),
+    month: String(date.getMonth() + 1),
+    year: String(date.getFullYear()),
+  };
+}
+
+export function convertDatestringToUkDate(
+  formattedUkDate: string,
+  format: string
+): UkDate {
+  const date = dayjs(formattedUkDate, format, true);
+  return {
+    day: String(date.date()),
+    month: String(date.month() + 1),
+    year: String(date.year()),
+  };
+}
+
 export function dateIsValid(date: string, format: string): boolean {
   return dayjs(date, format, true).isValid();
 }
+
 export function emptyProp(value: any): boolean {
   for (const prop in value) {
     if (empty(value[prop])) {
@@ -95,6 +129,19 @@ export function emptyProp(value: any): boolean {
 
 export function empty(o: any): boolean {
   return typeof o === 'undefined' || o === null || o === '';
+}
+
+export function isEmptyInputValue(value: any): boolean {
+  /**
+   * Check if the object is a string or array before evaluating the length attribute.
+   * This avoids falsely rejecting objects that contain a custom length attribute.
+   * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
+   */
+  return (
+    value === null ||
+    value === undefined ||
+    ((typeof value === 'string' || Array.isArray(value)) && value.length === 0)
+  );
 }
 
 export function getControlName(c: AbstractControl): string | null {
@@ -147,12 +194,13 @@ export function getCountryNameFromCountryCode(
   countries: IUkOfficialCountry[],
   key: string
 ) {
+  const getDefaultValue = (key: string) => (key === '-' ? 'Not provided' : key);
   const iUkOfficialCountry: IUkOfficialCountry = countries.find(
     (country) => country.key === key
   );
-  return iUkOfficialCountry == undefined
-    ? key
-    : iUkOfficialCountry.item[0]?.name;
+  return iUkOfficialCountry
+    ? iUkOfficialCountry.item[0]?.name
+    : getDefaultValue(key);
 }
 
 export function getOptionsFromStatusMap(map: Record<any, Status>): Option[] {
@@ -176,11 +224,12 @@ export function getOptionsFromMap(map: Record<any, string>): Option[] {
 }
 
 export function getUrlIdentifier(parameter: string): string {
-  return parameter.indexOf('?') > -1
-    ? parameter.split('?')[0]
-    : parameter.indexOf('%') > -1
-    ? parameter.split('%')[0]
-    : parameter;
+  const sanitizedParameter = parameter.replace('#main-content', '');
+  return sanitizedParameter.indexOf('?') > -1
+    ? sanitizedParameter.split('?')[0]
+    : sanitizedParameter.indexOf('%') > -1
+      ? sanitizedParameter.split('%')[0]
+      : sanitizedParameter;
 }
 
 export function accountHolderResultFormatter(
@@ -364,6 +413,18 @@ export function handleCustomScheduledTimeOption(
     if (sort) options.sort((a, b) => compareTimeOptions(a, b, notification));
   }
   return options;
+}
+
+/**
+ * Parse input as date and set hour, minute and second at the end of the given day
+ *
+ * @param date
+ * @returns Date
+ */
+export function parseDeadline(date: Date | string | null): Date {
+  const deadline = new Date(date);
+  deadline.setHours(23, 59, 59);
+  return deadline;
 }
 
 function compareTimeOptions(a: Option, b: Option, notification: Notification) {

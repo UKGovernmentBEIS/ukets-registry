@@ -9,6 +9,7 @@ import { ContactType } from '@shared/model/account-holder-contact-type';
 import { FileDetails } from '@shared/model/file/file-details.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountHolderDetailsWizardPathsModel } from '@account-management/account/account-holder-details-wizard/model';
+import { ChangeAccountHolderWizardPathsModel } from '@account-management/account/change-account-holder-wizard/model';
 
 @Component({
   selector: 'app-account-holder',
@@ -31,6 +32,8 @@ export class AccountHolderComponent {
   canRequestUpdateDocuments: boolean;
   @Input()
   canDeleteFile: boolean;
+  @Input()
+  canChangeAccountHolder: boolean;
   @Output()
   readonly downloadAccountHolderFileEmitter = new EventEmitter<FileDetails>();
   @Output()
@@ -40,7 +43,10 @@ export class AccountHolderComponent {
   primaryContactType = ContactType.PRIMARY;
   alternativeContactType = ContactType.ALTERNATIVE;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router) {}
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router
+  ) {}
 
   isKpNonGovernmentAccount() {
     return (
@@ -70,6 +76,13 @@ export class AccountHolderComponent {
     this.router.navigate([
       this.activatedRoute.snapshot['_routerState'].url +
         `/${AccountHolderDetailsWizardPathsModel.BASE_PATH}`,
+    ]);
+  }
+
+  goToChangeAccountHolderRequest() {
+    this.router.navigate([
+      this.activatedRoute.snapshot['_routerState'].url +
+        `/${ChangeAccountHolderWizardPathsModel.BASE_PATH}`,
     ]);
   }
 }

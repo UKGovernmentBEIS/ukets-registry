@@ -4,7 +4,7 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
 import gov.uk.ets.registry.api.authz.ruleengine.BusinessSecurityStore;
 import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
@@ -30,7 +30,7 @@ public abstract class AbstractBusinessRule implements BusinessRule {
     protected final Map<User, List<UserRole>> requestedUsersRoles;
     protected final Set<String> userScopes;
     protected final List<AllocationSummary> allocationEntries;
-    protected final InstallationOrAircraftOperatorDTO requestedOperatorUpdate;
+    protected final OperatorDTO requestedOperatorUpdate;
 
 
     /**

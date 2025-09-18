@@ -2,8 +2,9 @@ package gov.uk.ets.reports.api.filter;
 
 import gov.uk.ets.commons.logging.SecurityLog;
 import gov.uk.ets.commons.ratelimiter.ThrottlingFilter;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +47,8 @@ public class PerUserThrottlingFilter extends ThrottlingFilter {
             return null;
         }
         try {
-            if (authorizationService != null && authorizationService.getToken() != null) {
-                userId = authorizationService.getToken().getSubject();
+            if (authorizationService != null && authorizationService.getClaim(OAuth2ClaimNames.SUBJECT) != null) {
+                userId = authorizationService.getClaim(OAuth2ClaimNames.SUBJECT);
             }
         } catch (Exception e) {
             SecurityLog.log(log, "A user id could not be extracted for this request", e);

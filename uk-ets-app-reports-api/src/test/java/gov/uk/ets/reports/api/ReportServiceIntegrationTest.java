@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
@@ -32,7 +33,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.http.AbortableInputStream;
@@ -79,11 +79,11 @@ class ReportServiceIntegrationTest extends BasePostgresFixture {
                 )
             );
 
-        when(reportsApiKafkaTemplate.send(any(), any())).thenReturn(new AsyncResult<>(null));
+        when(reportsApiKafkaTemplate.send(any(), any())).thenReturn(CompletableFuture.completedFuture(null));
     }
 
     @Test
-    public void shouldSaveNewReportRequest() {
+    void shouldSaveNewReportRequest() {
         ReportCreationRequest creationRequest = ReportCreationRequest.builder()
             .type(ReportType.R0001)
             .queryInfo(new ReportQueryInfo())
@@ -99,7 +99,7 @@ class ReportServiceIntegrationTest extends BasePostgresFixture {
     }
 
     @Test
-    public void shouldFailSavingReportWithNullUrid() {
+    void shouldFailSavingReportWithNullUrid() {
         ReportCreationRequest creationRequest = ReportCreationRequest.builder()
             .type(ReportType.R0001)
             .queryInfo(new ReportQueryInfo())
@@ -109,7 +109,7 @@ class ReportServiceIntegrationTest extends BasePostgresFixture {
     }
 
     @Test
-    public void shouldListAllReportsForAdmin() {
+    void shouldListAllReportsForAdmin() {
 
         LocalDateTime now1 = LocalDateTime.now();
         LocalDateTime now2 = LocalDateTime.now().plusSeconds(5L);
@@ -133,7 +133,7 @@ class ReportServiceIntegrationTest extends BasePostgresFixture {
     }
 
     @Test
-    public void shouldListAllReportsForAr() {
+    void shouldListAllReportsForAr() {
 
         LocalDateTime now1 = LocalDateTime.now();
         LocalDateTime now2 = LocalDateTime.now().plusSeconds(5L);
@@ -160,7 +160,7 @@ class ReportServiceIntegrationTest extends BasePostgresFixture {
     
     @Test
     @Ignore("until s3 integration is complete")
-    public void shouldRetrieveFileContentOnDownload() {
+    void shouldRetrieveFileContentOnDownload() {
         Report report = generateTestReport(LocalDateTime.now(), null, TEST_URID_1, ReportStatus.PENDING, true);
 
         ReportDto reportDto = reportService.downloadReport(report.getId());
@@ -168,13 +168,13 @@ class ReportServiceIntegrationTest extends BasePostgresFixture {
     }
 
     @Test
-    public void shouldThrowWhenDownloadingNonExistentReport() {
+    void shouldThrowWhenDownloadingNonExistentReport() {
 
         assertThrows(UkEtsReportsException.class, () -> reportService.downloadReport(1L));
     }
 
     @Test
-    public void shouldRetrieveExpiredReports() {
+    void shouldRetrieveExpiredReports() {
         LocalDateTime now = LocalDateTime.now();
         generateTestReport(now, now, TEST_URID_1, ReportStatus.DONE, true);
         Report report2 = generateTestReport(now, now.minusMinutes(1), TEST_URID_2, ReportStatus.DONE, true);

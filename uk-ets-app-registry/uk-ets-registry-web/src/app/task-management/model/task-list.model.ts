@@ -31,6 +31,8 @@ export interface TaskSearchCriteria {
   allocationYear: string;
   nameOrUserId: string;
   urid?: string;
+  deadlineFrom: string;
+  deadlineTo: string;
 }
 
 export class Task {

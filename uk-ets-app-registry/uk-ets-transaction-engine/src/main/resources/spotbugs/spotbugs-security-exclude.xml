@@ -8,4 +8,20 @@
 		<Class name="gov.uk.ets.registry.api.transaction.exception.TransactionExecutionException" />
 		<Bug pattern="CRLF_INJECTION_LOGS" />
 	</Match>
+	<Match>
+		<Class name="gov.uk.ets.registry.api.transaction.processor.ParentTransactionProcessor" />
+		<Bug pattern="BEAN_PROPERTY_INJECTION" />
+	</Match>
+	<Match>
+		<Class name="gov.uk.ets.registry.api.transaction.TransactionService" />
+		<Bug pattern="BEAN_PROPERTY_INJECTION" />
+	</Match>
+	<Match>
+		<Class name="gov.uk.ets.registry.api.transaction.service.UnitSplitService" />
+		<Bug pattern="BEAN_PROPERTY_INJECTION" />
+	</Match>
+	<Match>
+		<Class name="gov.uk.ets.registry.api.transaction.service.UnitCreationService" />
+		<Bug pattern="BEAN_PROPERTY_INJECTION" />
+	</Match>
 </FindBugsFilter>

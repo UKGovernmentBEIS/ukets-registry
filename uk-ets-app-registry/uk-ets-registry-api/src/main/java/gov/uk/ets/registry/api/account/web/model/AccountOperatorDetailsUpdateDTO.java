@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,7 +19,7 @@ public class AccountOperatorDetailsUpdateDTO implements Serializable {
     private static final long serialVersionUID = 8566306592755679070L;
 
     @NotNull
-    private InstallationOrAircraftOperatorDTO current;
+    private OperatorDTO current;
     @NotNull
-    private InstallationOrAircraftOperatorDTO diff;
+    private OperatorDTO diff;
 }

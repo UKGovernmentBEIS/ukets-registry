@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { ErrorDetail, ErrorSummary } from '@registry-web/shared/error-summary';
 import { Note } from '@registry-web/shared/model';
 import { errors } from '@registry-web/shared/shared.action';
-import * as NotesActions from 'src/app/notes/store/notes.actions';
+import * as NotesActions from '@registry-web/account-management/account/account-details/notes/store/account-notes.actions';
 
 @Component({
   selector: 'app-account-notes',
@@ -18,6 +18,8 @@ export class AccountNotesComponent {
   isAdmin: boolean;
   @Input()
   isSeniorAdmin: boolean;
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
   @Input()
   accountFullId: string;
 

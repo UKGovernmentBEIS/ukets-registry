@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -50,11 +49,6 @@ public class KPAccountInformationReportService implements ReportTypeService<KPAc
                 "1st Representative", "1st Rep Name and Contact",
                 "2nd Representative", "2nd Rep Name and Contact"
         );
-    }
-
-    @Override
-    public List<KPAccountInformationReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

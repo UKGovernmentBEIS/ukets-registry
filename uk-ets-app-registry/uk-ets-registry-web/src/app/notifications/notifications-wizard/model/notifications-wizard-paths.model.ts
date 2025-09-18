@@ -6,4 +6,7 @@ export enum NotificationsWizardPathsModel {
   CHECK_AND_SUBMIT = 'notification-check-and-submit',
   REQUEST_SUBMITTED = 'notification-request-submitted',
   CLONE = 'notification-clone',
+  ADHOC_EMAIL = 'adhoc-email-submit',
+  CANCEL_NOTIFICATION = 'cancel-notification',
+  NOTIFICATION_CANCELLED = 'notification-cancelled',
 }

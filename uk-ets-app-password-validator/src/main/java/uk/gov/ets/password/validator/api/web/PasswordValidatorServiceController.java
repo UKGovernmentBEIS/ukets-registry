@@ -1,8 +1,8 @@
 package uk.gov.ets.password.validator.api.web;
 
 import gov.uk.ets.registry.api.common.validators.PasswordStrength;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;

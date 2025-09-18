@@ -6,12 +6,13 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 import gov.uk.ets.commons.logging.MDCParam;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsService;
+import jakarta.ws.rs.QueryParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.QueryParam;
+
 
 @RequiredArgsConstructor
 @RestController

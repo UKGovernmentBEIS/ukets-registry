@@ -53,35 +53,40 @@
         "@angular-eslint/directive-class-suffix": "error",
         "@angular-eslint/no-conflicting-lifecycle": "error",
         "@angular-eslint/no-empty-lifecycle-method": "error",
-        "@angular-eslint/no-host-metadata-property": "error",
         "@angular-eslint/no-input-rename": "error",
         "@angular-eslint/no-inputs-metadata-property": "error",
-        "@angular-eslint/no-output-native": "error",
+        "@angular-eslint/no-output-native": "warn",
         "@angular-eslint/no-output-on-prefix": "error",
         "@angular-eslint/no-output-rename": "error",
         "@angular-eslint/no-outputs-metadata-property": "error",
         "@angular-eslint/use-lifecycle-interface": "warn",
         "@angular-eslint/use-pipe-transform-interface": "error",
-        "@typescript-eslint/ban-types": "warn",
+        "@typescript-eslint/no-empty-object-type": "warn",
+        "@typescript-eslint/no-unsafe-function-type": "warn",
+        "@typescript-eslint/no-wrapper-object-types": "warn",
+        "@typescript-eslint/no-unused-expressions": "warn",
         "@typescript-eslint/explicit-member-accessibility": [
           "off",
           {
             "accessibility": "explicit"
           }
         ],
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unsafe-declaration-merging": "off",
         "ngrx/updater-explicit-return-type": "warn",
         "ngrx/avoid-cyclic-effects": "warn",
         "ngrx/no-dispatch-in-effects": "warn",
         "ngrx/no-effect-decorator-and-creator": "error",
         "ngrx/no-effect-decorator": "warn",
         "ngrx/no-effects-in-providers": "error",
-        "ngrx/no-multiple-actions-in-effects": "warn",
+        "ngrx/no-multiple-actions-in-effects": "off",
         "ngrx/prefer-action-creator-in-of-type": "warn",
         "ngrx/prefer-concat-latest-from": "warn",
-        "ngrx/prefer-effect-callback-in-block-statement": "warn",
+        "ngrx/prefer-effect-callback-in-block-statement": "off",
         "ngrx/use-effects-lifecycle-interface": "warn",
         "ngrx/avoid-combining-selectors": "warn",
-        "ngrx/avoid-dispatching-multiple-actions-sequentially": "warn",
+        "ngrx/avoid-dispatching-multiple-actions-sequentially": "off",
         "ngrx/avoid-duplicate-actions-in-reducer": "warn",
         "ngrx/avoid-mapping-selectors": "warn",
         "ngrx/good-action-hygiene": "warn",
@@ -105,10 +110,10 @@
         "@angular-eslint/component-max-inline-declarations": [
           "error",
           {
-            "template": 30
+            "template": 35
           }
         ],
-        "@angular-eslint/no-forward-ref": "warn",
+        "@angular-eslint/no-forward-ref": "off",
         "@angular-eslint/prefer-on-push-component-change-detection": "off",
         "@angular-eslint/use-injectable-provided-in": "off",
         "@angular-eslint/relative-url-prefix": "off"

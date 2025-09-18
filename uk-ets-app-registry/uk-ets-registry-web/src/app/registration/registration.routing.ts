@@ -10,6 +10,7 @@ import { EmailAddressContainerComponent } from './email-address/email-address-co
 import { ChoosePasswordContainerComponent } from './choose-password/choose-password.container.component';
 import { EmailInfoContainerComponent } from '@registry-web/registration/email-info/email-info-container.component';
 import { MemorablePhraseContainerComponent } from '@registry-web/registration/memorable-phrase';
+import { DeclarationContainerComponent } from './declaration/declaration-container.component';
 
 export const routes: Routes = [
   { path: 'emailInfo', component: EmailInfoContainerComponent },
@@ -18,30 +19,31 @@ export const routes: Routes = [
   { path: 'emailVerify/:submittedEmail', component: EmailVerifyComponent },
   {
     path: 'emailConfirm/:token',
-    component: EmailConfirmComponent
+    component: EmailConfirmComponent,
   },
   {
     path: 'personal-details',
-    component: PersonalDetailsContainerComponent
+    component: PersonalDetailsContainerComponent,
   },
   {
     path: 'work-details',
-    component: WorkDetailsContainerComponent
+    component: WorkDetailsContainerComponent,
   },
   {
     path: 'memorable-phrase',
-    component: MemorablePhraseContainerComponent
+    component: MemorablePhraseContainerComponent,
   },
   { path: 'choose-password', component: ChoosePasswordContainerComponent },
+  { path: 'declaration', component: DeclarationContainerComponent },
   {
     path: 'check-answers-and-submit',
-    component: CheckAnswersAndSubmitComponent
+    component: CheckAnswersAndSubmitComponent,
   },
-  { path: 'registered', component: RegisteredComponent }
+  { path: 'registered', component: RegisteredComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class RegistrationRoutingModule {}

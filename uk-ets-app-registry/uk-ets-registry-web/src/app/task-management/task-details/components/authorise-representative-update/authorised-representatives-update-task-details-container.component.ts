@@ -7,6 +7,7 @@ import { AuthoriseRepresentativeTaskDetails } from '@task-management/model';
     <app-authorise-representatives-update-task-details
       [authoriseRepresentativeTaskDetails]="taskDetails"
       (requestDocumentEmitter)="onUserRequestDocuments($event)"
+      (requestPaymentEmitter)="onRequestPayment($event)"
     ></app-authorise-representatives-update-task-details>
   `,
 })
@@ -15,11 +16,19 @@ export class AuthorisedRepresentativesUpdateTaskDetailsContainerComponent {
   taskDetails: AuthoriseRepresentativeTaskDetails;
 
   @Output() readonly requestDocumentEmitter = new EventEmitter();
+  @Output() readonly requestPaymentEmitter = new EventEmitter();
 
   onUserRequestDocuments(requestDocumentDetails) {
     this.requestDocumentEmitter.emit({
       parentRequestId: this.taskDetails.requestId,
       ...requestDocumentDetails,
+    });
+  }
+
+  onRequestPayment(requestPaymentWizardDetails) {
+    this.requestPaymentEmitter.emit({
+      parentRequestId: this.taskDetails.requestId,
+      ...requestPaymentWizardDetails,
     });
   }
 }

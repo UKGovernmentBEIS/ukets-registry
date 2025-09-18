@@ -5,11 +5,11 @@ import { Component, Input, OnInit } from '@angular/core';
   template: `
     <a
       [routerLink]="['/user-details', 'my-profile']"
-      class="govuk-header__link uk_ets_sign_in_out_link govuk-header__link--sign-custom"
+      class="govuk-header__link uk_ets_menu_item_link govuk-header__link--sign-custom"
       >My Profile</a
     >
   `,
-  styles: []
+  styles: [],
 })
 export class MyProfileComponent {
   @Input() urid: string;

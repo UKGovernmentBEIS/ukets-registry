@@ -41,6 +41,11 @@ export const selectUserDetailsUpdateInfo = createSelector(
   }
 );
 
+export const selectUserHasMobilePhone = createSelector(
+  selectUserDetailsUpdateInfo,
+  (userDetails) => !userDetails.noMobilePhoneNumberReason
+);
+
 export const selectDeactivationComment = createSelector(
   selectUserDetailsUpdateState,
   (state) => state.deactivationComment

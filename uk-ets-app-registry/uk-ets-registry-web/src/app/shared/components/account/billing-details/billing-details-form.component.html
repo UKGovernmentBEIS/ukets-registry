@@ -33,7 +33,7 @@
         <div class="govuk-warning-text">
           <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
           <strong class="govuk-warning-text__text">
-            <span class="govuk-warning-text__assistive">Warning</span>
+            <span class="govuk-visually-hidden">Warning</span>
             There is pending mandatory information.
           </strong>
         </div>
@@ -129,10 +129,10 @@
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
               Billing contact details
             </legend>
-            <span class="govuk-hint"
-              >We will only use this information to contact you about invoices
-              for this Registry Account</span
-            >
+            <div class="govuk-hint">
+              We will only use this information to contact you about invoices
+              for this Registry Account
+            </div>
             <app-form-control-text
               *ngIf="isAdmin"
               [readonly]="!isSeniorAdmin"
@@ -152,10 +152,10 @@
               controlName="billingContactDetails.contactName"
             ></app-form-control-text>
             <span class="govuk-label">Phone number</span>
-            <span class="govuk-hint"
-              >This is the number we will call if we have a query about your
-              invoices</span
-            >
+            <div class="govuk-hint">
+              This is the number we will call if we have a query about your
+              invoices
+            </div>
             <app-uk-phone-select
               [phoneInfo]="_billingPhoneInfo"
               [showErrors]="showErrors"

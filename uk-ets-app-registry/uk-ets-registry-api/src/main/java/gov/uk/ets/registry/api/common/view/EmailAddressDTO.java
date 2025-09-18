@@ -1,7 +1,7 @@
 package gov.uk.ets.registry.api.common.view;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 

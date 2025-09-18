@@ -81,7 +81,8 @@ export class AccountHolderSelectionContainerComponent implements OnInit {
     );
 
     this.searchByNameRequestUrl =
-      this.ukEtsRegistryApiBaseUrl + '/account-holder.get.by-name';
+      this.ukEtsRegistryApiBaseUrl +
+      '/account-holder.get.by-name-or-identifier';
     this.accountHolderSelectionType$ = this.store.select(
       selectAccountHolderSelectionType
     );

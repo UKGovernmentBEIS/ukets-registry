@@ -1,0 +1,4 @@
+This file is missing from maven central. That is why it was added here.
+
+mvn install:install-file -Dfile=activation.jar -DgroupId=javax.activation \
+-DartifactId=activation -Dversion=1.0.2 -Dpackaging=jar

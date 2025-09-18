@@ -6,12 +6,18 @@ import gov.uk.ets.registry.api.allocation.domain.AllocationJob;
 import gov.uk.ets.registry.api.allocation.type.AllocationJobStatus;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
 import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.task.domain.Task;
+import gov.uk.ets.registry.api.task.domain.TaskTransaction;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
+import gov.uk.ets.registry.api.task.repository.TaskTransactionRepository;
+import gov.uk.ets.registry.api.transaction.checks.BusinessCheckResult;
 import gov.uk.ets.registry.api.transaction.domain.data.AccountSummary;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import gov.uk.ets.registry.api.transaction.service.TransactionPersistenceService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +46,10 @@ public class AllocationSchedulerService {
      */
     private final AllocationJobService jobService;
 
+    private final TaskRepository taskRepository;
+
+    private final TaskTransactionRepository taskTransactionRepository;
+
     /**
      * Pause between allocation transactions.
      */
@@ -67,10 +77,6 @@ public class AllocationSchedulerService {
 
         Map<AccountType,AccountSummary> accounts = new HashMap<>();
 
-        AccountSummary account = overview.getBeneficiaryRecipients().stream().anyMatch(f-> f.getType() != AllocationType.NER)
-                ?  persistenceService.getAccount(AccountType.UK_ALLOCATION_ACCOUNT, AccountStatus.OPEN)
-                : persistenceService.getAccount(AccountType.UK_NEW_ENTRANTS_RESERVE_ACCOUNT, AccountStatus.OPEN);
-
         for (AllocationSummary recipient : overview.getBeneficiaryRecipients()) {
             switch (recipient.getType()) {
                 case NER -> {
@@ -84,9 +90,10 @@ public class AllocationSchedulerService {
             }
         }
 
+        Task task = taskRepository.findByRequestId(allocationJob.getRequestIdentifier());
         for (AllocationSummary entry : overview.getBeneficiaryRecipients()) {
                 try {
-                    transactionService.executeAllocation(
+                    BusinessCheckResult transactionIdentifier = transactionService.executeAllocation(
                             entry.getType() == AllocationType.NER
                                     ? accounts.get(AccountType.UK_NEW_ENTRANTS_RESERVE_ACCOUNT).getIdentifier()
                                     : accounts.get(AccountType.UK_ALLOCATION_ACCOUNT).getIdentifier(),
@@ -99,10 +106,13 @@ public class AllocationSchedulerService {
                         TimeUnit.MILLISECONDS.sleep(pauseInMilliseconds);
                     }
                     completedAllocations++;
+                    linkTaskWithTransaction(task, transactionIdentifier.getTransactionIdentifier(), entry.getAccountFullIdentifier());
                 } catch (InterruptedException exception) {
                     log.error("Interrupted exception when executing the allocation job", exception);
                     Thread.currentThread().interrupt();
-                    jobService.setStatus(allocationJob, getFinalStatus(totalAllocations, completedAllocations));
+                    AllocationJobStatus finalStatus = getFinalStatus(totalAllocations, completedAllocations);
+                    jobService.setStatus(allocationJob, finalStatus);
+                    jobService.setErrors(allocationJob, Map.of(-1, "Job was interrupted"));
                     return;
 
                 } catch (Exception exception) {
@@ -114,6 +124,9 @@ public class AllocationSchedulerService {
 
         AllocationJobStatus finalStatus = getFinalStatus(totalAllocations, completedAllocations);
         jobService.setStatus(allocationJob, finalStatus);
+        if (finalStatus == AllocationJobStatus.FAILED) {
+            jobService.setErrors(allocationJob, Map.of(-1, "All transactions have failed"));
+        }
         publishEvent(allocationJob.getRequestIdentifier(), finalStatus);
     }
 
@@ -143,5 +156,20 @@ public class AllocationSchedulerService {
                 "Error in Allocation Job execution");
         }
 
+    }
+
+    private void linkTaskWithTransaction(Task task, String transactionIdentifier, String acquiringAccountFullIdentifier) {
+        TaskTransaction taskTransaction = new TaskTransaction();
+        taskTransaction.setTask(task);
+        taskTransaction.setTransactionIdentifier(transactionIdentifier);
+        taskTransaction.setRecipientAccountNumber(acquiringAccountFullIdentifier);
+
+        if (task.getTransactionIdentifiers() == null) {
+            task.setTransactionIdentifiers(new ArrayList<>());
+        }
+        task.getTransactionIdentifiers().add(taskTransaction);
+
+        taskRepository.save(task);
+        taskTransactionRepository.save(taskTransaction);
     }
 }

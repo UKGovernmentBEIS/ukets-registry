@@ -7,6 +7,7 @@ import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.SalesContact;
 import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
@@ -16,6 +17,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderContactInfoDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
+import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
@@ -28,13 +30,14 @@ import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.user.UserConversionService;
 import gov.uk.ets.registry.api.user.UserDTO;
-import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
-import gov.uk.ets.registry.api.user.repository.UserRepository;
-
+import gov.uk.ets.registry.api.user.domain.UserWorkContact;
+import gov.uk.ets.registry.api.user.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
@@ -52,9 +55,7 @@ public class AccountDTOFactory {
 
     private UserConversionService userConversionService;
 
-    private UserRepository userRepository;
-
-    private UserAdministrationService userAdministrationService;
+    private UserService userService;
 
     private AuthorizedRepresentativeService authorizedRepresentativeService;
 
@@ -91,7 +92,7 @@ public class AccountDTOFactory {
         setupTrustedAccountListRulesDTO(accountDTO, account);
         setupAccountDetailsDTO(accountDTO, account);
         setupOperator(accountDTO, account);
-        setupAuthorizedRepresentatives(accountDTO, account, noUserToken);
+        setupAuthorizedRepresentatives(accountDTO, account);
         accountDTO.setBalance(account.getBalance());
         accountDTO.setUnitType(account.getUnitType());
         AccountType accountType = AccountType.get(account.getRegistryAccountType(), account.getKyotoAccountType());
@@ -129,6 +130,7 @@ public class AccountDTOFactory {
     private void setupAccountDetailsDTO(AccountDTO accountDTO, Account account) {
         AccountDetailsDTO accountDetailsDTO = new AccountDetailsDTO();
         accountDetailsDTO.setName(account.getAccountName());
+        accountDetailsDTO.setPublicAccountIdentifier(account.getPublicIdentifier());
         accountDetailsDTO.setAccountType(account.getAccountType());
         accountDetailsDTO.setAccountNumber(account.getFullIdentifier());
         accountDetailsDTO.setAccountStatus(account.getAccountStatus());
@@ -190,25 +192,53 @@ public class AccountDTOFactory {
             dto.setOperator(accountConversionService.convert((Installation) noProxyCompliantEntity));
         } else if (noProxyCompliantEntity instanceof AircraftOperator) {
             dto.setOperator(accountConversionService.convert((AircraftOperator) noProxyCompliantEntity));
+        } else if (noProxyCompliantEntity instanceof MaritimeOperator) {
+            dto.setOperator(accountConversionService.convert((MaritimeOperator) noProxyCompliantEntity));
         }
     }
 
-    private void setupAuthorizedRepresentatives(AccountDTO accountDTO, Account account, boolean noUserToken) {
+    private void setupAuthorizedRepresentatives(AccountDTO accountDTO, Account account) {
         List<AuthorisedRepresentativeDTO> authorisedRepresentatives = new ArrayList<>();
-        for (AccountAccess accountAccess : accountAccessRepository.finARsByAccount_Identifier(
-            account.getIdentifier())) {
-            AuthorisedRepresentativeDTO ar = new AuthorisedRepresentativeDTO();
-            ar.setRight(accountAccess.getRight());
-            ar.setState(accountAccess.getState());
-            UserDTO user = userConversionService.convert(userRepository.findByUrid(accountAccess.getUser().getUrid()));
-            ar.setUser(user);
-            ar.setUrid(user.getUrid());
-            Contact workContact =
-                userAdministrationService.findWorkContactDetailsByIamId(user.getKeycloakId(), noUserToken);
-            ar.setContact(workContact);
-            authorisedRepresentatives.add(ar);
+
+        Map<String, AccountAccess> userAccess = accountAccessRepository.finARsByAccount_Identifier(account.getIdentifier())
+            .stream()
+            .collect(Collectors.toMap(accountAccess -> accountAccess.getUser().getUrid(), Function.identity()));
+
+        if (!userAccess.isEmpty()) {
+            userService.getUserWorkContacts(userAccess.keySet())
+                .forEach(userWorkContact -> {
+                    AccountAccess accountAccess = userAccess.get(userWorkContact.getUrid());
+                    AuthorisedRepresentativeDTO ar = new AuthorisedRepresentativeDTO();
+                    ar.setRight(accountAccess.getRight());
+                    ar.setState(accountAccess.getState());
+                    UserDTO user = userConversionService.convert(accountAccess.getUser());
+                    ar.setUser(user);
+                    ar.setUrid(user.getUrid());
+                    ContactDTO workContact = convert(userWorkContact);
+                    ar.setContact(workContact);
+                    authorisedRepresentatives.add(ar);
+                });
         }
+
         accountDTO.setAuthorisedRepresentatives(authorisedRepresentatives);
+    }
+
+    private ContactDTO convert(UserWorkContact userWorkContact) {
+        ContactDTO contact = new ContactDTO();
+        contact.setEmailAddress(userWorkContact.getEmail());
+        contact.setLine1(userWorkContact.getWorkBuildingAndStreet());
+        contact.setLine2(userWorkContact.getWorkBuildingAndStreetOptional());
+        contact.setLine3(userWorkContact.getWorkBuildingAndStreetOptional2());
+        contact.setPostCode(userWorkContact.getWorkPostCode());
+        contact.setCity(userWorkContact.getWorkTownOrCity());
+        contact.setStateOrProvince(userWorkContact.getWorkStateOrProvince());
+        contact.setCountry(userWorkContact.getWorkCountry());
+        contact.setMobileCountryCode(userWorkContact.getWorkMobileCountryCode());
+        contact.setMobilePhoneNumber(userWorkContact.getWorkMobilePhoneNumber());
+        contact.setAlternativeCountryCode(userWorkContact.getWorkAlternativeCountryCode());
+        contact.setAlternativePhoneNumber(userWorkContact.getWorkAlternativePhoneNumber());
+        contact.setNoMobilePhoneNumberReason(userWorkContact.getNoMobilePhoneNumberReason());
+        return contact;
     }
     
     private void setupSalesContactDetailsDTO(AccountDetailsDTO accountDetailsDTO, Account account) {

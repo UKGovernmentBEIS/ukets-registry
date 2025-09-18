@@ -15,9 +15,7 @@
       }}
     </h1>
     <hr
-      class="
-        govuk-section-break govuk-section-break--m govuk-section-break--visible
-      "
+      class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
       *ngIf="isAuthenticated$ | async"
     />
     <span
@@ -53,7 +51,7 @@
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <p>
           <strong class="govuk-warning-text__text">
-            <span class="govuk-warning-text__assistive">Warning</span>
+            <span class="govuk-visually-hidden">Warning</span>
             We have sent a Registry activation code to your work email address.
             Once you receive the email, please use the link below to activate
             your access to the Registry.

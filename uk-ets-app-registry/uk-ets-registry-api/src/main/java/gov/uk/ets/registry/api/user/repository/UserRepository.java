@@ -92,10 +92,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
                and acs.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED
                and (
                    :userId is null or acc.id in (
-                        select acc2 from AccountAccess acs2
+                        select acc2.id from AccountAccess acs2
                           join acs2.user u2
                           join acs2.account acc2
-                          join acc2.accountHolder hol2
                         where u2.id = :userId
                    )
                        

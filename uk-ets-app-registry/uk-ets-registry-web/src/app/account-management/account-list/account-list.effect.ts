@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AccountApiService } from '../service/account-api.service';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { AccountSearchResult, SearchActionPayload } from './account-list.model';
 import { PagedResults } from '@shared/search/util/search-service.util';
@@ -11,6 +11,8 @@ import * as AccountListActions from './account-list.actions';
 import { createReportRequestSuccess } from '@reports/actions';
 import { selectPageParameters } from './account-list.selector';
 import { Store } from '@ngrx/store';
+import { isAdmin } from '@registry-web/auth/auth.selector';
+import { concatLatestFrom } from '@ngrx/operators';
 
 @Injectable()
 export class AccountListEffect {
@@ -24,6 +26,16 @@ export class AccountListEffect {
     return this.actions$.pipe(
       ofType(AccountListActions.searchAccounts),
       map((action) => AccountListActions.loadAccounts(action))
+    );
+  });
+
+  clearStatePerRole$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AccountListActions.clearState),
+      concatLatestFrom(() => this.store.select(isAdmin)),
+      map(([action, isAdmin]) =>
+        AccountListActions.clearStatePerRole({ isAdmin })
+      )
     );
   });
 

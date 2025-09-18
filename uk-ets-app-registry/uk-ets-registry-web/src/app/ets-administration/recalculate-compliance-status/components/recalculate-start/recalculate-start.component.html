@@ -1,40 +1,39 @@
-<app-banner
-  [type]="BannerType.SUCCESS"
-  *ngIf="recalculateComplianceRequestStatus === 'SUBMITTED'"
->
-  <span>
-    You have successfully submitted a recalculation request of the dynamic
-    surrender status of Operator Holding Accounts and Aircraft Operator Holding
-    Accounts.</span
+<div aria-live="polite">
+  <app-banner
+    [type]="BannerType.SUCCESS"
+    *ngIf="recalculateComplianceRequestStatus === 'SUBMITTED'"
   >
-</app-banner>
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">Recalculate dynamic surrender status</h1>
-  </div>
-
-  <div class="govuk-grid-column-full">
-    <p class="govuk-body govuk-!-font-size-19">
-      Recalculate the dynamic surrender status of all the compliance accounts
-      linked to either an Installation or an Aircraft Operator
-    </p>
-
-    <button
-      data-prevent-double-click="true"
-      [disabled]="
-        recalculateComplianceRequestStatus !== 'SUBMITTED' ? false : true
-      "
-      [ngClass]="
-        recalculateComplianceRequestStatus !== 'SUBMITTED'
-          ? 'govuk-button'
-          : 'govuk-button govuk-button--disabled'
-      "
-      data-module="govuk-button"
-      id="continue"
-      (click)="onContinue()"
+    <span>
+      You have successfully submitted a recalculation request of the dynamic
+      surrender status of Operator Holding Accounts and Aircraft Operator
+      Holding Accounts.</span
     >
-      Recalculate
-    </button>
+  </app-banner>
+  <div aria-live="polite">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Recalculate dynamic surrender status</h1>
+      </div>
+
+      <div class="govuk-grid-column-full">
+        <p class="govuk-body govuk-!-font-size-19">
+          Recalculate the dynamic surrender status of all the compliance
+          accounts linked to either an Installation or an Aircraft Operator
+        </p>
+
+        <button
+          data-prevent-double-click="true"
+          [disabled]="
+            recalculateComplianceRequestStatus !== 'SUBMITTED' ? false : true
+          "
+          [class]="'govuk-button'"
+          data-module="govuk-button"
+          id="continue"
+          (click)="onContinue()"
+        >
+          Recalculate
+        </button>
+      </div>
+    </div>
   </div>
 </div>

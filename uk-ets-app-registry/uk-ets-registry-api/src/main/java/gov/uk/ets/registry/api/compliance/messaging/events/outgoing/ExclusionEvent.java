@@ -22,6 +22,10 @@ public class ExclusionEvent extends ComplianceOutgoingEventBase {
 
     private Integer year;
 
+    private String reason;
+
+    private Long emissions;
+
     @Override
     protected boolean doValidate() {
         return Optional.of(year).isPresent();

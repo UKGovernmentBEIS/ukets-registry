@@ -1,0 +1,39 @@
+{
+  "realm": "uk-ets",
+  "resource": "uk-ets-publication-api",
+  "enforcement-mode": "PERMISSIVE",
+  "lazy-load-paths": "true",
+  "user-managed-access": {},
+  "paths": [
+    {
+      "path": "/*",
+      "enforcement-mode": "DISABLED",
+      "static": "true"
+    },
+    {
+      "path": "/api-publication/*",
+      "enforcement-mode": "ENFORCING",
+      "static": "true"
+    },
+    {
+      "path": "/api-publication/roles.add",
+      "enforcement-mode": "DISABLED",
+      "static": "true"
+    },
+    {
+      "path": "/api-publication/roles.remove",
+      "enforcement-mode": "DISABLED",
+      "static": "true"
+    },
+    {
+      "path": "/api-publication/actuator/health",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "GET"
+        }
+      ]
+    }
+  ]
+}

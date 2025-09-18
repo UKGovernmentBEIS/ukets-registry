@@ -1,0 +1,17 @@
+export enum DocumentUpdateType {
+  ADD_DOCUMENT = 'ADD_DOCUMENT',
+  UPDATE_DOCUMENT = 'UPDATE_DOCUMENT',
+  DELETE_DOCUMENT = 'DELETE_DOCUMENT',
+  ADD_DOCUMENT_CATEGORY = 'ADD_DOCUMENT_CATEGORY',
+  UPDATE_DOCUMENT_CATEGORY = 'UPDATE_DOCUMENT_CATEGORY',
+  DELETE_DOCUMENT_CATEGORY = 'DELETE_DOCUMENT_CATEGORY',
+}
+
+export const DocumentUpdateTypeLabel = {
+  ADD_DOCUMENT: 'Add document',
+  UPDATE_DOCUMENT: 'Update document',
+  DELETE_DOCUMENT: 'Delete document',
+  ADD_DOCUMENT_CATEGORY: 'Add document category',
+  UPDATE_DOCUMENT_CATEGORY: 'Update document category',
+  DELETE_DOCUMENT_CATEGORY: 'Delete document category',
+};

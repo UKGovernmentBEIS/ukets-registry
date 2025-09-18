@@ -22,14 +22,20 @@ export interface KeycloakUser {
     workBuildingAndStreetOptional: string[];
     workBuildingAndStreetOptional2: string[];
     workCountry: string[];
-    workCountryCode: string[];
-    workEmailAddress: string[];
-    workEmailAddressConfirmation: string[];
-    workPhoneNumber: string[];
+    workMobileCountryCode: string[];
+    workMobilePhoneNumber: string[];
+    workAlternativeCountryCode: string[];
+    workAlternativePhoneNumber: string[];
+    noMobilePhoneNumberReason: string[];
     workPostCode: string[];
     workTownOrCity: string[];
     workStateOrProvince: string[];
     lastLoginDate?: string[];
     memorablePhrase?: string;
+    differentCountryLastFiveYears?: string[];
+    recoveryCountryCode?: string[];
+    recoveryPhoneNumber?: string[];
+    recoveryEmailAddress?: string[];
+    hideRecoveryMethodsNotification?: string[];
   };
 }

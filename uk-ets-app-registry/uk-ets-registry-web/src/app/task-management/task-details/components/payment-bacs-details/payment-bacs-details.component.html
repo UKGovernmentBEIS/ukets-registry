@@ -1,0 +1,107 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Make payment</span>
+    <h1 class="govuk-heading-l">Pay by bank transfer</h1>
+    <p class="govuk-body">
+      Use the Environment Agency's bank details to make a payment by bank
+      transfer.
+    </p>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          How long does a bank transfer take?
+        </span>
+      </summary>
+      <div class="govuk-details__text">
+        <p>
+          Faster payments are usually received on the same day they are sent,
+          including weekends and bank holidays.
+        </p>
+        <p>
+          CHAPS payments are usually received on the same working day, if you
+          send the payment within your bank's processing times.
+        </p>
+        <p>BACS payments usually take 3 working days to be received.</p>
+      </div>
+    </details>
+
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-visually-hidden">Warning</span>
+        You must include your payment reference when paying
+      </strong>
+    </div>
+
+    <h2 class="govuk-heading-m">Environment Agency's bank details</h2>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Sort code</dt>
+        <dd class="govuk-summary-list__value">60-70-80</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Account number</dt>
+        <dd class="govuk-summary-list__value">10014411</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Account Name</dt>
+        <dd class="govuk-summary-list__value">EA receipts</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reference number</dt>
+        <dd class="govuk-summary-list__value">1005216</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Amount to pay</dt>
+        <dd class="govuk-summary-list__value">
+          {{ amount | currency: 'GBP' : 'symbol' : '1.2-2' : 'en-GB' }}
+        </dd>
+      </div>
+    </dl>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          International Payments
+        </span>
+      </summary>
+      <div class="govuk-details__text">
+        Use the following details if you are making an international payment:
+
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Bank name</dt>
+            <dd class="govuk-summary-list__value">NATWEST</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">IBAN number</dt>
+            <dd class="govuk-summary-list__value">GB23NWBK60708010014411</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">SWIFT/BIC Code</dt>
+            <dd class="govuk-summary-list__value">NWBKGB2L</dd>
+          </div>
+        </dl>
+      </div>
+    </details>
+
+    <div class="govuk-inset-text">
+      By clicking "Continue" your invoice will be downloaded.Please use these
+      details to complete your bank transfer.
+    </div>
+
+    <div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        appDebounceClick
+        (debounceClick)="onContinue()"
+        id="submit"
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+</div>

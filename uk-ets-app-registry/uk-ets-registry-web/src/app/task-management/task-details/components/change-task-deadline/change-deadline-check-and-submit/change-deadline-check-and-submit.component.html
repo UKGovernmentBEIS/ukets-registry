@@ -1,0 +1,72 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Change deadline'"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Change deadline</span>
+    <fieldset class="govuk-fieldset govuk-!-margin-bottom-10">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">
+          Check your answers
+        </h1>
+      </legend>
+
+      <div
+        class="govuk-summary-list govuk-!-margin-top-30 govuk-!-margin-bottom-0"
+      >
+        <div class="govuk-summary-list__row">
+          <div class="govuk-summary-list__key">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Deadline</h2>
+          </div>
+          <div class="govuk-summary-list__actions">
+            <a class="govuk-link" (click)="onChange()">Change</a>
+          </div>
+        </div>
+      </div>
+      <dl
+        class="
+          govuk-summary-list
+          govuk-!-font-weight-bold
+          govuk-!-margin-bottom-0
+          govuk-!-margin-top-0
+          key
+        "
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__value">Field</dt>
+          <dt class="govuk-summary-list__value">Current value</dt>
+          <dd class="govuk-summary-list__value">Changed value</dd>
+          <!-- <dd class="govuk-summary-list__value"></dd> -->
+        </div>
+      </dl>
+      <dl
+        class="govuk-summary-list govuk-!-margin-bottom-0 govuk-!-margin-top-0"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__value govuk-!-font-weight-bold">
+            Deadline
+          </dt>
+          <dt class="govuk-summary-list__value">
+            {{ initialDeadline | nativeDateToUkDate | formatUkDate }}
+          </dt>
+          <dd class="govuk-summary-list__value focused-text">
+            {{ changedDeadline | nativeDateToUkDate | formatUkDate }}
+          </dd>
+          <!-- <dd class="govuk-summary-list__value"></dd> -->
+        </div>
+      </dl>
+    </fieldset>
+    <button
+      id="submit"
+      class="
+        govuk-button
+        govuk-!-margin-right-1
+        govuk-!-margin-bottom-5
+        govuk-!-margin-top-5
+      "
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="submitChanges()"
+    >
+      Submit
+    </button>
+  </div>
+</div>

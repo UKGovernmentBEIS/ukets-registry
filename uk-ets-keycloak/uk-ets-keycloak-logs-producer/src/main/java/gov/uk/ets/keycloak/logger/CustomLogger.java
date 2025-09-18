@@ -8,6 +8,7 @@ import org.jboss.logging.MDC;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.jboss.logging.Logger;
 
@@ -42,13 +43,14 @@ public class CustomLogger {
     }
 
     private static String logs(String interactionIdentifier, String absolutePath, String serverResponse, String message, String error)  {
+
         Instant start = Instant.now();
         MDC.put(Attr.RECEPTION_DATE.name().toLowerCase(), FORMATTER.format(start));
-        MDC.put(Attr.INTERACTION_IDENTIFIER.name().toLowerCase(), interactionIdentifier);
-        MDC.put(Attr.ENTRYPOINT.name().toLowerCase(), absolutePath);
-        MDC.put(Attr.APP_SERVER.name().toLowerCase(), serverResponse);
-        MDC.put(Attr.TYPE.name().toLowerCase(), message);
-        MDC.put(Attr.CAUSE.name().toLowerCase(), error);
+        MDC.put(Attr.INTERACTION_IDENTIFIER.name().toLowerCase(), Optional.ofNullable(interactionIdentifier).orElse(""));
+        MDC.put(Attr.ENTRYPOINT.name().toLowerCase(), Optional.ofNullable(absolutePath).orElse(""));
+        MDC.put(Attr.APP_SERVER.name().toLowerCase(), Optional.ofNullable(serverResponse).orElse(""));
+        MDC.put(Attr.TYPE.name().toLowerCase(), Optional.ofNullable(message).orElse(""));
+        MDC.put(Attr.CAUSE.name().toLowerCase(), Optional.ofNullable(error).orElse(""));
         try {
             return new ObjectMapper().writeValueAsString(MDC.getMap());
         } catch (JsonProcessingException e) {

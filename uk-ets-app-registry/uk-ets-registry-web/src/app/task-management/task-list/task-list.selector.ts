@@ -128,6 +128,7 @@ function isClaimableByAr(request: string): boolean {
     request !== RequestType.AUTHORIZED_REPRESENTATIVE_RESTORE_REQUEST &&
     request !== RequestType.AUTHORIZED_REPRESENTATIVE_SUSPEND_REQUEST &&
     request !== RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST &&
+    request !== RequestType.MARITIME_OPERATOR_UPDATE_REQUEST &&
     request !== RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST &&
     request !== RequestType.ACCOUNT_HOLDER_UPDATE_DETAILS &&
     request !==

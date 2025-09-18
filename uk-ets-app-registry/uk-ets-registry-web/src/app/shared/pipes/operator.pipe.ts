@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {
   AircraftOperator,
   Installation,
+  MaritimeOperator,
   Operator,
 } from '../model/account/operator';
 
@@ -22,5 +23,15 @@ export class InstallationPipe implements PipeTransform {
 export class AircraftOperatorPipe implements PipeTransform {
   transform(value: Operator): AircraftOperator {
     return value as AircraftOperator;
+  }
+}
+
+@Pipe({
+  name: 'maritimeOperator',
+  pure: true,
+})
+export class MaritimeOperatorPipe implements PipeTransform {
+  transform(value: Operator): MaritimeOperator {
+    return value as MaritimeOperator;
   }
 }

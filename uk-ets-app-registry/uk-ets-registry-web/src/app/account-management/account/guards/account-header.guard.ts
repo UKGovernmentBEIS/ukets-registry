@@ -40,15 +40,11 @@ export class AccountHeaderGuard {
   private getAccount(accountId: string) {
     return this.store.select(selectAccount).pipe(
       tap((data) => this.prefetch(accountId, data)),
-      filter(
-        (data) =>
-          !empty(data.identifier) && data.identifier.toString() === accountId
-      ),
       take(1)
     );
   }
 
-  private prefetch(accountId: string, data: Account) {
+  private prefetch(accountId: string, data?: Account) {
     /*
      TODO: UKETS-4673 always dispatch prepareNavigationToAccount. When performing a transaction the holdings in the accounts details page are not updated
      We should revisit this, as it would be more proper

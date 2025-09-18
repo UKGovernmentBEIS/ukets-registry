@@ -10,6 +10,7 @@ const routes: Routes = [
     path: '',
     canActivate: [LoginGuard],
     component: NotificationsResultsContainerComponent,
+    title: 'Notifications',
   },
   {
     path: NotificationsWizardPathsModel.BASE_PATH,

@@ -15,7 +15,7 @@
   </label>
   <div [innerHTML]="moreInfo"></div>
   <ng-container *ngIf="validationErrorMessage">
-    <span
+    <p
       *ngIf="showError() && formControl.errors"
       id="event-name-error"
       class="govuk-error-message"
@@ -24,7 +24,7 @@
     >
       <span class="govuk-visually-hidden">Error:</span>
       {{ validationErrorMessage }}
-    </span>
+    </p>
   </ng-container>
   <quill-editor
     #quillis

@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { GOVUKFrontendService } from './app.govukfrontend';
 import { fromEvent, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { isAuthenticated } from '@registry-web/auth/auth.selector';
@@ -13,6 +12,7 @@ import {
   Interaction,
   receivedUserAction,
 } from '@generate-logs/actions/generate-logs.actions';
+import { initAll } from 'govuk-frontend';
 
 @Component({
   selector: 'app-root',
@@ -30,12 +30,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     private router: Router,
     private store: Store,
     private keycloakService: KeycloakService,
-    private logsfactoryService: LogsFactoryService,
-    private govukfrontend?: GOVUKFrontendService
+    private logsfactoryService: LogsFactoryService
   ) {
-    if (this.govukfrontend) {
-      this.govukfrontend.initAll();
-    }
+    initAll();
   }
 
   ngOnInit(): void {

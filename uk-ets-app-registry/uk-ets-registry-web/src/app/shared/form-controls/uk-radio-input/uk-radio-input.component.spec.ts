@@ -10,7 +10,7 @@ describe('UkRadioInputComponent', () => {
   let fixture: ComponentFixture<TestHostComponent>;
 
   function getErrorSpan() {
-    return fixture.debugElement.query(By.css(`span.govuk-error-message`))
+    return fixture.debugElement.query(By.css(`p.govuk-error-message`))
       ?.nativeElement;
   }
 

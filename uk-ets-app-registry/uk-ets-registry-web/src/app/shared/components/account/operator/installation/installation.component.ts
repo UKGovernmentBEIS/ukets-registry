@@ -18,6 +18,9 @@ export class InstallationComponent {
   hasOperatorUpdatePendingApproval: boolean;
   @Input()
   canRequestAccountTransfer: boolean;
+  @Input() 
+  isSeniorOrJuniorAdmin: boolean;
+
   @Output()
   readonly requestInstallationUpdateEmitter = new EventEmitter();
   @Output()
@@ -33,4 +36,24 @@ export class InstallationComponent {
   goToRequestTransferAccount() {
     this.requestTransferAccountEmitter.emit();
   }
+
+  get summaryListLines(){
+    const lines = {
+      'Installation name': this.installation.name,
+      'Installation ID': this.installation.identifier,
+      'Installation activity type': InstallationActivityType[this.installation.activityType],
+      'Emitter ID': this.installation.emitterId ? this.installation.emitterId : '',
+      'Permit ID': this.installation.permit ? this.installation.permit.id : '',
+      Regulator: regulatorMap[this.installation.regulator],
+      'First year of verified emission submission': this.installation.firstYear,
+      'Last year of verified emission submission': this.installation.lastYear
+    }
+
+    if(!this.isSeniorOrJuniorAdmin){
+      const { ['Emitter ID']: emitterId, ...updatedLines } = lines;
+      return updatedLines;
+    }
+
+    return lines;
+  }  
 }

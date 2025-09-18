@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
 import { User } from '@shared/user';
@@ -31,10 +31,6 @@ export class SelectRecipientComponent
   }>();
 
   candidateRecipientOptions: Option[];
-
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
 
   ngOnInit() {
     this.candidateRecipientOptions = this.candidateRecipients
@@ -76,7 +72,10 @@ export class SelectRecipientComponent
   protected getFormModel(): any {
     return {
       recipient: [this.recipientUrid, Validators.required],
-      comment: [this.comment, Validators.required],
+      comment: [
+        this.comment,
+        { validators: Validators.required, updateOn: 'change' },
+      ],
     };
   }
 

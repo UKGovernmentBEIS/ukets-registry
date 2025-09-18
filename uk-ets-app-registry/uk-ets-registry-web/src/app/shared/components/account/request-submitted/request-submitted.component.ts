@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-request-submitted',
@@ -44,6 +45,8 @@ export class RequestSubmittedComponent implements OnInit {
   path: string;
   goBack: string;
 
+  constructor(private router: Router) {}
+
   ngOnInit(): void {
     if (this.accountId) {
       this.path = '/account/' + this.accountId;
@@ -65,5 +68,13 @@ export class RequestSubmittedComponent implements OnInit {
 
   navigateTo(): void {
     this.navigateToEmitter.emit();
+  }
+
+  navigateToNotifications() {
+    if (this.path === '/notifications') {
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate([this.path]);
+      });
+    }
   }
 }

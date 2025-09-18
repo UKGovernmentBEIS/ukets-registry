@@ -11,19 +11,21 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/uk-ets-registry-web",
+            "outputPath": {
+              "base": "dist/uk-ets-registry-web",
+              "browser": ""
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["src/polyfills.ts", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "aot": false,
             "assets": [
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/govuk-frontend/govuk/assets",
+                "input": "./node_modules/govuk-frontend/dist/govuk/assets",
                 "output": "assets/"
               }
             ],
@@ -35,31 +37,23 @@
               "node_modules/quill/dist/quill.snow.css"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["src/sass/include"]
+              "includePaths": ["src/sass/include", "."]
             },
-            "scripts": [
-              "node_modules/govuk-frontend/govuk/all.js",
-              "node_modules/keycloak-js/dist/keycloak.min.js",
-              "node_modules/keycloak-js/dist/keycloak-authz.min.js"
-            ],
             "allowedCommonJsDependencies": [
               "core-js",
               "file-saver",
               "crypto-js",
-              "keycloak-js",
               "dayjs",
               "google-libphonenumber",
-              "govuk-frontend",
               "js-sha256",
               "base64-js",
               "quill"
             ],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -82,8 +76,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -106,17 +98,17 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "uk-ets-registry-web:build"
+            "buildTarget": "uk-ets-registry-web:build"
           },
           "configurations": {
             "development": {
-              "browserTarget": "uk-ets-registry-web:build:development"
+              "buildTarget": "uk-ets-registry-web:build:development"
             },
             "production": {
-              "browserTarget": "uk-ets-registry-web:build:production"
+              "buildTarget": "uk-ets-registry-web:build:production"
             },
             "es5": {
-              "browserTarget": "uk-ets-registry-web:build:es5"
+              "buildTarget": "uk-ets-registry-web:build:es5"
             }
           },
           "defaultConfiguration": "development"
@@ -124,7 +116,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "uk-ets-registry-web:build"
+            "buildTarget": "uk-ets-registry-web:build"
           }
         },
         "test": {

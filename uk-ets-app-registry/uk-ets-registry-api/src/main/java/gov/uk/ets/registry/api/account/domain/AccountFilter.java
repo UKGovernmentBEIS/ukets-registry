@@ -118,7 +118,7 @@ public class AccountFilter {
      * The Installation or Aircraft Operator ID.
      */
     @Setter
-    private String installationOrAircraftOperatorId;
+    private String operatorId;
 
     /**
      * Determines if the current user has limited scope, e.g. a non-admin user.
@@ -126,4 +126,6 @@ public class AccountFilter {
     @Setter()
     @Accessors(fluent = true)
     private boolean hasLimitedScope;
+
+    private String imo;
 }

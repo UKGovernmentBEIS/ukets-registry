@@ -4,6 +4,7 @@ import static gov.uk.ets.registry.api.authz.ruleengine.RuleInputType.ACCOUNT_FUL
 
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInput;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.PendingTALRequestsRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.AccountWithOutstandingTasksRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.AccountWithOutstandingExceptDelayedTransactionsRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.LastYearOfVerifiedEmissionsRule;
@@ -31,7 +32,8 @@ public class AccountClosureBusinessRulesApplier {
         AccountWithOutstandingExceptDelayedTransactionsRule.class,
         LastYearOfVerifiedEmissionsRule.class,
         TransferPendingWithLinkedInstallation.class,
-        MissingEmissionsBetweenFyveAndLyveRule.class
+        MissingEmissionsBetweenFyveAndLyveRule.class,
+        PendingTALRequestsRule.class
     })
     public void applyAccountClosureBusinessRules(@RuleInput(ACCOUNT_FULL_ID) String accountFullIdentifier) {
         // implemented for being able to apply account closure business rules using annotations

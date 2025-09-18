@@ -16,7 +16,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.Builder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

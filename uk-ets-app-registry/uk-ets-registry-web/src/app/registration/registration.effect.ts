@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, exhaustMap, map, mergeMap, tap } from 'rxjs/operators';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
-import { errors } from '@shared/shared.action';
+import { errors, setGoBackToErrorBasedPath } from '@shared/shared.action';
 import { User } from '@shared/user';
 import * as fromRegistration from './registration.actions';
 import {
@@ -17,6 +17,7 @@ import {
 } from './registration.service';
 import { of } from 'rxjs';
 import { ApiErrorHandlingService } from '@shared/services';
+import { Store } from '@ngrx/store';
 
 @Injectable()
 export class RegistrationEffects {
@@ -34,10 +35,24 @@ export class RegistrationEffects {
     )
   );
 
+  navigateToDeclaration$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(fromRegistration.RegistrationActionTypes.SET_PASSWORD_SUCCESS),
+        tap(() =>
+          this.router.navigate(['/registration/declaration'], {
+            skipLocationChange: false,
+          })
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
   navigateToCheckAnswersAndSubmit$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(fromRegistration.RegistrationActionTypes.SET_PASSWORD_SUCCESS),
+        ofType(fromRegistration.RegistrationActionTypes.CONFIRM_DECLARATION),
         tap(() =>
           this.router.navigate(['/registration/check-answers-and-submit'], {
             skipLocationChange: false,
@@ -47,8 +62,8 @@ export class RegistrationEffects {
     { dispatch: false }
   );
 
-  submittedRegistration$ = createEffect(() =>
-    this.actions$.pipe(
+  submittedRegistration$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(fromRegistration.RegistrationActionTypes.SUBMIT),
       exhaustMap((action: { user: User }) =>
         this.registrationService
@@ -70,19 +85,26 @@ export class RegistrationEffects {
                     componentId: '',
                   });
                 });
+              } else {
+                errorDetails.push({
+                  errorMessage:
+                    'Failed to submit the registration form. You need to go back and start the registration process again.',
+                  componentId: '',
+                });
+                // eslint-disable-next-line ngrx/no-dispatch-in-effects
+                this.store.dispatch(
+                  setGoBackToErrorBasedPath({
+                    goBackToErrorBasedPath: '/registration/emailInfo',
+                  })
+                );
               }
-              return of(
-                errors({
-                  errorSummary: {
-                    errors: errorDetails,
-                  },
-                })
-              );
+
+              return of(errors({ errorSummary: { errors: errorDetails } }));
             })
           )
       )
-    )
-  );
+    );
+  });
 
   persistedRegistration$ = createEffect(() => {
     return this.actions$.pipe(
@@ -91,7 +113,6 @@ export class RegistrationEffects {
         return this.registrationService.persistUser(action.user).pipe(
           map(() => fromRegistration.completedRegistration()),
           catchError((httpError: HttpErrorResponse) => {
-            // eslint-disable-next-line ngrx/no-multiple-actions-in-effects
             return [
               errors({
                 errorSummary: this.apiErrorHandlingService.transform(
@@ -145,7 +166,6 @@ export class RegistrationEffects {
               });
             }),
             catchError((httpError: HttpErrorResponse) => {
-              console.log(httpError);
               return action.potentialErrors.has(httpError.status)
                 ? [
                     verificationNextStep({
@@ -174,6 +194,7 @@ export class RegistrationEffects {
   );
 
   constructor(
+    private store: Store,
     private router: Router,
     private actions$: Actions,
     private registrationService: RegistrationService,

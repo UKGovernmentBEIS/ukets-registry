@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RegistrationDetailsComponent } from './registration-details.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GovukTagComponent } from '@shared/govuk-components/govuk-tag';
-import { userStatusMap } from '@shared/user';
 
 describe('RegistrationDetailsComponent', () => {
   let component: RegistrationDetailsComponent;
@@ -43,10 +42,11 @@ describe('RegistrationDetailsComponent', () => {
         workBuildingAndStreetOptional: null,
         workBuildingAndStreetOptional2: null,
         workCountry: [],
-        workCountryCode: [],
-        workEmailAddress: [],
-        workEmailAddressConfirmation: [],
-        workPhoneNumber: [],
+        workMobileCountryCode: [],
+        workMobilePhoneNumber: [],
+        workAlternativeCountryCode: [],
+        workAlternativePhoneNumber: [],
+        noMobilePhoneNumberReason: [],
         workPostCode: [],
         workTownOrCity: [],
         workStateOrProvince: [],

@@ -5,7 +5,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.CommitmentPeriod;
 import gov.uk.ets.registry.api.transaction.domain.type.EnvironmentalActivity;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import gov.uk.ets.registry.api.transaction.repository.AccountHoldingRepository;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

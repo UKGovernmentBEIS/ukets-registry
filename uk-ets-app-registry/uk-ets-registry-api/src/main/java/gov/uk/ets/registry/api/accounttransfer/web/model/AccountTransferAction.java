@@ -3,7 +3,7 @@ package gov.uk.ets.registry.api.accounttransfer.web.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,6 +20,6 @@ public class AccountTransferAction {
     private AccountHolderDTO accountHolderDTO;
     private AccountHolderRepresentativeDTO accountHolderContactInfo;
     private AccountStatus previousAccountStatus;
-    private InstallationOrAircraftOperatorDTO installationDetails;
+    private OperatorDTO installationDetails;
 }
 

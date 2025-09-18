@@ -32,6 +32,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import gov.uk.ets.registry.api.transaction.domain.util.Constants;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
@@ -114,7 +115,7 @@ class IncomingITLReconciliationMessageListenerIntegrationTest extends Integratio
         sendProvideTotalsRequest(createProvideTotalsRequest(TEST_RECONCILIATION_ID));
 
         ConsumerRecord<String, Serializable> singleRecord =
-            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, DEFAULT_CONSUMER_TIMEOUT);
+            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, Duration.ofMillis(DEFAULT_CONSUMER_TIMEOUT));
 
         assertThat(singleRecord).isNotNull();
         ReceiveTotalsRequest receiveTotalsRequest = (ReceiveTotalsRequest) singleRecord.value();
@@ -147,7 +148,7 @@ class IncomingITLReconciliationMessageListenerIntegrationTest extends Integratio
         sendProvideTotalsRequest(createProvideTotalsRequest("non existing id"));
 
         Assert.assertThrows(Exception.class, () -> {
-            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, DEFAULT_CONSUMER_TIMEOUT);
+            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, Duration.ofMillis(DEFAULT_CONSUMER_TIMEOUT));
         });
         Optional<ITLReconciliationLog> reconciliationLog = reconciliationLogRepository.findById(TEST_RECONCILIATION_ID);
         assertThat(reconciliationLog).isPresent();
@@ -166,7 +167,7 @@ class IncomingITLReconciliationMessageListenerIntegrationTest extends Integratio
 
         Assert.assertThrows(IllegalStateException.class, () -> {
             ConsumerRecord<String, Serializable> singleRecord = KafkaTestUtils
-                .getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, DEFAULT_CONSUMER_TIMEOUT);
+                .getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, Duration.ofMillis(DEFAULT_CONSUMER_TIMEOUT));
             log.info("*****************SINGLE RECORD*************************");
             log.info(singleRecord);
         });
@@ -185,11 +186,11 @@ class IncomingITLReconciliationMessageListenerIntegrationTest extends Integratio
     public void shouldProvideAllUnitBlocksAfterTotalsRequest() {
         // first send a provide totals request
         sendProvideTotalsRequest(createProvideTotalsRequest(TEST_RECONCILIATION_ID));
-        KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, DEFAULT_CONSUMER_TIMEOUT);
+        KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, Duration.ofMillis(DEFAULT_CONSUMER_TIMEOUT));
 
         sendProvideUnitBlocksRequest(createProvideUnitBlocksRequest(TEST_RECONCILIATION_ID));
         ConsumerRecord<String, Serializable> singleRecord =
-            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, DEFAULT_CONSUMER_TIMEOUT);
+            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, Duration.ofMillis(DEFAULT_CONSUMER_TIMEOUT));
 
         assertThat(singleRecord).isNotNull();
         ReceiveUnitBlocksRequest receiveUnitBlocksRequest = (ReceiveUnitBlocksRequest) singleRecord.value();
@@ -231,7 +232,7 @@ class IncomingITLReconciliationMessageListenerIntegrationTest extends Integratio
         sendProvideUnitBlocksRequest(provideUnitBlocksRequest);
 
         ConsumerRecord<String, Serializable> singleRecord =
-            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, DEFAULT_CONSUMER_TIMEOUT);
+            KafkaTestUtils.getSingleRecord(consumer, DEFAULT_ITL_RECONCILIATION_OUT_TOPIC, Duration.ofMillis(DEFAULT_CONSUMER_TIMEOUT));
 
         assertThat(singleRecord).isNotNull();
         ReceiveUnitBlocksRequest receiveUnitBlocksRequest = (ReceiveUnitBlocksRequest) singleRecord.value();
@@ -272,14 +273,16 @@ class IncomingITLReconciliationMessageListenerIntegrationTest extends Integratio
         // because of spring proxy issue, we need to get default topic from template
         itlReconciliationIncomingKafkaTemplate.send(
             itlReconciliationIncomingKafkaTemplate.getDefaultTopic(), provideTotalsRequest)
-            .addCallback(this::callback, ex -> log.error("failed to send message", ex));
+            .complete(null);
+//            .addCallback(this::callback, ex -> log.error("failed to send message", ex));
     }
 
 
     private void sendProvideUnitBlocksRequest(ProvideUnitBlocksRequest provideUnitBlocksRequest) {
         itlReconciliationIncomingKafkaTemplate.send(
             itlReconciliationIncomingKafkaTemplate.getDefaultTopic(), provideUnitBlocksRequest)
-            .addCallback(this::callback, ex -> log.error("failed to send message", ex));
+            .complete(null);
+//            .addCallback(this::callback, ex -> log.error("failed to send message", ex));
     }
 
     private ProvideUnitBlocksRequest createProvideUnitBlocksRequest(String testReconciliationId) {

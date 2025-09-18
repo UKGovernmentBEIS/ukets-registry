@@ -14,23 +14,11 @@ export enum ARAccessRights {
 
 export const AccessRightsLabelMap = new Map<ARAccessRights, string>([
   [ARAccessRights.ROLE_BASED, 'Role based'],
-  [
-    ARAccessRights.INITIATE_AND_APPROVE,
-    'Initiate and approve transactions and Trusted Account List (TAL) updates',
-  ],
-  [
-    ARAccessRights.APPROVE,
-    'Approve transfers and Trusted Account List (TAL) updates',
-  ],
-  [
-    ARAccessRights.INITIATE,
-    'Initiate transfers and Trusted Account List (TAL) updates',
-  ],
-  [
-    ARAccessRights.SURRENDER_INITIATE_AND_APPROVE,
-    'Initiate and approve Surrender of allowances and Return of excess allocation transactions',
-  ],
-  [ARAccessRights.READ_ONLY, 'Read only'],
+  [ARAccessRights.INITIATE_AND_APPROVE, 'Initiate and Approve'],
+  [ARAccessRights.APPROVE, 'Approve'],
+  [ARAccessRights.INITIATE, 'Initiate'],
+  [ARAccessRights.SURRENDER_INITIATE_AND_APPROVE, 'Surrender only'],
+  [ARAccessRights.READ_ONLY, 'Read Only'],
 ]);
 
 export const AccessRightLabelHintMap = new Map<
@@ -48,21 +36,21 @@ export const AccessRightLabelHintMap = new Map<
     ARAccessRights.INITIATE_AND_APPROVE,
     {
       text: AccessRightsLabelMap.get(ARAccessRights.INITIATE_AND_APPROVE),
-      hint: 'This will allow the representative to initiate and approve transactions and changes to the trusted account list',
+      hint: 'Authorised Representative can initiate or approve amendments to the Trusted Account List and any type of transaction, including surrenders and returns of allocation.',
     },
   ],
   [
     ARAccessRights.APPROVE,
     {
       text: AccessRightsLabelMap.get(ARAccessRights.APPROVE),
-      hint: 'This will allow the representative to approve transactions and changes to the trusted account list',
+      hint: 'Authorised Representative can approve amendments to the Trusted Account List and any type of transaction, including surrenders and returns of allocation, but cannot initiate them.',
     },
   ],
   [
     ARAccessRights.INITIATE,
     {
       text: AccessRightsLabelMap.get(ARAccessRights.INITIATE),
-      hint: 'This will allow the representative to initiate transactions and changes to the trusted account list',
+      hint: 'Authorised Representative can initiate amendments to the Trusted Account List and any type of transaction, including surrenders and returns of allocation, but cannot approve them.',
     },
   ],
   [
@@ -71,14 +59,14 @@ export const AccessRightLabelHintMap = new Map<
       text: AccessRightsLabelMap.get(
         ARAccessRights.SURRENDER_INITIATE_AND_APPROVE
       ),
-      hint: 'This will allow the representative to initiate and approve Surrender of allowances and Return of excess allocation transactions',
+      hint: 'Authorised Representative can initiate or approve Surrender and Return of Allocation transactions only. They cannot perform any other type of transaction or make amendments to the Trusted Account List.',
     },
   ],
   [
     ARAccessRights.READ_ONLY,
     {
       text: AccessRightsLabelMap.get(ARAccessRights.READ_ONLY),
-      hint: '',
+      hint: 'Authorised Representative can view the account but cannot initiate or approve transactions or changes to the account.',
     },
   ],
 ]);

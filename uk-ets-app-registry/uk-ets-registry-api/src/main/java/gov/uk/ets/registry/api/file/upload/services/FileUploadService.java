@@ -23,7 +23,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -198,7 +197,7 @@ public class FileUploadService {
                 mapper.convertToPojo(task.getDifference(), RequestDocumentsTaskDifference.class);
 
             List<Long> documentIds = uploadedFiles.stream()
-                .filter(uploadedFile -> uploadedFile.getTask().equals(task))
+                .filter(uploadedFile -> Objects.equals(uploadedFile.getTask(), task))
                 .map(UploadedFile::getId)
                 .toList();
             
@@ -234,4 +233,7 @@ public class FileUploadService {
         }
     }
 
+    public Optional<UploadedFile> findUploadedFileById(Long fileId) {
+        return uploadedFilesRepository.findById(fileId);
+    }
 }

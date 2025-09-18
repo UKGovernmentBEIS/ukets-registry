@@ -21,6 +21,12 @@
   ></app-account-closure-approval-confirmation>
 </ng-container>
 
+<ng-container *ngIf="taskType === requestTypes.PAYMENT_REQUEST">
+  <app-payment-confirmation
+    [paymentCompletionDetails]="taskCompleteResponse"
+  ></app-payment-confirmation>
+</ng-container>
+
 <ng-container
   *ngIf="
     taskType === requestTypes.CHANGE_TOKEN ||
@@ -28,6 +34,7 @@
     taskType === requestTypes.REQUESTED_EMAIL_CHANGE ||
     taskType === requestTypes.LOST_PASSWORD_AND_TOKEN ||
     taskType === requestTypes.AIRCRAFT_OPERATOR_UPDATE_REQUEST ||
+    taskType === requestTypes.MARITIME_OPERATOR_UPDATE_REQUEST ||
     taskType === requestTypes.INSTALLATION_OPERATOR_UPDATE_REQUEST ||
     taskType === requestTypes.ACCOUNT_TRANSFER ||
     taskType === requestTypes.USER_DETAILS_UPDATE_REQUEST ||

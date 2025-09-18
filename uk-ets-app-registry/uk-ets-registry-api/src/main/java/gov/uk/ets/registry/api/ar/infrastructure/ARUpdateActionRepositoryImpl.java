@@ -13,7 +13,7 @@ import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Repository;

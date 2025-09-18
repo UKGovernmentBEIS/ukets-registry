@@ -2,6 +2,7 @@ package gov.uk.ets.registry.api.user.admin.service;
 
 import static org.mockito.Mockito.doReturn;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.QAccountAccess;
@@ -63,7 +64,7 @@ class UserAdministrationServiceImplTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         userAdministrationService = Mockito.spy(
             new UserAdministrationServiceImpl(authorizationServiceImpl, accountAccessRepository, keycloakUserRepository,
                 serviceAccountAuthorizationService, keycloakUserRepresentationRepository, keycloakClientRepresentationRepository));
@@ -100,19 +101,21 @@ class UserAdministrationServiceImplTest {
         account2.getAccountAccesses().get(0).setUser(user1);
         account2.getAccountAccesses().get(1).setUser(user3);
 
-        AccessToken accessToken = new AccessToken();
-        accessToken.setSubject("9a416c9c-48c1-4fbc-9efd-84f6175eeff9");
-        Mockito.when(authorizationServiceImpl.getToken()).thenReturn(accessToken);
+//        AccessToken accessToken = new AccessToken();
+//        accessToken.setSubject("9a416c9c-48c1-4fbc-9efd-84f6175eeff9");
+//        Mockito.when(authorizationServiceImpl.getToken()).thenReturn(accessToken);
+        String subject = "9a416c9c-48c1-4fbc-9efd-84f6175eeff9";
 
         Set<AccountAccess> accountAccesses = new HashSet<>();
         accountAccesses.addAll(account1.getAccountAccesses());
         accountAccesses.addAll(account2.getAccountAccesses());
         accountAccesses = accountAccesses.stream()
-            .filter(ar -> !ar.getUser().getIamIdentifier().equals(accessToken.getSubject()) &&
+            .filter(ar -> !ar.getUser().getIamIdentifier().equals(subject) &&
                 (ar.getUser().getFirstName().toLowerCase().contains(dto.getTerm().toLowerCase()) ||
                     ar.getUser().getLastName().toLowerCase().contains(dto.getTerm().toLowerCase())))
             .collect(Collectors.toSet());
-
+        Mockito.when(authorizationServiceImpl.getClaim(OAuth2ClaimNames.SUBJECT))
+            .thenReturn(subject);
         Mockito.when(authorizationServiceImpl.hasClientRole(UserRole.SENIOR_REGISTRY_ADMINISTRATOR))
             .thenReturn(userRole.equals(UserRole.SENIOR_REGISTRY_ADMINISTRATOR));
         Mockito.when(authorizationServiceImpl.hasClientRole(UserRole.JUNIOR_REGISTRY_ADMINISTRATOR))
@@ -122,7 +125,7 @@ class UserAdministrationServiceImplTest {
         QAccountAccess accountAccess = QAccountAccess.accountAccess;
         Mockito.when(accountAccessRepository.findAll(accountAccess.account.identifier.in(dto.getAccountIdentifiers())
             .and(accountAccess.state.eq(AccountAccessState.ACTIVE))
-            .and(accountAccess.user.iamIdentifier.notEqualsIgnoreCase(accessToken.getSubject()))
+            .and(accountAccess.user.iamIdentifier.notEqualsIgnoreCase(subject))
             .and(accountAccess.user.firstName.lower().contains(dto.getTerm().toLowerCase())
                 .or(accountAccess.user.lastName.lower().contains(dto.getTerm().toLowerCase()))
                 .or(accountAccess.user.knownAs.lower().contains(dto.getTerm().toLowerCase())))))

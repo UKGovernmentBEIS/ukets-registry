@@ -3,8 +3,11 @@ import { IUser } from 'src/app/shared/user/user';
 import { diffInYears, getDayjs } from '../../shared/shared.util';
 import { createSelector } from '@ngrx/store';
 import { State } from '@registry-web/reducers';
+import {
+  selectMobileNumberVerificationStatus,
+  selectUser,
+} from '../registration.selector';
 
-export const selectUser = (state: State) => state.registration.user;
 export const selectCountries = (state: State) => state.shared.countries;
 
 export const selectResidenceCountry = createSelector(
@@ -49,11 +52,7 @@ export const selectAge = createSelector(selectUser, (theUser: IUser) => {
   }
 });
 
-export const selectPhoneNumberFull = createSelector(
-  selectUser,
-  (theUser: IUser) => {
-    if (theUser) {
-      return '+' + theUser.workCountryCode + theUser.workPhoneNumber;
-    }
-  }
+export const selectShowMobileNumberWarning = createSelector(
+  selectMobileNumberVerificationStatus,
+  (status) => status === 'FIXED_LINE_OR_MOBILE' || status === 'UNKNOWN'
 );

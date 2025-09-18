@@ -11,17 +11,18 @@ const routes: Routes = [
     path: '',
     resolve: {
       filtersDescriptor: FiltersDescriptorResolver,
-      search: AccountListResolver
+      search: AccountListResolver,
     },
     component: AccountListContainerComponent,
     data: {
-      errorMap: createAccountListErrorMap()
-    }
-  }
+      errorMap: createAccountListErrorMap(),
+    },
+    title: 'Accounts',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AccountListRoutingModule {}

@@ -6,6 +6,8 @@ import {
 import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
 import {
   AccountOpeningTaskDetails,
+  PaymentCompleteResponse,
+  RequestPaymentTaskDetails,
   RequestType,
   RequestedDocumentUploadTaskDetails,
   TaskDetails,
@@ -16,15 +18,10 @@ import {
 } from '@shared/model/transaction';
 import { UploadStatus } from '@shared/model/file';
 import { RequestedDocumentsModel } from '@task-management/model/requested-documents.model';
-import { selectUrl } from '@registry-web/shared/router.selector';
+import { convertDateForDatepicker } from '@registry-web/shared/shared.util';
 
 const selectTaskDetailsState = createFeatureSelector<TaskDetailsState>(
   taskDetailsFeatureKey
-);
-
-export const areTaskDetailsLoaded = createSelector(
-  selectTaskDetailsState,
-  (state) => state.taskDetailsLoaded
 );
 
 export const selectAccountHolder = createSelector(
@@ -120,6 +117,24 @@ export const selectUploadedFileDetails = createSelector(
   }
 );
 
+export const selectFileUploadErrors = createSelector(
+  selectTaskDetailsState,
+  (state) => state.fileUploadErrors
+);
+
+export const selectFileUploadErrorMessages = createSelector(
+  selectTask,
+  selectFileUploadErrors,
+  (task, fileUploadErrors) => {
+    return (task as RequestedDocumentUploadTaskDetails).documentNames.map(
+      (_, index) =>
+        fileUploadErrors.find(
+          ({ fileUploadIndex }) => fileUploadIndex === index
+        )?.errorMessage || null
+    );
+  }
+);
+
 export const selectUserDecisionForTask = createSelector(
   selectTaskDetailsState,
   (state) => state.userDecision
@@ -128,6 +143,28 @@ export const selectUserDecisionForTask = createSelector(
 export const selectUserComment = createSelector(
   selectTaskDetailsState,
   (state) => state.userComment
+);
+
+export const selectAmountPaid = createSelector(
+  selectTaskDetailsState,
+  (state) => {
+    if (state.taskDetails.taskType === 'PAYMENT_REQUEST') {
+      const taskDetails = state.taskDetails as RequestPaymentTaskDetails;
+      if (taskDetails.paymentMethod === 'BACS') {
+        return (state.taskDetails as RequestPaymentTaskDetails).amountPaid;
+      }
+    }
+  }
+);
+
+export const selectAmountRequested = createSelector(
+  selectTaskDetailsState,
+  (state) => {
+    if (state.taskDetails.taskType === 'PAYMENT_REQUEST') {
+      const taskDetails = state.taskDetails as RequestPaymentTaskDetails;
+      return (state.taskDetails as RequestPaymentTaskDetails).amountRequested;
+    }
+  }
 );
 
 export const selectHasUploadedFiles = createSelector(
@@ -141,4 +178,48 @@ export const selectHasUploadedFiles = createSelector(
 export const selectNavigationAwayTargetUrl = createSelector(
   selectTaskDetailsState,
   (state) => state.navigationAwayTargetUrl
+);
+
+export const selectTaskDeadline = createSelector(
+  selectTaskDetailsState,
+  (state) =>
+    convertDateForDatepicker(
+      new Date(state.deadline || state.taskDetails?.deadline)
+    )
+);
+
+export const selectTaskDeadlineAsDate = createSelector(
+  selectTaskDetailsState,
+  (state) => new Date(state.deadline || state.taskDetails?.deadline)
+);
+
+export const selectSubmittedApproveTask = createSelector(
+  selectTaskDetailsState,
+  (state) => state.submittedApproveTask
+);
+
+export const selectPaymentUUID = createSelector(
+  selectTask,
+  (task: TaskDetails) => {
+    {
+      if (task.taskType === RequestType.PAYMENT_REQUEST) {
+        return task.uuid;
+      } else {
+        return null;
+      }
+    }
+  }
+);
+
+export const selectPaymentMethod = createSelector(
+  selectTask,
+  (task: TaskDetails) => {
+    {
+      if (task.taskType === RequestType.PAYMENT_REQUEST) {
+        return task.paymentMethod;
+      } else {
+        return null;
+      }
+    }
+  }
 );

@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,11 +49,6 @@ public class TaskSearchAdminReportService implements ReportTypeService<TaskSearc
                 "Account number", "Account type", "AH name", "AH ID", "AR", "Transaction ID", "Created on (UTC)",
                 "Completed on (UTC)", "Task status");
 
-    }
-
-    @Override
-    public List<TaskSearchAdminReportData> generateReportData(ReportCriteria criteria) {
-        return List.of();
     }
 
     @Override

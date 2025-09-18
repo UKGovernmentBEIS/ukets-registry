@@ -56,7 +56,7 @@
     <p class="govuk-body">
       <a
         [routerLink]="toBeLoggedOut ? '' : path"
-        (click)="toBeLoggedOut ? navigateTo() : ''"
+        (click)="toBeLoggedOut ? navigateTo() : navigateToNotifications()"
         class="govuk-link govuk-link--no-visited-state"
         id="back"
         >{{ goBack }}</a

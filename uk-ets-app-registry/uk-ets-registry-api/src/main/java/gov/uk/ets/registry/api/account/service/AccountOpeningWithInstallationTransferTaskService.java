@@ -14,6 +14,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.OnlySe
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.ARsForNewAccountMustBeActiveRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.FourEyesPrincipleRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlySeniorRegistryAdminCanApproveTask;
+import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.UniqueEmitterIdBusinessRule;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.compliance.messaging.events.outgoing.GetCurrentDynamicStatusEvent;
@@ -114,7 +115,8 @@ public class AccountOpeningWithInstallationTransferTaskService
         {
             FourEyesPrincipleRule.class,
             OnlySeniorRegistryAdminCanApproveTask.class,
-            ARsForNewAccountMustBeActiveRule.class
+            ARsForNewAccountMustBeActiveRule.class,
+            UniqueEmitterIdBusinessRule.class
         }
     )
     @Override

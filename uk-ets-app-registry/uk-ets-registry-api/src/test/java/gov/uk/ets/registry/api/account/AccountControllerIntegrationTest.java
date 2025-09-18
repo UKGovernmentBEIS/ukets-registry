@@ -22,8 +22,8 @@ import gov.uk.ets.registry.api.user.service.UserService;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -104,7 +104,6 @@ class AccountControllerIntegrationTest {
 
         String currentUserKeycloakId = "fc4c4b91-efd8-4cc9-a96e-4efdae59b4ba";
         accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
 
         // create two users one is the task initiator and one is the task claimant and store them in the database
         UserDTO taskInitiatorDTO = new UserDTO();

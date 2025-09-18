@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.types.NotificationStatus;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.types.NotificationType;
 import java.time.LocalDateTime;
-import javax.validation.GroupSequence;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.GroupSequence;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,4 +61,6 @@ public class NotificationDTO {
     private NotificationStatus status;
 
     private Integer tentativeRecipients;
+
+    private Long uploadedFileId;
 }

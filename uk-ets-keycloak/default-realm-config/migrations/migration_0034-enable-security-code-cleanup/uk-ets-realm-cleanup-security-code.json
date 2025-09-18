@@ -1,0 +1,7 @@
+{
+  "enabled": "true",
+  "alias": "cleanup-security-code",
+  "name": "UK ETS User clean up security codes",
+  "providerId": "cleanup-security-code",
+  "priority": 1002
+}

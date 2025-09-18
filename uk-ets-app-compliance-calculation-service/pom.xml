@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.10</version>
+        <version>3.2.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -21,7 +21,6 @@
         <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <shedlock.version>4.18.0</shedlock.version>
-        <log4j2.version>2.17.1</log4j2.version>
         <checkstyle.version>8.45.1</checkstyle.version>
     </properties>
 
@@ -118,6 +117,13 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
+            <exclusions>
+                <!-- avoid: LoggerFactory is not a Logback LoggerContext but Logback is on the classpath -->
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>                        
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -185,8 +191,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

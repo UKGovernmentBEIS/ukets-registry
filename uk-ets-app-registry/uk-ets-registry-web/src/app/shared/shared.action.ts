@@ -31,6 +31,7 @@ export enum SharedActionTypes {
   RETRIEVE_USER_STATUS = "[Shared] Retrieve a user's status",
   RETRIEVE_USER_STATUS_SUCCESS = "[Shared] Retrieve a user's status success",
   RETRIEVE_USER_STATUS_ERROR = "[Shared] Retrieve a user's status error",
+  RETRIEVE_USER_RECOVERY_INFO_SET = '[Shared] User get recovery info',
 }
 
 export const cookiesExist = createAction(SharedActionTypes.SET_COOKIES_EXIST);
@@ -139,6 +140,15 @@ export const retrieveUserStatusError = createAction(
   props<{ error?: any }>()
 );
 
+export const retrieveUserRecoveryInfoSet = createAction(
+  SharedActionTypes.RETRIEVE_USER_RECOVERY_INFO_SET
+);
+
+export const retrieveUserRecoveryInfoSetError = createAction(
+  SharedActionTypes.RETRIEVE_USER_STATUS_ERROR,
+  props<{ error?: any }>()
+);
+
 export const navigateTo = createAction(
   '[Shared] Navigate to',
   props<{ route: string; extras?: NavigationExtras; queryParams?: Params }>()
@@ -175,4 +185,9 @@ export const loadRequestAllocationDataSuccess = createAction(
 export const loadRequestAllocationDataFailure = createAction(
   '[Request Allocation] Load Request Allocation Data Failure',
   props<{ error: any }>()
+);
+
+export const downloadEmailsFile = createAction(
+  '[File] Download file',
+  props<{ fileId: number }>()
 );

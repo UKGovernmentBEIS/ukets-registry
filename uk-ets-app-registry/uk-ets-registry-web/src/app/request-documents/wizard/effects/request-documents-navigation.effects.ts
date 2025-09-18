@@ -11,7 +11,10 @@ import {
   navigateToSelectRecipient,
   setComment,
   setRecipient,
+  setDeadline,
   submitDocumentsRequestSuccess,
+  navigateToSetDeadlineAccountHolder,
+  navigateToSetDeadlineUser,
 } from '../actions';
 import { navigateTo } from '@shared/shared.action';
 import { select, Store } from '@ngrx/store';
@@ -40,6 +43,20 @@ export class RequestDocumentsNavigationEffects {
       ofType(setRecipient),
       map(() => {
         return navigateTo({
+          route: `/request-documents/set-deadline-ah`,
+          extras: {
+            skipLocationChange: true,
+          },
+        });
+      })
+    );
+  });
+
+  selectDeadline$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(setDeadline),
+      map(() => {
+        return navigateTo({
           route: `/request-documents/check-documents-request`,
           extras: {
             skipLocationChange: true,
@@ -54,7 +71,7 @@ export class RequestDocumentsNavigationEffects {
       ofType(setComment),
       map(() => {
         return navigateTo({
-          route: `/request-documents/check-documents-request`,
+          route: `/request-documents/set-deadline-user`,
           extras: {
             skipLocationChange: true,
           },
@@ -125,6 +142,34 @@ export class RequestDocumentsNavigationEffects {
       map(() =>
         navigateTo({
           route: `/request-documents/assigning-user-comment`,
+          extras: {
+            skipLocationChange: true,
+          },
+        })
+      )
+    );
+  });
+
+  navigateToSetDeadlineAccountHolder$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(navigateToSetDeadlineAccountHolder),
+      map(() =>
+        navigateTo({
+          route: `/request-documents/set-deadline-ah`,
+          extras: {
+            skipLocationChange: true,
+          },
+        })
+      )
+    );
+  });
+
+  navigateToSetDeadlineUser$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(navigateToSetDeadlineUser),
+      map(() =>
+        navigateTo({
+          route: `/request-documents/set-deadline-user`,
           extras: {
             skipLocationChange: true,
           },

@@ -10,4 +10,5 @@ export enum HeaderItem {
   REPORTS,
   NOTIFICATIONS,
   ABOUT,
+  DOCUMENTS,
 }

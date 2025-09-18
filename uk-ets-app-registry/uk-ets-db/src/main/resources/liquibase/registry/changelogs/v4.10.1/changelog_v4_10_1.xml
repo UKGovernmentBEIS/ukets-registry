@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_10_1_SET_UK_HOLIDAYS" author="piliotid" context="migrate">
+        <comment>Sets the UK bank Holidays for 2024 to 2026</comment>
+        <sql>
+            --2024
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2024-03-29');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2024-04-01');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2024-05-06');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2024-05-27');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2024-08-26');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2024-12-25');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2024-12-26');
+
+            --2025
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-01-01');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-04-18');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-04-21');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-05-05');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-05-26');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-08-25');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-12-25');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2025-12-26');
+
+            --2026
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-01-01');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-04-03');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-04-06');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-05-04');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-05-25');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-08-31');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-12-25');
+
+            insert into holiday (id,working_off_day)
+            values (nextval('holiday_seq'), '2026-12-26');
+        </sql>
+    </changeSet>
+
+    <changeSet id="4_10_1_FIX_DECEMBER_2026_UK_HOLIDAY" author="piliotid" context="migrate">
+        <comment>Update december last holiday of 2026</comment>
+        <sql>
+            update holiday set working_off_day = '2026-12-28' where working_off_day = '2026-12-26';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

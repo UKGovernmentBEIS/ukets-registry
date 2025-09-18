@@ -26,6 +26,7 @@ export class OperatorSummaryChangesComponent implements OnInit {
   activityTypes = InstallationActivityType;
   isInstallation: boolean;
   isAircraft: boolean;
+  isMaritime: boolean;
   titleOfIdentifier: string;
   title: string;
 
@@ -34,6 +35,7 @@ export class OperatorSummaryChangesComponent implements OnInit {
   ngOnInit(): void {
     this.isInstallation = this.current.type === OperatorType.INSTALLATION;
     this.isAircraft = this.current.type === OperatorType.AIRCRAFT_OPERATOR;
+    this.isMaritime = this.current.type === OperatorType.MARITIME_OPERATOR;
     if (this.current.type === OperatorType.INSTALLATION) {
       this.titleOfIdentifier = 'Installation ID';
       this.title = 'Installation details';
@@ -41,6 +43,10 @@ export class OperatorSummaryChangesComponent implements OnInit {
     if (this.current.type === OperatorType.AIRCRAFT_OPERATOR) {
       this.titleOfIdentifier = 'Aircraft Operator ID';
       this.title = 'Aircraft operator details';
+    }
+    if (this.current.type === OperatorType.MARITIME_OPERATOR) {
+      this.titleOfIdentifier = 'Maritime Operator ID';
+      this.title = 'Maritime operator details';
     }
   }
 
@@ -180,6 +186,28 @@ export class OperatorSummaryChangesComponent implements OnInit {
         },
       });
     }
+    if (this.current['emitterId'] || this.changed['emitterId']) {
+      summaryListItems.push({
+        key: { label: 'Emitter ID' },
+        value: [
+          {
+            label: this.current['emitterId'],
+          },
+          {
+            label:this.changed['emitterId'],
+            class:this.changed['emitterId']
+                ? 'summary-list-change-notification'
+                : '',
+          },
+        ],
+        action: {
+          label: '',
+          visuallyHidden: '',
+          visible: true,
+        },
+      });
+    }
+
     if (this.current['monitoringPlan']) {
       summaryListItems.push({
         key: { label: 'Monitoring Plan ID' },
@@ -196,6 +224,27 @@ export class OperatorSummaryChangesComponent implements OnInit {
             class:
               this.changed['monitoringPlan'] &&
               this.changed['monitoringPlan']['id']
+                ? 'summary-list-change-notification'
+                : '',
+          },
+        ],
+        action: {
+          label: '',
+          visuallyHidden: '',
+          visible: true,
+        },
+      });
+    }
+    if (this.current['imo']) {
+      summaryListItems.push({
+        key: { label: 'Company IMO number' },
+        value: [
+          {
+            label: this.current['imo'],
+          },
+          {
+            label:this.changed['imo'],
+            class:this.changed['imo']
                 ? 'summary-list-change-notification'
                 : '',
           },

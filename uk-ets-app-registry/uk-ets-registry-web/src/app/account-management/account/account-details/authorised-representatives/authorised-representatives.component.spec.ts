@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { AuthorisedRepresentativesComponent } from './authorised-representatives.component';
 import { StoreModule } from '@ngrx/store';
 import * as fromAuth from '@registry-web/auth/auth.reducer';
@@ -27,7 +27,7 @@ describe('AuthorisedRepresentativesComponent', () => {
   let component: AuthorisedRepresentativesComponent;
   let fixture: ComponentFixture<AuthorisedRepresentativesComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         StoreModule.forRoot({
@@ -85,10 +85,11 @@ describe('AuthorisedRepresentativesComponent', () => {
           country: '',
           birthDate: { day: null, month: null, year: null },
           countryOfBirth: '',
-          workCountryCode: '',
-          workPhoneNumber: '',
-          workEmailAddress: '',
-          workEmailAddressConfirmation: '',
+          workMobileCountryCode: '',
+          workMobilePhoneNumber: '',
+          workAlternativeCountryCode: '',
+          workAlternativePhoneNumber: '',
+          noMobilePhoneNumberReason: '',
           workBuildingAndStreet: '',
           workBuildingAndStreetOptional: '',
           workBuildingAndStreetOptional2: '',
@@ -108,11 +109,12 @@ describe('AuthorisedRepresentativesComponent', () => {
           line1: '',
           line2: '',
           line3: '',
-          phoneNumber1: '',
-          countryCode1: '',
-          phoneNumber2: '',
-          countryCode2: '',
           postCode: '',
+          mobileCountryCode: '',
+          mobilePhoneNumber: '',
+          alternativeCountryCode: '',
+          alternativePhoneNumber: '',
+          noMobilePhoneNumberReason: '',
         },
       },
     ];

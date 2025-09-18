@@ -13,7 +13,8 @@
                 <p class="govuk-body">${msg("proceedWithUpdateActions")}</p>
             </#if>
             <#if skipLink??>
-            <#--                case of the update success page      -->
+            <#else>
+                <#-- case of the update success page -->
                 <#if !actionUri?? && message.summary == "Your account has been updated.">
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-two-thirds govuk-grid-column-two-thirds-custom">
@@ -32,10 +33,8 @@
                                         href="${properties.loginUrl}">${msg("whatHappensNextText2")}</a> ${msg("whatHappensNextText3")}
                             </p>
                         </div>
-                    </div>
-                </#if>
-            <#else>
-                <#if pageRedirectUri?has_content>
+                    </div>                           
+                <#elseif message.summary != "Your account has been updated." && pageRedirectUri?has_content>
                     <p><a href="${pageRedirectUri}">${kcSanitize(msg("backToApplication"))?no_esc}</a></p>
                 <#elseif actionUri?has_content>
                     <p>

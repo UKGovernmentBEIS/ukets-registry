@@ -3,14 +3,10 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { AccountStatus, ARAccessRights } from '@shared/model/account';
 import { map } from 'rxjs/operators';
 import { AccountAccessService } from '../../auth/account-access.service';
-import { AuthApiService } from '../../auth/auth-api.service';
 
 @Injectable()
 export class AccountBusinessRulesService {
-  constructor(
-    private authApiService: AuthApiService,
-    private accountAccessService: AccountAccessService
-  ) {}
+  constructor(private accountAccessService: AccountAccessService) {}
 
   //TODO - Move the button presentation business logic to the backend corresponding services.
 

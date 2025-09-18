@@ -174,12 +174,14 @@ class AuthorizedRepresentativeServiceBDDTest {
             .workBuildingAndStreetOptional("test address 2")
             .workBuildingAndStreetOptional2("test address 3")
             .workCountry("Greece")
-            .workCountryCode("GR")
             .urid(updateAction.getUrid())
-            .workPhoneNumber("123123123")
             .workPostCode("123232")
             .workTownOrCity("Athens")
             .workStateOrProvince("Attica")
+            .workAlternativeCountryCode("GR")
+            .workAlternativePhoneNumber("123123123")
+            .workMobileCountryCode("GR")
+            .workMobilePhoneNumber("6987410235")
             .build();
         UserWorkContact userInfo = mockPersonalUserInfo(personalUserInfoCommand);
         given(userService.getUserWorkContacts(Set.of(updateAction.getUrid())))
@@ -224,8 +226,10 @@ class AuthorizedRepresentativeServiceBDDTest {
             .workBuildingAndStreetOptional("test address 2")
             .workBuildingAndStreetOptional2("test address 3")
             .workCountry("Greece")
-            .workCountryCode("GR")
-            .workPhoneNumber("123123123")
+            .workAlternativeCountryCode("GR")
+            .workAlternativePhoneNumber("123123123")
+            .workMobileCountryCode("GR")
+            .workMobilePhoneNumber("6987410235")
             .workPostCode("123232")
             .workTownOrCity("Athens")
             .workStateOrProvince("Attica")
@@ -321,8 +325,10 @@ class AuthorizedRepresentativeServiceBDDTest {
             .workBuildingAndStreetOptional("test address 2")
             .workBuildingAndStreetOptional2("test address 3")
             .workCountry("Greece")
-            .workCountryCode("GR")
-            .workPhoneNumber("123123123")
+            .workAlternativeCountryCode("GR")
+            .workAlternativePhoneNumber("123123123")
+            .workMobileCountryCode("GR")
+            .workMobilePhoneNumber("6987410235")
             .workPostCode("123232")
             .workTownOrCity("Athens")
             .workStateOrProvince("Attica")
@@ -595,12 +601,15 @@ class AuthorizedRepresentativeServiceBDDTest {
         personalUserInfo.setWorkBuildingAndStreetOptional2(command.workBuildingAndStreetOptional2);
         personalUserInfo.setWorkBuildingAndStreetOptional(command.workBuildingAndStreetOptional);
         personalUserInfo.setWorkCountry(command.workCountry);
-        personalUserInfo.setWorkCountryCode(command.workCountryCode);
         personalUserInfo.setWorkTownOrCity(command.workTownOrCity);
         personalUserInfo.setWorkStateOrProvince(command.workStateOrProvince);
         personalUserInfo.setEmail(command.workEmailAddress);
         personalUserInfo.setWorkPostCode(command.workPostCode);
-        personalUserInfo.setWorkPhoneNumber(command.workPhoneNumber);
+        personalUserInfo.setWorkMobileCountryCode(command.workMobileCountryCode);
+        personalUserInfo.setWorkMobilePhoneNumber(command.workMobilePhoneNumber);
+        personalUserInfo.setWorkAlternativeCountryCode(command.workAlternativeCountryCode);
+        personalUserInfo.setWorkAlternativePhoneNumber(command.workAlternativePhoneNumber);
+        personalUserInfo.setNoMobilePhoneNumberReason(command.noMobilePhoneNumberReason);
         return personalUserInfo;
     }
 
@@ -614,9 +623,7 @@ class AuthorizedRepresentativeServiceBDDTest {
         assertEquals(expected.workTownOrCity, workContactDetailsDTO.getWorkTownOrCity());
         assertEquals(expected.workStateOrProvince, workContactDetailsDTO.getWorkStateOrProvince());
         assertEquals(expected.workCountry, workContactDetailsDTO.getWorkCountry());
-        assertEquals(expected.workCountryCode, workContactDetailsDTO.getWorkCountryCode());
         assertEquals(expected.workEmailAddress, workContactDetailsDTO.getWorkEmailAddress());
-        assertEquals(expected.workPhoneNumber, workContactDetailsDTO.getWorkPhoneNumber());
         assertEquals(expected.workPostCode, workContactDetailsDTO.getWorkPostCode());
     }
 
@@ -651,9 +658,12 @@ class AuthorizedRepresentativeServiceBDDTest {
         private String workTownOrCity;
         private String workStateOrProvince;
         private String workCountry;
-        private String workCountryCode;
-        private String workPhoneNumber;
         private String workEmailAddress;
+        private String workMobileCountryCode;
+        private String workMobilePhoneNumber;
+        private String workAlternativeCountryCode;
+        private String workAlternativePhoneNumber;
+        private String noMobilePhoneNumberReason;
     }
 
     private AccountAccess retrieveAccountAccessInfo(AccountAccessState state,

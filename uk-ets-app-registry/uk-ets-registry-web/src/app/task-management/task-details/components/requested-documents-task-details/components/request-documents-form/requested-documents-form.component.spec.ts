@@ -10,6 +10,8 @@ import {
   DocumentNamePipe,
   UploadedFilePipe,
 } from '@registry-web/task-management/pipes';
+import { taskDetailsBase } from '@registry-web/task-management/model/task-details.model.spec';
+import { RequestType } from '@registry-web/task-management/model';
 
 describe('RequestedDocumentsFormComponent', () => {
   let component: RequestedDocumentsFormComponent;
@@ -26,21 +28,19 @@ describe('RequestedDocumentsFormComponent', () => {
     },
   ];
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, CommonModule],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        declarations: [
-          RequestedDocumentsFormComponent,
-          UkSelectFileComponent,
-          UploadedFilePipe,
-          DocumentNamePipe,
-        ],
-        providers: [provideMockStore()],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, CommonModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      declarations: [
+        RequestedDocumentsFormComponent,
+        UkSelectFileComponent,
+        UploadedFilePipe,
+        DocumentNamePipe,
+      ],
+      providers: [provideMockStore()],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RequestedDocumentsFormComponent);
@@ -51,9 +51,27 @@ describe('RequestedDocumentsFormComponent', () => {
       initialStateConfiguration
     );
     component = fixture.componentInstance;
-    component.requestStatus = 'SUBMITTED_NOT_YET_APPROVED';
     component.formGroup = new FormGroup({});
-    component.claimantURID = 'UK100001';
+    component.taskDetails = {
+      ...taskDetailsBase,
+      taskType: RequestType.AH_REQUESTED_DOCUMENT_UPLOAD,
+      claimantURID: 'UK100001',
+      documentNames: [
+        'Bank account details',
+        'Proof of identity',
+        'Proof of residence',
+      ],
+      accountHolderName: null,
+      recipient: null,
+      userUrid: null,
+      accountHolderIdentifier: null,
+      reasonForAssignment: null,
+      comment: null,
+      referenceFiles: [],
+      uploadedFiles: [],
+      completedDate: null,
+      difference: null,
+    };
     component.loggedinUser = {
       authenticated: true,
       showLoading: true,
@@ -66,11 +84,6 @@ describe('RequestedDocumentsFormComponent', () => {
       lastName: 'lastName',
       knownAs: 'KnownAs',
     };
-    component.documentNames = [
-      'Bank account details',
-      'Proof of identity',
-      'Proof of residence',
-    ];
     fixture.detectChanges();
   });
 
@@ -79,12 +92,12 @@ describe('RequestedDocumentsFormComponent', () => {
   });
 
   it('should create documentNames.length - 1 form controls', () => {
-    component.documentNames.forEach((s, index) => {
+    component.taskDetails.documentNames.forEach((s, index) => {
       expect(component.formGroup.controls['file-upload-' + index]).toBeTruthy();
     });
     expect(
       component.formGroup.controls[
-        'file-upload-' + component.documentNames.length
+        'file-upload-' + component.taskDetails.documentNames.length
       ]
     ).toBeFalsy();
   });

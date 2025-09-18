@@ -65,14 +65,11 @@ complicated in this html and should be simplified
                 taskDetails.taskStatus !== 'COMPLETED' &&
                 taskDetails.currentUserClaimant &&
                 taskHeaderActionsVisibility &&
-                checkIfCanApprove(taskDetails.taskType)
+                checkIfCanApprove(taskDetails.taskType),
             }"
           >
             <button
-              class="
-                govuk-button govuk-button--secondary
-                govuk-!-margin-right-4 govuk-!-margin-bottom-0
-              "
+              class="govuk-button govuk-button--secondary govuk-!-margin-right-4 govuk-!-margin-bottom-0"
               data-module="govuk-button"
               (click)="exportPDF()"
             >
@@ -107,6 +104,20 @@ complicated in this html and should be simplified
             data-module="govuk-button"
           >
             Reject
+          </button>
+          <button
+            style="margin-bottom: 0"
+            *ngIf="
+              taskDetails.taskStatus !== 'COMPLETED' &&
+              taskDetails.currentUserClaimant &&
+              taskHeaderActionsVisibility &&
+              checkIfCanMakePayment()
+            "
+            (click)="proceedWithPayment()"
+            class="govuk-button govuk-!-margin-left-4 govuk-!-margin-right-1"
+            data-module="govuk-button"
+          >
+            Make payment
           </button>
         </div>
         <div style="float: right">
@@ -150,7 +161,7 @@ complicated in this html and should be simplified
         </app-govuk-tag>
       </ng-template>
       <div class="govuk-grid-column-full" *ngIf="taskDetails">
-        <div class="govuk-body">
+        <div class="govuk-body govuk-!-margin-bottom-0">
           Request ID: {{ taskDetails.requestId }}
           <a
             [routerLink]="[]"
@@ -182,6 +193,27 @@ complicated in this html and should be simplified
             </div>
           </ng-container>
         </div>
+
+        <div
+          class="govuk-body govuk-!-margin-bottom-0"
+          *ngIf="taskDetails.deadline"
+        >
+          Deadline:
+          {{ taskDetails.deadline | nativeDateToUkDate | formatUkDate }}
+          <a
+            *ngIf="
+              isAdmin &&
+              taskDetails.taskStatus !== 'COMPLETED' &&
+              taskDetails.subTasks?.length == 0
+            "
+            [routerLink]="[]"
+            (click)="changeDeadline()"
+            class="govuk-link"
+            style="margin-left: 10px"
+            >Change deadline</a
+          >
+        </div>
+        <div class="govuk-body"></div>
       </div>
     </div>
   </div>

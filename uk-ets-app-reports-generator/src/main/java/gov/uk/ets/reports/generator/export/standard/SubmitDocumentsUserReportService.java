@@ -6,7 +6,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -52,11 +51,6 @@ public class SubmitDocumentsUserReportService implements ReportTypeService<Submi
                 "Task Last Updated Date",
                 "Task Status"
         );
-    }
-
-    @Override
-    public List<SubmitDocumentsUserReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

@@ -1,19 +1,11 @@
 package gov.uk.ets.registry.api.account.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.model.services.PersistenceService;
 import gov.uk.ets.registry.api.compliance.domain.ExcludeEmissionsEntry;
@@ -28,10 +20,6 @@ import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +30,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -188,13 +188,12 @@ class AccountOperatorUpdateServiceTest {
         installation.setInstallationName("Installation Name");
         installation.setActivityType("COMBUSTION_OF_FUELS");
         installation.setPermitIdentifier("1234589");
-        installation.setPermitExpiryDate(new Date());
         installation.setStartYear(2021);
         installation.setEndYear(2022);
         account.setCompliantEntity(installation);
         when(accountRepository.findByIdentifier(10001L)).thenReturn(Optional.of(account));
 
-        InstallationOrAircraftOperatorDTO dto = new InstallationOrAircraftOperatorDTO();
+        OperatorDTO dto = new OperatorDTO();
         dto.setRegulator(RegulatorType.EA);
         dto.setType("INSTALLATION");
         dto.setFirstYear(2022);
@@ -209,13 +208,13 @@ class AccountOperatorUpdateServiceTest {
 
     private AccountOperatorDetailsUpdateDTO populateAccountOperatorDetailsUpdateDTO() {
         AccountOperatorDetailsUpdateDTO dto = new AccountOperatorDetailsUpdateDTO();
-        InstallationOrAircraftOperatorDTO diff = new InstallationOrAircraftOperatorDTO();
+        OperatorDTO diff = new OperatorDTO();
         diff.setFirstYear(2022);
         diff.setLastYear(2024);
         diff.setType("INSTALLATION");
         dto.setDiff(diff);
 
-        InstallationOrAircraftOperatorDTO current = new InstallationOrAircraftOperatorDTO();
+        OperatorDTO current = new OperatorDTO();
         current.setFirstYear(2021);
         current.setType("INSTALLATION");
         dto.setCurrent(current);

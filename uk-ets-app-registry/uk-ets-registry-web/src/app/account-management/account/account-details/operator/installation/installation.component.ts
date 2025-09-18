@@ -11,6 +11,7 @@ import { ImportsNotUsedAsValues } from 'typescript';
       [canRequestUpdate]="canRequestUpdate"
       [hasOperatorUpdatePendingApproval]="hasOperatorUpdatePendingApproval"
       [canRequestAccountTransfer]="canRequestAccountTransfer"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"           
       (requestInstallationUpdateEmitter)="goToRequestUpdate()"
       (requestTransferAccountEmitter)="goToRequestTransferAccount()"
     ></app-shared-installation>
@@ -25,6 +26,9 @@ export class InstallationComponent {
   hasOperatorUpdatePendingApproval: boolean;
   @Input()
   canRequestAccountTransfer: boolean;
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+  
   @Output()
   readonly requestInstallationUpdateEmitter = new EventEmitter();
   @Output()

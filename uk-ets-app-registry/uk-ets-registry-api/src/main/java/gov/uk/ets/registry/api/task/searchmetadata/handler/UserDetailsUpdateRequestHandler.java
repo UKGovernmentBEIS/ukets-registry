@@ -7,6 +7,8 @@ import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.searchmetadata.domain.types.MetadataName;
 import gov.uk.ets.registry.api.task.searchmetadata.utils.QueryUtils;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsDTO;
+import java.util.Objects;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.event.spi.AbstractEvent;
 import org.hibernate.event.spi.PostUpdateEvent;
@@ -51,7 +53,9 @@ public class UserDetailsUpdateRequestHandler implements SearchMetadataHandler {
     }
 
     private String getKnownAs(UserDetailsDTO before, UserDetailsDTO difference) {
-        return difference.getAlsoKnownAs() != null ? difference.getAlsoKnownAs()
-                : before.getAlsoKnownAs();
+        return Stream.of(difference.getAlsoKnownAs(), before.getAlsoKnownAs())
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse("");
     }
 }

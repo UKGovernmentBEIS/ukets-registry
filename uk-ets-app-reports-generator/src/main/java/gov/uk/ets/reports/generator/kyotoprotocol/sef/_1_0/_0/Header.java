@@ -1,6 +1,6 @@
 package gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 /**

@@ -19,11 +19,12 @@ sed -i "s/REPLACE_ME_WITH_VAULT_FQDN/$VAULT/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_COOKIES_FQDN/$COOKIES/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_SIGNING_FQDN/$SIGNING/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_REGISTRY_FQDN/$REGISTRY/g" /etc/nginx/conf.d/ets.conf
-sed -i "s/REPLACE_ME_WITH_MAINTENANCE_FQDN/$MAINTENANCE/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_DIGITAL_DASHBOARD_FQDN/$DASHBOARD/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_FEEDBACK_FQDN/$FEEDBACK/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_LANDING_FQDN/$LANDING/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_ERROR_FQDN/$ERROR/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_UILOGS_FQDN/$UILOGS/g" /etc/nginx/conf.d/ets.conf
+sed -i "s/REPLACE_ME_WITH_ACCOUNT_RECOVERY_API_FQDN/$ACCOUNT_RECOVERY_API/g" /etc/nginx/conf.d/ets.conf
+sed -i "s/REPLACE_ME_WITH_ACCOUNT_RECOVERY_WEB_FQDN/$ACCOUNT_RECOVERY_WEB/g" /etc/nginx/conf.d/ets.conf
 
 exec nginx -g 'daemon off;'

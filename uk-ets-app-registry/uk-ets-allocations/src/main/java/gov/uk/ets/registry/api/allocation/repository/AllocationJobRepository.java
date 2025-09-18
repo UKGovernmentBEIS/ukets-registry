@@ -5,11 +5,12 @@ import gov.uk.ets.registry.api.allocation.type.AllocationCategory;
 import gov.uk.ets.registry.api.allocation.type.AllocationJobStatus;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /**
  * Repository for allocation jobs.
  */
-public interface AllocationJobRepository extends JpaRepository<AllocationJob, Long> {
+public interface AllocationJobRepository extends JpaRepository<AllocationJob, Long>, QuerydslPredicateExecutor<AllocationJob> {
 
     /**
      * Retrieves the allocation job with the provided status.

@@ -26,7 +26,8 @@ export interface AccountSearchCriteria {
   excludedForYear: string;
   allocationStatus: string;
   allocationWithholdStatus: string;
-  installationOrAircraftOperatorId: string;
+  operatorId: string;
+  imo: string;
 }
 
 export interface AccountSearchResult {
@@ -75,10 +76,7 @@ export const allocationWithholdStatusMap: Record<AllocationWithhold, string> = {
   ALLOWED: 'Not withheld',
 };
 
-export const accountStatusMap: Record<
-  AccountStatus | 'ALL_EXCEPT_CLOSED',
-  Status
-> = {
+export const accountStatusMap: Record<AccountStatus, Status> = {
   OPEN: {
     color: 'green',
     label: 'Open',

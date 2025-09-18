@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import gov.uk.ets.registry.api.migration.domain.MigratorHistory;
 import gov.uk.ets.registry.api.migration.domain.MigratorHistoryRepository;

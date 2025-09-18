@@ -60,7 +60,8 @@ export class UserDeactivationCommentComponent extends UkFormComponent {
   get fullName() {
     return empty(this._fullName) || this.isSignedInUser
       ? ''
-      : this._fullName.attributes.alsoKnownAs[0].length > 0
+      : this._fullName.attributes.alsoKnownAs?.length > 0 &&
+        this._fullName.attributes.alsoKnownAs[0]?.length > 0
       ? 'Name ' + this._fullName.attributes.alsoKnownAs[0]
       : 'Name ' + this._fullName.firstName + ' ' + this._fullName.lastName;
   }

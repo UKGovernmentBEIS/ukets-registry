@@ -5,7 +5,7 @@ import gov.uk.ets.registry.api.itl.notice.domain.type.NoticeType;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 
 /**

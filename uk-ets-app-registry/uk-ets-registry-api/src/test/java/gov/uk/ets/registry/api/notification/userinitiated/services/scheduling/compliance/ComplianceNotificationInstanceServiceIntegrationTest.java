@@ -13,6 +13,7 @@ import gov.uk.ets.registry.api.common.test.PostgresJpaTest;
 import gov.uk.ets.registry.api.compliance.service.ComplianceService;
 import gov.uk.ets.registry.api.compliance.web.model.ComplianceOverviewDTO;
 import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
 import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper;
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.api.notification.emailgeneration.EmailException;
@@ -24,6 +25,8 @@ import gov.uk.ets.registry.api.notification.userinitiated.messaging.model.Identi
 import gov.uk.ets.registry.api.notification.userinitiated.repository.NotificationDefinitionRepository;
 import gov.uk.ets.registry.api.notification.userinitiated.repository.NotificationRepository;
 import gov.uk.ets.registry.api.notification.userinitiated.services.StringEmailTemplateProcessor;
+import gov.uk.ets.registry.api.notification.userinitiated.services.UserInitiatedNotificationService;
+import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.NotificationUpdater;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
@@ -77,6 +80,8 @@ class ComplianceNotificationInstanceServiceIntegrationTest {
     @Autowired
     private NotificationRepository notificationRepository;
     @Autowired
+    private UploadedFilesRepository uploadedFilesRepository;
+    @Autowired
     private NotificationUpdater updater;
 
     @MockBean
@@ -90,6 +95,9 @@ class ComplianceNotificationInstanceServiceIntegrationTest {
 
     @MockBean
     private GroupNotificationClient groupNotificationClient;
+
+    @MockBean
+    UserInitiatedNotificationService userInitiatedNotificationService;
 
     NotificationModelTestHelper notificationModelTestHelper;
     private AccountModelTestHelper accountModelTestHelper;
@@ -109,7 +117,7 @@ class ComplianceNotificationInstanceServiceIntegrationTest {
         user.setFirstName(USER_FIRST_NAME);
         user.setLastName(USER_LAST_NAME);
         entityManager.persist(user);
-        notificationModelTestHelper = new NotificationModelTestHelper(entityManager, definitionRepository);
+        notificationModelTestHelper = new NotificationModelTestHelper(definitionRepository, notificationRepository, uploadedFilesRepository);
         notificationModelTestHelper.setUp();
 
         accountModelTestHelper = new AccountModelTestHelper(entityManager.getEntityManager());
@@ -158,7 +166,7 @@ class ComplianceNotificationInstanceServiceIntegrationTest {
         UserWorkContact contact = new UserWorkContact();
         contact.setEmail(WORK_EMAIL_ADDRESS);
         contact.setUrid(NotificationModelTestHelper.TEST_URID);
-        when(userWorkContactRepository.fetch(Set.of(NotificationModelTestHelper.TEST_URID), true))
+        when(userWorkContactRepository.fetchUserWorkContactsInBatches(Set.of(NotificationModelTestHelper.TEST_URID)))
             .thenReturn(List.of(contact));
 
         ComplianceOverviewDTO complianceOverviewDTO = new ComplianceOverviewDTO();
@@ -204,4 +212,5 @@ class ComplianceNotificationInstanceServiceIntegrationTest {
 
         assertThrows(EmailException.class, () -> cut.generateNotificationInstances());
     }
+    
 }

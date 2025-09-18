@@ -22,6 +22,8 @@ public class ExclusionReversalEvent extends ComplianceOutgoingEventBase {
 
     private Integer year;
 
+    private String reason;
+
     @Override
     protected boolean doValidate() {
         return Optional.of(year).isPresent();

@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.SubmitDocumentsUserReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,12 +56,6 @@ public class SubmitDocumentsUserJdbcMapper implements ReportDataMapper<SubmitDoc
                 "    AND f.file_status = 'SUBMITTED'\n" +
                 "    AND f.file_size IS NOT NULL\n" +
                 "    AND CAST( TRIM (SUBSTRING ( f.file_size FROM 1 FOR (length(f.file_size)-2))) AS DECIMAL ) > 0;";
-    }
-
-
-    @Override
-    public List<SubmitDocumentsUserReportData> mapData(ReportCriteria criteria) {
-        return List.of();
     }
 
     @Override

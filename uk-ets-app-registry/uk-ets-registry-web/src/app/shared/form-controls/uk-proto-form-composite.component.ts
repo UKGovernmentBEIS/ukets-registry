@@ -3,45 +3,54 @@ import {
   ControlValueAccessor,
   UntypedFormControl,
   UntypedFormGroup,
-  FormGroupDirective,
   NgControl,
 } from '@angular/forms';
 import {
   AfterContentInit,
   Component,
   EventEmitter,
+  inject,
   Injector,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   Type,
 } from '@angular/core';
-import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { getControlName } from '../shared.util';
+import { injectDestroy } from '../utils/inject-destroy';
 
 // eslint-disable-next-line @angular-eslint/use-component-selector
 @Component({ template: `` })
 export abstract class UkProtoFormCompositeComponent
-  implements ControlValueAccessor, OnInit, AfterContentInit, OnDestroy
+  implements ControlValueAccessor, OnInit, AfterContentInit
 {
+  readonly destroy$ = injectDestroy();
+
   @Input() showErrors: boolean;
-  @Input() validationErrorMessages: { [key: string]: string };
+  @Input() set validationErrorMessages(value: { [key: string]: string }) {
+    this._validationErrorMessages = value;
+  }
+  get validationErrorMessages(): { [key: string]: string } {
+    // override defaultValues set in control with those set in the form
+    return {
+      ...this.getDefaultErrorMessageMap(),
+      ...this._validationErrorMessages,
+    };
+  }
+  private _validationErrorMessages: { [key: string]: string } = {};
+
   @Output() readonly nestedFormChangeEmitter = new EventEmitter<any>();
 
   nestedForm: UntypedFormGroup;
   controlName: string;
   private onChange = (value: any) => {};
   private onTouched = () => {};
-  private onDestroy$: Subject<void> = new Subject();
 
   formControl: UntypedFormControl;
   compositeFormGroupId: string;
-  protected constructor(
-    protected parentF: FormGroupDirective,
-    protected injector: Injector
-  ) {}
+
+  protected injector = inject(Injector);
 
   ngOnInit(): void {
     this.nestedForm = this.buildForm();
@@ -51,14 +60,10 @@ export abstract class UkProtoFormCompositeComponent
           this.onChange(value);
           this.onTouched();
         }),
-        takeUntil(this.onDestroy$)
+        takeUntil(this.destroy$)
       )
       .subscribe();
-    // override defaultValues set in control with those set in the form
-    this.validationErrorMessages = {
-      ...this.getDefaultErrorMessageMap(),
-      ...this.validationErrorMessages,
-    };
+
     this.nestedFormChangeEmitter.emit(this.nestedForm?.value);
   }
 
@@ -78,6 +83,7 @@ export abstract class UkProtoFormCompositeComponent
     // form control should be updated
     this.onChange = fn;
   }
+
   registerOnTouched(fn: any): void {
     // when we want to let the parent
     // know that the form control
@@ -89,11 +95,6 @@ export abstract class UkProtoFormCompositeComponent
     if (obj) {
       this.nestedForm.setValue(obj, { emitEvent: false });
     }
-  }
-
-  public ngOnDestroy(): void {
-    this.onDestroy$.next();
-    this.onDestroy$.complete();
   }
 
   public getObjectKeys(o: any): string[] {

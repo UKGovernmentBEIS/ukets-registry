@@ -1,26 +1,19 @@
 <ng-container *ngIf="accountDetails.address as address">
   <dl
-    class="
-      govuk-summary-list govuk-summary-list--no-border
-      govuk-!-margin-bottom-0
-    "
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0"
   >
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">
         <span class="govuk-heading-m">Billing details</span>
-        <span class="govuk-hint" *ngIf="!isConfirmMode"
-          >We will use these details to email your annual subsistence
-          invoice(s)</span
-        >
+        <div class="govuk-hint" *ngIf="!isConfirmMode">
+          We will use these details to email your annual subsistence invoice(s)
+        </div>
       </dt>
     </div>
   </dl>
   <ng-container *ngIf="!isConfirmMode && isAdmin">
     <dl
-      class="
-        govuk-summary-list govuk-summary-list--no-border
-        govuk-!-margin-bottom-0
-      "
+      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0"
     >
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Exclude from billing</dt>
@@ -40,10 +33,7 @@
     </dl>
   </ng-container>
   <dl
-    class="
-      govuk-summary-list govuk-summary-list--no-border
-      govuk-!-margin-bottom-9
-    "
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
   >
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Address</dt>

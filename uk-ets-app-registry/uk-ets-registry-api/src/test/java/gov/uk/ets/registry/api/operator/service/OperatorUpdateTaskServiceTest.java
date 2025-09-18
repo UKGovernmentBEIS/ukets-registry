@@ -8,7 +8,7 @@ import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.web.model.OperatorUpdateTaskDetailsDTO;
@@ -58,8 +58,8 @@ class OperatorUpdateTaskServiceTest {
         String diff =
             "{\"type\":\"INSTALLATION\",\"regulator\":\"OPRED\",\"permit\":{\"id\":\"1234581\"}}";
 
-        InstallationOrAircraftOperatorDTO dto =
-            new ObjectMapper().readValue(diff, InstallationOrAircraftOperatorDTO.class);
+        OperatorDTO dto =
+            new ObjectMapper().readValue(diff, OperatorDTO.class);
         Assertions.assertEquals("INSTALLATION", dto.getType());
         Assertions.assertEquals(RegulatorType.OPRED, dto.getRegulator());
         Assertions.assertEquals("1234581", dto.getPermit().getId());
@@ -75,12 +75,12 @@ class OperatorUpdateTaskServiceTest {
         when(accountRepository.findByIdentifier(10001L)).thenReturn(Optional.of(account));
         String diff =
             "{\"type\":\"INSTALLATION\",\"regulator\":\"OPRED\",\"permit\":{\"id\":\"1234581\"}}";
-        InstallationOrAircraftOperatorDTO diffDto =
-            new ObjectMapper().readValue(diff, InstallationOrAircraftOperatorDTO.class);
+        OperatorDTO diffDto =
+            new ObjectMapper().readValue(diff, OperatorDTO.class);
         String before =
             "{\"type\":\"INSTALLATION\",\"identifier\":1000001,\"name\":\"Installation Name for update1\",\"activityType\":\"PRODUCTION_OF_BULK_CHEMICALS\",\"regulator\":\"OPRED\",\"firstYear\":2023,\"lastYear\":2024,\"permit\":{\"id\":\"1234581\"}}";
-        InstallationOrAircraftOperatorDTO beforeDto =
-            new ObjectMapper().readValue(before, InstallationOrAircraftOperatorDTO.class);
+        OperatorDTO beforeDto =
+            new ObjectMapper().readValue(before, OperatorDTO.class);
 
         TaskDetailsDTO taskDetailsDTO = new TaskDetailsDTO();
         taskDetailsDTO.setTaskType(RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST);
@@ -94,11 +94,11 @@ class OperatorUpdateTaskServiceTest {
         AccountInfo accountInfo = AccountInfo.builder().identifier(10001L).build();
         dto.setAccountInfo(accountInfo);
 
-        when(mapper.convertToPojo(diff, InstallationOrAircraftOperatorDTO.class)).thenReturn(diffDto);
+        when(mapper.convertToPojo(diff, OperatorDTO.class)).thenReturn(diffDto);
         operatorUpdateTaskService.complete(dto, TaskOutcome.APPROVED, "");
 
-        ArgumentCaptor<InstallationOrAircraftOperatorDTO> captor1 =
-            ArgumentCaptor.forClass(InstallationOrAircraftOperatorDTO.class);
+        ArgumentCaptor<OperatorDTO> captor1 =
+            ArgumentCaptor.forClass(OperatorDTO.class);
         ArgumentCaptor<Long> captor2 = ArgumentCaptor.forClass(Long.class);
         ArgumentCaptor<RequestType> captor3 = ArgumentCaptor.forClass(RequestType.class);
         ArgumentCaptor<Account> captor4 = ArgumentCaptor.forClass(Account.class);
@@ -114,12 +114,12 @@ class OperatorUpdateTaskServiceTest {
     void testReject() throws JsonProcessingException {
         String diff =
             "{\"type\":\"INSTALLATION\",\"regulator\":\"OPRED\",\"permit\":{\"id\":\"1234581\"}}";
-        InstallationOrAircraftOperatorDTO diffDto =
-            new ObjectMapper().readValue(diff, InstallationOrAircraftOperatorDTO.class);
+        OperatorDTO diffDto =
+            new ObjectMapper().readValue(diff, OperatorDTO.class);
         String before =
             "{\"type\":\"INSTALLATION\",\"identifier\":1000001,\"name\":\"Installation Name for update1\",\"activityType\":\"PRODUCTION_OF_BULK_CHEMICALS\",\"regulator\":\"OPRED\",\"firstYear\":2023,\"lastYear\":2024,\"permit\":{\"id\":\"1234581\"}}";
-        InstallationOrAircraftOperatorDTO beforeDto =
-            new ObjectMapper().readValue(before, InstallationOrAircraftOperatorDTO.class);
+        OperatorDTO beforeDto =
+            new ObjectMapper().readValue(before, OperatorDTO.class);
 
         TaskDetailsDTO taskDetailsDTO = new TaskDetailsDTO();
         taskDetailsDTO.setTaskType(RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST);
@@ -132,8 +132,8 @@ class OperatorUpdateTaskServiceTest {
 
         operatorUpdateTaskService.complete(dto, TaskOutcome.REJECTED, "");
 
-        ArgumentCaptor<InstallationOrAircraftOperatorDTO> captor1 =
-            ArgumentCaptor.forClass(InstallationOrAircraftOperatorDTO.class);
+        ArgumentCaptor<OperatorDTO> captor1 =
+            ArgumentCaptor.forClass(OperatorDTO.class);
         ArgumentCaptor<Long> captor2 = ArgumentCaptor.forClass(Long.class);
         ArgumentCaptor<RequestType> captor3 = ArgumentCaptor.forClass(RequestType.class);
         ArgumentCaptor<Account> captor4 = ArgumentCaptor.forClass(Account.class);

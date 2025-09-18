@@ -15,6 +15,7 @@ import {
 import { AccountHolderContactWizardRoutes } from '@account-holder-contact/account-holder-contact-wizard-properties';
 import { selectAccountHolderExisting } from '@account-opening/account-holder/account-holder.selector';
 
+//TODO merge with account-holder-contact-overview from account-shared module
 @Component({
   selector: 'app-account-holder-contact-summary',
   templateUrl: './account-holder-contact-summary.component.html',
@@ -34,7 +35,10 @@ export class AccountHolderContactSummaryComponent implements OnInit {
   primaryContactType = ContactType.PRIMARY;
   alternativeContactType = ContactType.ALTERNATIVE;
 
-  constructor(private _router: Router, private store: Store) {}
+  constructor(
+    private _router: Router,
+    private store: Store
+  ) {}
 
   ngOnInit() {
     this.primaryContact$ = this.store.select(selectPrimaryAccountHolderContact);

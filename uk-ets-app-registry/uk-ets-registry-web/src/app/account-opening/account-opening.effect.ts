@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import {
   catchError,
   exhaustMap,
@@ -43,7 +44,7 @@ import {
 import { AccountHolderContactService } from '@account-holder-contact/account-holder-contact.service';
 import { AccountOpeningOperatorActions } from '@account-opening/operator/actions';
 import { HttpErrorResponse } from '@angular/common/http';
-import { of } from 'rxjs';
+import { forkJoin, of, throwError } from 'rxjs';
 import { OperatorWizardRoutes } from '@account-opening/operator/operator-wizard-properties';
 import {
   selectAccountOpening,
@@ -58,6 +59,7 @@ import { selectInitialPermitId } from '@account-opening/operator/operator.select
 import { RequestType } from '@registry-web/task-management/model';
 import { TaskService } from '@registry-web/shared/services/task-service';
 import { ExportFileService } from '@registry-web/shared/export-file/export-file.service';
+import { ErrorDetail } from '@shared/error-summary';
 
 @Injectable()
 export class AccountOpeningEffects {
@@ -189,13 +191,13 @@ export class AccountOpeningEffects {
       ofType(AccountOpeningOperatorActions.fetchExistsMonitoringPlan),
       switchMap((action) => {
         return this.operatorService
-          .fetchExistsMonitoringPlanId(
-            action.aircraftOperator?.monitoringPlan.id
+          .fetchExistsAircraftMonitoringPlanId(
+            action.operator?.monitoringPlan.id
           )
           .pipe(
             map((data) =>
               AccountOpeningOperatorActions.fetchExistsMonitoringPlanSuccess({
-                aircraftOperator: action.aircraftOperator,
+                operator: action.operator,
               })
             ),
             catchError((httpError: HttpErrorResponse) =>
@@ -208,6 +210,93 @@ export class AccountOpeningEffects {
               )
             )
           );
+      })
+    )
+  );
+
+  fetchExistsMonitoringPlanAndImo$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AccountOpeningOperatorActions.fetchExistsImoAndMonitoringPlan),
+      switchMap((action) => {
+        return forkJoin({
+          monitoringPlan: this.operatorService
+            .fetchExistsMaritimeMonitoringPlanId(
+              action.operator?.monitoringPlan.id
+            )
+            .pipe(
+              catchError((httpError: HttpErrorResponse) => of(httpError.error))
+            ),
+          imo: this.operatorService
+            .fetchExistsImo(action.operator.imo)
+            .pipe(
+              catchError((httpError: HttpErrorResponse) => of(httpError.error))
+            ),
+        }).pipe(
+          map(({ monitoringPlan, imo }) => {
+            const errors: ErrorDetail[] = [];
+
+            if (monitoringPlan && typeof monitoringPlan !== 'boolean') {
+              errors.push(...monitoringPlan.errorDetails);
+            }
+
+            if (imo && typeof imo !== 'boolean') {
+              errors.push(...imo.errorDetails);
+            }
+
+            if (errors.length > 0) {
+              return AccountOpeningOperatorActions.fetchExistsMonitoringPlanAndImoFailure(
+                {
+                  errorSummaries: errors,
+                }
+              );
+            }
+
+            return AccountOpeningOperatorActions.fetchExistsMonitoringPlanAndImoSuccess(
+              {
+                operator: action.operator,
+              }
+            );
+          }),
+          catchError((httpError) =>
+            of(
+              errors({
+                errorSummary: this.apiErrorHandlingService.transform(
+                  httpError.error
+                ),
+              })
+            )
+          )
+        );
+      })
+    )
+  );
+
+  fetchExistsImoSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        AccountOpeningOperatorActions.fetchExistsMonitoringPlanAndImoSuccess
+      ),
+      map((action) =>
+        AccountOpeningOperatorActions.setOperator({
+          operator: action.operator,
+        })
+      )
+    );
+  });
+
+  fetchExistsImoAndMonitoringPlanFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(
+        AccountOpeningOperatorActions.fetchExistsMonitoringPlanAndImoFailure
+      ),
+      switchMap((httpError) => {
+        return of(
+          errors({
+            errorSummary: this.apiErrorHandlingService.transform({
+              errorDetails: httpError.errorSummaries,
+            }),
+          })
+        );
       })
     )
   );
@@ -256,6 +345,7 @@ export class AccountOpeningEffects {
       return this.actions$.pipe(
         ofType(
           AccountOpeningOperatorActions.fetchExistsMonitoringPlanSuccess,
+          AccountOpeningOperatorActions.fetchExistsMonitoringPlanAndImoSuccess,
           AccountOpeningOperatorActions.fetchExistsInstallationPermitIdSuccess,
           AccountOpeningOperatorActions.validateInstallationTransferSuccess
         ),
@@ -288,7 +378,7 @@ export class AccountOpeningEffects {
       ofType(AccountOpeningOperatorActions.fetchExistsMonitoringPlanSuccess),
       map((action) =>
         AccountOpeningOperatorActions.setOperator({
-          operator: action.aircraftOperator,
+          operator: action.operator,
         })
       )
     );

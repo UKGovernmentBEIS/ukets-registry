@@ -51,10 +51,6 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
         </dependency>
@@ -73,6 +69,8 @@
         <dependency>
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-jpa</artifactId>
+            <version>${querydsl.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
     </dependencies>
 
@@ -168,7 +166,7 @@
                         <plugin>
                             <groupId>com.h3xstream.findsecbugs</groupId>
                             <artifactId>findsecbugs-plugin</artifactId>
-                            <version>LATEST</version> <!-- Auto-update to the latest stable -->
+                            <version>${findsecbugs.plugin.version}</version> <!-- Auto-update to the latest stable -->
                         </plugin>
                     </plugins>
                 </configuration>
@@ -256,7 +254,7 @@
                         <plugin>
                             <groupId>com.h3xstream.findsecbugs</groupId>
                             <artifactId>findsecbugs-plugin</artifactId>
-                            <version>LATEST</version> <!-- Auto-update to the latest stable -->
+                            <version>${findsecbugs.plugin.version}</version> <!-- Auto-update to the latest stable -->
                         </plugin>
                     </plugins>
                     <xmlOutput>true</xmlOutput>

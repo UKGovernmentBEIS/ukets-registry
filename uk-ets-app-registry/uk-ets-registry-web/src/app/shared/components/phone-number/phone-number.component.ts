@@ -1,8 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-shared-phone-number',
-  templateUrl: './phone-number.component.html'
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
+  templateUrl: './phone-number.component.html',
 })
 export class PhoneNumberComponent {
   @Input()

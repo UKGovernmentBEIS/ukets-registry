@@ -12,7 +12,7 @@ import gov.uk.ets.registry.api.user.domain.IamUserRole;
 import gov.uk.ets.registry.api.user.domain.IamUserRoleRepository;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import java.util.List;
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;

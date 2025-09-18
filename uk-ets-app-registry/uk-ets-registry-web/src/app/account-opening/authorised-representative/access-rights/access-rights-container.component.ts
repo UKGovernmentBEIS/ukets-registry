@@ -21,7 +21,7 @@ import { ViewOrCheck } from '../../account-opening.model';
 import { canGoBack, clearErrors, errors } from '@shared/shared.action';
 import { initAll } from 'govuk-frontend';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
-import { selectIsOHAOrAOHA } from '@registry-web/account-opening/account-opening.selector';
+import { selectIsOHAOrAOHAorMOHA } from '@registry-web/account-opening/account-opening.selector';
 
 @Component({
   selector: 'app-access-rights-container',
@@ -51,7 +51,7 @@ export class AccessRightsContainerComponent implements OnInit {
     ) as Observable<boolean>;
   showOtherThanReadOnlySelections$: Observable<boolean>;
 
-  showSurrender$ = this.store.select(selectIsOHAOrAOHA);
+  showSurrender$ = this.store.select(selectIsOHAOrAOHAorMOHA);
 
   arAccessRight: ARAccessRights;
 

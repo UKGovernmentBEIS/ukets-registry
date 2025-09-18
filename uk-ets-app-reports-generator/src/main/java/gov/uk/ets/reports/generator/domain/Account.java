@@ -9,6 +9,7 @@ import lombok.Data;
 public class Account {
 
     private String number;
+    private String publicIdentifier;
     private String name;
     private String status;
     private String type;

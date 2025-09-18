@@ -6,5 +6,5 @@ import { Component, Input } from '@angular/core';
 })
 export class AboutTrustedAccountListComponent {
   @Input() informativeText: boolean;
-  @Input() isOHAOrAOHA: boolean;
+  @Input() isOHAOrAOHAorMOHA: boolean;
 }

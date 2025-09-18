@@ -34,15 +34,6 @@ const PENDING_ALLOCATION_NOTIFICATION_DELAY = 2000;
 @Component({
   selector: 'app-request-allocation-container',
   template: `
-    <app-pending-request-allocation-warning
-      *ngIf="isSeniorAdmin$ | async"
-      [isCancelAllocationSuccessDisplayed]="
-        isCancelAllocationSuccessDisplayed$ | async
-      "
-      [isAllocationPendingDisplayed]="isAllocationPendingDisplayed$ | async"
-      (cancelAllocations)="onCancelAllocations()"
-    >
-    </app-pending-request-allocation-warning>
     <app-request-allocation
       *ngIf="allocationYears$ | async as allocationYears"
       [allocationYears]="allocationYears"

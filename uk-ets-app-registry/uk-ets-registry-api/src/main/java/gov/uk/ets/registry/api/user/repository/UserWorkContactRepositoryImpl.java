@@ -5,8 +5,12 @@ import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.keycloak.KeycloakRestEndpointRepository;
 import gov.uk.ets.registry.api.user.domain.UserWorkContact;
 import gov.uk.ets.registry.api.user.domain.UserWorkContactRepository;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,5 +59,23 @@ public class UserWorkContactRepositoryImpl
         UserWorkContact[] responseBody = fetchData(paramsMap, token, UserWorkContact[].class);
 
         return Arrays.asList(responseBody);
+    }
+
+    @Override
+    public List<UserWorkContact> fetchUserWorkContactsInBatches(Set<String> urIdsSet) {
+        if (urIdsSet == null || urIdsSet.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<String> urIds = new ArrayList<>(urIdsSet); // Convert Set to List for batching
+        List<UserWorkContact> userWorkContacts = new ArrayList<>();
+        int batchSize = 50;
+        for (int index = 0; index < urIds.size(); index += batchSize) {
+            Set<String> nextSet = new HashSet<>(urIds.subList(index, Math.min(index + batchSize, urIds.size())));
+            List<UserWorkContact> results = fetch(nextSet, true);
+            if (!results.isEmpty()) {
+                userWorkContacts.addAll(results);
+            }
+        }
+        return userWorkContacts;
     }
 }

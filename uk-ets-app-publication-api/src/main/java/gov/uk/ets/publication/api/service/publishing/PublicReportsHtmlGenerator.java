@@ -7,15 +7,22 @@ import freemarker.template.TemplateException;
 import gov.uk.ets.publication.api.domain.ReportFile;
 import gov.uk.ets.publication.api.domain.Section;
 import gov.uk.ets.publication.api.error.UkEtsPublicationApiException;
+import gov.uk.ets.publication.api.model.DisplayType;
 import gov.uk.ets.publication.api.model.ReportPublicationStatus;
 import gov.uk.ets.publication.api.model.SectionType;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import gov.uk.ets.reports.model.ReportType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,6 +45,9 @@ public class PublicReportsHtmlGenerator {
     private static final String ETS_REPORT_SECTION = "/ets-reports/section";
     private static final String KP_REPORT_SECTION = "/kp-reports/section";
 
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final ReportType PERIOD_REPORT = ReportType.R0017;
+
 
     /**
      * Creates a String representation of a publication section, consisting of
@@ -49,19 +59,26 @@ public class PublicReportsHtmlGenerator {
     public byte[] generateSection(Section section) {
         final Map<String, Object> params = new HashMap<>();
         params.put("sectionTitle", section.getTitle());
+        params.put("sectionType", section.getReportType());
         params.put("sectionSummary", section.getSummary());
         params.put("sectionPath", getSectionPath(section));
         List<ReportFile> reportFiles = section.getReportFiles()
                                               .stream()
                                               .filter(rf -> ReportPublicationStatus.PUBLISHED.equals(rf.getFileStatus()))
+                                              .sorted(Comparator.comparing(ReportFile::getApplicableForYear).reversed())
                                               .toList();
-        params.put("reportFiles", reportFiles);
-
+        params.put("allReports", reportFiles);
+        params.put("visibleReports", reportFiles);
         if (reportFiles.size() > moreReportsSize) {
            List[] listArray = splitList(reportFiles, moreReportsSize);
-            params.put("reportFiles", listArray[0]);
-            params.put("moreReportFiles", listArray[1]);
+            params.put("visibleReports", listArray[0]);
         }
+        params.put("isApplicableForYear", section.getDisplayType() == DisplayType.ONE_FILE_PER_YEAR);
+
+        if (section.getReportType() == PERIOD_REPORT) {
+            params.put("yearToPeriod", generatePeriodFromYear(reportFiles));
+        }
+
         String sectionHtml;
 
         if (reportFiles.isEmpty()) {
@@ -75,6 +92,33 @@ public class PublicReportsHtmlGenerator {
                           separate() + constructMoreReports(params) + separate() + constructEndingSectionArea();
         }
         return sectionHtml.getBytes();
+    }
+
+    private Map<String, String> generatePeriodFromYear(List<ReportFile> reportFiles) {
+        return reportFiles.stream()
+                .map(ReportFile::getApplicableForYear)
+                .collect(Collectors.toMap(
+                    Object::toString,
+                    this::calculatePeriod
+                ));
+    }
+
+    private String calculatePeriod(Integer year) {
+        if (year == null) {
+            return null;
+        }
+
+        int offset = 3;
+        int startYear = year - offset - 1;
+        int endYear = year - offset;
+        LocalDate startDate = LocalDate.of(startYear, 5, 1);
+        LocalDate endDate = LocalDate.of(endYear, 4, 30);
+
+        if (year == 2025) {
+            startDate = LocalDate.of(startYear, 1, 1);
+        }
+
+        return FORMATTER.format(startDate) + "–" + FORMATTER.format(endDate);
     }
 
     /**

@@ -27,9 +27,15 @@ export class AuthorisedRepresentativeEffects {
           .getAuthorisedRepresentatives(action.accountHolderId)
           .pipe(
             map((result) => loadAuthorisedRepresentatives({ ARs: result })),
-            catchError((err: HttpErrorResponse) =>
-              this.handleFetchListError(err, action)
-            )
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                errors({
+                  errorSummary: this.apiErrorHandlingService.transform(
+                    error.error
+                  ),
+                })
+              );
+            })
           )
       )
     )
@@ -49,9 +55,15 @@ export class AuthorisedRepresentativeEffects {
               return setCurrentAuthorisedRepresentative({ AR: result });
             }
           }),
-          catchError((error: HttpErrorResponse) =>
-            this.handleFetchListError(error, action)
-          )
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              errors({
+                errorSummary: this.apiErrorHandlingService.transform(
+                  error.error
+                ),
+              })
+            );
+          })
         );
       })
     )
@@ -63,21 +75,4 @@ export class AuthorisedRepresentativeEffects {
     private arService: AuthorisedRepresentativeService,
     private apiErrorHandlingService: ApiErrorHandlingService
   ) {}
-
-  private handleFetchListError(error: HttpErrorResponse, action) {
-    if (error.status === 403) {
-      return of(
-        errors({
-          errorSummary: this.apiErrorHandlingService.transform(error.error),
-        })
-      );
-    }
-    return [
-      errors({
-        errorSummary: !empty(action.errorSummary)
-          ? action.errorSummary
-          : action.errorSummaries[0],
-      }),
-    ];
-  }
 }

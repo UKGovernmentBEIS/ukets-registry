@@ -115,10 +115,11 @@ describe('AccountHolderSelectionComponent', () => {
   });
 
   it('should instantiate', () => {
-    const accountHolderSelectionComponent: AccountHolderSelectionComponent = new AccountHolderSelectionComponent(
-      formBuilder
-    );
-    expect(accountHolderSelectionComponent).toBeDefined();
+    TestBed.runInInjectionContext(() => {
+      const accountHolderSelectionComponent =
+        new AccountHolderSelectionComponent();
+      expect(accountHolderSelectionComponent).toBeDefined();
+    });
   });
 
   it('should instantiate', () => {

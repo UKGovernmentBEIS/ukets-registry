@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   REQUEST_TYPE_VALUES,
   RequestType,
@@ -12,12 +12,13 @@ import { AuthModel } from '@registry-web/auth/auth.model';
 import { FileDetails } from '@shared/model/file/file-details.model';
 import { getLabel } from '@shared/shared.util';
 import { FileBase } from '@shared/model/file';
+import { IsPastDatePipe } from '@registry-web/shared/pipes';
 
 @Component({
   templateUrl: './task-details.component.html',
   selector: 'app-task-details',
 })
-export class TaskDetailsComponent {
+export class TaskDetailsComponent implements OnInit {
   @Input()
   isEtsTransaction: boolean;
 
@@ -38,21 +39,39 @@ export class TaskDetailsComponent {
 
   @Input() taskTypeOptions: TaskType[];
 
+  @Input() isSeniorOrJuniorAdmin: boolean;
+
   @Output()
   readonly downloadFileTemplateEmitter = new EventEmitter<FileDetails>();
 
   @Output()
-  readonly downloadRequestDocumentFile = new EventEmitter<TaskFileDownloadInfo>();
+  readonly downloadRequestDocumentFile =
+    new EventEmitter<TaskFileDownloadInfo>();
 
   @Output() readonly openDetail = new EventEmitter<string>();
 
   @Output() readonly requestDocumentEmitter = new EventEmitter();
+
+  @Output() readonly requestPaymentEmitter = new EventEmitter();
 
   @Output() userDecision = new EventEmitter();
 
   requestTypes = RequestType;
   taskStatusMap = taskStatusMap;
   requestTypeMap = REQUEST_TYPE_VALUES;
+
+  showOverdueSubtaskWarning = false;
+
+  ngOnInit() {
+    if (this.taskDetails?.subTasks?.length > 0) {
+      this.showOverdueSubtaskWarning = this.taskDetails.subTasks.some(
+        (t) =>
+          t.deadline &&
+          t.taskStatus !== 'COMPLETED' &&
+          new IsPastDatePipe().transform(t.deadline)
+      );
+    }
+  }
 
   downloadTemplate(fileDetails: FileDetails) {
     this.downloadFileTemplateEmitter.emit(fileDetails);
@@ -73,12 +92,12 @@ export class TaskDetailsComponent {
     });
   }
 
-  getTaskTypeLabel(key: string): string {
-    return getLabel(key, this.taskTypeOptions);
-  }
-
   onAccountHolderOrUserRequestDocuments(requestDocumentDetails) {
     this.requestDocumentEmitter.emit(requestDocumentDetails);
+  }
+
+  onRequestPayment(requestPaymentDetails) {
+    this.requestPaymentEmitter.emit(requestPaymentDetails);
   }
 
   onUserDecisionForTask(decision) {

@@ -93,7 +93,7 @@ public enum RequestType {
     /**
      * Request type of requested document upload for Account Holder.
      */
-    AH_REQUESTED_DOCUMENT_UPLOAD,
+    AH_REQUESTED_DOCUMENT_UPLOAD(true, false),
 
     /**
      * Request type of updating Account Holder details.
@@ -132,6 +132,11 @@ public enum RequestType {
     AIRCRAFT_OPERATOR_UPDATE_REQUEST,
 
     /**
+     * Request to update the maritime operator info.
+     */
+    MARITIME_OPERATOR_UPDATE_REQUEST,
+
+    /**
      * Request to transfer an account.
      */
     ACCOUNT_TRANSFER,
@@ -144,7 +149,7 @@ public enum RequestType {
     /**
      * Request to update the user details.
      */
-    USER_DETAILS_UPDATE_REQUEST,
+    USER_DETAILS_UPDATE_REQUEST(false, true),
 
     /**
      * Request to deactivate a user from Registry.
@@ -154,7 +159,12 @@ public enum RequestType {
     /**
      * Request to close an account.
      */
-    ACCOUNT_CLOSURE_REQUEST;
+    ACCOUNT_CLOSURE_REQUEST,
+
+    /**
+     * Request for Payment.
+     */
+    PAYMENT_REQUEST(true,true);
 
     /**
      * True if the request is considered a user task.
@@ -219,6 +229,7 @@ public enum RequestType {
                 AUTHORIZED_REPRESENTATIVE_RESTORE_REQUEST,
                 INSTALLATION_OPERATOR_UPDATE_REQUEST,
                 AIRCRAFT_OPERATOR_UPDATE_REQUEST,
+                MARITIME_OPERATOR_UPDATE_REQUEST,
                 ACCOUNT_HOLDER_UPDATE_DETAILS,
                 ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS,
                 ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE,

@@ -3,6 +3,7 @@ import { AuthorisedRepresentative } from '@shared/model/account';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import { UntypedFormBuilder } from '@angular/forms';
 import { SelectArFormModel } from '@shared/form-controls/uk-select-authorised-representative';
+import { ErrorSummary } from '@shared/error-summary';
 
 @Component({
   selector: 'app-add-representative',
@@ -10,6 +11,7 @@ import { SelectArFormModel } from '@shared/form-controls/uk-select-authorised-re
 })
 export class AddRepresentativeComponent extends UkFormComponent {
   @Input() authorisedRepresentatives: AuthorisedRepresentative[];
+  @Input() errorSummary: ErrorSummary;
   @Output()
   readonly selectAuthorizedRepresentative = new EventEmitter<string>();
 
@@ -18,6 +20,7 @@ export class AddRepresentativeComponent extends UkFormComponent {
   }
 
   protected doSubmit() {
+    this.showErrors = true;
     this.selectAuthorizedRepresentative.emit(
       this.retrieveAuthorisedRepresentativeUrid(this.formGroup.value.selectAr)
     );

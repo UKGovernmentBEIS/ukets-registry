@@ -6,7 +6,6 @@ import gov.uk.ets.reports.generator.domain.TransactionsBalanceReportData;
 import gov.uk.ets.reports.generator.export.util.DateRangeUtil;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,6 +43,7 @@ public class TransactionsBalanceJdbcMapper
             "                    on aa.user_id = u.id\n" +
             "where a.type_label in  ('ETS - Operator holding account',\n" +
             "                                        'ETS - Aircraft operator holding account',\n" +
+            "                                        'ETS - Maritime operator holding account',\n" +
             "                                        'ETS - Trading account')\n" +
             "  and t.status = 'COMPLETED'\n" +
             "  and t.execution_date between ? AND ?\n" +
@@ -85,6 +85,7 @@ public class TransactionsBalanceJdbcMapper
             "                    on aa.user_id = u.id\n" +
             "where a.type_label in ('ETS - Operator holding account',\n" +
             "                       'ETS - Aircraft operator holding account',\n" +
+            "                       'ETS - Maritime operator holding account',\n" +
             "                       'ETS - Trading account')\n" +
             "  and (\n" +
             "        (tx.status in ('COMPLETED') and tx.execution_date between ? AND ?) or\n" +
@@ -177,11 +178,6 @@ public class TransactionsBalanceJdbcMapper
 
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Override
-    public List<TransactionsBalanceReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<TransactionsBalanceReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

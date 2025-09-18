@@ -4,7 +4,7 @@ import gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0.Replacement;
 import gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0.RequirementForReplacement;
 import gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0.TransactionOrEventTypeEnum;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * <p>Java class for anonymous complex type.

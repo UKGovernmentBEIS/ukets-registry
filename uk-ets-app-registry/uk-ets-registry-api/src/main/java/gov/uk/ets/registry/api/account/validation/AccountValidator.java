@@ -3,9 +3,6 @@ package gov.uk.ets.registry.api.account.validation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import org.apache.commons.lang3.tuple.Pair;
-
-
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
@@ -18,7 +15,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.BillingContactDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.account.web.model.PermitDTO;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
@@ -26,10 +23,11 @@ import gov.uk.ets.registry.api.common.view.AddressDTO;
 import gov.uk.ets.registry.api.common.view.EmailAddressDTO;
 import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
-
+import jakarta.validation.constraints.NotEmpty;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import javax.validation.constraints.NotEmpty;
 
 /**
  * Validator for user registration.
@@ -93,7 +89,8 @@ public class AccountValidator {
 
             if (accountType != null &&
                 (accountType.equals(AccountType.OPERATOR_HOLDING_ACCOUNT.name()) ||
-                    accountType.equals(AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.name()))) {
+                    accountType.equals(AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.name()) ||
+                            accountType.equals(AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.name()))) {
             	AccountType accountTypeEnum = AccountType.parse(accountType);
             	validateAccountDetails(errors, accountTypeEnum, account.getAccountDetails());
                 validateOperator(errors, account.getOperator());
@@ -202,24 +199,26 @@ public class AccountValidator {
      * @param errors   the errors list.
      * @param operator the account operator.
      */
-    private void validateOperator(List<Violation> errors, InstallationOrAircraftOperatorDTO operator) {
+    private void validateOperator(List<Violation> errors, OperatorDTO operator) {
         if (operator == null) {
             errors.add(new Violation("account.operator.empty", "Operator is required for operator holding accounts"));
             return;
+        }
+        if (operator.getEmitterId() == null) {
+            errors.add(new Violation("account.operator.emitterId.empty", "Operator emitterId is required"));
         }
         if (OperatorType.INSTALLATION.name().equals(operator.getType())) {
             validateInstallation(errors, operator);
         } else if (OperatorType.INSTALLATION_TRANSFER.name().equals(operator.getType())) {
             validateInstallationTransfer(errors, operator);
-        } else if (OperatorType.AIRCRAFT_OPERATOR.name().equals(operator.getType())) {
-            validateAircraftOperatingHoldingAccount(errors, operator);
+        } else if (OperatorType.AIRCRAFT_OPERATOR.name().equals(operator.getType()) || OperatorType.MARITIME_OPERATOR.name().equals(operator.getType())) {
+            validateAircraftOrMaritimeOperatingHoldingAccount(errors, operator);
         } else {
             errors.add(new Violation("account.operator.type.invalid", "The account operator type is invalid"));
         }
-
     }
 
-    private void validateInstallation(List<Violation> errors, InstallationOrAircraftOperatorDTO operator) {
+    private void validateInstallation(List<Violation> errors, OperatorDTO operator) {
         if (operator.getRegulator() == null) {
             errors.add(new Violation("account.operator.activityType.empty", "Operator activity type is required"));
         }
@@ -245,14 +244,14 @@ public class AccountValidator {
 
     }
 
-    private void validateRegulator(List<Violation> errors, InstallationOrAircraftOperatorDTO operator) {
+    private void validateRegulator(List<Violation> errors, OperatorDTO operator) {
         if (operator.getRegulator() == null) {
             errors.add(new Violation("account.operator.regulator.empty", "operator.regulator must not be null"));
         }
     }
 
 
-    private void validateInstallationTransfer(List<Violation> errors, InstallationOrAircraftOperatorDTO operator) {
+    private void validateInstallationTransfer(List<Violation> errors, OperatorDTO operator) {
         if( !operator.getPermit().getPermitIdUnchanged()) {
             validatePermitId(errors, operator.getPermit());
         }
@@ -278,32 +277,39 @@ public class AccountValidator {
         }
     }
 
-
     /**
-     * This method checks the validity of account holder contacts.
+     * This method checks the validity of Maritime or Aircraft Operator
      *
      * @param errors   the errors list.
      * @param operator the operator.
      */
-    private void validateAircraftOperatingHoldingAccount(List<Violation> errors,
-                                                         InstallationOrAircraftOperatorDTO operator) {
+    private void validateAircraftOrMaritimeOperatingHoldingAccount(List<Violation> errors, OperatorDTO operator) {
         if (operator == null) {
             errors.add(new Violation("account.operator.type.empty",
                 "Operator is required for aircraft operator holding accounts"));
             return;
         }
-
         validateRegulator(errors, operator);
 
         if (operator.getMonitoringPlan() == null) {
             errors.add(new Violation("account.monitoringPlan.empty", "Monitoring plan is required"));
         } else if (operator.getMonitoringPlan().getId().isEmpty()) {
             errors.add(new Violation("account.monitoringPlan.id.empty", "Monitoring plan ID is required"));
-        } else if (accountService.monitoringPlanIdExists(operator.getMonitoringPlan().getId())) {
-            errors.add(new Violation("account.monitoringPlan.id.invalid",
-                "An account with the same monitoring plan ID already exists"));
         }
 
+        if (OperatorType.AIRCRAFT_OPERATOR.name().equals(operator.getType()) && accountService.aircraftMonitoringPlanIdExists(operator.getMonitoringPlan().getId())) {
+            errors.add(new Violation("account.monitoringPlan.id.invalid", "An account with the same aircraft monitoring plan ID already exists"));
+        }
+        if (OperatorType.MARITIME_OPERATOR.name().equals(operator.getType())) {
+            if (accountService.maritimeMonitoringPlanIdExists(operator.getMonitoringPlan().getId())) {
+                errors.add(new Violation("account.monitoringPlan.id.invalid",
+                    "An account with the same maritime monitoring plan ID already exists"));
+            }
+            if (accountService.maritimeImoExists(operator.getImo())) {
+                errors.add(new Violation("account.imo.invalid",
+                    "An account with the same IMO already exists"));
+            }
+        }
         //validate first year
         if (operator.getFirstYear() == null) {
             errors.add(new Violation("account.operator.firstyear.empty",
@@ -312,7 +318,6 @@ public class AccountValidator {
             errors.add(new Violation("account.operator.firstyear.invalid",
                 String.format("First year of verified emission submission must be %s or later", firstYear)));
         }
-
     }
 
 
@@ -477,9 +482,10 @@ public class AccountValidator {
         					"Read Only privileges for authorised representatives cannot be selected for account opening requests."));
         }
 
-        // We don't need to check for Four Eyes Principle in OHA/AOHA types.
+        // We don't need to check for Four Eyes Principle in OHA/AOHA/MOHA types.
         if (AccountType.OPERATOR_HOLDING_ACCOUNT.name().equals(accountType) ||
-            AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.name().equals(accountType)) {
+            AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.name().equals(accountType) ||
+                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.name().equals(accountType)) {
             return;
         }
 

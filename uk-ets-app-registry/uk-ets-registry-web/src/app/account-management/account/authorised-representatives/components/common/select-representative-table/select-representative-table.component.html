@@ -7,22 +7,22 @@
       <h1 class="govuk-heading-xl">
         {{ updateType | arUpdateType }}
       </h1>
-      <span id="changed-name-hint" class="govuk-hint">
+      <div id="changed-name-hint" class="govuk-hint">
         Select one option from the users below
-      </span>
+      </div>
       <div
         class="govuk-form-group"
         [class.govuk-form-group--error]="showErrors"
         id="authorisedRepresentative-label"
       >
-        <span
+        <p
           *ngIf="showErrors"
           class="govuk-error-message"
           [attr.id]="'authorisedRepresentative-error-label'"
         >
           <span class="govuk-visually-hidden">Error:</span
           >{{ validationErrorMessage['authorisedRepresentative'] }}
-        </span>
+        </p>
         <table
           aria-describedby="trusted-accounts"
           class="govuk-table govuk-!-margin-bottom-4"
@@ -45,23 +45,38 @@
               class="govuk-table__row"
             >
               <th scope="row" class="govuk-table__header">
-                <div class="govuk-radios govuk-radios--small">
-                  <div class="govuk-radios__item">
-                    <input
-                      class="govuk-radios__input"
-                      [id]="'authorised-representative-' + ar.urid"
-                      type="radio"
-                      formControlName="authorisedRepresentative"
-                      value="{{ ar.urid }}"
-                      data-aria-controls="conditional-how-contracted-conditional"
-                    />
-                    <label
-                      class="govuk-label govuk-radios__label"
-                      [attr.for]="'authorised-representative-' + ar.urid"
-                    >
-                    </label>
+                <fieldset
+                  class="govuk-fieldset"
+                  aria-describedby="authorised-representative-radio"
+                >
+                  <legend
+                    class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-visually-hidden"
+                  >
+                    <span class="govuk-caption-xl govuk-visually-hidden">
+                      authorised representative radio
+                    </span>
+                  </legend>
+                  <div class="govuk-radios govuk-radios--small">
+                    <div class="govuk-radios__item">
+                      <input
+                        class="govuk-radios__input"
+                        [id]="'authorised-representative-' + ar.urid"
+                        type="radio"
+                        formControlName="authorisedRepresentative"
+                        value="{{ ar.urid }}"
+                        data-aria-controls="conditional-how-contracted-conditional"
+                        [attr.aria-label]="
+                          'Select representative ' + ar.user.firstName
+                        "
+                      />
+                      <label
+                        class="govuk-label govuk-radios__label"
+                        [attr.for]="'authorised-representative-' + ar.urid"
+                      >
+                      </label>
+                    </div>
                   </div>
-                </div>
+                </fieldset>
               </th>
               <td class="govuk-table__cell">
                 {{ ar | arDisplayName }}

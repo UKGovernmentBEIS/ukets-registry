@@ -82,6 +82,14 @@ export class SearchTasksUserCriteriaComponent implements OnInit, AfterViewInit {
         pattern: 'The date you have entered is invalid.',
         ngbDate: ' ',
       },
+      deadlineFrom: {
+        pattern: 'The date you have entered is invalid.',
+        ngbDate: ' ',
+      },
+      deadlineTo: {
+        pattern: 'The date you have entered is invalid.',
+        ngbDate: ' ',
+      },
     };
     this.genericValidator = new UkValidationMessageHandler(
       this.validationMessages
@@ -138,6 +146,8 @@ export class SearchTasksUserCriteriaComponent implements OnInit, AfterViewInit {
       createdOnTo: [],
       completedOnFrom: [],
       completedOnTo: [],
+      deadlineFrom: [],
+      deadlineTo: [],
     });
   }
 

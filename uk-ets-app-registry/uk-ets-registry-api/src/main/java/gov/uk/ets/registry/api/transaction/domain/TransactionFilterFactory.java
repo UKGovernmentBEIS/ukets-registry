@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.transaction.domain;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.Scope;
 import gov.uk.ets.registry.api.common.search.SearchFiltersUtils;
@@ -41,7 +42,7 @@ public class TransactionFilterFactory {
             authorizedRepresentativeUrid = userService.getCurrentUser().getUrid();
         } else if (authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN)) {
             endUserSearch.setAdminSearch(Boolean.TRUE);
-            endUserSearch.setIamIdentifier(authorizationService.getToken().getSubject());
+            endUserSearch.setIamIdentifier(authorizationService.getClaim(OAuth2ClaimNames.SUBJECT));
         }
 
         return TransactionFilter.builder()

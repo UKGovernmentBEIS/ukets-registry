@@ -9,7 +9,7 @@ import { SelectedTasksResolver } from './util/selected-tasks-resolver';
 import {
   createTaskListErrorMap,
   createBulkClaimErrorMap,
-  createBulkAssignErrorMap
+  createBulkAssignErrorMap,
 } from './util/potential-error-map.factory';
 
 export const routes: Routes = [
@@ -19,19 +19,20 @@ export const routes: Routes = [
     component: TaskSearchContainerComponent,
     resolve: { search: TaskSearchResolver },
     data: {
-      errorMap: createTaskListErrorMap()
-    }
+      errorMap: createTaskListErrorMap(),
+    },
+    title: 'Tasks',
   },
   {
     path: 'bulk-claim',
     canActivate: [LoginGuard],
     component: BulkClaimComponent,
     resolve: {
-      selectedTasks: SelectedTasksResolver
+      selectedTasks: SelectedTasksResolver,
     },
     data: {
-      errorMap: createBulkClaimErrorMap()
-    }
+      errorMap: createBulkClaimErrorMap(),
+    },
   },
 
   {
@@ -39,16 +40,16 @@ export const routes: Routes = [
     canActivate: [LoginGuard],
     component: BulkAssignComponent,
     resolve: {
-      selectedTasks: SelectedTasksResolver
+      selectedTasks: SelectedTasksResolver,
     },
     data: {
-      errorMap: createBulkAssignErrorMap()
-    }
-  }
+      errorMap: createBulkAssignErrorMap(),
+    },
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class TaskListRoutingModule {}

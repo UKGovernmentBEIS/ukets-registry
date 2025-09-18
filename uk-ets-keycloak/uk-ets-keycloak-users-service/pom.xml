@@ -50,13 +50,21 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-rest</artifactId>
+			<version>${quarkus.version}</version>
+			<scope>provided</scope>
+		</dependency>		
+		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
+			<classifier>jakarta</classifier>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
+			<classifier>jakarta</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -77,6 +85,12 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.smallrye</groupId>
+		    <artifactId>jandex</artifactId>
+		    <version>${io.smallrye.jandex.version}</version>
+		    <scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -106,22 +120,6 @@
 							<sources>
 								<source>${project.build.directory}/generated-sources/java/</source>
 							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.mysema.maven</groupId>
-				<artifactId>apt-maven-plugin</artifactId>
-				<version>${apt-maven-plugin.version}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/generated-sources/java</outputDirectory>
-							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 						</configuration>
 					</execution>
 				</executions>
@@ -196,6 +194,7 @@
 						<artifactItem>
 							<groupId>com.querydsl</groupId>
 							<artifactId>querydsl-jpa</artifactId>
+							<classifier>jakarta</classifier>
 							<version>${querydsl.version}</version>
 							<type>jar</type>
 							<overWrite>false</overWrite>
@@ -217,8 +216,7 @@
 					<overWriteReleases>false</overWriteReleases>
 					<overWriteSnapshots>true</overWriteSnapshots>
 				</configuration>
-			</plugin>
-					
+			</plugin>		
 		</plugins>
 	</build>
 </project>

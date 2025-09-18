@@ -9,6 +9,7 @@ import gov.uk.ets.registry.api.account.messaging.CompliantEntityInitializationEv
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.accountaccess.service.AccountAccessService;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
+import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.UniqueEmitterIdBusinessRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.assign.OnlySeniorOrJuniorRegistryAdminCanBeAssignedTaskRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.HasAccountOpenCompleteScope;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.OnlySeniorAdminCanClaimTaskRule;
@@ -19,6 +20,7 @@ import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTaskService;
+import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.messaging.UktlAccountNotifyMessageService;
 import gov.uk.ets.registry.api.messaging.domain.AccountNotification;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
@@ -52,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountOpeningTaskService
     implements TaskTypeService<AccountOpeningTaskDetailsDTO> {
 
-    private final AccountService accountService;
+    private final OperatorEventService operatorEventService;
 
     private final UserService userService;
 
@@ -107,7 +109,8 @@ public class AccountOpeningTaskService
         {
             FourEyesPrincipleRule.class,
             OnlySeniorRegistryAdminCanApproveTask.class,
-            ARsForNewAccountMustBeActiveRule.class
+            ARsForNewAccountMustBeActiveRule.class,
+            UniqueEmitterIdBusinessRule.class
         }
     )
     @Override
@@ -127,6 +130,9 @@ public class AccountOpeningTaskService
         accountAccessService.createAccountAccess(newAccount, UserRole.getRolesForRoleBasedAccess(),
                                                  AccountAccessRight.ROLE_BASED);
         sendAccountNotifications(newAccount, taskDTO.getCompletedDate());
+
+        operatorEventService.updateOperator(newAccount.getCompliantEntity(), newAccount.getRegistryAccountType().name());
+
         return defaultResponseBuilder(taskDTO).build();
     }
 

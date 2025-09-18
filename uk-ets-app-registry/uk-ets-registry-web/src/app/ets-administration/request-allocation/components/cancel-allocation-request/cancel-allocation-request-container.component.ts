@@ -10,7 +10,7 @@ import { Store } from '@ngrx/store';
       updateRequestText="allocation request"
       (cancelRequest)="onCancel()"
     ></app-cancel-update-request>
-  `
+  `,
 })
 export class CancelAllocationRequestContainerComponent implements OnInit {
   constructor(private store: Store) {}
@@ -20,7 +20,7 @@ export class CancelAllocationRequestContainerComponent implements OnInit {
       canGoBack({
         goBackRoute:
           'ets-administration/request-allocation/check-allocation-request',
-        extras: { skipLocationChange: true }
+        extras: { skipLocationChange: true },
       })
     );
   }

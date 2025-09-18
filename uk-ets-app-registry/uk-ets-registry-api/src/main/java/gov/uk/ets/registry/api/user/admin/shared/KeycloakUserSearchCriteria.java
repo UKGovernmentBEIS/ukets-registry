@@ -1,6 +1,6 @@
 package gov.uk.ets.registry.api.user.admin.shared;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 

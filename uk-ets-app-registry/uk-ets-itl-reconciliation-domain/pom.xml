@@ -80,11 +80,15 @@
         <dependency>
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-apt</artifactId>
+            <version>${querydsl.version}</version>
+            <classifier>jakarta</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-jpa</artifactId>
+            <version>${querydsl.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -155,7 +159,7 @@
                     <minimumTokens>100</minimumTokens>
                     <targetJdk>${java.version}</targetJdk>
                     <excludeRoots>
-                        <excludeRoot>target/generated-sources/java</excludeRoot>
+                        <excludeRoot>target/generated-sources</excludeRoot>
                     </excludeRoots>
                 </configuration>
             </plugin>
@@ -173,7 +177,7 @@
                         <plugin>
                             <groupId>com.h3xstream.findsecbugs</groupId>
                             <artifactId>findsecbugs-plugin</artifactId>
-                            <version>LATEST</version> <!-- Auto-update to the latest stable -->
+                            <version>${findsecbugs.plugin.version}</version> <!-- Auto-update to the latest stable -->
                         </plugin>
                     </plugins>
                 </configuration>
@@ -182,22 +186,6 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.mysema.maven</groupId>
-                <artifactId>apt-maven-plugin</artifactId>
-                <version>1.1.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/generated-sources/java</outputDirectory>
-                            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -277,7 +265,7 @@
                         <plugin>
                             <groupId>com.h3xstream.findsecbugs</groupId>
                             <artifactId>findsecbugs-plugin</artifactId>
-                            <version>LATEST</version> <!-- Auto-update to the latest stable -->
+                            <version>${findsecbugs.plugin.version}</version> <!-- Auto-update to the latest stable -->
                         </plugin>
                     </plugins>
                     <xmlOutput>true</xmlOutput>

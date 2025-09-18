@@ -43,12 +43,16 @@ export class CompleteTaskComponent implements OnInit {
   headingText: string;
   isAuthority$: Observable<boolean>;
 
-  constructor(private formBuilder: UntypedFormBuilder, private store: Store) {}
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       comment: [],
       otp: [],
+      amountPaid: [],
     });
     this.headingText =
       REQUEST_TYPE_VALUES[this.taskDetails.taskType].headingText;
@@ -77,6 +81,14 @@ export class CompleteTaskComponent implements OnInit {
       this.taskOutcome === TaskOutcome.APPROVED &&
       REQUEST_TYPE_VALUES[this.taskDetails.taskType]
         .requiresOtpVerificationOnApproval
+    );
+  }
+
+  amountPaidRequired(): boolean {
+    return (
+      this.taskOutcome === TaskOutcome.APPROVED &&
+      this.taskDetails.taskType === 'PAYMENT_REQUEST' &&
+      this.taskDetails.paymentMethod === 'BACS'
     );
   }
 

@@ -33,6 +33,7 @@ export class AccountDetailsViewComponent implements OnInit {
     const isSalesContactAccountType =
       this.accountType === AccountType.OPERATOR_HOLDING_ACCOUNT ||
       this.accountType === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ||
+      this.accountType === AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT ||
       this.accountType === AccountType.TRADING_ACCOUNT;
     const isViewMode = !this.isConfirmMode;
     const isSalesContactEmpty =

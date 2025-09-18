@@ -1,5 +1,10 @@
 <div
-  class="govuk-grid-row govuk-summary-list govuk-!-padding-bottom-2"
+  class="
+    govuk-grid-row
+    govuk-summary-list
+    govuk-!-padding-bottom-0
+    govuk-!-margin-bottom-4
+  "
   [class.section-border]="hasLink"
 >
   <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
@@ -91,6 +96,43 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{ accountInfo.accountName }}
+    </dd>
+  </div>
+  <div
+    *ngIf="operator?.type === OperatorType.INSTALLATION"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Installation name</dt>
+    <dd class="govuk-summary-list__value">{{ operator?.name }}</dd>
+  </div>
+  <div
+    *ngIf="operator?.type === OperatorType.INSTALLATION"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Installation ID</dt>
+    <dd class="govuk-summary-list__value">{{ operator?.identifier }}</dd>
+  </div>
+  <div
+    *ngIf="operator?.type === OperatorType.INSTALLATION"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Permit ID</dt>
+    <dd class="govuk-summary-list__value">{{ operator?.permit.id }}</dd>
+  </div>
+  <div
+    *ngIf="operator?.type === OperatorType.AIRCRAFT_OPERATOR"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Aircraft operator ID</dt>
+    <dd class="govuk-summary-list__value">{{ operator?.identifier }}</dd>
+  </div>
+  <div
+    *ngIf="operator?.type === OperatorType.AIRCRAFT_OPERATOR"
+    class="govuk-summary-list__row govuk-summary-list__row--no-border"
+  >
+    <dt class="govuk-summary-list__key">Monitoring plan ID</dt>
+    <dd class="govuk-summary-list__value">
+      {{ operator?.monitoringPlan.id }}
     </dd>
   </div>
 </dl>

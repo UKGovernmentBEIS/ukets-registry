@@ -22,20 +22,12 @@ public class EmailChangeBooleanExpressionFactory {
      */
     public BooleanExpression getCurrentUserPendingEmailChangesExpression() {
         return getPendingEmailChangesExpression()
-            .and(QTask.task.initiatedBy.eq(userService.getCurrentUser()));
+            .and(QTask.task.user.eq(userService.getCurrentUser()));
     }
 
     public BooleanExpression getOtherUserPendingEmailChangesExpression(String urid) {
         return getPendingEmailChangesExpression()
-            .and(QTask.task.initiatedBy.urid.eq(urid));
-    }
-
-    /**
-     * Gets the {@link BooleanExpression} for getting the pending email change tasks with same new email as difference.
-     * @return The {@link BooleanExpression}
-     */
-    public BooleanExpression getOfSameNewEmailPendingEmailChangesExpression(String newEmail) {
-        return getPendingEmailChangesExpression().and(QTask.task.difference.eq(newEmail));
+            .and(QTask.task.user.urid.eq(urid));
     }
 
     private BooleanExpression getPendingEmailChangesExpression() {

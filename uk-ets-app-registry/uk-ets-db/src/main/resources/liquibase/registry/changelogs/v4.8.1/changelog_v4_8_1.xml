@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_8_1_RERUN_USER_EMAIL_MIGRATOR" author="piliotid" context="migrate">
+        <comment>Rerun user email migrator.</comment>
+        <sql>
+            delete from migrator_history where migrator_name = 'USER_EMAIL_MIGRATOR';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

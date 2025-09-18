@@ -3,7 +3,7 @@ package gov.uk.ets.registry.api.accountholder.web.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import java.io.Serializable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

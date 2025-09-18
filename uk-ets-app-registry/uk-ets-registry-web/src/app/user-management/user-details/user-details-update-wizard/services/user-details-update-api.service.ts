@@ -90,24 +90,29 @@ export class UserDetailsUpdateApiService {
       username: keycloakUser.username,
       firstName: keycloakUser.firstName,
       lastName: keycloakUser.lastName,
-      alsoKnownAs: keycloakUser.attributes?.alsoKnownAs[0],
+      alsoKnownAs: UserDetailsUpdateApiService.checkValue(
+        keycloakUser.attributes?.alsoKnownAs
+      ),
       countryOfBirth: UserDetailsUpdateApiService.checkValue(
         keycloakUser.attributes?.countryOfBirth
       ),
       birthDate: UserDetailsUpdateApiService.checkDate(
         keycloakUser.attributes?.birthDate
       ),
-      workCountryCode: UserDetailsUpdateApiService.checkValue(
-        keycloakUser.attributes?.workCountryCode
+      workMobileCountryCode: UserDetailsUpdateApiService.checkValue(
+        keycloakUser.attributes?.workMobileCountryCode
       ),
-      workPhoneNumber: UserDetailsUpdateApiService.checkValue(
-        keycloakUser.attributes?.workPhoneNumber
+      workMobilePhoneNumber: UserDetailsUpdateApiService.checkValue(
+        keycloakUser.attributes?.workMobilePhoneNumber
       ),
-      workEmailAddress: UserDetailsUpdateApiService.checkValue(
-        keycloakUser.attributes?.workEmailAddress
+      workAlternativeCountryCode: UserDetailsUpdateApiService.checkValue(
+        keycloakUser.attributes?.workAlternativeCountryCode
       ),
-      workEmailAddressConfirmation: UserDetailsUpdateApiService.checkValue(
-        keycloakUser.attributes?.workEmailAddress
+      workAlternativePhoneNumber: UserDetailsUpdateApiService.checkValue(
+        keycloakUser.attributes?.workAlternativePhoneNumber
+      ),
+      noMobilePhoneNumberReason: UserDetailsUpdateApiService.checkValue(
+        keycloakUser.attributes?.noMobilePhoneNumberReason
       ),
       workBuildingAndStreet: UserDetailsUpdateApiService.checkValue(
         keycloakUser.attributes?.workBuildingAndStreet

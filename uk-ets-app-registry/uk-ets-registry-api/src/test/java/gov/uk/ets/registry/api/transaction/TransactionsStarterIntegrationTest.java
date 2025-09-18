@@ -37,7 +37,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashSet;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.Builder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

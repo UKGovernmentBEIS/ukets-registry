@@ -1,4 +1,9 @@
-import { TrustedAccountListRules } from '@shared/model/account';
+import {
+  AircraftOperator,
+  Installation,
+  MaritimeOperator,
+  Operator,
+} from '@shared/model/account';
 
 export interface AccountInfo {
   identifier: number; // this field is not required for performing transactions. fullIdentifier is a natural key
@@ -8,6 +13,7 @@ export interface AccountInfo {
   accountType?: string;
   kyotoAccountType?: boolean; // indicates whether the account is Kyoto type
   isGovernment?: boolean; // indicates whether the account is Government
+  operator?: Operator | Installation | AircraftOperator | MaritimeOperator;
 }
 
 export interface AcquiringAccountInfo extends AccountInfo {

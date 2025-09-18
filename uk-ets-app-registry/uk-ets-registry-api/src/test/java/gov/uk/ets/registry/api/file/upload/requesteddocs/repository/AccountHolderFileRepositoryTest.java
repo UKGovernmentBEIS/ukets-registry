@@ -8,8 +8,8 @@ import gov.uk.ets.registry.api.file.upload.requesteddocs.domain.AccountHolderFil
 import gov.uk.ets.registry.api.task.domain.Task;
 import java.io.IOException;
 import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

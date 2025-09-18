@@ -36,9 +36,10 @@ public class AllocationTransactionService {
      * @param quantity The quantity to allocate.
      * @param allocationYear The allocation year.
      * @param allocationType The allocation type.
+     * @return Transaction identifier.
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void executeAllocation(Long transferringAccountIdentifier,
+    public BusinessCheckResult executeAllocation(Long transferringAccountIdentifier,
                                                  String acquiringAccountFullIdentifier,
                                                  Long quantity,
                                                  Integer allocationYear,
@@ -73,6 +74,8 @@ public class AllocationTransactionService {
                 "identifier={}, errors={}",
             transferringAccountIdentifier, acquiringAccountFullIdentifier, quantity, allocationYear, allocationType,
             result.success(), result.getTransactionIdentifier(), result.getErrors());
+
+        return result;
     }
 
 }

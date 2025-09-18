@@ -7,17 +7,19 @@ import {
   NotificationContent,
   NotificationDefinition,
   NotificationsWizardPathsModel,
+  NotificationType,
 } from '@notifications/notifications-wizard/model';
 import {
   cancelClicked,
   setGoBackPath,
-  setNotificationsContent,
+  submitEmailDetails,
 } from '@notifications/notifications-wizard/actions/notifications-wizard.actions';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import {
   selectNewNotification,
   selectNotificationDefinition,
   selectNotificationRequest,
+  selectNotificationType,
 } from '@notifications/notifications-wizard/reducers';
 import { Observable } from 'rxjs';
 import { NotificationRequestEnum } from '@notifications/notifications-wizard/model/notification-request.enum';
@@ -39,7 +41,10 @@ export class NotificationContentContainerComponent implements OnInit {
   notificationDefinition$: Observable<NotificationDefinition>;
   notificationRequest$: Observable<NotificationRequestEnum>;
 
-  constructor(private store: Store, private route: ActivatedRoute) {}
+  constructor(
+    private store: Store,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.store.dispatch(
@@ -57,7 +62,7 @@ export class NotificationContentContainerComponent implements OnInit {
   }
 
   onContinue(notificationContent: NotificationContent) {
-    this.store.dispatch(setNotificationsContent({ notificationContent }));
+    this.store.dispatch(submitEmailDetails({ notificationContent }));
   }
 
   onError(details: ErrorDetail[]) {

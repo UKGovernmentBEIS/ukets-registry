@@ -2,7 +2,7 @@
   /*
    * Ugly hack to set the css class that govuk sets in the body for all stories
    * */
-  setTimeout(function() {
-    document.body.classList.add('js-enabled');
-  }, 0);
+  document.addEventListener('DOMContentLoaded', function () {
+    document.body.classList.add('js-enabled', 'govuk-frontend-supported');
+  });
 </script>

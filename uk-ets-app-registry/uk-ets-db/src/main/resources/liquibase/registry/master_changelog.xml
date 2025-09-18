@@ -65,7 +65,22 @@
     <include file="changelogs/v4.1.0/changelog_v4_1_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v4.3.0/changelog_v4_3_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v4.5.0/changelog_v4_5_0.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelogs/v4.6.0/changelog_v4_6_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.8.0/changelog_v4_8_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.8.1/changelog_v4_8_1.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.10.1/changelog_v4_10_1.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.11.0/changelog_v4_11_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.13.0/changelog_v4_13_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.17.0/changelog_v4_17_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.21.0/changelog_v4_21_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.23.0/changelog_v4_23_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.24.0/changelog_v4_24_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.1.0/changelog_v5_1_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.1.2/changelog_v5_1_2.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.3.0/changelog_v5_3_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.3.1/changelog_v5_3_1.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.7.0/changelog_v5_7_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.12.0/changelog_v5_12_0.xml" relativeToChangelogFile="true"/>
     <!-- Include here new files -->
 
     <!-- This changeSet should be executed at the end-->

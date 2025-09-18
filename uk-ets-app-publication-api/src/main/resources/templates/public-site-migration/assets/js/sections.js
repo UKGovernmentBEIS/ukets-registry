@@ -11,12 +11,34 @@ function insertKpSections() {
 
 function insertEtsSections() {
   document.addEventListener("DOMContentLoaded", function () {
-    for (let id = 1; id <= 7; id++) {
+    for (let id = 1; id <= 6; id++) {
       document.getElementById("sections").innerHTML += load(
         `/ets-reports/section${id}/section${id}.html`
       );
     }
     appendOrdinal();
+    document.querySelectorAll('.show-more').forEach(button => {
+      button.addEventListener('click', function () {
+        const sectionId = this.id.split("-")[2];
+
+        const hiddenRows = document.getElementById('hidden-rows-' + sectionId);
+        hiddenRows.style.display = 'table-row-group';
+        const visibleRows = document.getElementById('visible-rows-' + sectionId);
+        visibleRows.style.display = 'none';
+
+        this.style.display = 'none';
+        document.getElementById("show-less-" + sectionId).style.display = "block";
+
+        document.getElementById("show-less-" + sectionId).addEventListener('click', function () {
+          hiddenRows.style.display = 'none';
+          visibleRows.style.display = 'table-row-group';
+
+          this.style.display = 'none';
+          document.getElementById("show-more-" + sectionId).style.display = "block";
+
+        });
+      });
+    });
   });
 }
 

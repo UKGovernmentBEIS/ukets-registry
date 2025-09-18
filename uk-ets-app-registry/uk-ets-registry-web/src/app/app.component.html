@@ -1,20 +1,24 @@
 <app-skip-link></app-skip-link>
 <app-header [isAuthenticated]="isAuthenticated$ | async"></app-header>
+<app-feedback-banner *ngIf="isAuthenticated$ | async"></app-feedback-banner>
 <main
   id="main-content"
   role="main"
   tabindex="-1"
   [attr.aria-hidden]="isTimeoutDialogVisible$ | async"
 >
-  <app-feedback-banner *ngIf="isAuthenticated$ | async"></app-feedback-banner>
   <app-submenu-container
     *ngIf="isAuthenticated$ | async"
   ></app-submenu-container>
   <div id="feature-header" *ngIf="isAuthenticated$ | async"></div>
   <div class="govuk-width-container">
     <div
-      class="govuk-main-wrapper"
-      [ngClass]="noPadding ? 'govuk-!-padding-0' : ''"
+      class="govuk-width-container"
+      [ngClass]="
+        noPadding
+          ? 'govuk-!-padding-0'
+          : 'govuk-!-padding-top-7 govuk-!-padding-bottom-7'
+      "
     >
       <app-back-button></app-back-button>
       <div class="govuk-grid-row">

@@ -61,6 +61,7 @@ describe('CheckUpdateRequestComponent', () => {
       regulator: Regulator.OPRED,
       changedRegulator: null,
       firstYear: '2021',
+      emitterId: '5653357886HT5'
     } as Installation;
 
     component.newOperatorInfo = {
@@ -71,6 +72,7 @@ describe('CheckUpdateRequestComponent', () => {
       regulator: null,
       changedRegulator: Regulator.DAERA,
       firstYear: '2022',
+      emitterId: '5653357886HT5'
     } as Installation;
     fixture.detectChanges();
   });

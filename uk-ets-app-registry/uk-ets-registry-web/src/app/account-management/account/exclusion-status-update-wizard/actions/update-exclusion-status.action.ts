@@ -52,3 +52,8 @@ export const setExclusionStatus = createAction(
   '[Update Exclusion Status Wizard] Set exclusion status for specific year',
   props<{ excluded: boolean }>()
 );
+
+export const setExclusionReason = createAction(
+  '[Update Exclusion Status Wizard] Set exclusion reason for specific year',
+  props<{ reason: string }>()
+);

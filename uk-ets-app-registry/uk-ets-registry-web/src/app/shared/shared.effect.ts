@@ -17,6 +17,7 @@ import {
   clearSubMenu,
   cookiesAccepted,
   cookiesExist,
+  downloadEmailsFile,
   errors,
   loadCountries,
   loadCountriesRequested,
@@ -54,7 +55,7 @@ import {
 } from '@shared/shared.selector';
 import { CountryService } from '@shared/countries/country.service';
 import { Router } from '@angular/router';
-import { CookieService } from '@shared/services';
+import { ApiErrorHandlingService, CookieService } from '@shared/services';
 import { MenuItem } from '@shared/model/navigation-menu';
 import { NavMenuService } from '@shared/services/nav-menu.service';
 import {
@@ -67,6 +68,7 @@ import {
   uploadAllocationTableFileSuccess,
   uploadBulkARFileSuccess,
   uploadEmissionsTableFileSuccess,
+  uploadRecipientsEmailFileSuccess,
   uploadReportPublicationFileSuccess,
   uploadSelectedFileError,
   uploadSelectedFileHasStarted,
@@ -76,6 +78,9 @@ import { BaseType, FileBase, UploadStatus } from '@shared/model/file';
 import { UserDetailService } from '@user-management/service';
 import { UserStatus } from '@shared/user';
 import { RequestAllocationService } from '@registry-web/ets-administration/request-allocation/services/request-allocation.service';
+import { RecoveryMethodsChangeService } from '@user-management/recovery-methods-change/recovery-methods-change.service';
+import { NotificationApiService } from '@shared/components/notifications/services';
+import { ExportFileService } from '@shared/export-file/export-file.service';
 
 @Injectable()
 export class SharedEffects {
@@ -262,7 +267,7 @@ export class SharedEffects {
         ([route, menuItems, subMenuItems]: [
           RouterNavigatedAction,
           MenuItem[],
-          MenuItem[]
+          MenuItem[],
         ]) => {
           if (
             !this.navMenuService.isNavigatedRouteAMenuRoute(
@@ -300,6 +305,38 @@ export class SharedEffects {
       ])
     );
   });
+
+  downloadFile$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(downloadEmailsFile),
+        mergeMap((action) => {
+          return this.notificationApiService
+            .downloadRecipientsEmailsFile(action.fileId)
+            .pipe(
+              map((result) => {
+                this.exportFileService.export(
+                  result.body,
+                  this.exportFileService.getContentDispositionFilename(
+                    result.headers.get('Content-Disposition')
+                  )
+                );
+              }),
+              catchError((error: HttpErrorResponse) =>
+                of(
+                  errors({
+                    errorSummary: this.apiErrorHandlingService.transform(
+                      error.error
+                    ),
+                  })
+                )
+              )
+            );
+        })
+      );
+    },
+    { dispatch: false }
+  );
 
   manageFileUpload(event: HttpEvent<any>) {
     switch (event.type) {
@@ -344,6 +381,13 @@ export class SharedEffects {
             })
           );
         }
+        if (event.body?.baseType === BaseType.AD_HOC_EMAIL_RECIPIENTS) {
+          return of(
+            uploadRecipientsEmailFileSuccess({
+              fileHeader: event.body,
+            })
+          );
+        }
         break;
       default:
         return of(
@@ -373,6 +417,10 @@ export class SharedEffects {
     private router: Router,
     private navMenuService: NavMenuService,
     private userDetailsService: UserDetailService,
-    private requestAllocationService: RequestAllocationService
+    private requestAllocationService: RequestAllocationService,
+    private recoveryMethodsService: RecoveryMethodsChangeService,
+    private notificationApiService: NotificationApiService,
+    private exportFileService: ExportFileService,
+    private apiErrorHandlingService: ApiErrorHandlingService
   ) {}
 }

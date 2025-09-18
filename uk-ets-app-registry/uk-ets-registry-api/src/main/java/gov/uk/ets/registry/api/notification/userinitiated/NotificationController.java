@@ -6,15 +6,16 @@ import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.SeniorAdminRule;
 import gov.uk.ets.registry.api.common.search.PageParameters;
 import gov.uk.ets.registry.api.common.search.SearchResponse;
+import gov.uk.ets.registry.api.file.upload.dto.NotificationValidationRequest;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.types.NotificationType;
+import gov.uk.ets.registry.api.notification.userinitiated.services.NotificationValidationService;
 import gov.uk.ets.registry.api.notification.userinitiated.services.UserInitiatedNotificationService;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.DashboardNotificationDTO;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationDTO;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchCriteria;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchPageableMapper;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchResult;
-import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api-registry", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -35,7 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class NotificationController {
 
-    private final UserInitiatedNotificationService service;
+    private final NotificationValidationService notificationValidationService;
+    private final UserInitiatedNotificationService userInitiatedNotificationService;
     private final NotificationSearchPageableMapper pageableMapper;
 
     @Protected({
@@ -43,7 +46,7 @@ public class NotificationController {
     })
     @PostMapping(value = "notifications.create")
     public ResponseEntity<Long> create(@RequestBody @Valid NotificationDTO notificationRequest) {
-        return ResponseEntity.ok(service.createNotification(notificationRequest).getId());
+        return ResponseEntity.ok(userInitiatedNotificationService.createNotification(notificationRequest).getId());
     }
 
     @Protected({
@@ -51,17 +54,26 @@ public class NotificationController {
     })
     @PutMapping(value = "notifications.update")
     public ResponseEntity<Long> update(@RequestParam Long id, @RequestBody @Valid NotificationDTO notificationRequest) {
-        return ResponseEntity.ok(service.updateNotification(id, notificationRequest).getId());
+        return ResponseEntity.ok(userInitiatedNotificationService.updateNotification(id, notificationRequest).getId());
+    }
+
+    @Protected({
+        SeniorAdminRule.class
+    })
+    @PostMapping(value = "notifications.cancel")
+    public ResponseEntity<Void> cancel(@RequestParam Long id) {
+        userInitiatedNotificationService.cancelNotification(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "notifications.get", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationDTO> getDefinition(@RequestParam @MDCParam(RequestParamType.NOTIFICATION_ID) Long id) {
-        return ResponseEntity.ok(service.retrieveNotificationById(id));
+        return ResponseEntity.ok(userInitiatedNotificationService.retrieveNotificationById(id));
     }
 
     @GetMapping(value = "notifications.get.definition", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationDefinitionDTO> getDefinition(@RequestParam NotificationType type) {
-        return ResponseEntity.ok(service.retrieveDefinitionByType(type));
+        return ResponseEntity.ok(userInitiatedNotificationService.retrieveDefinitionByType(type));
     }
 
     /**
@@ -74,7 +86,7 @@ public class NotificationController {
     public SearchResponse<NotificationSearchResult> search(NotificationSearchCriteria criteria,
                                                            PageParameters pageParameters) {
         Pageable pageable = pageableMapper.get(pageParameters);
-        Page<NotificationSearchResult> searchResults = service.search(criteria, pageable);
+        Page<NotificationSearchResult> searchResults = userInitiatedNotificationService.search(criteria, pageable);
         SearchResponse<NotificationSearchResult> response = new SearchResponse<>();
         pageParameters.setTotalResults(searchResults.getTotalElements());
         response.setPageParameters(pageParameters);
@@ -84,11 +96,17 @@ public class NotificationController {
 
     @GetMapping(value = "notifications.list.for-dashboard")
     public ResponseEntity<List<DashboardNotificationDTO>> getDefinition() {
-        return ResponseEntity.ok(service.retrieveDashboardNotifications());
+        return ResponseEntity.ok(userInitiatedNotificationService.retrieveDashboardNotifications());
     }
 
     @GetMapping(value = "notifications.get.definition.recipients.count")
     public ResponseEntity<Integer> getTentativeRecipientCount(@RequestParam NotificationType type) {
-        return ResponseEntity.ok(service.calculateNumberOfRecipients(type));
+        return ResponseEntity.ok(userInitiatedNotificationService.calculateNumberOfRecipients(type));
+    }
+
+    @PostMapping(value = "notifications.validate")
+    public ResponseEntity<Void> validate(@RequestBody @Valid NotificationValidationRequest request) {
+        notificationValidationService.validateNotification(request);
+        return ResponseEntity.noContent().build();
     }
 }

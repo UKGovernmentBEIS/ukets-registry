@@ -10,6 +10,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderService;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferAction;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferTaskDetailsDTO;
+import gov.uk.ets.registry.api.common.DateUtils;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.model.services.PersistenceService;
 import gov.uk.ets.registry.api.event.service.EventService;
@@ -23,6 +24,7 @@ import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.task.service.TaskService;
+import gov.uk.ets.registry.api.task.web.model.AccountHolderUpdateTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.AccountOpeningTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
@@ -36,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -82,8 +85,7 @@ public class RequestDocumentsWizardService {
         	TaskDetailsDTO parentTaskDetails = getParentTaskDetails(task);
             String accountHolderName = getAccountHolderName(documentsRequest, parentTaskDetails);
             difference.setAccountHolderName(accountHolderName);
-            String accountName = getAccountName(parentTaskDetails);
-            difference.setAccountName(accountName);
+            getAccountName(parentTaskDetails).ifPresent(difference::setAccountName);
             setAccountHolderTaskRequestInfoAndGenerateEvent(task, documentsRequest.getAccountFullIdentifier(),
                 accountHolderName);
         } else if (documentsRequest.getType().equals(DocumentsRequestType.USER)) {
@@ -91,6 +93,12 @@ public class RequestDocumentsWizardService {
             setAuthorisedRepresentativeTaskRequestInfoAndGenerateEvent(documentsRequest, task);
         }
         task.setDifference(mapper.convertToJson(difference));
+
+        Date deadline = documentsRequest.getDeadline();
+        validateDeadline(deadline);
+        task.setDeadline(deadline);
+        Optional.ofNullable(task.getParentTask())
+            .ifPresent(parent -> parent.setDeadline(DateUtils.getMax(deadline, parent.getDeadline())));
 
         persistenceService.save(task);
         taskEventService.createAndPublishTaskAndAccountRequestEvent(task, currentUser.getUrid());
@@ -102,6 +110,14 @@ public class RequestDocumentsWizardService {
 
         taskService.assign(List.of(task.getRequestId()), documentsRequest.getRecipientUrid(), comment);
         return task.getRequestId();
+    }
+
+    private void validateDeadline(Date deadline) {
+        if (deadline == null) {
+            throw new IllegalArgumentException("Deadline cannot be null.");
+        }
+
+        DateUtils.validateFutureDate(deadline);
     }
 
     /**
@@ -192,27 +208,20 @@ public class RequestDocumentsWizardService {
         return accountHolderName;
     }
     
-	private String getAccountName(TaskDetailsDTO parentTaskDetails) {
-		if (parentTaskDetails == null) {
-			return null;
-		}
-        if (!(parentTaskDetails instanceof AccountOpeningTaskDetailsDTO ||
-        		parentTaskDetails instanceof AccountTransferTaskDetailsDTO)) {
-            throw AccountActionException
-                .create(AccountActionError
-                    .builder()
-                    .message("Only account Opening or account Transfer parent task supported. ")
-                    .build());
-        }
-		String accountName = null;
+	private Optional<String> getAccountName(TaskDetailsDTO parentTaskDetails) {
+        String accountName = null;
         if (parentTaskDetails instanceof AccountOpeningTaskDetailsDTO accountOpeningTaskDetailsDTO) {
             AccountDTO proposedAccount = accountOpeningTaskDetailsDTO.getAccount();
             accountName = proposedAccount.getAccountDetails().getName();
         } else if (parentTaskDetails instanceof AccountTransferTaskDetailsDTO accountTransferTaskDetailsDTO) {
             AccountDetailsDTO proposedAccount = accountTransferTaskDetailsDTO.getAccount();
             accountName = proposedAccount.getName();
+        } else if (parentTaskDetails instanceof AccountHolderUpdateTaskDetailsDTO accountHolderUpdateTaskDetailsDTO) {
+            AccountDetailsDTO accountDetails = accountHolderUpdateTaskDetailsDTO.getAccountDetails();
+            accountName = accountDetails.getName();
         }
-        return accountName;
+
+        return Optional.ofNullable(accountName);
 	}
 
     /**

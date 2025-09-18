@@ -1,0 +1,76 @@
+<div class="govuk-grid-row" *ngIf="user">
+  <h2 class="govuk-heading-m govuk-summary-list__title">
+    Methods of account recovery
+  </h2>
+
+  <dl
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-top-5"
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Recovery phone number</dt>
+      <dd class="govuk-summary-list__value">
+        @if (recoveryPhoneNumber) {
+          <app-shared-phone-number
+            [countryCode]="recoveryCountryCode"
+            [phoneNumber]="recoveryPhoneNumber"
+          />
+        } @else {
+          There is no recovery phone number
+        }
+
+        @if (canEdit) {
+          <div class="govuk-button-group govuk-!-margin-top-2">
+            <a
+              [routerLink]="[]"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="onUpdateRecoveryPhone()"
+              (keyup)="onUpdateRecoveryPhone()"
+            >
+              Update your recovery phone number
+            </a>
+            @if (recoveryPhoneNumber) {
+              <a
+                [routerLink]="[]"
+                class="govuk-link govuk-link--no-visited-state"
+                (click)="onRemoveRecoveryPhone()"
+                (keyup)="onRemoveRecoveryPhone()"
+              >
+                Remove your recovery phone number
+              </a>
+            }
+          </div>
+        }
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Recovery email address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ recoveryEmailAddress || 'There is no recovery email address' }}
+
+        @if (canEdit) {
+          <div class="govuk-button-group govuk-!-margin-top-2">
+            <a
+              [routerLink]="[]"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="onUpdateRecoveryEmail()"
+              (keyup)="onUpdateRecoveryEmail()"
+            >
+              Update your recovery email address
+            </a>
+            @if (recoveryEmailAddress) {
+              <a
+                [routerLink]="[]"
+                class="govuk-link govuk-link--no-visited-state"
+                (click)="onRemoveRecoveryEmail()"
+                (keyup)="onRemoveRecoveryEmail()"
+              >
+                Remove your recovery email address
+              </a>
+            }
+          </div>
+        }
+      </dd>
+    </div>
+  </dl>
+</div>

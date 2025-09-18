@@ -4,7 +4,7 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
 import gov.uk.ets.registry.api.tal.domain.types.TrustedAccountStatus;
 import java.time.LocalDateTime;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,0 +1,18 @@
+<h1 class="govuk-heading-l">
+  <span class="govuk-caption-l">Cancel allocation job</span>
+  Are you sure you want to cancel the pending allocation job?
+</h1>
+<p class="govuk-body">
+  This pending allocation job will be cancelled.<br />
+  This action cannot be reversed.
+</p>
+
+<button
+  (click)="cancel()"
+  data-prevent-double-click="true"
+  class="govuk-button govuk-button--warning"
+  data-module="govuk-button"
+  id="cancel-pending-allocations"
+>
+  Yes, cancel allocation
+</button>

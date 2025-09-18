@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SummaryListItem } from '@shared/summary-list/summary-list.info';
+import { Store } from '@ngrx/store';
 import {
   Notification,
   NotificationType,
-  NotificationTypeLabels,
+  NotificationTypeLabels
 } from '@notifications/notifications-wizard/model';
-import { GdsDatePipe } from '@shared/pipes';
 import { getLabelForCustomNotificationTime } from '@registry-web/shared/shared.util';
+import { GdsDatePipe } from '@shared/pipes';
+import { downloadEmailsFile } from '@shared/shared.action';
+import { SummaryListItem } from '@shared/summary-list/summary-list.info';
 
 @Component({
   selector: 'app-notifications-details',
@@ -21,7 +23,10 @@ export class NotificationDetailsComponent implements OnInit {
   notificationDetails: Notification;
   @Output() readonly navigateToEmitter = new EventEmitter<string>();
 
-  constructor(private gdsDatePipe: GdsDatePipe) {}
+  constructor(
+    private gdsDatePipe: GdsDatePipe,
+    private store: Store
+  ) {}
 
   notificationTypeLabels = NotificationTypeLabels;
   scheduledTimeOptions = [
@@ -37,6 +42,12 @@ export class NotificationDetailsComponent implements OnInit {
 
   navigateTo(value: string) {
     this.navigateToEmitter.emit(value);
+  }
+
+  downloadFile() {
+    this.store.dispatch(
+      downloadEmailsFile({ fileId: this.notificationDetails.uploadedFileId })
+    );
   }
 
   getNotificationType(): SummaryListItem[] {
@@ -61,6 +72,35 @@ export class NotificationDetailsComponent implements OnInit {
         ],
       },
     ];
+  }
+
+  getNotificationRecipientItems(): SummaryListItem[] {
+    if (this.notificationDetails?.type === NotificationType.AD_HOC_EMAIL) {
+      return [
+        {
+          key: { label: 'Recipients', class: 'govuk-heading-m' },
+          value: [
+            {
+              label: '',
+            },
+          ],
+        },
+        {
+          key: { label: 'File uploaded', class: '' },
+          value: {
+            label: '',
+            class: 'forcibly-hide',
+          },
+          action: {
+            label: 'recipients.xslx',
+            visible: true,
+            visuallyHidden: '',
+            clickEvent: 'download-emails-file',
+            class: 'summary-list-link',
+          },
+        },
+      ];
+    }
   }
 
   getActivationDetailsItems(): SummaryListItem[] {
@@ -117,9 +157,10 @@ export class NotificationDetailsComponent implements OnInit {
         key: { label: 'Expires by' },
         value: [
           {
-            label: this.gdsDatePipe.transform(
-              this.notificationDetails?.activationDetails?.expirationDate
-            ),
+            label: this.notificationDetails?.activationDetails?.expirationDate == null ? '' :
+              this.gdsDatePipe.transform(
+                this.notificationDetails?.activationDetails?.expirationDate
+              )
           },
         ],
       });
@@ -129,7 +170,8 @@ export class NotificationDetailsComponent implements OnInit {
         key: { label: 'Expiration date' },
         value: [
           {
-            label: this.gdsDatePipe.transform(
+            label: this.notificationDetails?.activationDetails?.expirationDate == null ? '':
+             this.gdsDatePipe.transform(
               this.notificationDetails?.activationDetails?.expirationDate
             ),
           },

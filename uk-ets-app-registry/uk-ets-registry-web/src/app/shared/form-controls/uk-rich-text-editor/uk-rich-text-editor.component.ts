@@ -7,11 +7,7 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import {
-  CustomModule,
-  QuillModules,
-  QuillToolbarConfig,
-} from 'ngx-quill/lib/quill-editor.interfaces';
+import { CustomModule, QuillModules, QuillToolbarConfig } from 'ngx-quill';
 import { ControlContainer, FormGroupDirective } from '@angular/forms';
 import { UkProtoFormComponent } from '@shared/form-controls/uk-proto-form.component';
 import { CustomLink } from '@shared/components/notifications/custom-link';
@@ -57,7 +53,10 @@ export class UkRichTextEditorComponent
     },
   ];
 
-  constructor(parentF: FormGroupDirective, private renderer: Renderer2) {
+  constructor(
+    parentF: FormGroupDirective,
+    private renderer: Renderer2
+  ) {
     super(parentF);
   }
 

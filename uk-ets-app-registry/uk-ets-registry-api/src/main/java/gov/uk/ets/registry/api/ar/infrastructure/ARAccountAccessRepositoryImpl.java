@@ -9,7 +9,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.ar.domain.ARAccountAccessRepository;
 import gov.uk.ets.registry.api.common.search.OptionalBooleanBuilder;
 import java.util.List;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -18,22 +18,20 @@ describe('EnterNewEmailFormContainerComponent', () => {
   let fixture: ComponentFixture<NewEmailFormContainerComponent>;
   let mockStore: MockStore<EmailChangeState>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule],
-        declarations: [
-          UkProtoFormTextComponent,
-          UkProtoFormEmailComponent,
-          NewEmailFormComponent,
-          NewEmailFormContainerComponent,
-          DisableControlDirective,
-        ],
-        providers: [provideMockStore()],
-      }).compileComponents();
-      mockStore = TestBed.inject(MockStore);
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule],
+      declarations: [
+        UkProtoFormTextComponent,
+        UkProtoFormEmailComponent,
+        NewEmailFormComponent,
+        NewEmailFormContainerComponent,
+        DisableControlDirective,
+      ],
+      providers: [provideMockStore()],
+    }).compileComponents();
+    mockStore = TestBed.inject(MockStore);
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NewEmailFormContainerComponent);
@@ -68,10 +66,11 @@ describe('EnterNewEmailFormContainerComponent', () => {
         workBuildingAndStreetOptional: [],
         workBuildingAndStreetOptional2: [],
         workCountry: [],
-        workCountryCode: [],
-        workEmailAddress: [],
-        workEmailAddressConfirmation: [],
-        workPhoneNumber: [],
+        workMobileCountryCode: [],
+        workMobilePhoneNumber: [],
+        workAlternativeCountryCode: [],
+        workAlternativePhoneNumber: [],
+        noMobilePhoneNumberReason: [],
         workPostCode: [],
         workTownOrCity: [],
         workStateOrProvince: [],

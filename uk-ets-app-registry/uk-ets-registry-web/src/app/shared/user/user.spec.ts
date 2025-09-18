@@ -20,10 +20,11 @@ function aTestUser(): User {
   user.country = 'USA';
   user.birthDate = { day: '02', month: '03', year: '1980' };
   user.countryOfBirth = '';
-  user.workCountryCode = 'USA';
-  user.workPhoneNumber = '132323232323';
-  user.workEmailAddress = 'spidy@avengers.com';
-  user.workEmailAddressConfirmation = 'spidy@avengers.com';
+  user.workMobileCountryCode = 'USA';
+  user.workMobilePhoneNumber = '132323232323';
+  user.workAlternativeCountryCode = '';
+  user.workAlternativePhoneNumber = '';
+  user.noMobilePhoneNumberReason = '';
   user.workBuildingAndStreet = 'Somewhere in new york';
   user.workBuildingAndStreetOptional = '';
   user.workBuildingAndStreetOptional2 = '';
@@ -35,6 +36,10 @@ function aTestUser(): User {
   user.state = 'REGISTERED';
   user.status = 'REGISTERED';
   user.memorablePhrase = 'I love ice cream';
+  user.recoveryCountryCode = '';
+  user.recoveryPhoneNumber = '';
+  user.recoveryEmailAddress = '';
+
   return user;
 }
 
@@ -56,10 +61,11 @@ const userObject: IUser = {
   country: 'USA',
   birthDate: { day: '02', month: '03', year: '1980' },
   countryOfBirth: '',
-  workCountryCode: 'USA',
-  workPhoneNumber: '132323232323',
-  workEmailAddress: 'spidy@avengers.com',
-  workEmailAddressConfirmation: 'spidy@avengers.com',
+  workMobileCountryCode: 'USA',
+  workMobilePhoneNumber: '132323232323',
+  workAlternativeCountryCode: '',
+  workAlternativePhoneNumber: '',
+  noMobilePhoneNumberReason: '',
   workBuildingAndStreet: 'Somewhere in new york',
   workBuildingAndStreetOptional: '',
   workBuildingAndStreetOptional2: '',
@@ -71,6 +77,9 @@ const userObject: IUser = {
   state: 'REGISTERED',
   status: 'REGISTERED',
   memorablePhrase: 'I love ice cream',
+  recoveryCountryCode: '',
+  recoveryPhoneNumber: '',
+  recoveryEmailAddress: '',
 };
 
 describe('Model: User in Registration', () => {

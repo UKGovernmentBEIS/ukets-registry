@@ -19,6 +19,7 @@ import {
   transactionStatusMap,
   UNIT_TYPE_OPTIONS,
 } from '@shared/model/transaction';
+import { UkRegistryValidators } from '@registry-web/shared/validation';
 
 @Component({
   selector: 'app-search-transactions-form',
@@ -74,8 +75,8 @@ export class SearchTransactionsFormComponent
       transactionId: ['', Validators.minLength(3)],
       transactionType: [''],
       transactionStatus: [''],
-      transactionLastUpdateDateFrom: [''],
-      transactionLastUpdateDateTo: [''],
+      transactionLastUpdateDateFrom: ['', UkRegistryValidators.isValidDate()],
+      transactionLastUpdateDateTo: ['', UkRegistryValidators.isValidDate()],
       transferringAccountNumber: ['', Validators.minLength(3)],
       acquiringAccountNumber: ['', Validators.minLength(3)],
       acquiringAccountType: [''],
@@ -83,8 +84,8 @@ export class SearchTransactionsFormComponent
       unitType: [''],
       initiatorUserId: ['', Validators.minLength(3)],
       approverUserId: ['', Validators.minLength(3)],
-      transactionalProposalDateFrom: [''],
-      transactionalProposalDateTo: [''],
+      transactionalProposalDateFrom: ['', UkRegistryValidators.isValidDate()],
+      transactionalProposalDateTo: ['', UkRegistryValidators.isValidDate()],
       reversed: [''],
     };
   }
@@ -111,20 +112,24 @@ export class SearchTransactionsFormComponent
         minlength: 'Enter at least 3 characters in the "Approver user ID"',
       },
       transactionLastUpdateDateFrom: {
-        pattern: 'The date you have entered is invalid.',
+        invalidDate: 'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Transaction last update date from" field',
         ngbDate: ' ',
+        pattern: ' '
       },
       transactionLastUpdateDateTo: {
-        pattern: 'The date you have entered is invalid.',
+        invalidDate: 'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Transaction last update date to" field',
         ngbDate: ' ',
+        pattern: ' '
       },
       transactionalProposalDateFrom: {
-        pattern: 'The date you have entered is invalid.',
+        invalidDate: 'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Transaction proposal date from" field',
         ngbDate: ' ',
+        pattern: ' '
       },
       transactionalProposalDateTo: {
-        pattern: 'The date you have entered is invalid.',
+        invalidDate: 'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Transaction proposal date to" field',
         ngbDate: ' ',
+        pattern: ' '
       },
     };
   }

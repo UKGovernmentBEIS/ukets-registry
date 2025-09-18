@@ -83,10 +83,11 @@ public class TrustedAccountTaskService implements TaskTypeService<TrustedAccount
                                          String comment) {
         List<TrustedAccount> trustedAccounts = extractTrustedAccountEntities(taskDetailsDTO);
         if (RequestType.ADD_TRUSTED_ACCOUNT_REQUEST.equals(taskDetailsDTO.getTaskType())) {
-            if (trustedAccounts.size() != 1) {
+            if (trustedAccounts.size() == 1) {
+                addAccountToTAL(trustedAccounts.get(0), taskOutcome);
+            } else if (taskOutcome == TaskOutcome.APPROVED || trustedAccounts.size() > 1) {
                 throw new UkEtsException("Expecting exactly one account");
             }
-            addAccountToTAL(trustedAccounts.get(0), taskOutcome);
         } else if (RequestType.DELETE_TRUSTED_ACCOUNT_REQUEST.equals(taskDetailsDTO.getTaskType())) {
             removeAccountsFromTAL(trustedAccounts, taskOutcome);
         } else {

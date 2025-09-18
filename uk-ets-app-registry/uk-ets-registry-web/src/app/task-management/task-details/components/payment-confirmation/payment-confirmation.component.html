@@ -1,0 +1,100 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 *ngIf="isCardOrLinkPayment()" class="govuk-panel__title">
+        Payment complete
+      </h1>
+      <h1 *ngIf="isBACSPayment()" class="govuk-panel__title">
+        Payment under review
+      </h1>
+    </div>
+    <h2 class="govuk-heading-m">Payment summary</h2>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+          <div *ngIf="isCardOrLinkPayment()" class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Amount requested</dt>
+            <dd class="govuk-summary-list__value">
+              {{
+                paymentCompletionDetails.taskDetailsDTO.amountRequested
+                  | currency: 'GBP' : 'symbol' : '1.2-2' : 'en-GB'
+              }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Amount paid</dt>
+            <dd class="govuk-summary-list__value">
+              {{
+                paymentCompletionDetails.taskDetailsDTO.amountPaid
+                  | currency: 'GBP' : 'symbol' : '1.2-2' : 'en-GB'
+              }}
+            </dd>
+          </div>
+          <div *ngIf="isCardOrLinkPayment()" class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Description</dt>
+            <dd class="govuk-summary-list__value">
+              {{ paymentCompletionDetails.taskDetailsDTO.description }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Reference number</dt>
+            <dd class="govuk-summary-list__value">
+              {{ paymentCompletionDetails.referenceNumber }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Payment status</dt>
+            <dd class="govuk-summary-list__value">
+              {{ paymentStatus() }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt *ngIf="isCardOrLinkPayment()" class="govuk-summary-list__key">
+              Paid on
+            </dt>
+            <dt *ngIf="isBACSPayment()" class="govuk-summary-list__key">
+              Completed on
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ paymentCompletionDetails.paidOn | gdsDateTime }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt *ngIf="isCardOrLinkPayment()" class="govuk-summary-list__key">
+              Paid by
+            </dt>
+            <dt *ngIf="isBACSPayment()" class="govuk-summary-list__key">
+              Completed by
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ paymentCompletionDetails.paidBy }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Payment method</dt>
+            <dd class="govuk-summary-list__value">
+              {{ paymentMethod() }}
+            </dd>
+          </div>
+          <div
+            *ngIf="isCardOrLinkPayment() && isAuthenticated"
+            class="govuk-summary-list__row"
+          >
+            <dt class="govuk-summary-list__key">Receipt</dt>
+            <dd class="govuk-summary-list__value">
+              <a [routerLink]="[]" (click)="downloadReceipt()">Receipt.pdf</a>
+            </dd>
+          </div>
+        </dl>
+        <p class="govuk-body" *ngIf="isAuthenticated">
+          <a
+            [routerLink]="[]"
+            (click)="onBackToTask()"
+            class="govuk-link govuk-link--no-visited-state"
+            >Go back to task</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

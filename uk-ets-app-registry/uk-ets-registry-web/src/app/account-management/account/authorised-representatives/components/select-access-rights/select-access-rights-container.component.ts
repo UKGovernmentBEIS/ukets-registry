@@ -15,7 +15,11 @@ import {
   setNewAccessRights,
 } from '@authorised-representatives/actions/authorised-representatives.actions';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
-import { selectIsOHAOrAOHA } from '@registry-web/account-management/account/account-details/account.selector';
+import {
+  selectIsOHAOrAOHA,
+  selectIsOHAOrAOHAorMOHA,
+  selectShowReadOnly,
+} from '@account-management/account/account-details/account.selector';
 
 @Component({
   selector: 'app-select-access-rights-container',
@@ -25,6 +29,7 @@ import { selectIsOHAOrAOHA } from '@registry-web/account-management/account/acco
       [arFullName]="arFullName$ | async"
       [accessRights]="accessRights$ | async"
       [showSurrender]="showSurrender$ | async"
+      [showReadonly]="showReadonly$ | async"
       (selectAccessRights)="onContinue($event)"
       (errorDetails)="onError($event)"
     ></app-select-access-rights>
@@ -38,10 +43,14 @@ export class SelectAccessRightsContainerComponent implements OnInit {
   arFullName$: Observable<string>;
   accessRights$: Observable<ARAccessRights>;
   showSurrender$: Observable<boolean>;
+  showReadonly$: Observable<boolean>;
 
   goBackPath: string;
 
-  constructor(private route: ActivatedRoute, private store: Store) {}
+  constructor(
+    private route: ActivatedRoute,
+    private store: Store
+  ) {}
 
   ngOnInit() {
     this.route.data.subscribe((data: Data) => {
@@ -50,7 +59,8 @@ export class SelectAccessRightsContainerComponent implements OnInit {
     this.updateType$ = this.store.select(selectUpdateType);
     this.arFullName$ = this.store.select(selectNewArFullName);
     this.accessRights$ = this.store.select(selectNewAccessRights);
-    this.showSurrender$ = this.store.select(selectIsOHAOrAOHA);
+    this.showSurrender$ = this.store.select(selectIsOHAOrAOHAorMOHA);
+    this.showReadonly$ = this.store.select(selectShowReadOnly);
     this.store.dispatch(
       canGoBack({
         goBackRoute: `/account/${this.route.snapshot.paramMap.get(

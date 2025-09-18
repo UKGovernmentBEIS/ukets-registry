@@ -4,7 +4,7 @@ import {
   FormRadioOption,
 } from '@shared/form-controls/uk-radio-input/uk-radio.model';
 import { AuthorisedRepresentativesUpdateType } from '@authorised-representatives/model';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import { UkRegistryValidators } from '@shared/validation';
 import {
@@ -20,7 +20,8 @@ import { getConfigurationValue } from '@shared/shared.util';
 })
 export class SelectTypeComponent extends UkFormComponent implements OnInit {
   @Output()
-  readonly selectUpdateType = new EventEmitter<AuthorisedRepresentativesUpdateType>();
+  readonly selectUpdateType =
+    new EventEmitter<AuthorisedRepresentativesUpdateType>();
   @Input()
   updateType: AuthorisedRepresentativesUpdateType;
   @Input()
@@ -35,10 +36,6 @@ export class SelectTypeComponent extends UkFormComponent implements OnInit {
   activeARs: number;
   maxNumberOfARs: number;
   pendingARAddRequests: number;
-
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
 
   ngOnInit() {
     this.maxNumberOfARs = getConfigurationValue(

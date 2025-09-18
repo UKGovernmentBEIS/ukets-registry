@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,10 +18,6 @@ public class ARPerAccountReportService
     implements ReportTypeService<ARPerAccountReportData> {
 
     private final ReportDataMapper<ARPerAccountReportData> mapper;
-
-    public List<ARPerAccountReportData> generateReportData(ReportCriteria reportCriteria) {
-        return mapper.mapData(reportCriteria);
-    }
 
     @Override
     public List<ARPerAccountReportData> generateReportData(ReportQueryInfoWithMetadata reportQueryInfo) {

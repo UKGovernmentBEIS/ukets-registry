@@ -8,6 +8,7 @@ import { UpdateExclusionStatusPathsModel } from '@exclusion-status-update-wizard
 import { SelectExclusionStatusContainerComponent } from '@exclusion-status-update-wizard/select-exclusion-status';
 import { SelectYearContainerComponent } from '@exclusion-status-update-wizard/select-year';
 import { SubmittedUpdateExclusionStatusContainerComponent } from '@exclusion-status-update-wizard/submitted-update-exclusion-status';
+import { ExclusionReasonContainerComponent } from './exclusion-reason/exclusion-reason-container.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,11 @@ export const routes: Routes = [
     path: UpdateExclusionStatusPathsModel.SELECT_EXCLUSION_STATUS,
     canLoad: [LoginGuard],
     component: SelectExclusionStatusContainerComponent,
+  },
+  {
+    path: UpdateExclusionStatusPathsModel.EXCLUSION_REASON,
+    canLoad: [LoginGuard],
+    component: ExclusionReasonContainerComponent,
   },
   {
     path: UpdateExclusionStatusPathsModel.CANCEL_UPDATE_EXCLUSION_STATUS,

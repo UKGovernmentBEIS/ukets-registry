@@ -8,7 +8,6 @@ import gov.uk.ets.reports.generator.keycloak.KeycloakDbService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +47,7 @@ public class TaskListCurrentReportService implements ReportTypeService<TaskListC
         data.add(reportData.getOwnershipDate());
         data.add(reportData.getOpenDocumentRequests());
         data.add(reportData.getCompletedDocumentRequests());
-        data.add(reportData.getWorkInitiationLag());
+        data.add(reportData.getWorkAllocationLagDays());
         data.add(reportData.getDeadline());
 
         data.add(reportData.getAccountHolder());
@@ -81,13 +80,13 @@ public class TaskListCurrentReportService implements ReportTypeService<TaskListC
             "Initiator UID",
             "User-Initiated",
             "Initiated",
-            "Age",
+            "Age (Weeks)",
             "AgeCohort",
             "Claimant",
             "Ownership Date",
             "Open Document Requests",
             "Completed Document Requests",
-            "Work Initiation Lag",
+            "Work Allocation Lag (Days)",
             "Deadline",
             "Account Holder",
             "Account Type",
@@ -104,11 +103,6 @@ public class TaskListCurrentReportService implements ReportTypeService<TaskListC
             "Status",
             "Last Signed In"
         );
-    }
-
-    @Override
-    public List<TaskListCurrentReportData> generateReportData(ReportCriteria criteria) {
-        return List.of();
     }
 
     @Override
@@ -170,5 +164,6 @@ public class TaskListCurrentReportService implements ReportTypeService<TaskListC
         if (data.getValidatedARs() == null) data.setValidatedARs(0);
         if (data.getSuspendedARs() == null) data.setSuspendedARs(0);
         if (data.getTotalARs() == null) data.setTotalARs(0);
+        if (data.getArNominations() == null) data.setArNominations(0);
     }
 }

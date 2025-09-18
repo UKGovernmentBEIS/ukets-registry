@@ -32,8 +32,11 @@ public class KeycloakUser {
     private String townOrCity;
     private String stateOrProvince;
     private String workCountry;
-    private String workCountryCode;
-    private String workPhoneNumber;
+    private String workMobileCountryCode;
+    private String workMobilePhoneNumber;
+    private String workAlternativeCountryCode;
+    private String workAlternativePhoneNumber;
+    private String noMobilePhoneNumberReason;
     private String workBuildingAndStreet;
     private String workBuildingAndStreetOptional;
     private String workBuildingAndStreetOptional2;

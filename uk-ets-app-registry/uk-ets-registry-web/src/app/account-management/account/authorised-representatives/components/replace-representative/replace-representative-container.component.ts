@@ -4,18 +4,19 @@ import { AuthorisedRepresentative } from '@shared/model/account';
 import { Store } from '@ngrx/store';
 import {
   selectAuthorisedRepresentativesOtherAccounts,
-  selectEligibleArsAsOptions
+  selectEligibleArsAsOptions,
 } from '@authorised-representatives/reducers';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   cancelClicked,
   fetchAuthorisedRepresentativesOtherAccounts,
-  replaceAuthorisedRepresentative
+  replaceAuthorisedRepresentative,
 } from '@authorised-representatives/actions/authorised-representatives.actions';
 import { canGoBack, errors } from '@shared/shared.action';
 import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
 import { ArUpdateRequest } from '@authorised-representatives/model/ar-update-request';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
+import { selectErrorSummary } from '@shared/shared.selector';
 
 @Component({
   selector: 'app-replace-representative-container',
@@ -31,17 +32,19 @@ import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
         onReplaceAuthorisedRepresentative($event)
       "
       (errorDetails)="onError($event)"
+      [errorSummary]="errorSummary$ | async"
     ></app-replace-representative>
     <app-cancel-request-link (goToCancelScreen)="onCancel()">
     </app-cancel-request-link>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplaceRepresentativeContainerComponent implements OnInit {
   currentAuthorisedRepresentatives$: Observable<Option[]>;
   authorisedRepresentativesOtherAccounts$: Observable<
     AuthorisedRepresentative[]
   >;
+  errorSummary$: Observable<ErrorSummary>;
 
   constructor(
     private store: Store,
@@ -57,7 +60,7 @@ export class ReplaceRepresentativeContainerComponent implements OnInit {
       canGoBack({
         goBackRoute: `/account/${this.activatedRoute.snapshot.paramMap.get(
           'accountId'
-        )}/authorised-representatives/select-update-type`
+        )}/authorised-representatives/select-update-type`,
       })
     );
     this.authorisedRepresentativesOtherAccounts$ = this.store.select(
@@ -67,6 +70,8 @@ export class ReplaceRepresentativeContainerComponent implements OnInit {
     this.currentAuthorisedRepresentatives$ = this.store.select(
       selectEligibleArsAsOptions
     );
+
+    this.errorSummary$ = this.store.select(selectErrorSummary);
   }
 
   onCancel() {
@@ -81,7 +86,7 @@ export class ReplaceRepresentativeContainerComponent implements OnInit {
 
   onError(details: ErrorDetail[]) {
     const summary: ErrorSummary = {
-      errors: details
+      errors: details,
     };
     this.store.dispatch(errors({ errorSummary: summary }));
   }

@@ -7,8 +7,8 @@ import gov.uk.ets.registry.api.transaction.domain.data.TrustedAccountListRulesDT
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -89,15 +89,15 @@ public class AccountDTO {
     private TrustedAccountListRulesDTO trustedAccountListRules;
 
     /**
-     * The attributes regarding the installation or aircraft operator.
+     * The attributes regarding the installation, aircraft or maritime operator.
      */
     @Valid
-    private InstallationOrAircraftOperatorDTO operator;
+    private OperatorDTO operator;
 
     /**
      * The installationToBeTransferred is only used for installation transfers.
      */
-    private InstallationOrAircraftOperatorDTO installationToBeTransferred;
+    private OperatorDTO installationToBeTransferred;
 
     /**
      * THe authorised representatives.

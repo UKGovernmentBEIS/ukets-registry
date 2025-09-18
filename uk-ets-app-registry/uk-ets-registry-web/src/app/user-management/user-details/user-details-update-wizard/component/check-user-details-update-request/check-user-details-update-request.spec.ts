@@ -13,21 +13,19 @@ describe('CheckUpdateRequestComponent', () => {
   let component: CheckUserDetailsUpdateRequestComponent;
   let fixture: ComponentFixture<CheckUserDetailsUpdateRequestComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        declarations: [
-          CheckUserDetailsUpdateRequestComponent,
-          FormGroupDirective,
-          ConnectFormDirective,
-          UserDetailsUpdatePipe,
-          ScreenReaderPageAnnounceDirective,
-        ],
-        providers: [FormatUkDatePipe, CountryNamePipe, UserDetailsUpdatePipe],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      declarations: [
+        CheckUserDetailsUpdateRequestComponent,
+        FormGroupDirective,
+        ConnectFormDirective,
+        UserDetailsUpdatePipe,
+        ScreenReaderPageAnnounceDirective,
+      ],
+      providers: [FormatUkDatePipe, CountryNamePipe, UserDetailsUpdatePipe],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CheckUserDetailsUpdateRequestComponent);
@@ -44,10 +42,11 @@ describe('CheckUpdateRequestComponent', () => {
       lastName: '',
       alsoKnownAs: '',
       countryOfBirth: '',
-      workCountryCode: '',
-      workPhoneNumber: '',
-      workEmailAddress: '',
-      workEmailAddressConfirmation: '',
+      workMobileCountryCode: '',
+      workMobilePhoneNumber: '',
+      workAlternativeCountryCode: '',
+      workAlternativePhoneNumber: '',
+      noMobilePhoneNumberReason: '',
       workBuildingAndStreet: '',
       workBuildingAndStreetOptional: '',
       workBuildingAndStreetOptional2: '',

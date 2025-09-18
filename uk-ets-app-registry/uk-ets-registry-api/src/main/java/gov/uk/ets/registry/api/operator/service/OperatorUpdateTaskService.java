@@ -4,12 +4,13 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.OnlySeniorAdminCanClaimTaskRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.FourEyesPrincipleRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlySeniorRegistryAdminCanApproveTask;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.RegistryAdminCanApproveTaskWhenAccountNotClosedOrPendingClosureRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.UniqueEmitterIdBusinessRule;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
@@ -36,7 +37,10 @@ public class OperatorUpdateTaskService implements TaskTypeService<OperatorUpdate
 
     @Override
     public Set<RequestType> appliesFor() {
-        return Set.of(RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST, RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST);
+        return Set.of(
+                RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST,
+                RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST,
+                RequestType.MARITIME_OPERATOR_UPDATE_REQUEST);
     }
 
     @Override
@@ -52,6 +56,7 @@ public class OperatorUpdateTaskService implements TaskTypeService<OperatorUpdate
         FourEyesPrincipleRule.class,
         RegistryAdminCanApproveTaskWhenAccountNotClosedOrPendingClosureRule.class,
         OnlySeniorRegistryAdminCanApproveTask.class,
+        UniqueEmitterIdBusinessRule.class
     })
     @Transactional
     @Override
@@ -63,7 +68,7 @@ public class OperatorUpdateTaskService implements TaskTypeService<OperatorUpdate
                 accountRepository.findByIdentifier(accountIdentifier).orElseThrow(() -> new UkEtsException(String
                     .format("Update account operator details for account with identifier:%s which does not exist",
                         accountIdentifier)));
-            InstallationOrAircraftOperatorDTO diff = deserializeRequest(taskDTO.getDifference());
+            OperatorDTO diff = deserializeRequest(taskDTO.getDifference());
 
             accountOperatorUpdateService.updateOperator(diff, accountIdentifier,
                 taskDTO.getTaskType(), account);
@@ -90,7 +95,7 @@ public class OperatorUpdateTaskService implements TaskTypeService<OperatorUpdate
         // implemented for being able to apply permissions using annotations
     }
 
-    private InstallationOrAircraftOperatorDTO deserializeRequest(String difference) {
-        return mapper.convertToPojo(difference, InstallationOrAircraftOperatorDTO.class);
+    private OperatorDTO deserializeRequest(String difference) {
+        return mapper.convertToPojo(difference, OperatorDTO.class);
     }
 }

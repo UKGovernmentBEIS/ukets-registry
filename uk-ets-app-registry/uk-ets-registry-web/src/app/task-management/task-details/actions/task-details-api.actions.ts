@@ -1,5 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { TaskCompleteResponse } from '@task-management/model';
+import {
+  PaymentCompleteResponse,
+  TaskCompleteResponse,
+} from '@task-management/model';
 
 export const otpVerificationForTaskRequest = createAction(
   `
@@ -18,6 +21,7 @@ export const completeTaskWithApproval = createAction(
   '[Task API] Approve task',
   props<{
     comment: string;
+    amountPaid?: number;
     taskId: string;
   }>()
 );
@@ -38,3 +42,26 @@ export const completeTaskWithRejectionSuccess = createAction(
   '[Task API] Reject task success',
   props<{ taskCompleteResponse: TaskCompleteResponse }>()
 );
+
+export const fetchPaymentCompleteResponseWithExternalService = createAction(
+  '[Task API] Fetch Payment Complete Response With External Service',
+  props<{ requestId: string }>()
+);
+
+export const fetchPaymentCompleteResponseWithExternalServiceSuccess =
+  createAction(
+    '[Task API] Fetch Payment Complete Response With External Service Success',
+    props<{ taskCompleteResponse: PaymentCompleteResponse }>()
+  );
+
+export const fetchPaymentViaWebLinkCompleteResponseWithExternalService =
+  createAction(
+    '[Task API] Fetch Payment via WebLink Complete Response With External Service',
+    props<{ uuid: string }>()
+  );
+
+export const fetchPaymentViaWebLinkCompleteResponseWithExternalServiceSuccess =
+  createAction(
+    '[Task API] Fetch Payment via WebLink  Complete Response With External Service Success',
+    props<{ taskCompleteResponse: PaymentCompleteResponse }>()
+  );

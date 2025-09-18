@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.KPAccountInformationReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -45,11 +44,6 @@ public class KPAccountInformationJdbcMapper
             "         a.commitment_period_code,\n" +
             "         account_holder_name\n" +
             "order by a.full_identifier asc";
-
-    @Override
-    public List<KPAccountInformationReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<KPAccountInformationReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

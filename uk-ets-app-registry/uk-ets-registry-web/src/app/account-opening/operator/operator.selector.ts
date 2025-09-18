@@ -5,6 +5,7 @@ import {
   AircraftOperator,
   Installation,
   InstallationTransfer,
+  MaritimeOperator,
   OperatorType,
 } from '../../shared/model/account/operator';
 import { AccountOpeningState } from '../account-opening.model';
@@ -74,6 +75,10 @@ export const selectOperatorWizardLink = createSelector(
         accountType === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT
       ) {
         operatorWizardLink = OperatorWizardRoutes.AIRCRAFT_OPERATOR;
+      } else if (
+        accountType === AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+      ) {
+        operatorWizardLink = OperatorWizardRoutes.MARITIME_OPERATOR;
       }
     }
     return operatorWizardLink;
@@ -90,8 +95,12 @@ export const selectOperatorTextForMainWizard = createSelector(
     if (!operatorCompleted) {
       if (accountType === AccountType.OPERATOR_HOLDING_ACCOUNT) {
         operatorText = 'Installation Information';
-      } else {
+      } else if (
+        accountType === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT
+      ) {
         operatorText = 'Aircraft Operator details';
+      } else {
+        operatorText = 'Maritime Operator details';
       }
     } else {
       switch (operator.type) {
@@ -108,6 +117,11 @@ export const selectOperatorTextForMainWizard = createSelector(
         case OperatorType.AIRCRAFT_OPERATOR: {
           const aircraftOperator = operator as AircraftOperator;
           operatorText = `${aircraftOperator.monitoringPlan?.id}`;
+          break;
+        }
+        case OperatorType.MARITIME_OPERATOR: {
+          const maritimeOperator = operator as MaritimeOperator;
+          operatorText = `${maritimeOperator.monitoringPlan?.id}`;
           break;
         }
       }
@@ -142,6 +156,7 @@ export const selectOperatorInputBackLink = createSelector(
           backLink = OperatorWizardRoutes.IS_IT_INSTALLATION_TRANSFER;
           break;
         case OperatorType.AIRCRAFT_OPERATOR:
+        case OperatorType.MARITIME_OPERATOR:
           backLink = MainWizardRoutes.TASK_LIST;
           break;
       }

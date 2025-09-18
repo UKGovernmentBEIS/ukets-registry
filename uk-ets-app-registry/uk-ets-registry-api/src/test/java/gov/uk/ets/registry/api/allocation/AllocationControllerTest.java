@@ -3,9 +3,12 @@ package gov.uk.ets.registry.api.allocation;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,13 +16,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.uk.ets.registry.api.allocation.domain.AllocationJob;
 import gov.uk.ets.registry.api.allocation.service.AccountAllocationService;
 import gov.uk.ets.registry.api.allocation.service.AllocationJobService;
+import gov.uk.ets.registry.api.allocation.service.AllocationReportGenerator;
 import gov.uk.ets.registry.api.allocation.service.AllocationYearCapService;
 import gov.uk.ets.registry.api.allocation.service.RequestAllocationService;
 import gov.uk.ets.registry.api.allocation.service.TestUtils;
 import gov.uk.ets.registry.api.allocation.service.dto.AccountAllocationDTO;
 import gov.uk.ets.registry.api.allocation.service.dto.AggregatedAllocationDTO;
+import gov.uk.ets.registry.api.allocation.service.dto.AllocationJobSearchCriteria;
 import gov.uk.ets.registry.api.allocation.service.dto.AnnualAllocationDTO;
 import gov.uk.ets.registry.api.allocation.service.dto.TotalAllocationDTO;
 import gov.uk.ets.registry.api.allocation.service.dto.UpdateAllocationCommand;
@@ -37,6 +43,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -54,6 +62,8 @@ class AllocationControllerTest {
 
     @Mock
     private AllocationJobService allocationJobService;
+    @Mock
+    private AllocationReportGenerator reportGenerator;
     private MockMvc mockMvc;
     private AllocationController controller;
 
@@ -61,7 +71,7 @@ class AllocationControllerTest {
     void setUp() {
         accountId = 12323L;
         controller = new AllocationController(
-            accountAllocationService, requestAllocationService,allocationYearCapService, allocationJobService
+            accountAllocationService, requestAllocationService,allocationYearCapService, allocationJobService, reportGenerator
         );
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
@@ -235,10 +245,10 @@ class AllocationControllerTest {
     @Test
     @DisplayName("When cancel job has not thrown an exception, canceling it is successful")
     void whenIsPendingAllocationCancelIsSuccess() throws Exception {
-        var url = "/api-registry/allocations.cancel.pending";
+        var url = "/api-registry/allocations.cancel.pending/1";
         mockMvc.perform(delete(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
-        then(allocationJobService).should(times(1)).cancelPendingJobs();
+        then(allocationJobService).should(times(1)).cancelPendingJob(1L);
     }
 
     @Test
@@ -253,5 +263,33 @@ class AllocationControllerTest {
             .andReturn();
         assertEquals(Boolean.TRUE.toString(), result.getResponse().getContentAsString());
         then(accountAllocationService).should(times(1)).getAccountAllocationPendingTaskExists(accountId);
+    }
+
+    @Test
+    @DisplayName("Allocation Jobs search")
+    void searchAllocationJobs() throws Exception {
+        var url = "/api-registry/allocations.list";
+
+        AllocationJob job = new AllocationJob();
+        given(allocationJobService.searchAllocationJobs(any(AllocationJobSearchCriteria.class), any(Pageable.class)))
+            .willReturn(new PageImpl<>(List.of(job)));
+
+        MvcResult result = mockMvc.perform(get(url)
+            .queryParam("sortDirection", "DESC"))
+            .andExpect(status().isOk())
+            .andReturn();
+        assertNotNull(result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @DisplayName("Allocation Job cancel")
+    void cancelAllocationJob() throws Exception {
+        var url = "/api-registry/allocations.cancel.pending/111";
+
+        mockMvc.perform(delete(url))
+            .andExpect(status().isNoContent())
+            .andReturn();
+
+        verify(allocationJobService, times(1)).cancelPendingJob(111L);
     }
 }

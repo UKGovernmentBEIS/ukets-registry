@@ -45,6 +45,15 @@ import {
   TransactionTaskDetailsComponent,
   TrustedAccountRequestTaskDetailsComponent,
   AccountClosureApprovalConfirmationComponent,
+  RequestPaymentTaskDetailsComponent,
+  PaymentSelectMethodComponent,
+  PaymentSelectMethodContainerComponent,
+  PaymentConfirmationComponent,
+  PaymentConfirmationContainerComponent,
+  PaymentBacsDetailsComponent,
+  PaymentBacsDetailsContainerComponent,
+  PaymentBacsConfirmContainerComponent,
+  PaymentBacsCancelContainerComponent,
 } from '@task-details/components';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -68,6 +77,7 @@ import {
 import { IssueKpUnitsModule } from '@issue-kp-units/issue-kp-units.module';
 import { TaskUserDetailsResolver } from '@task-details/task-user-details.resolver';
 import { RequestDocumentsModule } from '@request-documents/request-documents.module';
+import { RequestPaymentModule } from '@request-payment/request-payment.module';
 import { SigningModule } from '@signing/signing.module';
 import { AccountHolderUpdateService } from '@account-management/account/account-holder-details-wizard/services';
 import { OperatorUpdateTaskDetailsComponent } from '@task-details/components/operator-update-task-details';
@@ -83,6 +93,16 @@ import {
   OrganisationPipe,
 } from '@shared/pipes';
 import { TransferringAccountHolderTaskDetailsComponent } from '@task-details/components/transferring-account-holder-task-details';
+import { CancelChangeTaskDeadlineContainerComponent } from './components/change-task-deadline/cancel-change-task-deadline-container.component';
+import { ChangeTaskDeadlineContainerComponent } from './components/change-task-deadline/change-task-deadline-container.component';
+import { ChangeDeadlineSuccessComponent } from './components/change-task-deadline/change-deadline-success/change-deadline-success.component';
+import { ChangeDeadlineCheckAndSubmitContainerComponent } from './components/change-task-deadline/change-deadline-check-and-submit/change-deadline-check-and-submit-container.component';
+import { ChangeDeadlineCheckAndSubmitComponent } from './components/change-task-deadline/change-deadline-check-and-submit/change-deadline-check-and-submit.component';
+import { TaskDetailsTabsNavigationComponent } from './components/task-details-tabs-navigation/task-details-tabs-navigation.component';
+import { TaskNotesComponent } from './components/task-notes/components/task-notes.component';
+import { NotesEffect } from './components/task-notes/store/task-notes.effects';
+import * as fromTaskNotes from './components/task-notes/store/task-notes.reducer';
+import { PaymentBacsCancelComponent } from './components/payment-bacs-cancel/payment-bacs-cancel.component';
 
 @NgModule({
   declarations: [
@@ -126,7 +146,6 @@ import { TransferringAccountHolderTaskDetailsComponent } from '@task-details/com
     LostTokenTaskDetailsComponent,
     EmailChangeTaskDetailsComponent,
     GenericTaskDetailsConfirmationComponent,
-    TaskHeaderComponent,
     TaskUserDetailsContainerComponent,
     AccountOpeningTaskDetailsContainerComponent,
     AccountOpeningTaskDetailsComponent,
@@ -138,6 +157,21 @@ import { TransferringAccountHolderTaskDetailsComponent } from '@task-details/com
     AccountClosureTaskDetailsComponent,
     AccountClosureApprovalConfirmationComponent,
     TransferringAccountHolderTaskDetailsComponent,
+    ChangeTaskDeadlineContainerComponent,
+    CancelChangeTaskDeadlineContainerComponent,
+    ChangeDeadlineCheckAndSubmitContainerComponent,
+    ChangeDeadlineCheckAndSubmitComponent,
+    ChangeDeadlineSuccessComponent,
+    RequestPaymentTaskDetailsComponent,
+    PaymentSelectMethodComponent,
+    PaymentConfirmationComponent,
+    PaymentSelectMethodContainerComponent,
+    PaymentConfirmationContainerComponent,
+    PaymentBacsDetailsComponent,
+    PaymentBacsDetailsContainerComponent,
+    PaymentBacsConfirmContainerComponent,
+    PaymentBacsCancelContainerComponent,
+    PaymentBacsCancelComponent,
   ],
   imports: [
     TaskDetailsRoutingModule,
@@ -145,6 +179,14 @@ import { TransferringAccountHolderTaskDetailsComponent } from '@task-details/com
     FormsModule,
     SharedModule,
     ReactiveFormsModule,
+    TaskDetailsTabsNavigationComponent,
+    TaskNotesComponent,
+    TaskHeaderComponent,
+    StoreModule.forFeature(
+      fromTaskNotes.taskNotesFeatureKey,
+      fromTaskNotes.reducer
+    ),
+    EffectsModule.forFeature([NotesEffect]),
     StoreModule.forFeature(
       fromTaskDetails.taskDetailsFeatureKey,
       fromTaskDetails.reducer
@@ -155,6 +197,7 @@ import { TransferringAccountHolderTaskDetailsComponent } from '@task-details/com
     ]),
     AccountOpeningModule,
     RequestDocumentsModule,
+    RequestPaymentModule,
     UserDetailsModule,
     IssueKpUnitsModule,
     SigningModule,

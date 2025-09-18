@@ -1,6 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IUkOfficialCountry } from '@shared/countries/country.interface';
-import { Account, AccountDetails, AccountType } from '@shared/model/account';
+import {
+  Account,
+  AccountDetails,
+  AccountType,
+  AccountTypeMap,
+} from '@shared/model/account';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import {
@@ -29,6 +34,8 @@ export class ConfirmAccountDetailsUpdateContainerComponent
   updatedDetails$: Observable<AccountDetails>;
   countries$: Observable<IUkOfficialCountry[]>;
   isAdmin$: Observable<boolean>;
+
+  title: string;
   private subscriptionAccount: Subscription;
   private subscriptionUpdatedDetails: Subscription;
 
@@ -50,7 +57,10 @@ export class ConfirmAccountDetailsUpdateContainerComponent
   private currentSalesContactDetails: any;
   private updatedSalesContactDetails: any;
 
-  constructor(private store: Store, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private store: Store,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.account$ = this.store.select(selectAccount);
@@ -64,7 +74,13 @@ export class ConfirmAccountDetailsUpdateContainerComponent
         (this.currentBillingContactDetails =
           t?.accountDetails?.billingContactDetails),
         (this.currentSalesContactDetails =
-          t?.accountDetails?.salesContactDetails)
+          t?.accountDetails?.salesContactDetails),
+        (this.title =
+          this.accountType === AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+            ? 'Request to update the ' +
+              AccountTypeMap[this.accountType].label +
+              ' details'
+            : 'Request to update the account details')
       )
     );
     this.subscriptionUpdatedDetails = this.updatedDetails$.subscribe(
@@ -229,4 +245,7 @@ export class ConfirmAccountDetailsUpdateContainerComponent
         changed?.emailAddress?.emailAddress
     );
   }
+
+  protected readonly AccountType = AccountType;
+  protected readonly AccountTypeMap = AccountTypeMap;
 }

@@ -2,11 +2,11 @@
   <label class="govuk-label" [attr.for]="id" [attr.id]="labelId">
     {{ label }}
   </label>
-  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+  <div *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
     {{ hint }}
-  </span>
+  </div>
   <ng-container *ngIf="showError()">
-    <span
+    <p
       *ngIf="validationErrorMessage"
       id="event-name-error"
       class="govuk-error-message"
@@ -15,7 +15,7 @@
     >
       <span class="govuk-visually-hidden">Error:</span>
       {{ validationErrorMessage }}
-    </span>
+    </p>
   </ng-container>
 
   <input

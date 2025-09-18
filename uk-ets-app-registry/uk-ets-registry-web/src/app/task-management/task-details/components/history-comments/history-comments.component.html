@@ -1,14 +1,3 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <a
-      [routerLink]="'/task-details/' + requestId"
-      class="govuk-back-link"
-      skipLocationChange
-      id="back"
-      >Back</a
-    >
-  </div>
-</div>
 <form [formGroup]="formModel" *ngIf="isCompleted">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
@@ -36,7 +25,10 @@
                 Add comment
               </button>
               <button
-                class="govuk-button govuk-!-margin-right-3 govuk-button--secondary"
+                class="
+                  govuk-button govuk-!-margin-right-3
+                  govuk-button--secondary
+                "
                 data-module="govuk-button"
                 (click)="formModel.reset()"
               >

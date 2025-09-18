@@ -8,9 +8,6 @@ import gov.uk.ets.registry.api.file.upload.allocationtable.error.AllocationTable
 import gov.uk.ets.registry.api.file.upload.allocationtable.error.AllocationTableYearException;
 import gov.uk.ets.registry.api.file.upload.bulkar.error.BulkArBusinessRulesException;
 import gov.uk.ets.registry.api.file.upload.emissionstable.error.EmissionsTableBusinessRulesException;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
@@ -21,12 +18,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @ControllerAdvice
 @Log4j2
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class FileUploadControllerAdvice {
 
-    private static final String MAX_SIZE = "The file must be smaller than 2MB";
+    private static final String MAX_SIZE = "The file must be smaller than 10MB";
 
     @Value("${registry.file.max.errors.size}")
     private String maxErrorsSize;

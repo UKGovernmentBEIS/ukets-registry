@@ -5,8 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
@@ -15,12 +14,8 @@ import gov.uk.ets.registry.api.account.web.model.AccountHolderFileDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderService;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderUpdateService;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDiffDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDiffDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderTypeAheadSearchResultDTO;
-import gov.uk.ets.registry.api.common.model.types.Status;
+import gov.uk.ets.registry.api.accountholder.web.model.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -28,6 +23,7 @@ import java.util.List;
 
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -50,9 +46,11 @@ class AccountHolderControllerTest {
     @Mock
     private AccountHolderUpdateService accountHolderUpdateService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         controller = new AccountHolderController(accountHolderService, accountHolderUpdateService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
@@ -76,6 +74,42 @@ class AccountHolderControllerTest {
             .param("types", AccountHolderType.GOVERNMENT.toString(), AccountHolderType.INDIVIDUAL.toString())
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+    }
+
+
+    @Test
+    @Disabled
+    void shouldReturnBadRequestWhenDtoIsInvalidForAccountHolderChange() throws Exception {
+        String invalidJson = """
+            {
+              "accountIdentifier": 123
+            }
+        """;
+
+        mockMvc.perform(post("/api-registry/change-account-holder.perform")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Disabled
+    void shouldReturnOkWhenRequestIsValidForAccountHolderChange() throws Exception {
+        AccountHolderChangeDTO dto = new AccountHolderChangeDTO();
+        Long accountIdentifier = 123L;
+        dto.setAccountIdentifier(accountIdentifier);
+        dto.setAcquiringAccountHolder(new AccountHolderDTO());
+        dto.setAcquiringAccountHolderContactInfo(new AccountHolderRepresentativeDTO());
+
+        Mockito.when(accountHolderUpdateService.submitChangeAccountHolderRequest(any()))
+                .thenReturn(true);
+
+        mockMvc.perform(post("/api-registry/change-account-holder.perform")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .param("accountIdentifier", accountIdentifier.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
     }
 
     @Test

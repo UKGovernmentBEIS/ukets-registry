@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,7 +31,7 @@ public class PublicationApiResponseEntityExceptionHandler extends ResponseEntity
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
-                                                                  HttpHeaders headers, HttpStatus status,
+                                                                  HttpHeaders headers, HttpStatusCode status,
                                                                   WebRequest request) {
         ErrorBody error = ErrorBody.builder()
             .errorDetails(
@@ -49,7 +50,7 @@ public class PublicationApiResponseEntityExceptionHandler extends ResponseEntity
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
-        HttpMessageNotReadableException exception, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        HttpMessageNotReadableException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String message = "Unknown error";
         if (exception.getCause() instanceof JsonProcessingException) {
             message = ((JsonProcessingException) exception.getCause()).getOriginalMessage();

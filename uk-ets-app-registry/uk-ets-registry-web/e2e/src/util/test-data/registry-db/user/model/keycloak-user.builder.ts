@@ -29,7 +29,6 @@ export class KeycloakUserBuilder {
     workCountry: string[];
     workCountryCode: string[];
     workEmailAddress: string[];
-    workEmailAddressConfirmation: string[];
     workPhoneNumber: string[];
     workPostCode: string[];
     workTownOrCity: string[];
@@ -42,7 +41,7 @@ export class KeycloakUserBuilder {
       secretData: string;
       temporary: boolean;
       credentialData: string;
-    }
+    },
   ];
   // private readonly _credentials: [{ type: string; value: string }];
   private readonly _realmRoles: string[];
@@ -72,7 +71,6 @@ export class KeycloakUserBuilder {
       workCountry: ['UK'],
       workCountryCode: ['UK (44)'],
       workEmailAddress: ['dont@care.com'],
-      workEmailAddressConfirmation: ['dont@care.com'],
       workPhoneNumber: ['1434634996'],
       workTownOrCity: ['London'],
       workStateOrProvince: ['London'],
@@ -232,9 +230,6 @@ export class KeycloakUserBuilder {
     this._attributes.workEmailAddress = emailAddress
       ? [emailAddress]
       : this._attributes.workEmailAddress;
-    this._attributes.workEmailAddressConfirmation = emailAddress
-      ? [emailAddress]
-      : this._attributes.workEmailAddressConfirmation;
     this._attributes.workPhoneNumber = phoneNumber
       ? [phoneNumber]
       : this._attributes.workPhoneNumber;

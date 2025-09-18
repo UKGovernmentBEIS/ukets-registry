@@ -15,7 +15,10 @@ import {
   completeWizard,
   deleteTrustedAccountList,
 } from '../trusted-account-list.actions';
-import { selectIsOHAOrAOHA } from '@account-opening/account-opening.selector';
+import {
+  selectIsOHAOrAOHA,
+  selectIsOHAOrAOHAorMOHA,
+} from '@account-opening/account-opening.selector';
 import { getRuleLabel } from '@shared/model/account';
 
 @Component({
@@ -30,6 +33,9 @@ export class OverviewComponent implements OnInit {
     selectTrustedAccountListCompleted
   );
   isOHAorAOHA$: Observable<boolean> = this.store.select(selectIsOHAOrAOHA);
+  isOHAorAOHAorMOHA$: Observable<boolean> = this.store.select(
+    selectIsOHAOrAOHAorMOHA
+  );
   trustedAccountListWizardRoutes = TrustedAccountListWizardRoutes;
 
   question1 =

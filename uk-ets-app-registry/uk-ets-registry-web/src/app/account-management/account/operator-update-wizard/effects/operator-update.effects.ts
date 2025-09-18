@@ -9,17 +9,24 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-import { of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { errors } from '@shared/shared.action';
 import { ApiErrorHandlingService } from '@shared/services';
 import { select, Store } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import { selectAccountId } from '@account-management/account/account-details/account.selector';
 import { Router } from '@angular/router';
-import { AircraftOperator, Installation } from '@shared/model/account';
+import {
+  AircraftOperator,
+  Installation,
+  MaritimeOperator,
+  OperatorType,
+} from '@shared/model/account';
 import { selectCurrentOperatorInfo } from '@operator-update/reducers';
 import {
   checkIfExistsAircraftMonitoringPlanId,
+  checkIfExistsMaritimeImoAndMonitorinfPlan,
+  checkIfExistsMaritimeImoAndMonitoringPlanFailure,
   fetchCurrentOperatorInfo,
   setCurrentOperatorInfoSuccess,
   setNewOperatorInfoSuccess,
@@ -27,6 +34,7 @@ import {
 import { OperatorUpdateActions } from '@operator-update/actions';
 import { OperatorUpdateWizardPathsModel } from '@operator-update/model/operator-update-wizard-paths.model';
 import { OperatorUpdateApiService } from '@operator-update/services';
+import { ErrorDetail } from '@shared/error-summary';
 
 @Injectable()
 export class OperatorUpdateEffects {
@@ -196,7 +204,7 @@ export class OperatorUpdateEffects {
     )
   );
 
-  fetchExistsMonitoringPlan$ = createEffect(() =>
+  fetchExistsAircraftMonitoringPlan$ = createEffect(() =>
     this.actions$.pipe(
       ofType(checkIfExistsAircraftMonitoringPlanId),
       withLatestFrom(this.store.pipe(select(selectCurrentOperatorInfo))),
@@ -205,7 +213,8 @@ export class OperatorUpdateEffects {
         return this.operatorUpdateApiService
           .fetchExistsMonitoringPlanId(
             action.operator?.monitoringPlan.id,
-            currentAircraft?.monitoringPlan?.id
+            currentAircraft?.monitoringPlan?.id,
+            OperatorType.AIRCRAFT_OPERATOR
           )
           .pipe(
             map((data) =>
@@ -223,6 +232,79 @@ export class OperatorUpdateEffects {
               )
             )
           );
+      })
+    )
+  );
+
+  fetchExistsMaritimeMonitoringPlanAndImo$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(checkIfExistsMaritimeImoAndMonitorinfPlan),
+      withLatestFrom(this.store.pipe(select(selectCurrentOperatorInfo))),
+      switchMap(([action, currentOperatorInfo]) => {
+        return forkJoin({
+          monitoringPlan: this.operatorUpdateApiService
+            .fetchExistsMonitoringPlanId(
+              action.operator?.monitoringPlan.id,
+              (currentOperatorInfo as MaritimeOperator)?.monitoringPlan?.id,
+              OperatorType.MARITIME_OPERATOR
+            )
+            .pipe(
+              catchError((httpError: HttpErrorResponse) => of(httpError.error))
+            ),
+          imo: this.operatorUpdateApiService
+            .fetchExistsImo(
+              action.operator?.imo,
+              (currentOperatorInfo as MaritimeOperator)?.imo
+            )
+            .pipe(
+              catchError((httpError: HttpErrorResponse) => of(httpError.error))
+            ),
+        }).pipe(
+          map(({ monitoringPlan, imo }) => {
+            const errors: ErrorDetail[] = [];
+
+            if (monitoringPlan && typeof monitoringPlan !== 'boolean') {
+              errors.push(...monitoringPlan.errorDetails);
+            }
+
+            if (imo && typeof imo !== 'boolean') {
+              errors.push(...imo.errorDetails);
+            }
+
+            if (errors.length > 0) {
+              return checkIfExistsMaritimeImoAndMonitoringPlanFailure({
+                errorSummaries: errors,
+              });
+            }
+            return setNewOperatorInfoSuccess({
+              operator: action.operator,
+            });
+          }),
+          catchError((httpError) =>
+            of(
+              errors({
+                errorSummary: this.apiErrorHandlingService.transform(
+                  httpError.error
+                ),
+              })
+            )
+          )
+        );
+      })
+    )
+  );
+
+  fetchExistsImoAndMonitoringPlanFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(checkIfExistsMaritimeImoAndMonitoringPlanFailure),
+      switchMap((httpError) => {
+        return of(
+          errors({
+            errorSummary: this.apiErrorHandlingService.transform({
+              errorDetails: httpError.errorSummaries,
+            }),
+          })
+        );
       })
     )
   );

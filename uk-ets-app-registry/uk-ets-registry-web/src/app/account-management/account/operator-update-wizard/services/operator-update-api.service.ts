@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { Operator } from '@shared/model/account';
+import { Operator, OperatorType } from '@shared/model/account';
 import { OperatorUpdate } from '@operator-update/model/operator-update';
 import { OperatorService } from '@shared/services/operator-service';
 
@@ -40,13 +40,28 @@ export class OperatorUpdateApiService {
     );
   }
 
-  fetchExistsMonitoringPlanId(monitoringPlanIdentifier: string, current) {
+  fetchExistsMonitoringPlanId(
+    monitoringPlanIdentifier: string,
+    current,
+    type: OperatorType
+  ) {
     if (monitoringPlanIdentifier == current) {
       return of(true);
     }
-    return this.operatorService.fetchExistsMonitoringPlanId(
-      monitoringPlanIdentifier
-    );
+    switch (type) {
+      case OperatorType.AIRCRAFT_OPERATOR: {
+        return this.operatorService.fetchExistsAircraftMonitoringPlanId(
+          monitoringPlanIdentifier
+        );
+      }
+      case OperatorType.MARITIME_OPERATOR: {
+        return this.operatorService.fetchExistsMaritimeMonitoringPlanId(
+          monitoringPlanIdentifier
+        );
+      }
+      default:
+        break;
+    }
   }
 
   fetchExistsInstallationPermitId(
@@ -59,5 +74,12 @@ export class OperatorUpdateApiService {
     return this.operatorService.fetchExistsInstallationPermitId(
       installationPermitIdentifier
     );
+  }
+
+  fetchExistsImo(imo: string, current) {
+    if (imo == current) {
+      return of(true);
+    }
+    return this.operatorService.fetchExistsImo(imo);
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { catchError, concatMap, debounceTime, map, tap } from 'rxjs/operators';
 import * as TaskListActions from '@task-management/task-list/task-list.actions';
 import { SearchActionPayload, Task } from '@task-management/model';

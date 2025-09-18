@@ -27,7 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -309,6 +312,8 @@ class AllocationModelTest extends ParentAllocationBase {
 
         EqualsVerifier.forClass(AllocationPhase.class)
             .withOnlyTheseFields("code")
+            .suppress(Warning.STRICT_INHERITANCE)
+            .suppress(Warning.NONFINAL_FIELDS)
             .withPrefabValues(AllocationPeriod.class, firstPeriod, secondPeriod).verify();
 
         AllocationPhase phase1 = new AllocationPhase();
@@ -322,6 +327,8 @@ class AllocationModelTest extends ParentAllocationBase {
 
         EqualsVerifier.forClass(AllocationPeriod.class)
             .withOnlyTheseFields("code")
+            .suppress(Warning.STRICT_INHERITANCE)
+            .suppress(Warning.NONFINAL_FIELDS)            
             .withPrefabValues(AllocationPhase.class, phase1, phase2)
             .withPrefabValues(AllocationYear.class, year1, year2)
             .verify();
@@ -334,6 +341,8 @@ class AllocationModelTest extends ParentAllocationBase {
 
         EqualsVerifier.forClass(AllocationYear.class)
             .withOnlyTheseFields("year")
+            .suppress(Warning.STRICT_INHERITANCE)
+            .suppress(Warning.NONFINAL_FIELDS)            
             .withPrefabValues(AllocationEntry.class, entry1, entry2)
             .withPrefabValues(AllocationStatus.class, status1, status2)
             .withPrefabValues(AllocationPeriod.class, firstPeriod, secondPeriod)

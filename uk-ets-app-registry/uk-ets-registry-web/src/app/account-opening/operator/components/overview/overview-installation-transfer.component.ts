@@ -36,6 +36,9 @@ export class OverviewInstallationTransferComponent {
   @Input()
   operatorCompleted: boolean;
 
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+
   operatorWizardRoutes = OperatorWizardRoutes;
   activityTypes = InstallationActivityType;
   regulatorMap = regulatorMap;
@@ -43,7 +46,7 @@ export class OverviewInstallationTransferComponent {
   constructor(private formatUkDatePipe: FormatUkDatePipe) {}
 
   getInstallationToBeTransferredSummaryListInfos(): SummaryListItem[] {
-    return [
+    const summary = [
       {
         key: { label: 'Installation ID' },
         value: {
@@ -68,6 +71,10 @@ export class OverviewInstallationTransferComponent {
         },
       },
       {
+        key: { label: 'Emitter ID' },
+        value: { label: this.installationToBeTransferred.emitterId },
+      },
+      {
         key: { label: 'Permit ID' },
         value: { label: this.installationToBeTransferred.permit.id },
       },
@@ -87,14 +94,31 @@ export class OverviewInstallationTransferComponent {
         value: { label: this.installationToBeTransferred.lastYear },
       },
     ];
+
+    return !this.isSeniorOrJuniorAdmin ?
+      summary.filter( next => next.key.label != 'Emitter ID') :
+        summary;
   }
 
   getNewInstallationDetails(): SummaryListItem[] {
-    return [
+    const summary = [
       {
         key: { label: 'New installation name' },
         value: {
           label: this.installationTransfer.name,
+          class: 'summary-list-change-notification',
+        },
+        action: {
+          label: 'Change',
+          visible: !this.operatorCompleted.valueOf(),
+          visuallyHidden: 'installation and permit details',
+          url: this.operatorWizardRoutes.INSTALLATION,
+        },
+      },
+      {
+        key: { label: 'New emitter ID' },
+        value: {
+          label: this.installationTransfer.emitterId,
           class: 'summary-list-change-notification',
         },
         action: {
@@ -116,7 +140,11 @@ export class OverviewInstallationTransferComponent {
           visuallyHidden: 'installation and permit details',
           url: this.operatorWizardRoutes.INSTALLATION,
         },
-      },
+      }
     ];
+
+    return !this.isSeniorOrJuniorAdmin ?
+      summary.filter( next => next.key.label != 'New emitter ID') :
+        summary;
   }
 }

@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { UkDate } from '../model/uk-date';
 import { Status } from '@shared/model/status';
 
@@ -55,10 +54,11 @@ export interface IUser {
   country: string;
   birthDate: UkDate;
   countryOfBirth: string;
-  workCountryCode: string;
-  workPhoneNumber: string;
-  workEmailAddress: string;
-  workEmailAddressConfirmation: string;
+  workMobileCountryCode: string;
+  workMobilePhoneNumber: string;
+  workAlternativeCountryCode: string;
+  workAlternativePhoneNumber: string;
+  noMobilePhoneNumberReason: string;
   workBuildingAndStreet: string;
   workBuildingAndStreetOptional: string;
   workBuildingAndStreetOptional2: string;
@@ -70,6 +70,10 @@ export interface IUser {
   state: string;
   status: UserStatus;
   memorablePhrase: string;
+  differentCountryLastFiveYears?: boolean;
+  recoveryCountryCode?: string;
+  recoveryPhoneNumber?: string;
+  recoveryEmailAddress?: string;
 }
 
 export class User implements IUser {
@@ -90,10 +94,11 @@ export class User implements IUser {
   country = '';
   birthDate = { day: null, month: null, year: null };
   countryOfBirth = '';
-  workCountryCode = '';
-  workPhoneNumber = '';
-  workEmailAddress = '';
-  workEmailAddressConfirmation = '';
+  workMobileCountryCode = '';
+  workMobilePhoneNumber = '';
+  workAlternativeCountryCode = '';
+  workAlternativePhoneNumber = '';
+  noMobilePhoneNumberReason = '';
   workBuildingAndStreet = '';
   workBuildingAndStreetOptional = '';
   workBuildingAndStreetOptional2 = '';
@@ -105,6 +110,9 @@ export class User implements IUser {
   state = 'REGISTERED';
   status = 'REGISTERED' as UserStatus;
   memorablePhrase = '';
+  recoveryCountryCode = '';
+  recoveryPhoneNumber = '';
+  recoveryEmailAddress = '';
 
   static updatePartially(user: User, partialUser: Partial<User>): IUser {
     return User.decode({ ...user, ...partialUser });

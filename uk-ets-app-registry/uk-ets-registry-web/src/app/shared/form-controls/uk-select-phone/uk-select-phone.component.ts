@@ -1,25 +1,27 @@
 import {
   AfterContentInit,
   Component,
+  EventEmitter,
   forwardRef,
-  Injector,
+  inject,
   Input,
+  Output,
 } from '@angular/core';
 import {
   AbstractControl,
   ControlContainer,
-  UntypedFormBuilder,
-  UntypedFormGroup,
   FormGroupDirective,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   ValidationErrors,
   Validator,
+  FormGroup,
+  FormBuilder,
 } from '@angular/forms';
-import { PhoneNumberUtil } from 'google-libphonenumber';
+import { PhoneNumberUtil, PhoneNumberType } from 'google-libphonenumber';
 import { emptyProp } from '../../shared.util';
 import { UkProtoFormCompositeComponent } from '../uk-proto-form-composite.component';
-import { PhoneInfo } from './phone.model';
+import { MobileNumberVerificationStatus, PhoneInfo } from './phone.model';
 import { PhoneNumberValidationResult } from '@shared/form-controls/uk-select-phone/phone-number-validation-result.enum';
 
 const phoneNumberUtil = PhoneNumberUtil.getInstance();
@@ -27,6 +29,7 @@ const phoneNumberUtil = PhoneNumberUtil.getInstance();
 @Component({
   selector: 'app-uk-phone-select',
   templateUrl: './uk-select-phone.component.html',
+  styleUrls: ['uk-select-phone.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -50,31 +53,29 @@ export class UKSelectPhoneComponent
   @Input() countryCodes: any[];
   @Input() countryCodeLabel = 'Country code';
   @Input() phoneNumberLabel = 'Phone number';
+  @Input() mustBeMobileNumber = false;
 
-  phoneNumberRegex = new RegExp('^[\\d \\-()]*$');
+  @Output() readonly mobileNumberVerificationStatus =
+    new EventEmitter<MobileNumberVerificationStatus>();
 
-  constructor(
-    protected parentF: FormGroupDirective,
-    private fb: UntypedFormBuilder,
-    protected injector: Injector
-  ) {
-    super(parentF, injector);
-  }
+  private phoneNumberRegex = new RegExp('^[\\d \\-()]*$');
+  private fb = inject(FormBuilder);
 
   protected getDefaultErrorMessageMap(): { [key: string]: string } {
     return {
       allFieldsRequired: 'Enter a phone number',
       invalidCodeForCountry:
-        'Please enter a valid phone format for the selected country',
+        'Enter a valid phone format for the selected country',
       tooShort: 'The phone number is too short for your country code',
       tooLong: 'The phone number is too long for your country code',
       invalidLength: 'The phone number length is invalid',
       parseException: 'The string supplied did not seem to be a phone number',
       invalidChars: 'The phone number contains invalid characters',
+      notMobile: 'Enter a valid mobile number',
     };
   }
 
-  protected buildForm(): UntypedFormGroup {
+  protected buildForm(): FormGroup {
     return this.fb.group({
       countryCode: [''],
       phoneNumber: [''],
@@ -109,6 +110,8 @@ export class UKSelectPhoneComponent
     let validNumber = false;
     let countryCode = control.value.countryCode;
     const phone = control.value.phoneNumber;
+    let regionCode;
+    let phoneNumber;
 
     /* As libphonenumber library treats some non-digit characters as digits,
      * we have to check ourselves for invalid characters. */
@@ -123,12 +126,8 @@ export class UKSelectPhoneComponent
         .substring(countryCode.indexOf('(') + 1, countryCode.indexOf(')'));
     }
     try {
-      const regionCode =
-        phoneNumberUtil.getRegionCodeForCountryCode(countryCode);
-      const phoneNumber = phoneNumberUtil.parseAndKeepRawInput(
-        phone,
-        regionCode
-      );
+      regionCode = phoneNumberUtil.getRegionCodeForCountryCode(countryCode);
+      phoneNumber = phoneNumberUtil.parseAndKeepRawInput(phone, regionCode);
       validNumber = phoneNumberUtil.isValidNumber(phoneNumber);
       validationResult =
         phoneNumberUtil.isPossibleNumberWithReason(phoneNumber);
@@ -152,6 +151,29 @@ export class UKSelectPhoneComponent
             invalidCodeForCountry:
               this.getDefaultErrorMessageMap().invalidCodeForCountry,
           };
+      }
+    }
+    if (this.mustBeMobileNumber) {
+      const numberType = phoneNumberUtil.getNumberType(phoneNumber);
+
+      if (
+        numberType !== PhoneNumberType.MOBILE &&
+        numberType !== PhoneNumberType.FIXED_LINE_OR_MOBILE &&
+        numberType !== PhoneNumberType.UNKNOWN
+      ) {
+        return { notMobile: this.getDefaultErrorMessageMap().notMobile };
+      }
+
+      switch (numberType) {
+        case PhoneNumberType.MOBILE:
+          this.mobileNumberVerificationStatus.emit('MOBILE');
+          break;
+        case PhoneNumberType.FIXED_LINE_OR_MOBILE:
+          this.mobileNumberVerificationStatus.emit('FIXED_LINE_OR_MOBILE');
+          break;
+        case PhoneNumberType.UNKNOWN:
+          this.mobileNumberVerificationStatus.emit('UNKNOWN');
+          break;
       }
     }
     return null;

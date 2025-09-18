@@ -86,6 +86,7 @@ export class EditAccountDetailsContainerComponent implements OnInit {
         (type) =>
           type === AccountType.OPERATOR_HOLDING_ACCOUNT ||
           type === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ||
+          type === AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT ||
           type === AccountType.TRADING_ACCOUNT
       )
     );

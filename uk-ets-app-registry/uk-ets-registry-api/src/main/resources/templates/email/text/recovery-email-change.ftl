@@ -1,0 +1,1 @@
+The security code to recover your Registry Sign In is ${securityCode}.

@@ -3,7 +3,7 @@
   <div class="govuk-grid-column-two-thirds" aria-live="polite">
     <span class="govuk-caption-xl">{{ caption }}</span>
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">{{ heading }}</h1>
-    <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-8">
       We will use this information to contact
       {{
         isRequestUpdateProcess ? (isMyProfilePage ? 'you' : 'the user') : 'you'
@@ -14,61 +14,81 @@
     <form
       (ngSubmit)="onSubmit()"
       [formGroup]="formGroup"
-      [appConnectForm]="_user"
+      [appConnectForm]="user"
     >
-      <div>
-        <fieldset
-          aria-describedby="wrong-number-error"
-          class="govuk-fieldset"
-          role="group"
-        >
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">Work phone number</h2>
-          </legend>
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        <h2 class="govuk-fieldset__heading">Work mobile phone</h2>
+      </legend>
+      <label class="govuk-label govuk-!-margin-bottom-6">
+        We may use this number to send you an SMS message to verify your
+        identity or to contact you in relation to the Registry.
+      </label>
+
+      <fieldset class="govuk-fieldset govuk-!-margin-bottom-4">
+        <legend class="govuk-fieldset__legend">
+          Do you have a work mobile number?
+        </legend>
+        <app-uk-radio-input
+          controlName="hasWorkMobilePhone"
+          [formRadioGroupInfo]="hasWorkMobilePhoneRadioGroup"
+          [validationErrorMessage]="
+            this.validationErrorMessage.hasWorkMobilePhone
+          "
+        />
+      </fieldset>
+
+      <ng-template #mobilePhoneTemplate>
+        <div class="govuk-form-group">
           <app-uk-phone-select
-            [phoneInfo]="_phoneInfo"
+            class="govuk-!-margin-bottom-6"
             [showErrors]="showErrors"
             [countryCodes]="countryCodes"
-            [validationErrorMessages]="validationMessages.workPhone"
-            formControlName="workPhone"
-          ></app-uk-phone-select>
-        </fieldset>
-      </div>
-      <fieldset
-        aria-describedby="same-email-error"
-        class="govuk-fieldset"
-        role="group"
-      >
+            [validationErrorMessages]="validationMessages.workMobilePhone"
+            [mustBeMobileNumber]="true"
+            formControlName="workMobilePhone"
+            phoneNumberLabel="Work mobile number"
+            (mobileNumberVerificationStatus)="
+              onMobileNumberVerificationStatusChange($event)
+            "
+          />
+          <app-uk-phone-select
+            [showErrors]="showErrors"
+            [countryCodes]="countryCodes"
+            formControlName="workAlternativePhone"
+            phoneNumberLabel="Alternative phone number (optional)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template #noMobilePhoneTemplate>
+        <div class="govuk-form-group">
+          <app-uk-phone-select
+            class="govuk-!-margin-bottom-6"
+            [showErrors]="showErrors"
+            [countryCodes]="countryCodes"
+            [validationErrorMessages]="validationMessages.workAlternativePhone"
+            formControlName="workAlternativePhone"
+            phoneNumberLabel="Alternative phone number"
+          />
+          <app-form-control-textarea
+            class="govuk-!-margin-bottom-0"
+            [label]="'Reason for not having a work mobile number'"
+            [maxlength]="256"
+            controlName="noMobilePhoneNumberReason"
+            [validationErrorMessage]="
+              validationErrorMessage.noMobilePhoneNumberReason
+            "
+            [attr.id]="'noMobilePhoneNumberReason-label'"
+            [rows]="5"
+          />
+        </div>
+      </ng-template>
+
+      <fieldset class="govuk-fieldset" role="group">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
           <h2 class="govuk-fieldset__heading">Work contact address</h2>
         </legend>
-        <div
-          class="govuk-form-group"
-          id="work-address-form-checkbox"
-          *ngIf="!isRequestUpdateProcess"
-        >
-          <div class="govuk-checkboxes">
-            <div class="govuk-checkboxes__item">
-              <input
-                (change)="onAddressCheckChange($event)"
-                class="govuk-checkboxes__input"
-                formControlName="sameWorkAddress"
-                id="work-address-checkbox"
-                name="work-address-checkbox"
-                type="checkbox"
-                value="carcasses"
-              />
-              <label
-                class="govuk-label govuk-checkboxes__label"
-                for="work-address-checkbox"
-              >
-                My work contact address is the same as my home address
-              </label>
-            </div>
-          </div>
-        </div>
         <app-form-control-text
-          [readonly]="!!sameAddress"
           [label]="'Address line 1'"
           [maxlength]="256"
           [validationErrorMessage]="
@@ -76,52 +96,46 @@
           "
           controlName="workBuildingAndStreet"
           [autocomplete]="'address-line1'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
-          [readonly]="!!sameAddress"
           [label]="'Address line 2 (optional)'"
           [maxlength]="256"
           controlName="workBuildingAndStreetOptional"
           [autocomplete]="'address-line2'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
-          [readonly]="!!sameAddress"
           [label]="'Address line 3 (optional)'"
           [maxlength]="256"
           controlName="workBuildingAndStreetOptional2"
           [autocomplete]="'address-line3'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
-          [readonly]="!!sameAddress"
           [label]="'Town or city'"
           [validationErrorMessage]="validationErrorMessage.workTownOrCity"
           [maxlength]="256"
           controlName="workTownOrCity"
           [autocomplete]="'address-level2'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
-          [readonly]="!!sameAddress"
           [label]="'State or Province (optional)'"
           [maxlength]="256"
           controlName="workStateOrProvince"
           [autocomplete]="'state-or-province'"
-        ></app-form-control-text>
+        />
         <app-form-control-select
           controlName="workCountry"
           [options]="countrySelectOptions()"
           [class]="'govuk-!-width-two-thirds'"
           [label]="'Country'"
-          [readonly]="!!sameAddress"
-        ></app-form-control-select>
+        />
         <app-form-control-text
-          [readonly]="!!sameAddress"
           [label]="'Postal Code or ZIP (optional, if outside UK)'"
           [class]="'govuk-input--width-10'"
           [maxlength]="65"
           [validationErrorMessage]="validationErrorMessage.workPostCode"
           controlName="workPostCode"
           [autocomplete]="'postal-code'"
-        ></app-form-control-text>
+        />
       </fieldset>
       <button
         class="govuk-button"

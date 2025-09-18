@@ -4,7 +4,6 @@ import gov.uk.ets.reports.generator.domain.UnitBlockReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportRequestingRole;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,6 +31,7 @@ public class UnitBlockReportJdbcMapper
             "       ub.unit_type             as unit_type,\n" +
             "       ub.originating_country_code as originating_country_code,\n" +
             "       account_identifier       as account_identifier,\n" +
+            "       a.full_identifier       as account_full_identifier,\n" +
             "       case \n" +
             "           when a.registry_account_type != 'NONE' then a.registry_account_type \n" +
             "           else a.kyoto_account_type \n" +
@@ -85,11 +85,6 @@ public class UnitBlockReportJdbcMapper
             "order by ub.id desc";
 
     @Override
-    public List<UnitBlockReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
-
-    @Override
     public List<UnitBlockReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
         List<UnitBlockReportData> result = jdbcTemplate.query(REPORT_QUERY, this);
 
@@ -112,7 +107,8 @@ public class UnitBlockReportJdbcMapper
             .quantity(rs.getLong("quantity"))
             .unitType(rs.getString("unit_type"))
             .originatingCountryCode(rs.getString("originating_country_code"))
-            .accountNumber(rs.getLong("account_identifier"))
+            .holdingAccountId(rs.getLong("account_identifier"))
+            .accountNumber(rs.getString("account_full_identifier"))
             .accountType(rs.getString("account_type"))
             .originalCp(rs.getString("original_cp"))
             .applicableCp(rs.getString("applicable_cp"))

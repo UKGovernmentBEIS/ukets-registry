@@ -1,0 +1,88 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">Update documents</span>
+    <form (submit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading govuk-heading-xl">Upload file</h1>
+        </legend>
+        <div *ngIf="showChooseFileBtn">
+          <app-uk-select-file
+            formControlName="document"
+            [isInProgress]="isInProgress"
+            [fileProgress]="fileProgress"
+            [showErrors]="showErrors"
+            [fileType]="allowedFileTypes"
+            [isFileRequired]="isFileRequired"
+            [fileSize]="maxFileSize"
+          >
+          </app-uk-select-file>
+        </div>
+
+        <div class="govuk-details" *ngIf="!showChooseFileBtn">
+          <div
+            class="govuk-grid-row"
+            [class]="!storedDocumentFile ? 'disabled' : null"
+          >
+            <div class="govuk-grid-column-two-thirds">
+              <div class="inline-block">
+                <img
+                  [src]="
+                    !!storedDocumentFile
+                      ? './assets/images/icon-file-download.png'
+                      : './assets/images/icon-file-download_gray.png'
+                  "
+                  [class]="!storedDocumentFile ? 'disabled' : null"
+                  style="vertical-align: middle; margin-right: 10px"
+                  alt="download"
+                />
+                <span
+                  >{{ storedDocumentFile?.name || 'loading file...' }}
+                </span>
+              </div>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <span class="govuk-!-margin-right-3"
+                ><a
+                  class="govuk-link govuk-link--no-visited-state"
+                  (click)="downloadStoredDocument()"
+                  [routerLink]="[]"
+                  >Download</a
+                ></span
+              >
+              <span
+                ><a
+                  class="govuk-link govuk-link--no-visited-state"
+                  (click)="removeStoredFile()"
+                  [routerLink]="[]"
+                  >Remove</a
+                ></span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds" aria-live="title">
+            <app-form-control-text
+              label="Enter a document title"
+              [maxlength]="100"
+              [validationErrorMessage]="validationErrorMessage.title"
+              controlName="title"
+            ></app-form-control-text>
+          </div>
+        </div>
+      </fieldset>
+      <div>
+        <button
+          class="govuk-button"
+          data-module="govuk-button"
+          type="submit"
+          id="continue"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -25,11 +25,20 @@ public enum UserAttributes {
 	WORK_COUNTRY("workCountry"),
 	WORK_COUNTRY_CODE("workCountryCode"),
 	WORK_PHONE_NUMBER("workPhoneNumber"),
+	WORK_MOBILE_COUNTRY_CODE("workMobileCountryCode"),
+	WORK_MOBILE_PHONE_NUMBER("workMobilePhoneNumber"),
+	WORK_ALTERNATIVE_COUNTRY_CODE("workAlternativeCountryCode"),
+	WORK_ALTERNATIVE_PHONE_NUMBER("workAlternativePhoneNumber"),
+	NO_MOBILE_PHONE_NUMBER_REASON("noMobilePhoneNumberReason"),
 	WORK_EMAIL_ADDRESS("workEmailAddress"),
 	WORK_POST_CODE("workPostCode"),
 	WORK_TOWN_OR_CITY("workTownOrCity"),
 	WORK_STATE_OR_PROVINCE("workStateOrProvince"),
-	YEAR_OF_BIRTH("yearOfBirth");
+	YEAR_OF_BIRTH("yearOfBirth"),
+	RECOVERY_COUNTRY_CODE("recoveryCountryCode"),
+	RECOVERY_PHONE_NUMBER("recoveryPhoneNumber"),
+	RECOVERY_EMAIL_ADDRESS("recoveryEmailAddress"),
+	HIDE_RECOVERY_METHODS_NOTIFICATION("hideRecoveryMethodsNotification");
 
 	private final String attributeName;
 

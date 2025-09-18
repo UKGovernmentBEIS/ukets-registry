@@ -23,6 +23,7 @@ import { IUser } from '@registry-web/shared/user';
 import { KeycloakUser } from '@shared/user';
 import { UserDeactivationDetails } from '@registry-web/user-management/user-details/model/user-deactivation-details';
 import { AllocationStatus } from '@account-management/account-list/account-list.model';
+import { PaymentMethod, PaymentStatus } from '@request-payment/model';
 
 export interface TaskDetailsBase {
   requestId: string;
@@ -45,6 +46,7 @@ export interface TaskDetailsBase {
   history: DomainEvent[];
   subTasks: TaskDetailsBase[];
   parentTask: TaskDetailsBase;
+  deadline?: Date;
 }
 
 export interface AccountOpeningTaskDetails extends TaskDetailsBase {
@@ -78,7 +80,8 @@ export interface TransactionRuleUpdateTaskDetails extends TaskDetailsBase {
 export interface OperatorUpdateTaskDetails extends TaskDetailsBase {
   taskType:
     | RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST
-    | RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST;
+    | RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST
+    | RequestType.MARITIME_OPERATOR_UPDATE_REQUEST;
   accountInfo: AccountInfo;
   current: Operator;
   changed: Operator;
@@ -119,6 +122,7 @@ export interface TransactionTaskDetailsBase extends TaskDetailsBase {
   reference?: string;
   natTransactionIdentifier?: string;
   nerTransactionIdentifier?: string;
+  transferringAccount?: any;
 }
 
 export interface AllocationRequestTaskDetails extends TaskDetailsBase {
@@ -149,6 +153,25 @@ export interface RequestedDocumentUploadTaskDetails extends TaskDetailsBase {
   uploadedFiles: FileBase[];
   completedDate: Date;
   difference: string;
+}
+
+export interface RequestPaymentTaskDetails extends TaskDetailsBase {
+  taskType: RequestType.PAYMENT_REQUEST;
+  amountRequested: number;
+  amountPaid: number;
+  description: string;
+  invoiceFile: FileBase;
+  receiptFile: FileBase;
+  uuid: string;
+  paymentLink: string;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  recipient: string;
+  userUrid: string;
+
+  reasonForAssignment: string;
+  comment: string;
+  completedDate: Date;
 }
 
 export interface AccountHolderUpdateDetails extends TaskDetailsBase {
@@ -242,6 +265,7 @@ export type TaskDetails =
   | AllocationRequestTaskDetails
   | EmissionsTableUploadTaskDetails
   | RequestedDocumentUploadTaskDetails
+  | RequestPaymentTaskDetails
   | AccountHolderUpdateDetails
   | AccountHolderPrimaryContactUpdateDetails
   | ChangeTokenTaskDetails
@@ -296,4 +320,10 @@ export enum TaskUpdateAction {
   UPDATE_ACCOUNT_HOLDER = 'UPDATE_ACCOUNT_HOLDER',
   RESET_ACCOUNT_HOLDER = 'RESET_ACCOUNT_HOLDER',
   RESET_REGULATOR = 'RESET_REGULATOR',
+  UPDATE_DEADLINE = 'UPDATE_DEADLINE',
+}
+
+export interface TaskFileUploadError {
+  fileUploadIndex: number;
+  errorMessage: string;
 }

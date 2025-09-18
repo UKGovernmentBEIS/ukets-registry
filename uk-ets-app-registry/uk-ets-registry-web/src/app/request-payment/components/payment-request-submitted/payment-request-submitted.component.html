@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">A payment request has been submitted.</h1>
+      <div class="govuk-panel__body">
+        The request ID is<br /><strong>{{ submittedIdentifier }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      The recipient will receive a notification to make the payment.
+    </p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">
+      <a
+        [routerLink]="[]"
+        (click)="navigateTo()"
+        class="govuk-link govuk-link--no-visited-state"
+        id="back"
+        >Go back to the task</a
+      >
+    </p>
+  </div>
+</div>

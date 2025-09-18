@@ -1,6 +1,6 @@
 package gov.uk.ets.registry.api.user.admin.service;
 
-import gov.uk.ets.registry.api.common.model.entities.Contact;
+import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.user.KeycloakUser;
 import gov.uk.ets.registry.api.user.admin.AssignUsersCriteriaDTO;
 import gov.uk.ets.registry.api.user.admin.shared.KeycloakUserSearchCriteria;
@@ -63,7 +63,7 @@ public interface UserAdministrationService {
      * @param id the IAM ID
      * @return the user work contact details.
      */
-    Contact findWorkContactDetailsByIamId(String id);
+    ContactDTO findWorkContactDetailsByIamId(String id);
 
     /**
      * Finds the work contact details of a user by the provided IAM id.
@@ -72,7 +72,7 @@ public interface UserAdministrationService {
      * @param noUserToken if true indicates that no logged in user exists.
      * @return the user work contact details.
      */
-    Contact findWorkContactDetailsByIamId(String id, boolean noUserToken);
+    ContactDTO findWorkContactDetailsByIamId(String id, boolean noUserToken);
 
     /**
      * Searches for users in keycloak.
@@ -80,7 +80,7 @@ public interface UserAdministrationService {
      * @param criteria the user search criteria
      * @return
      */
-    KeycloakUserSearchPagedResults search(KeycloakUserSearchCriteria criteria);
+    KeycloakUserSearchPagedResults search(KeycloakUserSearchCriteria criteria,boolean withServiceAccountAccess);
 
     /***
      * Updates the user email, work email address.
@@ -93,7 +93,11 @@ public interface UserAdministrationService {
 
     /**
      * Retrieves a Keycloak representation of a user with the given email.
+     * 
+     * @deprecated email is unique per user but it can change,
+     * use findByIamId instead
      */
+    @Deprecated(forRemoval = true)
     Optional<UserRepresentation> findByEmail(String email);
 
 

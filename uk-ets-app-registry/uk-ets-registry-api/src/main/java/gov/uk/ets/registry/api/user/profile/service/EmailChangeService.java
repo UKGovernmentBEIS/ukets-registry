@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.user.profile.service;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import gov.uk.ets.registry.api.auditevent.DomainEvent;
 import gov.uk.ets.registry.api.auditevent.DomainObject;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInput;
@@ -7,6 +8,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.RuleInputType;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.security.GenerateTokenCommand;
 import gov.uk.ets.registry.api.common.security.TokenVerifier;
+import gov.uk.ets.registry.api.common.security.UsedTokenService;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
@@ -14,10 +16,7 @@ import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
-import gov.uk.ets.registry.api.user.domain.IamUserRole;
 import gov.uk.ets.registry.api.user.domain.User;
-import gov.uk.ets.registry.api.user.domain.UserRole;
-import gov.uk.ets.registry.api.user.domain.UserRoleMapping;
 import gov.uk.ets.registry.api.user.profile.domain.EmailChange;
 import gov.uk.ets.registry.api.user.service.UserService;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
@@ -44,6 +43,7 @@ public class EmailChangeService {
     private final TaskRepository taskRepository;
     private final EventService eventService;
     private final EmailChangeChecker emailChangeChecker;
+    private final UsedTokenService usedTokenService;
     private final Mapper mapper;
 
     public EmailChangeService(UserService userService,
@@ -52,6 +52,7 @@ public class EmailChangeService {
                               TaskRepository taskRepository,
                               EventService eventService,
                               EmailChangeChecker emailChangeChecker,
+                              UsedTokenService usedTokenService,
                               @Value("${application.url}") String applicationUrl,
                               @Value("${change.email.verification.path:/email-change/confirmation/}")
                                   String verificationPath,
@@ -66,6 +67,7 @@ public class EmailChangeService {
         this.taskRepository = taskRepository;
         this.eventService = eventService;
         this.emailChangeChecker = emailChangeChecker;
+        this.usedTokenService = usedTokenService;
         this.mapper = mapper;
     }
 
@@ -79,8 +81,8 @@ public class EmailChangeService {
         User currentUser = userService.getCurrentUser();
 
         boolean requestedByAnotherUser = isRequestedByAnotherUser(currentUser.getUrid(), dto.getUrid());
-        if (requestedByAnotherUser && !isAdminUser(currentUser)) {
-            throw new IllegalArgumentException("Only a Senior Admin can request email update for someone else.");
+        if (requestedByAnotherUser && !userService.isSeniorOrJuniorAdminUser(currentUser)) {
+            throw new IllegalArgumentException("Only a Senior or Junior Admin can request email update for someone else.");
         }
 
         User userToBeUpdated = requestedByAnotherUser ? userService.getUserByUrid(dto.getUrid()) : currentUser;
@@ -120,23 +122,24 @@ public class EmailChangeService {
         return !Objects.equals(currentUserUrid, suppliedUserUrid);
     }
 
-    private boolean isAdminUser(User user) {
-        return user.getUserRoles()
-            .stream()
-            .map(UserRoleMapping::getRole)
-            .map(IamUserRole::getRoleName)
-            .map(UserRole::fromKeycloakLiteral)
-            .anyMatch(UserRole::isSeniorRegistryAdministrator);
-    }
-
     /**
      * Creates a new email change task with status SUBMITTED_NOT_YET_APPROVED.
      */
     @Transactional
-    public Long openEmailChangeTask(EmailChangeDTO dto) {
+    public Long openEmailChangeTask(String token) {
+
+        if (usedTokenService.isTokenAlreadyUsed(token)) {
+            throw new TokenExpiredException("Token has already been used.");
+        }
+        String payload = tokenVerifier.getPayload(token);
+        EmailChangeDTO dto = mapper.convertToPojo(payload, EmailChangeDTO.class);
+
         User user = userService.getUserByUrid(dto.getUrid());
         if (user == null) {
             throw new IllegalArgumentException("User does not exist");
+        }
+        if (emailChangeChecker.sameEmailWithRecoveryEmail(dto.getNewEmail(), user.getIamIdentifier())) {
+            throw new IllegalArgumentException("User email address cannot be the same as user recovery email address.");
         }
         if (emailChangeChecker.otherUserHasNewEmailAsWorkingEmail(dto.getNewEmail())) {
             throw new IllegalArgumentException("The new email belongs to other user");
@@ -157,6 +160,7 @@ public class EmailChangeService {
         task.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
 
         taskRepository.save(task);
+        usedTokenService.saveToken(token, tokenVerifier.getExpiredAt(token));
 
         eventService.publishEvent(DomainEvent.builder()
             .who(dto.getRequesterUrid())

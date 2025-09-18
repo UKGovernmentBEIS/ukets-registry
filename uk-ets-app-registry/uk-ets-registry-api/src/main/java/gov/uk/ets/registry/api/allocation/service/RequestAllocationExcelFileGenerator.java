@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.allocation.service;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
@@ -125,6 +126,12 @@ public class RequestAllocationExcelFileGenerator {
                             AircraftOperator aircraftOperator =
                                 (AircraftOperator) Hibernate.unproxy(account.getCompliantEntity());
                             permitOrMonitoringPlanId = aircraftOperator.getMonitoringPlanIdentifier();
+                        }
+                        else if (RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+                            .equals(account.getRegistryAccountType())) {
+                            MaritimeOperator maritimeOperator =
+                                (MaritimeOperator) Hibernate.unproxy(account.getCompliantEntity());
+                            permitOrMonitoringPlanId = maritimeOperator.getMaritimeMonitoringPlanIdentifier();
                         }
                         writeValue(ws, account.getAccountHolder().actualName(), i + 1, 6);
                         writeValue(ws, permitOrMonitoringPlanId, i + 1, 7);

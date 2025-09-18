@@ -6,12 +6,13 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { IUkOfficialCountry } from '@shared/countries/country.interface';
 import { IUser } from '@shared/user';
 import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import { keepSingleSpace } from '@shared/shared.util';
+import { FormRadioGroupInfo } from '@registry-web/shared/form-controls/uk-radio-input/uk-radio.model';
 
 @Component({
   selector: 'app-personal-details-input',
@@ -24,15 +25,30 @@ export class PersonalDetailsComponent
   @Input() caption: string;
   @Input() heading: string;
   @Input() isRequestUpdateProcess = false;
+  @Input() showDifferentCountryLastFiveYears = false;
   @Input() isMyProfilePage: boolean;
   @Input() countries: IUkOfficialCountry[];
   @Input() user: IUser;
   @Input() isRequestFromAdmin: boolean;
   @Output() readonly outputUser = new EventEmitter<IUser>();
 
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
+  formRadioGroupInfo: FormRadioGroupInfo = {
+    key: 'differentCountryLastFiveYears',
+    options: [
+      {
+        label: 'Yes',
+        hint: '',
+        value: true,
+        enabled: true,
+      },
+      {
+        label: 'No',
+        hint: '',
+        value: false,
+        enabled: true,
+      },
+    ],
+  };
 
   protected getFormModel() {
     if (this.isRequestUpdateProcess) {
@@ -57,6 +73,7 @@ export class PersonalDetailsComponent
         country: ['', Validators.required],
         birthDate: [''],
         countryOfBirth: ['', Validators.required],
+        differentCountryLastFiveYears: ['', Validators.required],
       };
     }
   }
@@ -94,6 +111,9 @@ export class PersonalDetailsComponent
       },
       countryOfBirth: {
         required: 'Select your country of birth',
+      },
+      differentCountryLastFiveYears: {
+        required: 'Select a valid answer',
       },
     };
   }

@@ -10,21 +10,20 @@ import static org.mockito.Mockito.verify;
 
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.security.TokenVerifier;
-import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.common.security.UsedTokenService;
 import gov.uk.ets.registry.api.user.admin.service.UserStatusService;
-import gov.uk.ets.registry.api.user.admin.web.model.UserStatusChangeDTO;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.profile.domain.EmergencyChange;
 import gov.uk.ets.registry.api.user.profile.web.EmergencyOtpChangeTaskRequest;
 import gov.uk.ets.registry.api.user.profile.web.EmergencyOtpChangeTaskResponse;
 import gov.uk.ets.registry.api.user.service.UserService;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -33,7 +32,6 @@ class CommonEmergencyChangeServiceTest {
 
     private static final String TEST_EMAIL = "test@example.com";
     private static final String TEST_TOKEN = "0sa8yasd97yads97ydsa9t78afsd8t7gds0juhd";
-    private static final String TEST_REQUEST_ID = "12345";
     private static final String TEST_URID = "UK123456";
     private static final Long EXPIRATION = 1L;
     private static final String APPLICATION_URL = "test-url/";
@@ -44,7 +42,7 @@ class CommonEmergencyChangeServiceTest {
     @Mock()
     private TokenVerifier tokenVerifier;
     @Mock
-    private LostTokenTaskService taskService;
+    private UsedTokenService usedTokenService;
     @Mock
     private LostPasswordAndTokenTaskService lostPasswordAndTokenTaskService;
     @Mock
@@ -58,7 +56,7 @@ class CommonEmergencyChangeServiceTest {
     @BeforeEach
     public void setUp() {
         sut = new CommonEmergencyChangeService(
-            tokenVerifier, APPLICATION_URL, taskService, lostPasswordAndTokenTaskService, userService,
+            tokenVerifier, APPLICATION_URL, usedTokenService, lostPasswordAndTokenTaskService, userService,
             userStatusService,
             serviceAccountAuthorizationService
         );
@@ -86,29 +84,41 @@ class CommonEmergencyChangeServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectRequestIdAndExpired() {
+    public void shouldResetOTP() {
 
+        Date expirationDate = new Date();
+        given(usedTokenService.isTokenAlreadyUsed(TEST_TOKEN)).willReturn(false);
         given(tokenVerifier.getPayload(TEST_TOKEN)).willReturn(TEST_EMAIL);
+        given(tokenVerifier.getExpiredAt(TEST_TOKEN)).willReturn(expirationDate);
+
         User user = new User();
         user.setUrid(TEST_URID);
+        user.setIamIdentifier("iamIdentifier");
         given(userService.findByEmailNotInStatuses(TEST_EMAIL, statuses.toArray(UserStatus[]::new)))
             .willReturn(Optional.of(user));
-        given(taskService.proposeRequest(user, TEST_EMAIL, RequestType.LOST_TOKEN)).willReturn(TEST_REQUEST_ID);
-        given(serviceAccountAuthorizationService.obtainAccessToken().getToken()).willReturn(TEST_TOKEN);
 
         EmergencyOtpChangeTaskRequest request = new EmergencyOtpChangeTaskRequest(TEST_TOKEN);
         EmergencyOtpChangeTaskResponse emergencyOtpChangeTaskResponse = sut.confirmChange(request);
 
-        assertThat(emergencyOtpChangeTaskResponse.getRequestId()).isEqualTo(TEST_REQUEST_ID);
-        assertThat(emergencyOtpChangeTaskResponse.isTokenExpired()).isEqualTo(false);
+        assertThat(emergencyOtpChangeTaskResponse.getRequestId()).isNull();
+        assertThat(emergencyOtpChangeTaskResponse.isTokenExpired()).isFalse();
 
-        ArgumentCaptor<UserStatusChangeDTO> statusChangeCapture = ArgumentCaptor.forClass(UserStatusChangeDTO.class);
-        ArgumentCaptor<String> tokenCapture = ArgumentCaptor.forClass(String.class);
-        verify(userStatusService, times(1)).changeUserStatus(statusChangeCapture.capture(), tokenCapture.capture());
+        verify(serviceAccountAuthorizationService, times(1))
+            .addRequiredActionToUser("iamIdentifier", "CONFIGURE_TOTP");
+        verify(usedTokenService, times(1))
+            .saveToken(TEST_TOKEN, expirationDate);
+    }
 
-        assertThat(statusChangeCapture.getValue().getUrid()).isEqualTo(TEST_URID);
-        assertThat(statusChangeCapture.getValue().getUserStatus()).isEqualTo(UserStatus.SUSPENDED);
-        assertThat(tokenCapture.getValue()).isEqualTo(TEST_TOKEN);
+    @Test
+    public void shouldReturnedExpiredToken() {
+
+        given(usedTokenService.isTokenAlreadyUsed(TEST_TOKEN)).willReturn(true);
+
+        EmergencyOtpChangeTaskRequest request = new EmergencyOtpChangeTaskRequest(TEST_TOKEN);
+        EmergencyOtpChangeTaskResponse emergencyOtpChangeTaskResponse = sut.confirmChange(request);
+
+        assertThat(emergencyOtpChangeTaskResponse.getRequestId()).isNull();
+        assertThat(emergencyOtpChangeTaskResponse.isTokenExpired()).isTrue();
     }
 
     @Test

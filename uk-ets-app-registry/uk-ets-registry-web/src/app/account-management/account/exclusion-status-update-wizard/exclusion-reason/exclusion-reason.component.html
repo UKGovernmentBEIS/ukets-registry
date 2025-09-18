@@ -1,0 +1,42 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl"> Update exclusion status </span>
+
+    <div class="govuk-heading-l">
+      Please tell us why you want to update the exclusion status of the operator
+    </div>
+
+    <div class="govuk-body" *ngIf="hasEmissions">
+      <div class="govuk-warning-text">
+        <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
+
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          Emissions have already been reported for the selected year. If you
+          continue with the exclusion, the emissions will be deleted.
+        </strong>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+          <app-form-comment-area
+            controlName="exclusionReason"
+            label=""
+            [validationErrorMessage]="validationErrorMessage.exclusionReason"
+            [maxlength]="1024"
+          ></app-form-comment-area>
+          <button
+            class="govuk-button"
+            data-module="govuk-button"
+            type="submit"
+            id="continue"
+          >
+            Continue
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

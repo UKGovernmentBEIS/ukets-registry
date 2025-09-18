@@ -8,5 +8,7 @@ public enum TaskUpdateAction {
 
     RESET_ACCOUNT_HOLDER,
 
-    RESET_REGULATOR
+    RESET_REGULATOR,
+
+    UPDATE_DEADLINE;
 }

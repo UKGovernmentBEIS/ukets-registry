@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import gov.uk.ets.commons.s3.client.S3BucketAttributes;
 import gov.uk.ets.commons.s3.client.S3ClientService;
 import gov.uk.ets.publication.api.domain.PublicationSchedule;
 import gov.uk.ets.publication.api.domain.ReportFile;
@@ -85,8 +84,6 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @MockBean
     S3ClientService s3ClientService;
     
-    @MockBean
-    S3BucketAttributes s3BucketAttributes;
     //Indicates the number of sections loaded via liquibase
     long sectionsCount = 0;
 
@@ -108,7 +105,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
                 new ResponseInputStream<>(
                 GetObjectResponse.builder().build(),
                 AbortableInputStream.create(IOUtils.toInputStream("test", "UTF-8"))
-            )
+                )
             );
     }
     
@@ -179,7 +176,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         request.setPublicationStart(now.toLocalDate());
         request.setPublicationTime(now.toLocalTime());
         request.setPublicationFrequency(PublicationFrequency.DAILY);
-        request.setReportType(ReportType.R0009);
+        request.setReportType(ReportType.R0044);
         sectionService.updateSection(request);
         SectionDto section1 = sectionService.getSection(16L);
         assertThat(section1).extracting(SectionDto::getId).isEqualTo(16L);
@@ -187,7 +184,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         assertThat(section1).extracting(SectionDto::getSummary).isEqualTo(UPDATED_SUMMARY);
         assertThat(section1).extracting(SectionDto::getPublicationFrequency).isEqualTo(PublicationFrequency.DAILY);
         assertThat(section1).extracting(SectionDto::getEveryXDays).isNull();
-        assertThat(section1).extracting(SectionDto::getReportType).isEqualTo(ReportType.R0009);
+        assertThat(section1).extracting(SectionDto::getReportType).isEqualTo(ReportType.R0044);
         
         // existing schedule
         request.setDisplayType(DisplayType.ONE_FILE_PER_YEAR);
@@ -499,7 +496,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
                 -> new IllegalArgumentException("Section not found")));
         newFile.setFileName(MANY_FILES_UPDATED_TITLE);
         ReportFile savedFile = reportFilesRepository.save(newFile);
-        FileInfoDto dto = new FileInfoDto(savedFile.getId(), MANY_FILES_UPDATED_TITLE, null, null, 18L);
+        FileInfoDto dto = new FileInfoDto(savedFile.getId(), MANY_FILES_UPDATED_TITLE, 2021, null, 18L);
         sectionService.submitFile(dto);
         // unpublishing is determined based on filename, and both files have the same year,cp and version
         SortParameters sort = new SortParameters();
@@ -688,7 +685,24 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         List<ReportFileDto> updatedFiles = sectionService.getFiles(17L, sort);
         assertThat(updatedFiles).hasSize(2);
     }
-    
+
+    @Test
+    @Order(29)
+    public void shouldFailToUpdateSectionDetails() {
+        // new schedule
+        LocalDateTime now = LocalDateTime.now();
+        SectionDto request = new SectionDto();
+        request.setId(16L);
+        request.setTitle(UPDATED_TITLE);
+        request.setSummary(UPDATED_SUMMARY);
+        request.setDisplayType(DisplayType.ONE_FILE_PER_YEAR);
+        request.setPublicationStart(now.toLocalDate());
+        request.setPublicationTime(now.toLocalTime());
+        request.setPublicationFrequency(PublicationFrequency.DAILY);
+        request.setReportType(ReportType.R0009);
+
+        assertThrows(UkEtsPublicationApiException.class, () -> sectionService.updateSection(request));
+    }
 
     // initialize DB with two ETS and two KP sections
     private void createInitialSections() {

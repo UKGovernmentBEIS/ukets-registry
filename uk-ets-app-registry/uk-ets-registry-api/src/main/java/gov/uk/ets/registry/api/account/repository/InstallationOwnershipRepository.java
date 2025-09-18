@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface InstallationOwnershipRepository extends JpaRepository<InstallationOwnership, Long> {
 
+    @Query("select io from InstallationOwnership io " +
+        "join fetch io.installation i " +
+        "where io.account = ?1 and io.installation = ?2 and io.status = ?3 ")
     List<InstallationOwnership> findByAccountAndInstallationAndStatus(Account account, Installation installation,
                                                                       InstallationOwnershipStatus installationOwnershipStatus);
 
@@ -26,5 +29,9 @@ public interface InstallationOwnershipRepository extends JpaRepository<Installat
     List<InstallationOwnership> findByInstallationAndStatusOrderByOwnershipDateDesc(Installation installation,
                                                                                     InstallationOwnershipStatus status);
     
+    @Query("select io from InstallationOwnership io " +
+            "join fetch io.installation i " +
+            "where io.installation = ?1 " +
+            "order by io.ownershipDate desc ")
     List<InstallationOwnership> findByInstallation(Installation installation);
 }

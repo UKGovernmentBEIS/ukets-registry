@@ -11,7 +11,8 @@ import { ActivatedRoute } from '@angular/router';
 
     <p class="govuk-body">
       We have reset your session because you did not do anything for
-      {{ idle }} minutes. We did this to keep your information secure.
+      {{ idle | number: '1.0-0' }} minutes. We did this to keep your information
+      secure.
     </p>
 
     <button class="govuk-button" (click)="onSignInAgain()">
@@ -36,7 +37,7 @@ export class TimedOutComponent implements OnInit {
   onSignInAgain(): void {
     this.store.dispatch(
       Login({
-        redirectUri: location.origin + MENU_ROUTES.DASHBOARD,
+        redirectUri: location.origin + MENU_ROUTES.RECOVERY,
       })
     );
   }

@@ -19,9 +19,12 @@ import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.service.TransferValidationService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferAction;
@@ -76,6 +79,8 @@ class AccountTransferTaskServiceTest {
     private AccountHolderRepository accountHolderRepository;
     @Mock
     private TrustedAccountRepository trustedAccountRepository;
+    @Mock
+    private AccountConversionService accountConversionService;
     @Mock
     private TransferValidationService transferValidationService;
     @Mock
@@ -143,6 +148,58 @@ class AccountTransferTaskServiceTest {
         action.setPreviousAccountStatus(AccountStatus.OPEN);
         task.setAction(action);
         task.setAccountNumber(TEST_ACCOUNT_NUMBER);
+    }
+
+    @Test
+    void shouldGetTaskDetails() {
+        TaskDetailsDTO taskDetails = new TaskDetailsDTO();
+        taskDetails.setAccountNumber("111");
+        taskDetails.setDifference("difference");
+        taskDetails.setBefore("before");
+
+        AccountTransferAction action = new AccountTransferAction();
+        when(mapper.convertToPojo("difference", AccountTransferAction.class)).thenReturn(action);
+
+        AccountHolderDTO originalAH = new AccountHolderDTO();
+        when(mapper.convertToPojo("before", AccountHolderDTO.class)).thenReturn(originalAH);
+
+        AccountDTO accountDTO = new AccountDTO();
+        AccountDetailsDTO detailsDTO = new AccountDetailsDTO();
+        accountDTO.setAccountDetails(detailsDTO);
+        when(accountService.getAccountDTO(111L)).thenReturn(accountDTO);
+
+        AccountTransferTaskDetailsDTO result = cut.getDetails(taskDetails);
+
+        assertThat(result.getAction()).isEqualTo(action);
+        assertThat(result.getCurrentAccountHolder()).isEqualTo(originalAH);
+        assertThat(result.getAccount()).isEqualTo(detailsDTO);
+    }
+
+    @Test
+    void shouldGetTaskDetailsWithoutBeforeData() {
+        TaskDetailsDTO taskDetails = new TaskDetailsDTO();
+        taskDetails.setAccountNumber("111");
+        taskDetails.setDifference("difference");
+        taskDetails.setBefore("before");
+
+        AccountTransferAction action = new AccountTransferAction();
+        when(mapper.convertToPojo("difference", AccountTransferAction.class)).thenReturn(action);
+
+        AccountHolder accountHolder = new AccountHolder();
+        when(accountHolderRepository.getAccountHolderOfAccount(111L)).thenReturn(accountHolder);
+        AccountHolderDTO originalAH = new AccountHolderDTO();
+        when(accountConversionService.convert(accountHolder)).thenReturn(originalAH);
+
+        AccountDTO accountDTO = new AccountDTO();
+        AccountDetailsDTO detailsDTO = new AccountDetailsDTO();
+        accountDTO.setAccountDetails(detailsDTO);
+        when(accountService.getAccountDTO(111L)).thenReturn(accountDTO);
+
+        AccountTransferTaskDetailsDTO result = cut.getDetails(taskDetails);
+
+        assertThat(result.getAction()).isEqualTo(action);
+        assertThat(result.getCurrentAccountHolder()).isEqualTo(originalAH);
+        assertThat(result.getAccount()).isEqualTo(detailsDTO);
     }
 
     @Test

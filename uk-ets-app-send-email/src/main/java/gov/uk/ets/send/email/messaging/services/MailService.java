@@ -1,10 +1,9 @@
 package gov.uk.ets.send.email.messaging.services;
 
 import gov.uk.ets.send.email.messaging.config.MailConfiguration;
-import java.io.IOException;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Arrays;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -19,12 +18,15 @@ public class MailService {
     @Value("classpath:images/signature-logo.png")
     Resource signatureImage;
 
+    @Value("${mailbox.logo.link:null}")
+    private String emailLogoLink;
+
     /**
-     * The mail sender
+     * The mail sender.
      */
     protected final JavaMailSender mailSender;
     /**
-     * The mail configuration
+     * The mail configuration.
      */
     protected final MailConfiguration mailConfiguration;
 
@@ -34,7 +36,7 @@ public class MailService {
     }
 
     /**
-     * Sends an email with the provided parameters
+     * Sends an email with the provided parameters.
      *
      * @param toAddresses the To addresses of the email
      * @param subject     the Subject of the email
@@ -69,7 +71,12 @@ public class MailService {
     }
 
     private String augmentWithSignatureImage(String htmlText) {
-        htmlText += "<img src='cid:signatureImage'/>";
+        htmlText += """
+            <a href="%s">
+              <img src='cid:signatureImage'/>
+            </a>
+        """.formatted(emailLogoLink);
+
         return htmlText;
     }
 }

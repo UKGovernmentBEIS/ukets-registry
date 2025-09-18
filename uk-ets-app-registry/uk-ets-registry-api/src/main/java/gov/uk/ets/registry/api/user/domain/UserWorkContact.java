@@ -60,14 +60,40 @@ public class UserWorkContact {
     private String workCountry;
     /**
      * The work country code
+     *
+     * @deprecated has been replaced by mobile/alternative country code
      */
+    @Deprecated(forRemoval = true)
     private String workCountryCode;
     /**
      * The work phone number
+     *
+     * @deprecated has been replaced by mobile/alternative phone number
      */
+    @Deprecated(forRemoval = true)
     private String workPhoneNumber;
     /**
      * The email address
      */
     private String email;
+    /**
+     * The work mobile country code
+     */
+    private String workMobileCountryCode;
+    /**
+     * The work mobile phone number
+     */
+    private String workMobilePhoneNumber;
+    /**
+     * The work alternative country code
+     */
+    private String workAlternativeCountryCode;
+    /**
+     * The work alternative phone number
+     */
+    private String workAlternativePhoneNumber;
+    /**
+     * The reason for not providing a mobile phone number
+     */
+    private String noMobilePhoneNumberReason;
 }

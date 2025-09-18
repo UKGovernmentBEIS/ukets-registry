@@ -47,7 +47,10 @@ export class SubmitDocumentService {
     if (totalFileUploads) {
       fData.append(
         'totalFileUploads',
-        totalFileUploads.map((r) => r.id).toString()
+        totalFileUploads
+          .filter((t) => t.id !== null && t.id !== undefined)
+          .map((r) => r.id)
+          .toString()
       );
     }
     return this.http.post<HttpEvent<any>>(`${this.uploadDocumentApi}`, fData, {
@@ -68,7 +71,10 @@ export class SubmitDocumentService {
     params = params.append('taskRequestId', taskRequestId);
     params = params.append(
       'totalFileUploads',
-      totalFileUploads.map((t) => t.id).join(',')
+      totalFileUploads
+        .filter((t) => t.id !== null && t.id !== undefined)
+        .map((t) => t.id)
+        .join(',')
     );
     if (userUrid) {
       params = params.append('userUrid', userUrid);

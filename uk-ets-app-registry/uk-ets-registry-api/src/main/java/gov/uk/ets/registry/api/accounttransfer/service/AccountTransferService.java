@@ -5,12 +5,16 @@ import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.service.AccountService;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.shared.AccountActionError;
+import gov.uk.ets.registry.api.account.shared.AccountActionException;
+import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.shared.InstallationAndAccountTransferError;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.account.web.model.PermitDTO;
+import gov.uk.ets.registry.api.accountholder.service.AccountHolderService;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferAction;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferRequestDTO;
-import gov.uk.ets.registry.api.common.ConversionService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.model.services.PersistenceService;
 import gov.uk.ets.registry.api.event.service.EventService;
@@ -23,6 +27,8 @@ import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,11 +40,11 @@ public class AccountTransferService {
 
     private final UserService userService;
     private final AccountService accountService;
+    private final AccountHolderService accountHolderService;
     private final PersistenceService persistenceService;
     private final EventService eventService;
     private final TaskEventService taskEventService;
     private final Mapper mapper;
-    private final ConversionService conversionService;
     
 
     @Transactional
@@ -56,6 +62,8 @@ public class AccountTransferService {
                 dto, account.getAccountStatus(), account.getCompliantEntity())));
         task.setType(RequestType.ACCOUNT_TRANSFER);
 
+        AccountHolderDTO originalAH = accountHolderService.getAccountHolder(account.getAccountHolder().getIdentifier());
+        task.setBefore(mapper.convertToJson(originalAH));
 
         account.setAccountStatus(AccountStatus.TRANSFER_PENDING);
 
@@ -83,7 +91,11 @@ public class AccountTransferService {
         action.setAccountHolderDTO(request.getAcquiringAccountHolder());
         action.setAccountHolderContactInfo(request.getAcquiringAccountHolderContactInfo());
         action.setPreviousAccountStatus(status);
-        action.setInstallationDetails(toDto((Installation) compliantEntity));
+        if (!(Hibernate.unproxy(compliantEntity) instanceof Installation)) {
+            throw AccountActionException.create(
+                    AccountActionError.build(InstallationAndAccountTransferError.TRANSFER_ONLY_OHAS.getMessage()));
+        }
+        action.setInstallationDetails(toDto((Installation) Hibernate.unproxy(compliantEntity)));
         return action;
     }
 
@@ -97,8 +109,8 @@ public class AccountTransferService {
             EventType.ACCOUNT_TASK_REQUESTED, what);
     }
     
-    InstallationOrAircraftOperatorDTO toDto(Installation entity) {
-        InstallationOrAircraftOperatorDTO details = new InstallationOrAircraftOperatorDTO();
+    OperatorDTO toDto(Installation entity) {
+        OperatorDTO details = new OperatorDTO();
         details.setIdentifier(entity.getIdentifier());
         details.setType(OperatorType.INSTALLATION.name());
         details.setActivityType(InstallationActivityType.valueOf(entity.getActivityType()));
@@ -110,6 +122,7 @@ public class AccountTransferService {
         details.setPermit(permitDTO);
         details.setRegulator(entity.getRegulator());
         details.setChangedRegulator(entity.getChangedRegulator());
+        details.setEmitterId(entity.getEmitterId());
 
         return details;
     }

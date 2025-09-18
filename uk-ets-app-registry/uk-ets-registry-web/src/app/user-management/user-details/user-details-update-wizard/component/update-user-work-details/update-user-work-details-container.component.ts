@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { IUkOfficialCountry } from '@shared/countries/country.interface';
 import {
   selectAllCountries,
   selectCountryCodes,
@@ -8,7 +6,7 @@ import {
 import { IUser } from '@shared/user';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { Store } from '@ngrx/store';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { canGoBack, errors } from '@shared/shared.action';
 import { UserDetailsUpdateWizardPathsModel } from '@user-update/model';
 import {
@@ -18,6 +16,7 @@ import {
 import {
   selectIsLoadedFromMyProfilePage,
   selectUserDetailsUpdateInfo,
+  selectUserHasMobilePhone,
 } from '@user-update/reducers';
 
 @Component({
@@ -38,31 +37,21 @@ import {
       [countries]="countries$ | async"
       [countryCodes]="countryCodes$ | async"
       [user]="user$ | async"
+      [hasWorkMobilePhone]="hasWorkMobilePhone$ | async"
       (outputUser)="onContinue($event)"
       (errorDetails)="onError($event)"
-    >
-    </app-work-details-input
-    ><app-cancel-request-link
-      (goToCancelScreen)="onCancel()"
-    ></app-cancel-request-link> `,
+    />
+    <app-cancel-request-link (goToCancelScreen)="onCancel()" />`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateUserWorkDetailsContainerComponent implements OnInit {
-  countryCodes$: Observable<
-    {
-      region: string;
-      code: string;
-    }[]
-  >;
-  countries$: Observable<IUkOfficialCountry[]>;
-  user$: Observable<IUser>;
-  isMyProfilePage$: Observable<boolean>;
+  countries$ = this.store.select(selectAllCountries);
+  countryCodes$ = this.store.select(selectCountryCodes);
+  user$ = this.store.select(selectUserDetailsUpdateInfo);
+  isMyProfilePage$ = this.store.select(selectIsLoadedFromMyProfilePage);
+  hasWorkMobilePhone$ = this.store.select(selectUserHasMobilePhone);
 
-  constructor(
-    private store: Store,
-    private route: ActivatedRoute,
-    private _router: Router
-  ) {}
+  constructor(private store: Store, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.store.dispatch(
@@ -75,10 +64,6 @@ export class UpdateUserWorkDetailsContainerComponent implements OnInit {
         extras: { skipLocationChange: true },
       })
     );
-    this.countries$ = this.store.select(selectAllCountries);
-    this.countryCodes$ = this.store.select(selectCountryCodes);
-    this.user$ = this.store.select(selectUserDetailsUpdateInfo);
-    this.isMyProfilePage$ = this.store.select(selectIsLoadedFromMyProfilePage);
   }
 
   onContinue(value: IUser): void {
@@ -86,9 +71,7 @@ export class UpdateUserWorkDetailsContainerComponent implements OnInit {
   }
 
   onError(details: ErrorDetail[]) {
-    const summary: ErrorSummary = {
-      errors: details,
-    };
+    const summary: ErrorSummary = { errors: details };
     this.store.dispatch(errors({ errorSummary: summary }));
   }
 

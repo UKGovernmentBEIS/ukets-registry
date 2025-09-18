@@ -4,7 +4,7 @@ import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.api.notification.RequestResetPasswordLinkNotification;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

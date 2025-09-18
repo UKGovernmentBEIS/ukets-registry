@@ -9,7 +9,6 @@ import gov.uk.ets.reports.generator.domain.CompliantEntity;
 import gov.uk.ets.reports.generator.domain.Contact;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -33,6 +32,7 @@ public class AccountDetailsJdbcMapper
     private static final String REPORT_QUERY =
             "select ce.regulator                                                            as regulator,\n" +
             "       a.full_identifier                                                       as account_number,\n" +
+            "       a.public_identifier                                                     as account_public_identifier,\n" +
             "       a.account_name                                                          as account_name,\n" +
             "       a.type_label                                                            as account_type,\n" +
             "       a.account_status                                                        as account_status,\n" +
@@ -99,12 +99,19 @@ public class AccountDetailsJdbcMapper
             "                         accountContact.phone_number_1) end                    as billing_phone_number,\n" +
             "       accountContact.email_address                                            as billing_email,\n" +
             "       accountContact.sop_customer_id                                          as sop_customer_id,\n" +
+
             "       case when i.compliant_entity_id IS NOT NULL then ce.identifier end      as installation_id,\n" +
             "       i.installation_name                                                     as installation_name,\n" +
             "       i.activity_type                                                         as installation_activity,\n" +
             "       i.permit_identifier                                                     as installation_permit_id,\n" +
+
             "       case when ao.compliant_entity_id IS NOT NULL then ce.identifier end     as aircraft_operator_id,\n" +
-            "       ao.monitoring_plan_identifier                                           as monitoring_plan_id,\n" +
+            "       ao.monitoring_plan_identifier                                           as aircraft_monitoring_plan_id,\n" +
+
+            "       case when mo.compliant_entity_id IS NOT NULL then ce.identifier end     as maritime_operator_id,\n" +
+            "       mo.maritime_monitoring_plan_identifier                                  as maritime_monitoring_plan_id,\n" +
+            "       mo.imo                                                                  as imo,\n" +
+
             "       ce.start_year                                                           as first_year_verified_emission_submission,\n" +
             "       ce.end_year                                                             as last_year_verified_emission_submission\n" +
             "from account a\n" +
@@ -113,6 +120,7 @@ public class AccountDetailsJdbcMapper
             "         left join contact ahContact on ahContact.id = ah.contact_id\n" +
             "         left join installation i on ce.id = i.compliant_entity_id\n" +
             "         left join aircraft_operator ao on ce.id = ao.compliant_entity_id\n" +
+            "         left join maritime_operator mo on ce.id = mo.compliant_entity_id\n" +
             "         left join (select aa.account_id, count(aa.id) as numOfArs\n" +
             "                    from account_access aa\n" +
             "                    where aa.access_right <> 'ROLE_BASED'\n " +
@@ -126,14 +134,9 @@ public class AccountDetailsJdbcMapper
             "         left join contact primaryContact on primaryAr.contact_id = primaryContact.id\n" +
             "         left join contact altContact on altAr.contact_id = altContact.id\n" +
             "         left join contact accountContact on a.contact_id = accountContact.id\n" +
-            "order by a.account_name, a.full_identifier;\n";
+            "order by ah.name, a.full_identifier;\n";
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Override
-    public List<AccountDetailsReportData> mapData(ReportCriteria criteria) {
-        return null;
-    }
 
     @Override
     public List<AccountDetailsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
@@ -145,12 +148,13 @@ public class AccountDetailsJdbcMapper
         return AccountDetailsReportData.builder()
             .account(Account.builder()
                 .number(rs.getString("account_number"))
+                .publicIdentifier(rs.getString("account_public_identifier"))
                 .name(rs.getString("account_name"))
                 .type(rs.getString("account_type"))
                 .status(rs.getString("account_status"))
-                .openingDate(LocalDateTime.parse(rs.getString("opening_date"), formatter))
+                .openingDate(LocalDateTime.parse(rs.getString("opening_date"), inputFormatter))
                 .closingDate(rs.getString("closing_date") != null ?
-                    LocalDateTime.parse(rs.getString("closing_date"), formatter) : null)
+                    LocalDateTime.parse(rs.getString("closing_date"), inputFormatter) : null)
                 .complianceStatus(rs.getString("compliance_status"))
                 .balance(rs.getLong("account_balance"))
                 .numberOfARs(rs.getInt("number_of_ars"))
@@ -225,10 +229,13 @@ public class AccountDetailsJdbcMapper
                 .installationName(rs.getString("installation_name"))
                 .installationActivity(rs.getString("installation_activity"))
                 .installationPermitId(rs.getString("installation_permit_id"))
-                .aircraftOperatorId(Util.getNullableLong(rs, "aircraft_operator_id"))
-                .monitoringPlanId(rs.getString("monitoring_plan_id"))
                 .firstYearOfVerifiedEmissionSubmission(Util.getNullableLong(rs, "first_year_verified_emission_submission"))
                 .lastYearOfVerifiedEmissionSubmission(Util.getNullableLong(rs, "last_year_verified_emission_submission"))
+                .aircraftOperatorId(Util.getNullableLong(rs, "aircraft_operator_id"))
+                .aircraftMonitoringPlanId(rs.getString("aircraft_monitoring_plan_id"))
+                .maritimeOperatorId(Util.getNullableLong(rs, "maritime_operator_id"))
+                .maritimeMonitoringPlanId(rs.getString("maritime_monitoring_plan_id"))
+                .imo(rs.getString("imo"))
                 .build())
             .build();
     }

@@ -111,6 +111,11 @@ public enum ApplicationPropertyEnum {
     REGISTRY_FILE_SUBMIT_DOCUMENT_TYPE("registry.file.submit.document.type"),
 
     /**
+     * The allowed document area types
+     */
+    REGISTRY_FILE_DOCUMENT_AREA_TYPE("registry.file.document.area.type"),
+
+    /**
      * The Google tracking id for google analytics
      */
     GOOGLE_TRACKING_ID("google.tracking.id"),
@@ -128,7 +133,11 @@ public enum ApplicationPropertyEnum {
     /**
      * Show the running balances for ETS Protocol accounts.
      */
-    REGISTRY_TRANSACTION_LIST_SHOW_RUNNING_BALANCES_ETS("registry.transaction.list.showRunningBalancesEts");
+    REGISTRY_TRANSACTION_LIST_SHOW_RUNNING_BALANCES_ETS("registry.transaction.list.showRunningBalancesEts"),
+
+    TRANSACTIONS_PUBLIC_REPORT_STARING_DAY("transactions.public.report.startingDay"),
+
+    MARITIME_EMISSIONS_START_YEAR("emissions-maritime-starting-year");
     
     private String key;
 

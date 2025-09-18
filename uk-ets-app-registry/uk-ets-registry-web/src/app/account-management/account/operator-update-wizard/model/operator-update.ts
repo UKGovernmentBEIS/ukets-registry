@@ -13,9 +13,11 @@ export interface OperatorUpdate {
     id: string;
     date: UkDate;
   };
+  emitterId: string;
   monitoringPlan?: {
     id: string;
   };
+  imo?:string,
   regulator?: Regulator;
   changedRegulator?: Regulator;
   firstYear?: string;

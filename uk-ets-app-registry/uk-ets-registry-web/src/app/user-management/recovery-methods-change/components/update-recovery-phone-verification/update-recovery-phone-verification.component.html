@@ -1,0 +1,80 @@
+<div aria-live="polite">
+  <app-banner [type]="BannerType.SUCCESS" *ngIf="showBanner$ | async">
+    <span> A new security code has been sent to your phone. </span>
+  </app-banner>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <span class="govuk-caption-l govuk-!-margin-top-4"
+        >Update your recovery phone number</span
+      >
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-5">Check your phone</h1>
+
+      <p class="govuk-body">
+        We have sent you a text message to
+        @if (sanitizedPhone) {
+          {{ sanitizedPhone }}
+        } @else {
+          the recovery phone number
+        }
+        with a security code.
+      </p>
+
+      <p class="govuk-body govuk-!-margin-bottom-7">
+        The security code will be valid for 5 minutes.
+      </p>
+      <app-timer
+        [expiresAt$]="timer$"
+        (expired)="enableResendButton($event)"
+      ></app-timer>
+      <app-form-control-text
+        #securityCodeInput
+        [class]="'govuk-input--width-10'"
+        [validationErrorMessage]="validationErrorMessage.securityCode"
+        [label]="'Enter the security code'"
+        controlName="securityCode"
+        [autocomplete]="'off'"
+      />
+      <button
+        type="button"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        data-prevent-double-click="true"
+        (click)="onResendSecurityCode()"
+        (keyup)="onResendSecurityCode()"
+        [disabled]="resendDisabled"
+      >
+        Re-send security code
+      </button>
+
+      <div class="govuk-body">
+        You can request for a new security code after the current one expires.
+      </div>
+
+      <details class="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Security code does not work
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          If you have an issue with the security code, please contact the
+          Registry Administrator at
+          <a class="govuk-link" href="mailto:{{ etsRegistryHelpEmail }}"
+            >etregistryhelp&#64;environment-agency.gov.uk</a
+          >.
+        </div>
+      </details>
+
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button govuk-!-margin-top-4"
+        data-module="govuk-button"
+        type="submit"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

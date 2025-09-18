@@ -1,15 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
-import { UntypedFormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-set-transaction-reference',
   templateUrl: './set-transaction-reference.component.html',
 })
-export class SetTransactionReferenceComponent
-  extends UkFormComponent
-  implements OnInit
-{
+export class SetTransactionReferenceComponent extends UkFormComponent {
   @Input()
   reference: string;
   @Input()
@@ -17,13 +13,9 @@ export class SetTransactionReferenceComponent
   @Output()
   readonly setTransactionReference = new EventEmitter<string>();
 
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
-
   protected getFormModel(): any {
     return {
-      transactionReference: [this.reference],
+      transactionReference: [this.reference, { updateOn: 'change' }],
     };
   }
 

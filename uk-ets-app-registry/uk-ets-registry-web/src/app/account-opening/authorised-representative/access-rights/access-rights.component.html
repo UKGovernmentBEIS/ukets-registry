@@ -35,17 +35,17 @@
               </dd>
             </div>
           </dl>
-          <span [id]="arAccessRightGroupInfo.key + '-hint'" class="govuk-hint">
+          <div [id]="arAccessRightGroupInfo.key + '-hint'" class="govuk-hint">
             {{ arAccessRightGroupInfo.radioGroupHint }}
-          </span>
-          <span
+          </div>
+          <p
             *ngIf="showErrors()"
             [id]="arAccessRightGroupInfo.key + '-error-label'"
             class="govuk-error-message"
           >
             <span class="govuk-visually-hidden">Error:</span
             >{{ this.validationErrorMessage.arAccessRights }}
-          </span>
+          </p>
 
           <div class="govuk-radios">
             <ng-container

@@ -4,19 +4,19 @@ import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TransactionType;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,6 +70,6 @@ public class ITLReconAuditTrailTxLog {
     @Column(name = "notification_identifier")
     private Long notificationIdentifier;
 
-    @OneToMany(mappedBy = "reconAuditTrailTxLog", fetch = FetchType.LAZY , cascade = javax.persistence.CascadeType.ALL)
+    @OneToMany(mappedBy = "reconAuditTrailTxLog", fetch = FetchType.LAZY , cascade = jakarta.persistence.CascadeType.ALL)
     private List<ITLReconAuditTrailTxBlock> blocks;
 }

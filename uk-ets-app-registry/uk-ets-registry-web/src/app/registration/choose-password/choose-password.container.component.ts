@@ -14,8 +14,7 @@ import { selectConfigurationRegistry } from '@shared/shared.selector';
       [configuration]="configuration$ | async"
       (choosePasswordRequest)="onSubmitChoosePasswordRequest($event)"
       (errorDetails)="onError($event)"
-    >
-    </app-choose-password>
+    />
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,

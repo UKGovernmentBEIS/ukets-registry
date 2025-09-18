@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_24_0_ADD_TABLE_MARITIME_OPERATOR" author="archakisn" context="migrate">
+        <comment>Initial creation of Maritime Operator</comment>
+        <sql>
+            CREATE TABLE "maritime_operator" (
+            "compliant_entity_id" BIGINT NOT NULL,
+            "maritime_monitoring_plan_identifier" VARCHAR(1020) NOT NULL,
+            "imo" VARCHAR(1020));
+
+            ALTER TABLE "maritime_operator" ADD CONSTRAINT "pk_maritime_operator_compliant_entity_id"
+            PRIMARY KEY ("compliant_entity_id");
+
+            ALTER TABLE "maritime_operator" ADD CONSTRAINT "fk_maritime_operator_compliant_entity_id"
+            FOREIGN KEY ("compliant_entity_id") REFERENCES "compliant_entity" ("id");
+
+            create index "idx_maritime_monitoring_plan_identifier" on "maritime_operator"("maritime_monitoring_plan_identifier");
+
+            COMMENT ON TABLE "maritime_operator"  IS 'Represents a Maritime Operator';
+            COMMENT ON COLUMN "maritime_operator"."compliant_entity_id" IS 'Foreign key to verified entity';
+            COMMENT ON COLUMN "maritime_operator"."maritime_monitoring_plan_identifier" IS 'The unique id of the monitoring plan';
+            COMMENT ON COLUMN "maritime_operator"."imo" IS 'IMO Unique Identification Number';
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "maritime_operator" DROP CONSTRAINT "fk_maritime_operator_compliant_entity_id";
+                ALTER TABLE "maritime_operator" DROP CONSTRAINT "pk_maritime_operator_compliant_entity_id";
+                DROP INDEX IF EXISTS "idx_maritime_monitoring_plan_identifier";
+                DROP TABLE IF EXISTS "maritime_operator" CASCADE;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4_24_1_REMOVE_UNUSED_OPERATOR_FIELDS" author="archakisn" context="migrate">
+        <comment>Remove unused fields from aircraft operator and installation</comment>
+        <sql>
+            ALTER TABLE "aircraft_operator" DROP COLUMN "monitoring_plan_expiry_date";
+            ALTER TABLE "aircraft_operator" DROP COLUMN "permit_status";
+            ALTER TABLE "installation" DROP COLUMN "permit_expiry_date";
+            ALTER TABLE "installation" DROP COLUMN "permit_status";
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "aircraft_operator" ADD COLUMN "monitoring_plan_expiry_date" TIMESTAMP;
+                ALTER TABLE "aircraft_operator" ADD COLUMN "permit_status" VARCHAR(255);
+                ALTER TABLE "installation" ADD COLUMN "permit_expiry_date" TIMESTAMP;
+                ALTER TABLE "installation" ADD COLUMN "permit_status" VARCHAR(255);
+            </sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

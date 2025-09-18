@@ -8,6 +8,7 @@ import {
   NotificationType,
 } from '@notifications/notifications-wizard/model';
 import { NotificationRequestEnum } from '@notifications/notifications-wizard/model/notification-request.enum';
+import { UploadStatus } from '@shared/model/file';
 
 export const navigateTo = createAction(
   '[Notifications] Navigate to',
@@ -84,4 +85,44 @@ export const submitRequest = createAction(
 export const submitRequestSuccess = createAction(
   '[Notifications] Submit request success',
   props<{ requestId: string }>()
+);
+
+export const submitEmailRecipientsFile = createAction(
+  '[Notifications] Upload Recipients File'
+);
+
+export const submitEmailRecipientsFileSuccess = createAction(
+  '[Notifications] Upload Recipients File success',
+  props<{ requestId: string }>()
+);
+
+export const requestUploadSelectedRecipientsEmailFile = createAction(
+  '[Notifications] Request to upload recipients email file',
+  props<{ file: File; status: UploadStatus }>()
+);
+
+export const cancelRecipientsEmailUpload = createAction(
+  '[Notifications] Cancel'
+);
+
+export const clearRecipientsEmailUpload = createAction('[Notifications] Clear');
+
+export const submitEmailDetails = createAction(
+  '[Notifications] Submit adhoc email details',
+  props<{ notificationContent: NotificationContent }>()
+);
+
+export const validateEmailDetails = createAction(
+  '[Notifications] Validate adhoc email details',
+  props<{ notificationContent: NotificationContent }>()
+);
+
+export const cancelActiveOrPendingNotification = createAction(
+  '[Notifications] Cancel Active Or Pending',
+  props<{ notificationId: string }>()
+);
+
+export const cancelActiveOrPendingNotificationSuccess = createAction(
+  '[Notifications] Cancel Active Or Pending success',
+  props<{ notificationId: string }>()
 );

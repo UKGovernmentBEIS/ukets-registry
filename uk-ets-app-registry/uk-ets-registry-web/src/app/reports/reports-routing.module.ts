@@ -14,6 +14,7 @@ const routes: Routes = [
   {
     path: 'downloads',
     component: DownloadReportsListContainerComponent,
+    title: 'Reports',
   },
   {
     path: 'standard',

@@ -10,6 +10,10 @@
     <include file="changelogs/v3.4.0/changelog_v3_4_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v3.9.3/changelog_v3_9_3.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v4.0.0/changelog_v4_0_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.13.0/changelog_v4_13_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.14.0/changelog_v4_14_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.15.0/changelog_v4_15_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v4.16.0/changelog_v4_16_0.xml" relativeToChangelogFile="true"/>
     <!-- Include here new files -->
 
     <!-- This changeSet should be executed at the end-->

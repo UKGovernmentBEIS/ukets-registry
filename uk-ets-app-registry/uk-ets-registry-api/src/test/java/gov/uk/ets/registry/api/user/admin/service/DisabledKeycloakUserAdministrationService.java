@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.user.admin.service;
 
+import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.user.KeycloakUser;
 import gov.uk.ets.registry.api.user.admin.AssignUsersCriteriaDTO;
@@ -52,13 +53,13 @@ public class DisabledKeycloakUserAdministrationService implements UserAdministra
     }
 
     @Override
-    public Contact findWorkContactDetailsByIamId(String id) {
+    public ContactDTO findWorkContactDetailsByIamId(String id) {
         // TODO Implement method
         return null;
     }
 
     @Override
-    public Contact findWorkContactDetailsByIamId(String id, boolean noUserToken) {
+    public ContactDTO findWorkContactDetailsByIamId(String id, boolean noUserToken) {
         return null;
     }
 
@@ -66,7 +67,7 @@ public class DisabledKeycloakUserAdministrationService implements UserAdministra
      * {@inheritDoc}
      */
     @Override
-    public KeycloakUserSearchPagedResults search(KeycloakUserSearchCriteria criteria) {
+    public KeycloakUserSearchPagedResults search(KeycloakUserSearchCriteria criteria,boolean withServiceAccountAccess) {
         return null;
     }
 

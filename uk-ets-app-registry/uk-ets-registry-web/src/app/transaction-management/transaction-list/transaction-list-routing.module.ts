@@ -13,16 +13,17 @@ const routes: Routes = [
     component: TransactionListContainerComponent,
     resolve: {
       search: TransactionListResolver,
-      filtersDescriptor: FiltersDescriptorResolver
+      filtersDescriptor: FiltersDescriptorResolver,
     },
     data: {
-      errorMap: createTransactionListErrorMap()
-    }
-  }
+      errorMap: createTransactionListErrorMap(),
+    },
+    title: 'Transactions',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class TransactionListRoutingModule {}

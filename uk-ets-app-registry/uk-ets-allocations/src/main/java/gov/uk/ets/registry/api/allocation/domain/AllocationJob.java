@@ -2,16 +2,20 @@ package gov.uk.ets.registry.api.allocation.domain;
 
 import gov.uk.ets.registry.api.allocation.type.AllocationCategory;
 import gov.uk.ets.registry.api.allocation.type.AllocationJobStatus;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,5 +70,11 @@ public class AllocationJob {
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated;
+
+    /**
+     * The allocation job errors.
+     */
+    @OneToMany(mappedBy = "allocationJob", fetch = FetchType.LAZY)
+    private List<AllocationJobError> errors = new ArrayList<>();
 
 }

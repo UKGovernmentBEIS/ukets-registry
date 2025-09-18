@@ -7,7 +7,7 @@ import gov.uk.ets.keycloak.users.service.application.UkEtsUsersService;
 import gov.uk.ets.keycloak.users.service.application.domain.UkEtsUsersRepository;
 import gov.uk.ets.keycloak.users.service.application.UkEtsUsersServiceImpl;
 import gov.uk.ets.keycloak.users.service.application.domain.UserPersonalInfoRepository;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.KeycloakSession;
 

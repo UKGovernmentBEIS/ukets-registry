@@ -34,6 +34,9 @@ export class OverviewComponent {
   @Input()
   operatorCompleted: boolean;
 
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+
   type = OperatorType;
   operatorWizardRoutes = OperatorWizardRoutes;
   activityTypes = InstallationActivityType;

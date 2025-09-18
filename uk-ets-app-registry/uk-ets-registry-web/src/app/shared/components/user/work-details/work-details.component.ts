@@ -2,20 +2,26 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnInit,
   Output,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
-
+import { Validators } from '@angular/forms';
 import { IUkOfficialCountry } from '@shared/countries/country.interface';
 import { IUser, User } from '@shared/user';
 import { UkRegistryValidators } from '@shared/validation/uk-registry.validators';
 import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
-import { PhoneInfo } from '@shared/form-controls/uk-select-phone';
+import {
+  MobileNumberVerificationStatus,
+  PhoneInfo,
+} from '@shared/form-controls/uk-select-phone';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import { CountryCodeModel } from '@shared/countries/country-code.model';
+import { FormRadioGroupInfo } from '@registry-web/shared/form-controls/uk-radio-input/uk-radio.model';
 
 @Component({
   selector: 'app-work-details-input',
@@ -32,42 +38,38 @@ export class WorkDetailsComponent
   @Input() isMyProfilePage: boolean;
   @Input() countries: IUkOfficialCountry[];
   @Input() countryCodes: CountryCodeModel[];
-  @Input() sameAddress: boolean;
-  @Input() sameEmail: boolean;
+  @Input() hasWorkMobilePhone: boolean = null;
+  @Input() user: User;
 
   @Output() readonly outputUser = new EventEmitter<IUser>();
-  outputModel: IUser;
+  @Output() readonly hasWorkMobilePhoneChange = new EventEmitter<boolean>();
+  @Output() readonly mobileNumberVerificationStatusChange =
+    new EventEmitter<MobileNumberVerificationStatus>();
 
-  @Output() readonly copyHomeEmailToWorkEmail = new EventEmitter<boolean>();
-  @Output() readonly copyHomeAddressToWorkAddress = new EventEmitter<boolean>();
+  hasWorkMobilePhoneRadioGroup: FormRadioGroupInfo;
 
-  _phoneInfo: PhoneInfo;
-  _user: User;
+  @ViewChild('mobilePhoneTemplate', { static: true })
+  mobilePhoneTemplate: TemplateRef<ElementRef>;
 
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
+  @ViewChild('noMobilePhoneTemplate', { static: true })
+  noMobilePhoneTemplate: TemplateRef<ElementRef>;
 
   protected getFormModel() {
     return {
-      workPhone: ['', UkRegistryValidators.allFieldsRequired],
-      sameWorkEmail: ['', { updateOn: 'change' }],
-      workEmailAddress: ['', [Validators.required, Validators.email]],
-      workEmailAddressConfirmation: [
-        '',
-        [
-          Validators.required,
-          UkRegistryValidators.emailVerificationMatcher('workEmailAddress'),
-        ],
+      hasWorkMobilePhone: [
+        null,
+        { validators: Validators.required, updateOn: 'change' },
       ],
-      sameWorkAddress: ['', { updateOn: 'change' }],
+      workMobilePhone: [this.getEmptyPhoneInfo()],
+      workAlternativePhone: [this.getEmptyPhoneInfo()],
+      noMobilePhoneNumberReason: [''],
       workBuildingAndStreet: ['', Validators.required],
       workBuildingAndStreetOptional: [''],
       workBuildingAndStreetOptional2: [''],
       workTownOrCity: ['', Validators.required],
       workStateOrProvince: [''],
-      workPostCode: [''],
       workCountry: ['', Validators.required],
+      workPostCode: [''],
     };
   }
 
@@ -75,8 +77,17 @@ export class WorkDetailsComponent
     [key: string]: { [key: string]: string };
   } {
     return {
-      workPhone: {
-        allFieldsRequired: 'Enter a phone number',
+      hasWorkMobilePhone: {
+        required: 'Select yes if you have a work mobile number',
+      },
+      workMobilePhone: {
+        allFieldsRequired: 'Enter a work mobile number',
+      },
+      workAlternativePhone: {
+        allFieldsRequired: 'Enter an alternative phone number',
+      },
+      noMobilePhoneNumberReason: {
+        required: 'Enter a reason for not having a work mobile number',
       },
       workBuildingAndStreet: {
         required: 'Enter your work contact address',
@@ -84,37 +95,94 @@ export class WorkDetailsComponent
       workPostCode: {
         required: 'Enter a UK postcode',
       },
-      workEmailAddress: {
-        required: 'Enter your email address',
-        email:
-          'Enter an email address in the correct format, like name@example.com',
-      },
       workTownOrCity: {
         required: 'Enter your work town or city',
-      },
-      workEmailAddressConfirmation: {
-        required: 'Confirm your email address',
-        emailNotMatch:
-          'Invalid re-typed email address. The email address and the re-typed email address should match',
-        email:
-          'Enter an email address in the correct format, like name@example.com',
       },
     };
   }
 
-  @Input()
-  set user(value: User) {
-    if (value && value.workCountryCode && value.workPhoneNumber) {
-      this._phoneInfo = {
-        phoneNumber: value.workPhoneNumber,
-        countryCode: value.workCountryCode,
-      };
-    }
-    this._user = value;
-  }
-
   ngOnInit(): void {
     super.ngOnInit();
+
+    this.bindHasWorkMobilePhoneSwitch();
+    this.makePostalCodeMandatoryIfInUK();
+  }
+
+  ngAfterViewInit(): void {
+    // wait for "/assets/uk_countries.json" to load
+    // initialize workCountry to UK
+    if (!this.formGroup.get('workCountry').value) {
+      this.formGroup.get('workCountry').patchValue('UK');
+      this.formGroup.get('workCountry').updateValueAndValidity();
+    }
+  }
+
+  private bindHasWorkMobilePhoneSwitch(): void {
+    const hasWorkMobilePhoneFC = this.formGroup.get('hasWorkMobilePhone');
+    const workMobilePhoneFC = this.formGroup.get('workMobilePhone');
+    const workAlternativePhoneFC = this.formGroup.get('workAlternativePhone');
+    const noMobilePhoneNumberReasonFC = this.formGroup.get(
+      'noMobilePhoneNumberReason'
+    );
+
+    this.hasWorkMobilePhoneRadioGroup = {
+      key: 'hasWorkMobilePhone',
+      options: [
+        {
+          label: 'Yes',
+          value: true,
+          enabled: true,
+          conditionalTemplate: this.mobilePhoneTemplate,
+        },
+        {
+          label: 'No',
+          value: false,
+          enabled: true,
+          conditionalTemplate: this.noMobilePhoneTemplate,
+        },
+      ],
+    };
+
+    hasWorkMobilePhoneFC.valueChanges.subscribe((hasWorkMobilePhone) => {
+      if (hasWorkMobilePhone) {
+        workMobilePhoneFC.setValidators(UkRegistryValidators.allFieldsRequired);
+        workAlternativePhoneFC.clearValidators();
+        noMobilePhoneNumberReasonFC.clearValidators();
+      } else if (hasWorkMobilePhone === false) {
+        workMobilePhoneFC.clearValidators();
+        workAlternativePhoneFC.setValidators(
+          UkRegistryValidators.allFieldsRequired
+        );
+        noMobilePhoneNumberReasonFC.setValidators(Validators.required);
+      }
+      workMobilePhoneFC.updateValueAndValidity();
+      workAlternativePhoneFC.updateValueAndValidity();
+      noMobilePhoneNumberReasonFC.updateValueAndValidity();
+
+      this.hasWorkMobilePhoneChange.emit(hasWorkMobilePhone);
+    });
+
+    hasWorkMobilePhoneFC.patchValue(this.hasWorkMobilePhone);
+
+    this.patchPhoneValues();
+  }
+
+  private patchPhoneValues(): void {
+    this.formGroup.patchValue({
+      workMobilePhone: {
+        countryCode: this.user?.workMobileCountryCode || '',
+        phoneNumber: this.user?.workMobilePhoneNumber || '',
+      },
+    });
+    this.formGroup.patchValue({
+      workAlternativePhone: {
+        countryCode: this.user?.workAlternativeCountryCode || '',
+        phoneNumber: this.user?.workAlternativePhoneNumber || '',
+      },
+    });
+  }
+
+  private makePostalCodeMandatoryIfInUK() {
     this.formGroup.get('workCountry').valueChanges.subscribe((value) => {
       const workPostCodeControl = this.formGroup.get('workPostCode');
       if (value !== 'UK') {
@@ -126,98 +194,43 @@ export class WorkDetailsComponent
     });
   }
 
-  ngAfterViewInit(): void {
-    this.sameEmail = true;
-    // initialize  workCountry to UK
-    if (!this.formGroup.get('workCountry').value) {
-      this.formGroup.patchValue({ workCountry: 'UK' });
-      this.formGroup.get('workCountry').updateValueAndValidity();
-    }
-    if (this.sameEmail) {
-      this.formGroup.patchValue({ sameWorkEmail: true });
-      this.updateHomeEmail();
-    }
-    if (this.sameAddress) {
-      this.formGroup.patchValue({ sameWorkAddress: true });
-      this.updateWorkAddress();
-    }
-    if (this._user && this._user.workCountry) {
-      this.formGroup.patchValue({
-        workPhone: {
-          countryCode: this._user.workCountryCode,
-          phoneNumber: this._user.workPhoneNumber,
-        },
-      });
-    }
-  }
-
   countrySelectOptions(): Option[] {
     return this.countries.map((c) => ({ label: c.item[0].name, value: c.key }));
   }
 
-  onEmailCheckChange(event) {
-    if (event.target.checked) {
-      this.updateHomeEmail();
-    } else {
-      this.updateHomeEmail(true);
-    }
-    this.copyHomeEmailToWorkEmail.emit(event.target.checked);
+  onMobileNumberVerificationStatusChange(
+    event: MobileNumberVerificationStatus
+  ) {
+    this.mobileNumberVerificationStatusChange.emit(event);
   }
 
-  onAddressCheckChange(event) {
-    if (event.target.checked) {
-      this.updateWorkAddress();
-    } else {
-      this.updateWorkAddress(true);
-    }
-    this.copyHomeAddressToWorkAddress.emit(event.target.checked);
-  }
-
-  private updateHomeEmail(empty?: boolean) {
-    this.formGroup.patchValue({
-      workEmailAddress: empty ? '' : this._user.emailAddress,
-      workEmailAddressConfirmation: empty ? '' : this._user.emailAddress,
-    });
-  }
-
-  // updates work address from input user or cleans it when empty is set to true
-  private updateWorkAddress(empty?: boolean) {
-    this.formGroup.patchValue({
-      workBuildingAndStreet: empty ? '' : this._user.buildingAndStreet,
-      workBuildingAndStreetOptional: empty
-        ? ''
-        : this._user.buildingAndStreetOptional,
-      workBuildingAndStreetOptional2: empty
-        ? ''
-        : this._user.buildingAndStreetOptional2,
-      workCountry: empty ? 'UK' : this._user.country,
-      workTownOrCity: empty ? '' : this._user.townOrCity,
-      workStateOrProvince: empty ? '' : this._user.stateOrProvince,
-      workPostCode: empty ? '' : this._user.postCode,
-    });
+  private getEmptyPhoneInfo(): PhoneInfo {
+    return { countryCode: '', phoneNumber: '' };
   }
 
   doSubmit() {
-    // flatten form fields -> TODO: put it in a util class
-    const flatForm = Object.assign(
-      {},
-      ...(function _flatten(o) {
-        return [].concat(
-          ...Object.keys(o).map((k) =>
-            typeof o[k] === 'object' && o[k] !== null
-              ? _flatten(o[k])
-              : { [k]: o[k] }
-          )
-        );
-      })(this.formGroup.value)
-    );
-    delete flatForm.sameWorkAddress;
-    delete flatForm.sameWorkEmail;
-    this.outputModel = flatForm;
+    const formValues = { ...this.formGroup.value };
 
-    const phoneInfo = this.formGroup.get('workPhone').value as PhoneInfo;
-    this.outputModel.workPhoneNumber = phoneInfo.phoneNumber;
-    this.outputModel.workCountryCode = phoneInfo.countryCode;
-    this.outputUser.emit(this.outputModel);
+    // Empty fields depending on hasWorkMobilePhone value
+    const hasMobile = formValues.hasWorkMobilePhone;
+    const mobilePhone = formValues.workMobilePhone;
+    const alternativePhone = formValues.workAlternativePhone;
+
+    const phoneInfoData = {
+      workMobilePhoneNumber: hasMobile ? mobilePhone.phoneNumber : '',
+      workMobileCountryCode: hasMobile ? mobilePhone.countryCode : '',
+      workAlternativePhoneNumber: alternativePhone.phoneNumber,
+      workAlternativeCountryCode: alternativePhone.phoneNumber
+        ? alternativePhone.countryCode
+        : '',
+      noMobilePhoneNumberReason: hasMobile
+        ? ''
+        : formValues.noMobilePhoneNumberReason,
+    };
+    delete formValues.hasWorkMobilePhone;
+    delete formValues.workMobilePhone;
+    delete formValues.workAlternativePhone;
+
+    this.outputUser.emit({ ...formValues, ...phoneInfoData });
   }
 }

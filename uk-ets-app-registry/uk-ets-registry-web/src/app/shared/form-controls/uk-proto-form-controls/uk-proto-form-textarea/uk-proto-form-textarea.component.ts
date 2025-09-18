@@ -12,4 +12,5 @@ import { UkProtoFormComponent } from '../../uk-proto-form.component';
 export class UkProtoFormTextareaComponent extends UkProtoFormComponent {
   @Input() maxlength = 40;
   @Input() showLabel = true;
+  @Input() rows = 4;
 }

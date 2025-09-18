@@ -22,7 +22,6 @@ public class EmissionsTableExcelFileValidationService {
 
 	private final CompliantEntityRepository compliantEntityRepository;
 	private final ExcludeEmissionsRepository excludeEmissionsRepository;
-	private int currentYear = LocalDate.now().getYear();
 	
 	
 	/**
@@ -30,9 +29,6 @@ public class EmissionsTableExcelFileValidationService {
 	 *
 	 * @param multiPartInputStream
 	 *            the input stream of the uploaded file
-	 * @param wrapper
-	 *            the wrapper that contains data for the validation of the file
-	 *            content
 	 * @throws IOException
 	 *             if I/O interruption occurs
 	 */
@@ -40,7 +36,7 @@ public class EmissionsTableExcelFileValidationService {
     	EmissionsTableContentValidationWrapper wrapper = new EmissionsTableContentValidationWrapper(
     		compliantEntityRepository.findAllIdentifiersFetchAccountStatusAndYears(),
 			excludeEmissionsRepository.findAll(),
-			currentYear);
+			LocalDate.now().getYear());
 
 
 

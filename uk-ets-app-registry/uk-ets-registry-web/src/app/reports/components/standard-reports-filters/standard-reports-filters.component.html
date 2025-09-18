@@ -2,11 +2,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <hr
-        class="
-          govuk-section-break
-          govuk-section-break--s
-          govuk-section-break--visible
-        "
+        class="govuk-section-break govuk-section-break--s govuk-section-break--visible"
       />
     </div>
   </div>
@@ -23,7 +19,7 @@
   <div class="govuk-grid-row">
     <div
       [ngClass]="{
-        'govuk-form-group govuk-form-group--error': formHasErrors()
+        'govuk-form-group govuk-form-group--error': formHasErrors(),
       }"
     >
       <div
@@ -33,7 +29,7 @@
         <label class="govuk-heading-s" for="select-period-type">
           Select period to generate report
         </label>
-        <span
+        <p
           *ngIf="formHasErrors()"
           id="date-related-error"
           class="govuk-error-message"
@@ -50,7 +46,7 @@
           <span *ngIf="this.errorMessage">{{
             this.errorMessage?.invalidDateRange
           }}</span>
-        </span>
+        </p>
       </div>
       <div class="govuk-grid-column-one-third" *ngIf="this.hasPeriod">
         <div class="govuk-form-group" *ngIf="datePeriodOptions">

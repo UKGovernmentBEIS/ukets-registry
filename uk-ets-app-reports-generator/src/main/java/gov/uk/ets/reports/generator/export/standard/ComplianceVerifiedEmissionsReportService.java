@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class ComplianceVerifiedEmissionsReportService implements ReportTypeServi
         data.add(reportData.getAccountHolderName());
         data.add(reportData.getAccountType());
         data.add(reportData.getAccountStatus());
-        data.add(reportData.getInstallationIdentifier());
+        data.add(reportData.getOperatorId());
         data.add(reportData.getPermitOrMonitoringPlanId());
         data.add(reportData.getInstallationName());
         data.add(reportData.getFirstYearOfVerifiedEmissions());
@@ -70,7 +69,7 @@ public class ComplianceVerifiedEmissionsReportService implements ReportTypeServi
                 "Account Holder Name",
                 "Account type",
                 "Account status",
-                "Installation ID or Aircraft operator ID",
+                "Operator ID",
                 "Permit ID or Monitoring plan ID",
                 "Installation name",
                 "First Year of Operation",
@@ -97,11 +96,6 @@ public class ComplianceVerifiedEmissionsReportService implements ReportTypeServi
                 "Static surrender status 2029",
                 "Static surrender status 2030"
             );
-    }
-
-    @Override
-    public List<ComplianceReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

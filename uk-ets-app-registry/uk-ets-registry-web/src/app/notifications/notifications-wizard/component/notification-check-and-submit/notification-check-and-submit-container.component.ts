@@ -9,6 +9,7 @@ import {
   selectNewNotification,
   selectNotificationId,
   selectNotificationRequest,
+  selectRecipientsEmailsFile,
   selectTentativeRecipients,
 } from '@notifications/notifications-wizard/reducers';
 import { Store } from '@ngrx/store';
@@ -21,6 +22,8 @@ import {
 import { NotificationsWizardActions } from '@notifications/notifications-wizard/actions';
 import { NotificationRequestEnum } from '@notifications/notifications-wizard/model/notification-request.enum';
 import { selectTimeOptionsWithNow } from '@notifications/notifications-list/reducers';
+import { NotificationsFile } from '@shared/model/file';
+import { downloadEmailsFile } from '@shared/shared.action';
 
 @Component({
   selector: 'app-notification-check-and-submit-container',
@@ -31,6 +34,7 @@ import { selectTimeOptionsWithNow } from '@notifications/notifications-list/redu
     [currentNotification]="currentNotification$ | async"
     [newNotification]="newNotification$ | async"
     [tentativeRecipients]="tentativeRecipients$ | async"
+    [recipientsEmailsFile]="emailsFile$ | async"
     (cancelEmitter)="onCancel()"
     (submitRequest)="onSubmit($event)"
     (navigateToEmitter)="navigateTo($event)"
@@ -44,8 +48,12 @@ export class NotificationCheckAndSubmitContainerComponent implements OnInit {
   notificationId$: Observable<string>;
   timeOptions$: Observable<any>;
   tentativeRecipients$: Observable<number>;
+  emailsFile$: Observable<NotificationsFile>;
 
-  constructor(private store: Store, private route: ActivatedRoute) {}
+  constructor(
+    private store: Store,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.notificationRequest$ = this.store.select(selectNotificationRequest);
@@ -54,6 +62,7 @@ export class NotificationCheckAndSubmitContainerComponent implements OnInit {
     this.notificationId$ = this.store.select(selectNotificationId);
     this.timeOptions$ = this.store.select(selectTimeOptionsWithNow);
     this.tentativeRecipients$ = this.store.select(selectTentativeRecipients);
+    this.emailsFile$ = this.store.select(selectRecipientsEmailsFile);
 
     this.store.dispatch(
       setGoBackPath({
@@ -76,6 +85,11 @@ export class NotificationCheckAndSubmitContainerComponent implements OnInit {
   navigateTo(path: string) {
     const notificationId = this.route.snapshot.paramMap.get('notificationId');
     let pathRoute = `/notifications/${NotificationsWizardPathsModel.BASE_PATH}/${path}`;
+    if (path === 'download-emails-file') {
+      this.emailsFile$.subscribe((file) =>
+        this.store.dispatch(downloadEmailsFile({ fileId: file.id }))
+      );
+    }
     if (notificationId) {
       pathRoute = `/notifications/${notificationId}/${NotificationsWizardPathsModel.BASE_PATH}/${path}`;
     }

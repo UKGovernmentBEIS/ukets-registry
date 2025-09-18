@@ -7,8 +7,6 @@ import static org.springframework.http.MediaType.*;
 
 import java.util.List;
 
-import javax.ws.rs.QueryParam;
-
 import gov.uk.ets.commons.logging.MDCParam;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,7 +92,7 @@ public class EmissionsTableUploadController {
     
 
     @GetMapping(path = "/emissions-table.get.errors", produces = APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> getEmissionsTableErrors(@QueryParam("reportId") @MDCParam(FILE_ID) Long fileId) {
+    public ResponseEntity<byte[]> getEmissionsTableErrors(@RequestParam(required = false, value = "fileId") @MDCParam(FILE_ID) Long fileId) {
         HttpHeaders headers = new HttpHeaders();
         UploadedFile file = emissionsTableProcessor.getEmissionsTableErrorsFile(fileId);
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);

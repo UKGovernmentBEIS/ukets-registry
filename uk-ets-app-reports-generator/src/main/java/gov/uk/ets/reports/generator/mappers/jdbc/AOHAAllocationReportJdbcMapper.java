@@ -4,7 +4,6 @@ import gov.uk.ets.reports.generator.Util;
 import gov.uk.ets.reports.generator.domain.AOHAAllocationReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -34,6 +33,7 @@ public class AOHAAllocationReportJdbcMapper
             "           ac.sales_contact_email, \n"+
             "           ac.sales_contact_phone_number_country, \n"+
             "           ac.sales_contact_phone_number, \n"+
+            "           sum(ae.entitlement) as entitlement, \n" +
             "           sum(COALESCE(ae.allocated, 0) - COALESCE(ae.returned, 0) - COALESCE(ae.reversed, 0)) as allocation \n"+
             "from account_holder as ah \n" +
             "   inner join account as ac  \n" +
@@ -61,11 +61,6 @@ public class AOHAAllocationReportJdbcMapper
             "order by account_holder_name\n";
 
     @Override
-    public List<AOHAAllocationReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
-
-    @Override
     public List<AOHAAllocationReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
         return jdbcTemplate.query(REPORT_QUERY, this, reportQueryInfo.getYear());
     }
@@ -79,6 +74,7 @@ public class AOHAAllocationReportJdbcMapper
                 .firstYear(resultSet.getInt("first_year_of_verified_emission_submission"))
                 .regulator(resultSet.getString("regulator"))
                 .allocated(resultSet.getInt("allocation"))
+                .entitled(resultSet.getInt("entitlement"))
                 .salesContactEmail(resultSet.getString("sales_contact_email"))
                 .salesContactPhone(StringUtils.isNotBlank(resultSet.getString("sales_contact_phone_number_country")) ?  StringUtils.trim(resultSet.getString("sales_contact_phone_number_country") + " " +resultSet.getString("sales_contact_phone_number")) : "")
                 .build();

@@ -11,12 +11,12 @@ import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderContactInfoDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
+import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderService;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.common.Mapper;
-import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.migration.Migrator;
 import gov.uk.ets.registry.api.migration.domain.MigratorHistory;
 import gov.uk.ets.registry.api.migration.domain.MigratorHistoryRepository;
@@ -180,7 +180,7 @@ public class AccountOpeningTaskMigrator implements Migrator {
         UserDTO userDTO = userConversionService.convert(user);
         dto.setUser(userDTO);
         dto.setUrid(userDTO.getUrid());
-        Contact workContact = userAdministrationService.findWorkContactDetailsByIamId(userDTO.getKeycloakId(), true);
+        ContactDTO workContact = userAdministrationService.findWorkContactDetailsByIamId(userDTO.getKeycloakId(), true);
         dto.setContact(workContact);
 
         return dto;
@@ -196,11 +196,11 @@ public class AccountOpeningTaskMigrator implements Migrator {
         return retrieveFirstTaskWithBeforeObject(accountId, primaryContactRequest);
     }
 
-    private Optional<InstallationOrAircraftOperatorDTO> retrieveOperator(Long accountId) {
+    private Optional<OperatorDTO> retrieveOperator(Long accountId) {
         List<RequestType> operatorUpdateRequest =
             List.of(RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST, RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST);
         return retrieveFirstTaskWithBeforeObject(accountId, operatorUpdateRequest)
-            .map(task -> mapper.convertToPojo(task.getBefore(), InstallationOrAircraftOperatorDTO.class));
+            .map(task -> mapper.convertToPojo(task.getBefore(), OperatorDTO.class));
     }
 
     private Optional<Task> retrieveAlternativeContactTask(Long accountId) {

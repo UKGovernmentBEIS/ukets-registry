@@ -21,7 +21,7 @@ import gov.uk.ets.publication.api.web.model.SectionDto;
 import gov.uk.ets.reports.model.ReportType;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebFilter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

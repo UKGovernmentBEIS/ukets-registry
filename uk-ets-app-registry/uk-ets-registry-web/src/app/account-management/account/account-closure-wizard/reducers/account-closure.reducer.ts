@@ -24,6 +24,7 @@ export interface AccountClosureWizardState {
 export const initialState: AccountClosureWizardState = {
   accountDetails: {
     accountNumber: null,
+    publicAccountIdentifier: null,
     address: null,
     accountStatus: null,
     accountType: null,

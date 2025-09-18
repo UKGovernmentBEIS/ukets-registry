@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -182,9 +183,11 @@ public class AllocationScheduler {
             pendingAllocationJob, pendingAllocationTransaction, allocationValid, allocationAccountHasEnoughUnits));
 
         if (!result.success()) {
-            List<String> errors = result.getErrors().stream().map(BusinessCheckError::getMessage).toList();
-            log.error("Allocation job not started due to business errors. Errors: {}", errors);
+            Map<Integer, String> errors = result.getErrors().stream()
+                .collect(Collectors.toMap(BusinessCheckError::getCode, BusinessCheckError::getMessage));
+            log.error("Allocation job not started due to business errors. Errors: {}", errors.values());
             allocationJobService.setStatus(allocationJob, AllocationJobStatus.FAILED);
+            allocationJobService.setErrors(allocationJob, errors);
             eventService.createAndPublishEvent(allocationJob.getRequestIdentifier().toString(),
                                                null,
                                                "Allocation Job not started due to business errors. See logs for more details.",

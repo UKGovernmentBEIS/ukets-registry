@@ -24,7 +24,7 @@ public class TaskListCurrentReportData extends ReportData {
     private String ownershipDate;
     private Integer openDocumentRequests;
     private Integer completedDocumentRequests;
-    private Integer workInitiationLag;
+    private String workAllocationLagDays;
     private String deadline;
 
     private String accountHolder;

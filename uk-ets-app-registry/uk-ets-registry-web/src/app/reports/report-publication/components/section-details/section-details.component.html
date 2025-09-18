@@ -12,7 +12,7 @@
 <div class="govuk-warning-text" *ngIf="isFrequencyDisabled">
   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
   <strong class="govuk-warning-text__text">
-    <span class="govuk-warning-text__assistive">Warning</span>
+    <span class="govuk-visually-hidden">Warning</span>
     The automated report generation has been stopped.<br />
     You must update the current report manually or set a new report generation
     schedule.
@@ -104,7 +104,7 @@
       </td>
       <td class="govuk-table__cell">
         {{
-          entry.publishedOn | date: 'YYYY-MM-ddTHH:mm:ss.s+00:00' | gdsDateTime
+          entry.publishedOn | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00' | gdsDateTime
         }}
       </td>
       <td class="govuk-table__cell">

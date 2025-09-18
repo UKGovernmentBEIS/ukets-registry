@@ -103,14 +103,19 @@ public class EmailChangeTaskService implements TaskTypeService<EmailChangeTaskDe
     @Override
     public TaskCompleteResponse complete(EmailChangeTaskDetailsDTO taskDTO, TaskOutcome taskOutcome, String comment) {
         if (taskOutcome == TaskOutcome.APPROVED) {
+            User user = userRepository.findByUrid(taskDTO.getUserUrid());
+            if (user == null) {
+                throw new IllegalArgumentException("User not found, aborting task completion.");
+            }
+
+            if (emailChangeChecker.sameEmailWithRecoveryEmail(taskDTO.getUserNewEmail(), user.getIamIdentifier())) {
+                throw new IllegalArgumentException("User email address cannot be the same as user recovery email address.");
+            }
+
             if (emailChangeChecker.otherUserHasNewEmailAsWorkingEmail(taskDTO.getUserNewEmail())) {
                 throw new IllegalArgumentException("The email change aborted because the new email is used.");
             }
             userAdministrationService.updateUserEmail(taskDTO.getUserCurrentEmail(), taskDTO.getUserNewEmail());
-            User user = userRepository.findByUrid(taskDTO.getUserUrid());
-            if (user == null) {
-               throw new IllegalArgumentException("User not found, aborting task completion.");
-            }
 
             // update the user email in registry as well
             user.setEmail(taskDTO.getUserNewEmail());

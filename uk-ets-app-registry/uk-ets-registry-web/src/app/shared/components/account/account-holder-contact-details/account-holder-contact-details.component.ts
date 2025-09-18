@@ -4,6 +4,11 @@ import { AccountHolderContact } from '@shared/model/account';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ContactType } from '@shared/model/account-holder-contact-type';
 import { UkRegistryValidators } from '@shared/validation';
+import { selectIsOHAOrAOHA } from '@account-management/account/account-details/account.selector';
+import { Store } from '@ngrx/store';
+import { take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { selectIsMOHA } from '@account-opening/account-opening.selector';
 
 @Component({
   selector: 'app-account-holder-contact-details',
@@ -21,12 +26,30 @@ export class AccountHolderContactDetailsComponent
 
   title: string;
 
-  constructor(protected formBuilder: UntypedFormBuilder) {
+  isMOHA: boolean;
+
+  constructor(
+    protected formBuilder: UntypedFormBuilder,
+    private store: Store
+  ) {
     super();
   }
 
   ngOnInit() {
+    this.store
+      .select(selectIsMOHA)
+      .pipe(take(1))
+      .subscribe((type) => {
+        this.isMOHA = type;
+      });
     super.ngOnInit();
+    this.initFormValues();
+  }
+
+  initFormValues() {
+    this.formGroup.get('details').get('firstName').patchValue('Primary');
+    this.formGroup.get('details').get('lastName').patchValue('Contact');
+    this.formGroup.get('details').get('isOverEighteen').patchValue(true);
   }
 
   protected getFormModel() {

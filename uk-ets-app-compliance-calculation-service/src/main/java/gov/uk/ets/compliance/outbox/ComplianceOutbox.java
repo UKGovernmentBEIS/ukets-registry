@@ -1,13 +1,11 @@
 package gov.uk.ets.compliance.outbox;
 
-
-import lombok.*;
-import org.hibernate.Hibernate;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 @Entity
 @Table(name = "compliance_outbox")

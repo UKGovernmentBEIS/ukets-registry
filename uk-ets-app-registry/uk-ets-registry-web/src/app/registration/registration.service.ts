@@ -5,9 +5,8 @@ import {
   UK_ETS_REGISTRY_API_BASE_URL,
   USER_REGISTRATION_SERVICE_URL,
 } from '../app.tokens';
-import { SessionStorageService } from 'angular-web-storage';
 import { User } from '../shared/user/user';
-import { flatMap, map, catchError } from 'rxjs/operators';
+import { mergeMap, map, catchError } from 'rxjs/operators';
 import { leftPadZeros } from '../shared/shared.util';
 
 export class UserRepresentation {
@@ -21,10 +20,11 @@ export class UserRepresentation {
     'stateOrProvince',
     'country',
     'countryOfBirth',
-    'workCountryCode',
-    'workPhoneNumber',
-    'workEmailAddress',
-    'workEmailAddressConfirmation',
+    'workMobileCountryCode',
+    'workMobilePhoneNumber',
+    'workAlternativeCountryCode',
+    'workAlternativePhoneNumber',
+    'noMobilePhoneNumberReason',
     'workBuildingAndStreet',
     'workBuildingAndStreetOptional',
     'workBuildingAndStreetOptional2',
@@ -34,6 +34,7 @@ export class UserRepresentation {
     'workCountry',
     'state',
     'memorablePhrase',
+    'differentCountryLastFiveYears',
   ];
 
   id: string;
@@ -91,7 +92,6 @@ export class RegistrationService {
     @Inject(USER_REGISTRATION_SERVICE_URL)
     private userRegistrationServiceUrl: string,
     private httpClient: HttpClient,
-    private session: SessionStorageService,
     @Inject(UK_ETS_REGISTRY_API_BASE_URL)
     private ukEtsRegistryApiBaseUrl: string
   ) {}
@@ -117,7 +117,7 @@ export class RegistrationService {
 
   updateUser(userId: string, user: User) {
     const result = this.getUser(userId).pipe(
-      flatMap((userRep: UserRepresentation) => {
+      mergeMap((userRep: UserRepresentation) => {
         return this.httpClient.put<UserRepresentation>(
           this.userRegistrationServiceUrl,
           UserRepresentation.updateFromUser(userRep, user),

@@ -3,7 +3,7 @@ package gov.uk.ets.reports.generator.kyotoprotocol.sef._2_0._0;
 import gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0.SourceType;
 import gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0.StatusType;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 /**

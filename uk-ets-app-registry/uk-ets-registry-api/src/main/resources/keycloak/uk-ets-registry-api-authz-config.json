@@ -64,6 +64,9 @@
         },
         {
           "name": "urn:uk-ets-registry-api:page:account:search:installationOrAircraftOperatorId:view"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:page:account:search:imo:view"
         }
       ]
     },
@@ -165,7 +168,6 @@
         "/api-registry/users.get.history",
         "/api-registry/users.get.enrolment-key",
         "/api-registry/users.enrol",
-        "/api-registry/users.get.basic-info",
         "/api-registry/users.get.basic-info"
       ]
     },
@@ -272,7 +274,8 @@
         "/api-registry/account-holder.get.list",
         "/api-registry/account-holder.get",
         "/api-registry/account-holder.get.by-identifier",
-        "/api-registry/account-holder.get.contacts"
+        "/api-registry/account-holder.get.contacts",
+        "/api-registry/account-holder.get.by-name-or-identifier"
       ],
       "scopes": [
         {
@@ -458,8 +461,10 @@
         "/api-registry/allocations.get.available-years",
         "/api-registry/allocations.submit",
         "/api-registry/allocations.get.file",
+        "/api-registry/allocations.get.report.file",
+        "/api-registry/allocations.list",
         "/api-registry/allocations.get.pending",
-        "/api-registry/allocations.cancel.pending"
+        "/api-registry/allocations.cancel.pending/*"
       ]
     },
     {
@@ -543,7 +548,10 @@
       "displayName": "Account Monitoring Plan Exists",
       "attributes": {},
       "uris": [
-        "/api-registry/accounts.get.monitoring-plan",
+        "/api-registry/accounts.get.aircraft-monitoring-plan",
+        "/api-registry/accounts.get.maritime-monitoring-plan",
+        "/api-registry/accounts.get.maritime-imo",
+        "/api-registry/accounts.get.emitter-id",
         "/api-registry/accounts.get.installation-permit-id",
         "/api-registry/account.validate.installation-transfer",
         "/api-registry/accounts.get.candidate-installation-transfer"
@@ -753,6 +761,21 @@
       ]
     },
     {
+      "name": "Upload AdHoc Email Recipients",
+      "ownerManagedAccess": false,
+      "displayName": "Validate & submit ad hoc email recipients file",
+      "attributes": {},
+      "uris": [
+        "/api-registry/adhoc.recipients.upload",
+        "/api-registry/adhoc.recipients.download"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:adhoc-recipients-upload:write"
+        }
+      ]
+    },
+    {
       "name": "Upload requested document Resource",
       "ownerManagedAccess": false,
       "displayName": "Validate & submit a requested document",
@@ -788,6 +811,56 @@
         },
         {
           "name": "urn:uk-ets-registry-api:documents-request:submit"
+        }
+      ]
+    },
+    {
+      "name": "Request payment wizard",
+      "ownerManagedAccess": false,
+      "displayName": "Submit a payment request",
+      "attributes": {},
+      "uris": [
+        "/api-registry/payment-request.submit",
+        "/api-registry/payment-request.invoice-preview"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:payment-request:submit"
+        }
+      ]
+    },
+    {
+      "name": "Make payment wizard",
+      "ownerManagedAccess": false,
+      "displayName": "Submit a make payment request",
+      "attributes": {},
+      "uris": [
+        "/api-registry/make.payment.submit",
+        "/api-registry/make.payment.get.response/*",
+        "/api-registry/payment-request.receipt",
+        "/api-registry/bacs.payment.complete.or.cancel"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:make-payment-request:submit"
+        }
+      ]
+    },
+    {
+      "name": "List payment history",
+      "ownerManagedAccess": false,
+      "displayName": "List payment history",
+      "attributes": {},
+      "uris": ["/api-registry/payment.get.history"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
         }
       ]
     },
@@ -836,6 +909,8 @@
       "uris": [
         "/api-registry/notifications.create",
         "/api-registry/notifications.update",
+        "/api-registry/notifications.cancel",
+        "/api-registry/notifications.validate",
         "/api-registry/notifications.get.definition",
         "/api-registry/notifications.list",
         "/api-registry/notifications.get",
@@ -933,6 +1008,57 @@
       "scopes": [
         {
           "name": "urn:uk-ets-registry-api:user-profile-password-change:write"
+        }
+      ]
+    },
+    {
+      "name": "Request recovery method security code",
+      "ownerManagedAccess": false,
+      "displayName": "Request recovery method security code",
+      "attributes": {},
+      "uris": [
+        "/api-registry/user-profile.request.security-code",
+        "/api-registry/user-profile.resend.security-code"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-recovery-method-security-code:write"
+        }
+      ]
+    },
+    {
+      "name": "Request recovery method update",
+      "ownerManagedAccess": false,
+      "displayName": "Request recovery method update",
+      "attributes": {},
+      "uris": ["/api-registry/user-profile.update.recovery"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-recovery-method-update:write"
+        }
+      ]
+    },
+    {
+      "name": "Request recovery method remove",
+      "ownerManagedAccess": false,
+      "displayName": "Request recovery method remove",
+      "attributes": {},
+      "uris": ["/api-registry/user-profile.remove.recovery"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-recovery-method-remove:write"
+        }
+      ]
+    },
+    {
+      "name": "Request hide recovery methods notification",
+      "ownerManagedAccess": false,
+      "displayName": "Request hide recovery methods notification",
+      "attributes": {},
+      "uris": ["/api-registry/user-profile.hide.recovery-methods"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:user-profile-hide-recovery-methods-notification:write"
         }
       ]
     },
@@ -1047,6 +1173,18 @@
       ]
     },
     {
+      "name": "Change Account Holder",
+      "ownerManagedAccess": false,
+      "displayName": "Change Account Holder",
+      "attributes": {},
+      "uris": ["/api-registry/change-account-holder.perform"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        }
+      ]
+    },
+    {
       "name": "View Note Resource",
       "ownerManagedAccess": false,
       "displayName": "View Note Resource",
@@ -1059,11 +1197,60 @@
       ]
     },
     {
-      "name": "Update Note Resource",
+      "name": "Add Note Resource",
       "ownerManagedAccess": false,
-      "displayName": "Update Note Resource",
+      "displayName": "Add Note Resource",
       "attributes": {},
-      "uris": ["/api-registry/notes.add", "/api-registry/notes.delete/*"],
+      "uris": ["/api-registry/notes.add"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Delete Note Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Delete Note Resource",
+      "attributes": {},
+      "uris": ["/api-registry/notes.delete/*"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+        }
+      ]
+    },
+    {
+      "name": "View Document Resource",
+      "ownerManagedAccess": false,
+      "displayName": "View Document Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/document-categories.get",
+        "/api-registry/document.get/*"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+        },
+        {
+          "name": "urn:uk-ets-registry-api:actionForNonAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Update Document Resource",
+      "ownerManagedAccess": false,
+      "displayName": "Update Document Resource",
+      "attributes": {},
+      "uris": [
+        "/api-registry/document-categories.add",
+        "/api-registry/document-categories.update",
+        "/api-registry/document-categories.delete/*",
+        "/api-registry/document.add",
+        "/api-registry/document.update",
+        "/api-registry/document.delete/*"
+      ],
       "scopes": [
         {
           "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
@@ -1894,6 +2081,17 @@
       }
     },
     {
+      "name": "Recipients Emails upload - Write Permission",
+      "description": "Defines who can upload the Email Recipients file",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:adhoc-recipients-upload:write\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+      }
+    },
+    {
       "name": "Requested docs Table - Write Permission",
       "description": "Defines who can upload a requested document",
       "type": "scope",
@@ -1913,6 +2111,28 @@
       "config": {
         "scopes": "[\"urn:uk-ets-registry-api:documents-request:submit\"]",
         "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Request Payment Wizard - Submit Permission",
+      "description": "Defines who can submit a payment request",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:payment-request:submit\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Make Payment Wizard - Submit Permission",
+      "description": "Defines who can submit a make payment request",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:make-payment-request:submit\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
       }
     },
     {
@@ -2011,6 +2231,50 @@
       "decisionStrategy": "AFFIRMATIVE",
       "config": {
         "scopes": "[\"urn:uk-ets-registry-api:user-profile-password-change:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Request recovery method security code - User profile - Write Permission",
+      "description": "Defines who can request recovery method security code",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-recovery-method-security-code:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Request recovery method update - User profile - Write Permission",
+      "description": "Defines who can request recovery method update",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-recovery-method-update:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Request recovery method remove - User profile - Write Permission",
+      "description": "Defines who can request recovery method remove",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-recovery-method-remove:write\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
+      }
+    },
+    {
+      "name": "Request hide recovery methods notification - User profile - Write Permission",
+      "description": "Defines who can request hide recovery methods notification",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:user-profile-hide-recovery-methods-notification:write\"]",
         "applyPolicies": "[\"Any UK ETS User\"]"
       }
     },
@@ -2116,6 +2380,17 @@
     {
       "name": "Account Transfer Permission",
       "description": "Account Transfer Permission",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin\"]",
+        "applyPolicies": "[\"Senior Registry Administrator Policy\",\"Junior Registry Administrator Policy\"]"
+      }
+    },
+    {
+      "name": "Change Account Holder Permission",
+      "description": "Change Account Holder Permission",
       "type": "scope",
       "logic": "POSITIVE",
       "decisionStrategy": "AFFIRMATIVE",
@@ -2326,7 +2601,13 @@
       "name": "urn:uk-ets-registry-api:documents-request:submit"
     },
     {
+      "name": "urn:uk-ets-registry-api:payment-request:submit"
+    },
+    {
       "name": "urn:uk-ets-registry-api:bulk-ar-upload:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:adhoc-recipients-upload:write"
     },
     {
       "name": "urn:uk-ets-registry-api:registry-yearly-issuance-allocation:read"
@@ -2342,6 +2623,18 @@
     },
     {
       "name": "urn:uk-ets-registry-api:user-profile-password-change:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-recovery-method-security-code:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-recovery-method-update:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-recovery-method-remove:write"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:user-profile-hide-recovery-methods-notification:write"
     },
     {
       "name": "urn:uk-ets-registry-api:page:itl-message:read"

@@ -19,7 +19,7 @@
       <a
         *ngIf="!!isAuthenticated"
         [routerLink]="menuRoutes.DASHBOARD"
-        class="govuk-header__link govuk-header__link--service-name govuk-header__link--service-custom"
+        class="govuk-header__link govuk-header__service-name govuk-header__link--service-custom"
       >
         UK Emissions Trading Registry
       </a>
@@ -27,7 +27,7 @@
       <a
         *ngIf="!isAuthenticated"
         href="/"
-        class="govuk-header__link govuk-header__link--service-name govuk-header__link--service-custom"
+        class="govuk-header__link govuk-header__service-name govuk-header__link--service-custom"
       >
         UK Emissions Trading Registry
       </a>
@@ -41,19 +41,26 @@
           >Sign in</a
         >
       </span>
-      <span *ngIf="!!isAuthenticated" class="govuk-header__link-item">
-        <a
-          (click)="logout()"
-          (keypress)="logout()"
-          routerLink=""
-          class="govuk-header__link uk_ets_sign_in_out_link govuk-header__link--sign-custom"
-          id="sign-out"
-          >Sign out</a
+
+      <span class="uk_ets_menu_link">
+        <span *ngIf="!!isAuthenticated" class="govuk-header__link-item">
+          <app-my-profile [urid]="urid$ | async"></app-my-profile>
+        </span>
+        <span
+          *ngIf="!!isAuthenticated"
+          class="uk_ets_menu_item_link govuk-header__link-item"
         >
+          <a
+            (click)="logout()"
+            (keypress)="logout()"
+            routerLink=""
+            class="govuk-header__link govuk-header__link--sign-custom"
+            id="sign-out"
+            >Sign out</a
+          >
+        </span>
       </span>
-      <span *ngIf="!!isAuthenticated" class="govuk-header__link-item">
-        <app-my-profile [urid]="urid$ | async"></app-my-profile>
-      </span>
+
       <button
         type="button"
         class="govuk-header__menu-button govuk-js-header-toggle"

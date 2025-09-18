@@ -12,6 +12,7 @@ export class OperatorUpdateTaskDetailsComponent implements OnInit {
 
   isInstallation: boolean;
   isAircraft: boolean;
+  isMaritime: boolean;
 
   ngOnInit(): void {
     this.isInstallation =
@@ -20,6 +21,9 @@ export class OperatorUpdateTaskDetailsComponent implements OnInit {
     this.isAircraft =
       this.operatorUpdateTaskDetails.taskType ===
       RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST;
+    this.isMaritime =
+      this.operatorUpdateTaskDetails.taskType ===
+      RequestType.MARITIME_OPERATOR_UPDATE_REQUEST;
   }
 
   getSummaryListItems(): SummaryListItem[] {
@@ -28,8 +32,8 @@ export class OperatorUpdateTaskDetailsComponent implements OnInit {
         key: { label: 'Account Holder' },
         value: [
           {
-            label: this.operatorUpdateTaskDetails.accountInfo
-              ?.accountHolderName,
+            label:
+              this.operatorUpdateTaskDetails.accountInfo?.accountHolderName,
           },
         ],
       },

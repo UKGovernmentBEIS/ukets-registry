@@ -28,7 +28,7 @@ export const IsLoggedInCheckSuccess = createAction(
     roles: string[];
     firstName: string;
     lastName: string;
-    knownAs: string;
+    knownAs: string | unknown;
   }>()
 );
 

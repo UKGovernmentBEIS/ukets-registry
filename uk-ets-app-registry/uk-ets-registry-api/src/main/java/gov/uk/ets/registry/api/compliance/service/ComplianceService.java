@@ -26,6 +26,7 @@ import gov.uk.ets.registry.api.compliance.web.model.*;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.emissionstable.model.EmissionsEntry;
 import gov.uk.ets.registry.api.file.upload.emissionstable.repository.EmissionsEntryRepository;
+import gov.uk.ets.registry.api.file.upload.emissionstable.services.EmissionsTableService;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.transaction.domain.Transaction;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
@@ -39,7 +40,7 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -69,6 +70,7 @@ public class ComplianceService {
     private final InstallationOwnershipRepository installationOwnershipRepository;
     private final AllocationCalculationService allocationCalculationService;
     private final AllocationEntryRepository allocationEntryRepository;
+    private final EmissionsTableService emissionsTableService;
 
     @Transactional
     public void updateExclusionStatus(Long accountIdentifier,
@@ -82,17 +84,18 @@ public class ComplianceService {
         // verify that the exclusion status can be updated for the selected year
         verifySelectedYearIsValid(patch, account);
 
-        boolean emissionsForThisYearExist = false;
-        List<EmissionsEntry> entries = emissionsEntryRepository
+        Optional<Long> emissionsForThisYear = emissionsEntryRepository
             .findAllByCompliantEntityIdAndYear(
-                account.getCompliantEntity().getIdentifier(), patch.getYear());
-        if (!entries.isEmpty()) {
-            entries.sort(Comparator.comparing(EmissionsEntry::getUploadDate).reversed());
-            emissionsForThisYearExist = entries.get(0).getEmissions() != null;
-        }
-        if (emissionsForThisYearExist) {
-            throw new BusinessRuleErrorException(ErrorBody.from(
-                "Emissions have already been reported for the selected year"));
+                account.getCompliantEntity().getIdentifier(), patch.getYear())
+            .stream()
+            .max(Comparator.comparing(EmissionsEntry::getUploadDate))
+            .map(EmissionsEntry::getEmissions);
+
+        if (emissionsForThisYear.isPresent()) {
+            // Update emissions to null
+            EmissionsEntry emissionsEntry = createNullEmissionsEntry(account.getCompliantEntity().getIdentifier(), patch.getYear());
+            emissionsEntryRepository.save(emissionsEntry);
+            emissionsTableService.publishUpdateOfVerifiedEmissionsEvent(emissionsEntry, new Date());
         }
 
         ExcludeEmissionsEntry existingEntry = excludeEmissionsRepository
@@ -136,12 +139,23 @@ public class ComplianceService {
         if (patch.isExcluded()) {
             publishAccountExclusionEvent(
                 account.getCompliantEntity().getIdentifier(), patch.getYear(),
-                currentUser.getUrid());
+                currentUser.getUrid(),
+                patch.getReason(),
+                emissionsForThisYear.orElse(null));
         } else {
             publishAccountExclusionReversalEvent(
                 account.getCompliantEntity().getIdentifier(), patch.getYear(),
-                currentUser.getUrid());
+                currentUser.getUrid(), patch.getReason());
         }
+    }
+
+    private EmissionsEntry createNullEmissionsEntry(Long compliantEntityId, Long year) {
+        EmissionsEntry emissionsEntry = new EmissionsEntry();
+        emissionsEntry.setCompliantEntityId(compliantEntityId);
+        emissionsEntry.setYear(year);
+        emissionsEntry.setFilename("N/A");
+        emissionsEntry.setUploadDate(LocalDateTime.now());
+        return emissionsEntry;
     }
 
     /**
@@ -326,22 +340,26 @@ public class ComplianceService {
         }
     }
 
-    private void publishAccountExclusionEvent(Long compliantEntityId, Long year, String urid) {
+    private void publishAccountExclusionEvent(Long compliantEntityId, Long year, String urid, String reason, Long emissions) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(UTC));
         ExclusionEvent event = ExclusionEvent.builder()
             .compliantEntityId(compliantEntityId).actorId(urid)
             .dateTriggered(now).dateRequested(now).year(year.intValue())
+            .reason(reason).emissions(emissions)
             .build();
         complianceEventService.processEvent(event);
     }
 
     private void publishAccountExclusionReversalEvent(Long compliantEntityId,
-                                                      Long year, String urid) {
+                                                      Long year,
+                                                      String urid,
+                                                      String reason) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(UTC));
 
         ExclusionReversalEvent event = ExclusionReversalEvent.builder()
             .compliantEntityId(compliantEntityId).actorId(urid)
             .dateTriggered(now).dateRequested(now).year(year.intValue())
+            .reason(reason)
             .build();
         complianceEventService.processEvent(event);
     }

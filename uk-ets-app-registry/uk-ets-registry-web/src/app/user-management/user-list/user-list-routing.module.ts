@@ -12,16 +12,17 @@ const routes: Routes = [
     canActivate: [LoginGuard],
     component: UserListContainerComponent,
     resolve: {
-      search: UserListResolver
+      search: UserListResolver,
     },
     data: {
-      errorMap: createUserListErrorMap()
-    }
-  }
+      errorMap: createUserListErrorMap(),
+    },
+    title: 'Users',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class UserListRoutingModule {}

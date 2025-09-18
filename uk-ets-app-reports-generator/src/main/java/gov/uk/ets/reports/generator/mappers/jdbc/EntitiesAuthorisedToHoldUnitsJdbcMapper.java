@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.EntitiesAuthorisedToHoldUnitsReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,11 +34,6 @@ public class EntitiesAuthorisedToHoldUnitsJdbcMapper
                 "on ah.id = ahr.account_holder_id\n" +
                 "and ahr.account_contact_type = 'PRIMARY' \n" +
                 "order by ah.name asc";
-
-    @Override
-    public List<EntitiesAuthorisedToHoldUnitsReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<EntitiesAuthorisedToHoldUnitsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

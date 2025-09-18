@@ -158,12 +158,6 @@ const sharedReducer = createReducer(
     }
   ),
   mutableOn(
-    SharedActions.retrieveUserStatusSuccess,
-    (state, { userStatus }) => {
-      state.userStatus = userStatus;
-    }
-  ),
-  mutableOn(
     SharedActions.navigateToTransactionProposal,
     (state, { routeSnapshotUrl }) => {
       state.routeSnapshotUrl = routeSnapshotUrl;

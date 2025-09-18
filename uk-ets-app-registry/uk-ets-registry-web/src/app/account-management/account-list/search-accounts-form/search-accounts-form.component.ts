@@ -43,6 +43,10 @@ export class SearchAccountsFormComponent
     this.accountStatusOptions = this.accountStatusOptions.filter((status) =>
       filters.accountStatusOptions.includes(status.value)
     );
+    this.accountStatusOptions.unshift({
+      label: '',
+      value: null,
+    });
     this.accountTypeOptions = filters.accountTypeOptions;
     this.accountTypeOptions.unshift({
       label: '',
@@ -110,7 +114,8 @@ export class SearchAccountsFormComponent
       excludedForYear: ['', UkRegistryValidators.isValidYear()],
       allocationStatus: [''],
       allocationWithholdStatus: [''],
-      installationOrAircraftOperatorId: ['', Validators.minLength(3)],
+      operatorId: ['', Validators.minLength(3)],
+      imo: [''],
     };
   }
 
@@ -132,7 +137,7 @@ export class SearchAccountsFormComponent
         minlength:
           'Enter at least 3 characters in the "Authorised Representative ID"',
       },
-      installationOrAircraftOperatorId: {
+      operatorId: {
         minlength:
           'Enter at least 3 characters in the "Installation or Aircraft Operator ID"',
       },

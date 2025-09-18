@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
@@ -50,6 +51,31 @@ class TransferValidationServiceTest {
 		final String expectedMessage = InstallationAndAccountTransferError.INVALID_INSTALLATION_ID.getMessage();
 		Long compliantEntityId = 1L;
 		Mockito.when(accountRepository.findByCompliantEntityIdentifier(compliantEntityId)).thenReturn(empty());
+		try {
+			transferValidationService.validateTransferByCompliantEntityIdentifier(compliantEntityId, Optional.empty());
+			fail(expectedMessage);
+		} catch (AccountActionException ignore) {
+			// ignore
+		}
+	}
+	
+	@Test
+	void testValidateTransferWithInvalidOperator() {
+		final String expectedMessage = InstallationAndAccountTransferError.TRANSFER_ONLY_OHAS
+				.getMessage();
+		Long compliantEntityId = 1L;
+		Account accountToBeTransferred = new Account();
+		accountToBeTransferred.setAccountStatus(AccountStatus.OPEN);
+		accountToBeTransferred.setIdentifier(22L);
+		AccountHolder accountHolder = new AccountHolder();
+        accountHolder.setIdentifier(1000036L);
+		accountToBeTransferred.setAccountHolder(accountHolder);
+		AircraftOperator operator = new AircraftOperator();
+		operator.setIdentifier(compliantEntityId);
+		operator.setStartYear(2019);
+		operator.setEndYear(null);
+		accountToBeTransferred.setCompliantEntity(operator);
+		Mockito.when(accountRepository.findByCompliantEntityIdentifier(compliantEntityId)).thenReturn(Optional.of(accountToBeTransferred));
 		try {
 			transferValidationService.validateTransferByCompliantEntityIdentifier(compliantEntityId, Optional.empty());
 			fail(expectedMessage);

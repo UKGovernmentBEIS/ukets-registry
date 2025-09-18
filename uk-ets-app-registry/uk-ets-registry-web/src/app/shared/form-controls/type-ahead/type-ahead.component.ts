@@ -9,10 +9,11 @@ import {
 import { merge, Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
-import { ResultTemplateContext } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
+//import { ResultTemplateContext } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 import { NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
 import { UkFormControlComponent } from '../uk-form-control.component';
 import { TypeAheadService } from '@shared/services/type-ahead.service';
+import { ResultTemplateContext } from 'node_modules/@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 
 @Component({
   selector: 'app-type-ahead',

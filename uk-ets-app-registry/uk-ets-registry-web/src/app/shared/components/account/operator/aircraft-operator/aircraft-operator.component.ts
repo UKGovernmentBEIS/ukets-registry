@@ -13,6 +13,9 @@ export class AircraftOperatorComponent {
   canRequestUpdate: boolean;
   @Input()
   hasOperatorUpdatePendingApproval: boolean;
+  @Input() 
+  isSeniorOrJuniorAdmin: boolean;     
+  
   @Output()
   readonly requestAircraftUpdateEmitter = new EventEmitter();
 
@@ -20,5 +23,25 @@ export class AircraftOperatorComponent {
 
   goToRequestUpdate() {
     this.requestAircraftUpdateEmitter.emit();
+  }
+
+  get summaryListLines(){
+    const lines = {
+      'Aircraft Operator ID': this.aircraft.identifier,
+      'Emitter ID': this.aircraft.emitterId ? this.aircraft.emitterId : '',
+      'Monitoring plan ID': this.aircraft.monitoringPlan
+        ? this.aircraft.monitoringPlan.id
+        : '',
+      Regulator: regulatorMap[this.aircraft.regulator],
+      'First year of verified emission submission': this.aircraft.firstYear,
+      'Last year of verified emission submission': this.aircraft.lastYear
+    }
+
+    if(!this.isSeniorOrJuniorAdmin){
+      const { ['Emitter ID']: emitterId, ...updatedLines } = lines;
+      return updatedLines;
+    }
+
+    return lines;
   }
 }

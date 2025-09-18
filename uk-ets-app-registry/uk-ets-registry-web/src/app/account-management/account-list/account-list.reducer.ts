@@ -7,7 +7,7 @@ import { SortParameters } from '@shared/search/sort/SortParameters';
 import { AccountSearchCriteria } from './account-list.model';
 import * as AccountListActions from './account-list.actions';
 import { mutableOn } from '@shared/mutable-on';
-import { Account } from '@shared/model/account';
+import { Account, AccountStatus } from '@shared/model/account';
 
 export const accountListFeatureKey = 'accountList';
 
@@ -24,6 +24,38 @@ export interface AccountListState {
   resultsLoaded: boolean;
 }
 
+const defaultCriteria = {
+  accountIdOrName: undefined,
+  accountStatus: undefined,
+  accountType: undefined,
+  accountHolderName: undefined,
+  complianceStatus: undefined,
+  permitOrMonitoringPlanIdentifier: undefined,
+  authorizedRepresentativeUrid: undefined,
+  regulatorType: undefined,
+  allocationStatus: undefined,
+  allocationWithholdStatus: undefined,
+  excludedForYear: undefined,
+  operatorId: undefined,
+  imo: undefined,
+};
+
+const defaultCriteriaAdmin = {
+  accountIdOrName: undefined,
+  accountStatus: 'ALL_EXCEPT_CLOSED',
+  accountType: undefined,
+  accountHolderName: undefined,
+  complianceStatus: undefined,
+  permitOrMonitoringPlanIdentifier: undefined,
+  authorizedRepresentativeUrid: undefined,
+  regulatorType: undefined,
+  allocationStatus: undefined,
+  allocationWithholdStatus: undefined,
+  excludedForYear: undefined,
+  operatorId: undefined,
+  imo: undefined,
+};
+
 const initialState = {
   externalCriteria: undefined,
   pageParameters: {
@@ -36,25 +68,14 @@ const initialState = {
     sortDirection: 'ASC',
   },
   results: undefined,
-  criteria: {
-    accountIdOrName: undefined,
-    accountStatus: undefined,
-    accountType: undefined,
-    accountHolderName: undefined,
-    complianceStatus: undefined,
-    permitOrMonitoringPlanIdentifier: undefined,
-    authorizedRepresentativeUrid: undefined,
-    regulatorType: undefined,
-    allocationStatus: undefined,
-    allocationWithholdStatus: undefined,
-    excludedForYear: undefined,
-    installationOrAircraftOperatorId: undefined,
-  },
+  criteria: defaultCriteria,
   hideCriteria: false,
   showAdvancedSearch: false,
   hideTable: true,
   resultsLoaded: false,
 };
+
+const initialStateAdmin = { ...initialState, criteria: defaultCriteriaAdmin };
 
 const accountListReducer = createReducer(
   initialState,
@@ -85,7 +106,11 @@ const accountListReducer = createReducer(
   mutableOn(AccountListActions.showCriteria, (state) => {
     state.hideCriteria = false;
   }),
-  on(AccountListActions.clearState, (state): AccountListState => initialState)
+  on(
+    AccountListActions.clearStatePerRole,
+    (state, { isAdmin }): AccountListState =>
+      isAdmin ? initialStateAdmin : initialState
+  )
 );
 
 export function reducer(state: AccountListState | undefined, action: Action) {

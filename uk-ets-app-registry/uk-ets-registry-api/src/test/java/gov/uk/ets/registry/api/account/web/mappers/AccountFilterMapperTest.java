@@ -40,7 +40,7 @@ public class AccountFilterMapperTest {
         Mockito.when(criteria.getAccountStatus()).thenReturn(null);
         Mockito.when(criteria.getAuthorizedRepresentativeUrid()).thenReturn(null);
         Mockito.when(criteria.getPermitOrMonitoringPlanIdentifier()).thenReturn(null);
-        Mockito.when(criteria.getInstallationOrAircraftOperatorId()).thenReturn(null);
+        Mockito.when(criteria.getOperatorId()).thenReturn(null);
 
         AccountFilter filter = mapper.map(criteria);
 
@@ -52,7 +52,7 @@ public class AccountFilterMapperTest {
         assertThat(filter.getComplianceStatus(), nullValue());
         assertThat(filter.getPermitOrMonitoringPlanIdentifier(), nullValue());
         assertThat(filter.getRegulatorType(), nullValue());
-        assertThat(filter.getInstallationOrAircraftOperatorId(), nullValue());
+        assertThat(filter.getOperatorId(), nullValue());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class AccountFilterMapperTest {
         Mockito.when(criteria.getAccountStatus()).thenReturn(AccountStatus.OPEN.name());
         Mockito.when(criteria.getAuthorizedRepresentativeUrid()).thenReturn("test-urid");
         Mockito.when(criteria.getPermitOrMonitoringPlanIdentifier()).thenReturn("permit-or-monitoring");
-        Mockito.when(criteria.getInstallationOrAircraftOperatorId()).thenReturn("installation-or-aircraft");
+        Mockito.when(criteria.getOperatorId()).thenReturn("installation-or-aircraft-op-maritime");
         AccountFilter filter = mapper.map(criteria);
         assertThat(filter.getAccountTypes(), notNullValue());
         assertThat(filter.getComplianceStatus(), notNullValue());
@@ -115,6 +115,6 @@ public class AccountFilterMapperTest {
         assertThat(filter.getAccountStatuses(), notNullValue());
         assertThat(filter.getAuthorizedRepresentativeUrid(), notNullValue());
         assertThat(filter.getPermitOrMonitoringPlanIdentifier(), notNullValue());
-        assertThat(filter.getInstallationOrAircraftOperatorId(), notNullValue());
+        assertThat(filter.getOperatorId(), notNullValue());
     }
 }

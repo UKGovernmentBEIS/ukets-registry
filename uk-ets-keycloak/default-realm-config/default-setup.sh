@@ -17,17 +17,18 @@ else
   sed -i "s/http\:\/\/localhost\:8080/$ESCAPED_BASE_URL_2/g" /opt/keycloak/tools/uk-ets-realm-base.json
 fi
 
-KEYCLOAK_STATUS=`curl -sL "http://$URL/auth/" | grep -Po 'Welcome to Keycloak'`
+KEYCLOAK_STATUS=`curl "http://$URL/auth/realms/master/.well-known/openid-configuration" | grep -Po 'authorization_endpoint'`
 if [[ "$?" -eq 0 ]]; then
   echo "Keycloak is Up and Running"
   REALM_NAME=`cat /opt/keycloak/tools/uk-ets-realm-base.json | jq -r '.realm'`
-  REALM_STATUS=`curl -sL "http://$URL/auth/realms/$REALM_NAME/" | jq -r '.realm' | grep $REALM_NAME`
+  REALM_STATUS=`curl -s "http://$URL/auth/realms/$REALM_NAME/" | jq -r '.realm' | grep $REALM_NAME`
+# Create the uk-ets realm if it does not exists.  
   if [[ "$?" -ne 0 ]]; then
-    ACCESS_TOKEN=`curl -sL -H "application/x-www-form-urlencoded" -d "grant_type"="password" -d "client_id"="admin-cli" -d "username"="$KEYCLOAK_ADMIN" -d "password"="$KEYCLOAK_ADMIN_PASSWORD" "http://$URL/auth/realms/master/protocol/openid-connect/token" | jq -r '.access_token'`
+    ACCESS_TOKEN=`curl -s -H "application/x-www-form-urlencoded" -d "grant_type"="password" -d "client_id"="admin-cli" -d "username"="$KEYCLOAK_ADMIN" -d "password"="$KEYCLOAK_ADMIN_PASSWORD" "http://$URL/auth/realms/master/protocol/openid-connect/token" | jq -r '.access_token'`
     #echo $ACCESS_TOKEN
     echo "Importing Base configuration for uk-ets Realm"
     curl -XPOST -H 'Accept: application/json' -H "Content-Type: application/json" -H 'cache-control: no-cache' -H "Authorization: Bearer $ACCESS_TOKEN" "http://$URL/auth/admin/realms" -d @/opt/keycloak/tools/uk-ets-realm-base.json
-    REALM_STATUS=`curl -sL "http://$URL/auth/realms/$REALM_NAME/" | jq -r '.realm' | grep $REALM_NAME`
+    REALM_STATUS=`curl -s "http://$URL/auth/realms/$REALM_NAME/" | jq -r '.realm' | grep $REALM_NAME`
     if [[ "$REALM_STATUS" -eq 0 ]]; then
 
       echo "Base config was created successfully, let's proceed importing users"
@@ -58,8 +59,12 @@ if [[ "$?" -eq 0 ]]; then
     echo "Realm exists"
   fi
 else
+  echo "curl KEYCLOAK_STATUS:$KEYCLOAK_STATUS returned $?"
   echo "ERROR! Keycloak is not Running, please verify status..."
   exit 2
 fi
 
 performMigrations
+
+echo "----------------------------------------------------------------------------------------------------"
+echo "Migrations completed, Keycloak up to date..."

@@ -45,6 +45,16 @@
           >
             Update notification
           </button>
+          <button
+            *ngIf="showCancelUpdate"
+            (click)="goToCancelNotification()"
+            [routerLink]="[]"
+            style="margin-bottom: 0"
+            class="govuk-button govuk-!-margin-left-3 govuk-!-margin-right-1 govuk-button--secondary"
+            data-module="govuk-button"
+          >
+            Cancel notification
+          </button>
         </div>
       </div>
     </div>

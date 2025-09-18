@@ -60,4 +60,10 @@ public interface CompliantEntityRepository
 	 */
 	@Query("select new gov.uk.ets.registry.api.file.upload.emissionstable.model.SubmitEmissionsValidityInfo(c.identifier,a.accountStatus,a.complianceStatus,c.startYear,c.endYear) from Account a right join a.compliantEntity c")
 	List<SubmitEmissionsValidityInfo> findAllIdentifiersFetchAccountStatusAndYears();
+
+	/**
+	 * Find all compliant entities with end year earlier than the provided year.
+	 * @return a List of compliant entities
+	 */
+	List<CompliantEntity> findByEndYearBefore(int year);
 }

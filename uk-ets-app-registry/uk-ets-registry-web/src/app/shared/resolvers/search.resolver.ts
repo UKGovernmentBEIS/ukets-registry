@@ -1,10 +1,8 @@
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { select, Store } from '@ngrx/store';
+import { Action, MemoizedSelector, select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, finalize, first, tap } from 'rxjs/operators';
 import { canGoBack, clearErrors } from '../shared.action';
-import { Action } from '@ngrx/store/src/models';
-import { MemoizedSelector } from '@ngrx/store/src/selector';
 import { PageParameters } from '../search/paginator/paginator.model';
 import { SortParameters } from '../search/sort/SortParameters';
 

@@ -6,6 +6,11 @@
     </h1>
     <form [formGroup]="formGroup" (submit)="onSubmit()">
       <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">Account details</dt>
+          <dd class="govuk-summary-list__value"></dd>
+          <dd class="govuk-summary-list__key"></dd>
+        </div>
         <div class="govuk-summary-list__row" *ngIf="accountHolderName">
           <dt class="govuk-summary-list__key">Account Holder</dt>
           <dd class="govuk-summary-list__value">

@@ -39,11 +39,25 @@ export const selectIsAOHA = createSelector(
   (state) => state.accountType === AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT
 );
 
+export const selectIsMOHA = createSelector(
+  selectAccountOpening,
+  (state) => state.accountType === AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+);
+
 export const selectIsOHAOrAOHA = createSelector(
   selectIsOHA,
   selectIsAOHA,
   (isOHA, isAOHA) => {
     return isOHA || isAOHA;
+  }
+);
+
+export const selectIsOHAOrAOHAorMOHA = createSelector(
+  selectIsOHA,
+  selectIsAOHA,
+  selectIsMOHA,
+  (isOHA, isAOHA, isMOHA) => {
+    return isOHA || isAOHA || isMOHA;
   }
 );
 

@@ -1,18 +1,16 @@
 package gov.uk.ets.reports.generator.kyotoprotocol.commons.util;
 
-import java.io.*;
-import java.text.ParseException;
-import java.util.Collection;
-
 import gov.uk.ets.reports.generator.kyotoprotocol.KyotoReportOutcome;
 import gov.uk.ets.reports.generator.kyotoprotocol.KyotoReportOutcome.KyotoReportContentType;
 import  gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0.SEFSubmission;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import java.io.*;
+import java.text.ParseException;
+import java.util.Collection;
 import lombok.extern.log4j.Log4j2;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 
 /**
  * @author gkountak

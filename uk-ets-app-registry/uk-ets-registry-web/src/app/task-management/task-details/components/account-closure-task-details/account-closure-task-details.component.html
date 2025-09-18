@@ -25,7 +25,7 @@
 <div class="govuk-warning-text" *ngIf="taskDetails.noActiveAR">
   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
   <strong class="govuk-warning-text__text">
-    <span class="govuk-warning-text__assistive">Warning</span>
+    <span class="govuk-visually-hidden">Warning</span>
     No active AR is linked to the account.
   </strong>
 </div>
@@ -33,7 +33,7 @@
 <div class="govuk-warning-text" *ngIf="taskDetails.pendingAllocationTaskExists">
   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
   <strong class="govuk-warning-text__text">
-    <span class="govuk-warning-text__assistive">Warning</span>
+    <span class="govuk-visually-hidden">Warning</span>
     There are outstanding allocation tasks for this account.
   </strong>
 </div>
@@ -47,8 +47,5 @@
 </app-summary-list>
 
 <hr
-  class="
-    govuk-section-break govuk-section-break--visible
-    govuk-!-margin-bottom-6
-  "
+  class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6"
 />

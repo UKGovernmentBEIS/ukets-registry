@@ -1,19 +1,23 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
-      <ng-container *ngFor="let documentName of documentNames; let i = index">
+      <ng-container
+        *ngFor="let documentName of taskDetails.documentNames; let i = index"
+      >
         <div class="border-bottom govuk-!-margin-bottom-5">
           <span class="govuk-heading-s">
             {{ documentName }}
           </span>
-          <div
-            class="govuk-details"
-            *ngIf="
-              documentName
-                | uploadedFile: uploadedFiles:parsedDifference as file
-            "
-          >
-            <div class="govuk-grid-row">
+          <div class="govuk-details">
+            <div
+              class="govuk-grid-row"
+              *ngIf="
+                documentName
+                  | uploadedFile
+                    : taskDetails.uploadedFiles
+                    : parsedDifference as file
+              "
+            >
               <div class="govuk-grid-column-two-thirds">
                 <div class="inline-block">
                   <span>{{ file.fileName }} </span>
@@ -35,46 +39,49 @@
                 <span
                   ><a
                     class="govuk-link govuk-link--no-visited-state"
-                    (click)="removeUploadedFileById(file.id)"
+                    (click)="removeUploadedFileById(file.id, i)"
                     [routerLink]="[]"
                     >Remove</a
                   ></span
                 >
               </div>
             </div>
-          </div>
-          <div
-            class="govuk-details"
-            *ngIf="
-              !(documentName | uploadedFile: uploadedFiles:parsedDifference)
-            "
-          >
+
             <app-uk-select-file
+              #fileSelectInputs
+              [class.govuk-visually-hidden]="
+                documentName
+                  | uploadedFile : taskDetails.uploadedFiles : parsedDifference
+              "
               [disableAllForms]="
-                requestStatus !== 'SUBMITTED_NOT_YET_APPROVED' ||
+                taskDetails.requestStatus !== 'SUBMITTED_NOT_YET_APPROVED' ||
                 !isClaimantTheSameWithLoggedIn ||
                 isInProgress
               "
               [formControlName]="'file-upload-' + i"
               [isInProgress]="isInProgress && isInProgressActive[i]"
               [fileProgress]="fileProgress"
-              [showErrors]="showErrorArray[i]"
+              [showErrors]="showErrors || showErrorArray[i]"
               [fileType]="allowedFileTypes"
               [fileSize]="maxFileSize"
-              [isFileRequired]="false"
-            ></app-uk-select-file>
+              [isFileRequired]="!commentFormControl.value"
+              [validationErrorMessages]="
+                validationMessages['file-upload-' + i] || {}
+              "
+              [uploadErrorMessage]="fileUploadErrorMessages[i]"
+            />
           </div>
         </div>
       </ng-container>
       <app-form-comment-area
-        [readonly]="requestStatus !== 'SUBMITTED_NOT_YET_APPROVED'"
+        [readonly]="taskDetails.requestStatus !== 'SUBMITTED_NOT_YET_APPROVED'"
         [maxlength]="1024"
         controlName="comment"
         [label]="
           'Tell us why you cannot upload the requested documents or add any other comments here'
         "
-      >
-      </app-form-comment-area>
+        [validationErrorMessage]="validationErrorMessage.comment"
+      />
     </form>
   </div>
 </div>

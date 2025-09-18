@@ -30,8 +30,8 @@ import {
   TransactionSummary,
 } from '@shared/model/transaction';
 import {
-  selectAccount,
   selectTransactionApprovalRole,
+  selectTransferringAccountInfoFromAccount,
 } from '@account-management/account/account-details/account.selector';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TransactionProposalActions } from '@transaction-proposal/actions';
@@ -124,15 +124,8 @@ export class CheckTransactionDetailsContainerComponent
       selectTransferringAccountInfo
     );
     //TODO: Remove account selectors from transaction proposal (UKETS-4581)
-    this.transferringAccountInfo$ = this.store.select(selectAccount).pipe(
-      map((value) => {
-        return {
-          identifier: value.identifier,
-          accountHolderName: value.accountDetails?.accountHolderName,
-          fullIdentifier: value.accountDetails?.accountNumber,
-          accountName: value.accountDetails?.name,
-        };
-      })
+    this.transferringAccountInfo$ = this.store.select(
+      selectTransferringAccountInfoFromAccount
     );
     this.transactionBlocks$ = this.store.select(selectedTransactionBlocks);
     this.acquiringAccountInfo$ = this.store.select(

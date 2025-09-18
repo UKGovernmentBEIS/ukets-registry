@@ -12,6 +12,7 @@ import gov.uk.ets.registry.api.tal.domain.TrustedAccountTaskDifference;
 import gov.uk.ets.registry.api.tal.domain.types.TrustedAccountStatus;
 import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.task.web.model.TaskCompleteResponse;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TrustedAccountTaskDetailsDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
@@ -219,6 +220,31 @@ class TrustedAccountTaskServiceTest {
         Assertions.assertEquals(initialStatus, trustedAccountList.get(1).getStatus());
     }
 
+    @DisplayName("Allow Rejection when TAL list is empty")
+    @Test
+    void testRejectWhenTALIsZero() {
+        //
+        Long REQUEST_ID = 567876L;
+        List<TrustedAccount> trustedAccountList =
+                createTrustedAccount(List.of(), TrustedAccountStatus.PENDING_ACTIVATION);
+
+        when(mockTrustedAccountRepository.findByIdIn(Lists.newArrayList()))
+                .thenReturn(trustedAccountList);
+        LocalDateTime activationDate = LocalDateTime.now();
+        when(mockTransactionDelayService.calculateTrustedAccountListDelay())
+                .thenReturn(activationDate);
+        TaskDetailsDTO taskDetailsDTO = new TaskDetailsDTO();
+        taskDetailsDTO.setTaskType(RequestType.ADD_TRUSTED_ACCOUNT_REQUEST);
+        taskDetailsDTO.setRequestId(REQUEST_ID);
+        taskDetailsDTO.setDifference("{\"ids\": [10002]}");
+        TrustedAccountTaskDetailsDTO trustedAccountTaskDetailsDTO = new TrustedAccountTaskDetailsDTO(taskDetailsDTO);
+        when(mapper.convertToPojo(trustedAccountTaskDetailsDTO.getDifference(), TrustedAccountTaskDifference.class))
+                .thenReturn(TrustedAccountTaskDifference.builder().ids(List.of(10002L)).build());
+
+        var response = trustedAccountTaskService.complete(trustedAccountTaskDetailsDTO, TaskOutcome.REJECTED, null);
+        Assertions.assertEquals(TaskCompleteResponse.class, response.getClass());
+        Assertions.assertEquals(REQUEST_ID, response.getRequestIdentifier());
+    }
 
     private List<TrustedAccount> createTrustedAccount(List<Long> ids, TrustedAccountStatus trustedAccountStatus) {
         List<TrustedAccount> trustedAccountList = new ArrayList<>();

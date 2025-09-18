@@ -20,6 +20,8 @@ export class NotificationHeaderComponent {
   @Input()
   showRequestUpdate: boolean;
   @Input()
+  showCancelUpdate: boolean;
+  @Input()
   showClone: boolean;
   @Input()
   showBackToList: boolean;
@@ -45,6 +47,15 @@ export class NotificationHeaderComponent {
       this.notificationId,
       NotificationsWizardPathsModel.CLONE,
     ]);
+  }
+
+  goToCancelNotification(): void {
+    this.router.navigate(
+      [`/notifications/${this.notificationId}/${NotificationsWizardPathsModel.BASE_PATH}/${NotificationsWizardPathsModel.CANCEL_NOTIFICATION}`],
+      {
+        skipLocationChange: true,
+      }
+    );
   }
 
   private get notificationId() {

@@ -1,13 +1,16 @@
 import { Action, createReducer } from '@ngrx/store';
 import { mutableOn } from '@shared/mutable-on';
 import {
+  cancelRecipientsEmailUpload,
   clearNotificationsRequest,
+  clearRecipientsEmailUpload,
   setNotificationDefinition,
   setNotificationsContent,
   setNotificationsInfoSuccess,
   setNotificationsRequest,
   setNotificationsScheduledDate,
   setRequestNotificationType,
+  submitEmailRecipientsFileSuccess,
   submitRequestSuccess,
 } from '@notifications/notifications-wizard/actions/notifications-wizard.actions';
 import {
@@ -16,6 +19,13 @@ import {
   NotificationType,
 } from '@notifications/notifications-wizard/model';
 import { NotificationRequestEnum } from '@notifications/notifications-wizard/model/notification-request.enum';
+import { NotificationsFile, UploadStatus } from '@shared/model/file';
+import {
+  processSelectedFileError,
+  uploadRecipientsEmailFileSuccess,
+  uploadSelectedFileHasStarted,
+  uploadSelectedFileInProgress,
+} from '@shared/file/actions/file-upload-api.actions';
 
 export const notificationsWizardFeatureKey = 'notifications-wizard';
 
@@ -28,6 +38,9 @@ export interface NotificationsWizardState {
   submittedNotificationId: string;
   notificationDefinition: NotificationDefinition;
   datesConvertedToLocalTimezone: boolean;
+  status: UploadStatus;
+  progress: number | null;
+  fileHeader: NotificationsFile;
 }
 
 export const initialState: NotificationsWizardState = {
@@ -39,6 +52,13 @@ export const initialState: NotificationsWizardState = {
   submittedNotificationId: null,
   notificationDefinition: null,
   datesConvertedToLocalTimezone: false,
+  status: UploadStatus.Ready,
+  progress: null,
+  fileHeader: {
+    id: null,
+    fileName: null,
+    fileSize: null,
+  },
 };
 
 const notificationsWizardReducer = createReducer(
@@ -85,6 +105,31 @@ const notificationsWizardReducer = createReducer(
   }),
   mutableOn(clearNotificationsRequest, (state) => {
     resetState(state);
+  }),
+
+  mutableOn(uploadSelectedFileHasStarted, (state, { status }) => {
+    state.progress = 0;
+    state.status = status;
+  }),
+  mutableOn(uploadSelectedFileInProgress, (state, { progress }) => {
+    state.progress = progress;
+  }),
+  mutableOn(uploadRecipientsEmailFileSuccess, (state, { fileHeader }) => {
+    state.fileHeader = fileHeader;
+    state.progress = 100;
+    state.status = UploadStatus.Completed;
+  }),
+  mutableOn(processSelectedFileError, (state) => {
+    state.status = UploadStatus.Failed;
+  }),
+  mutableOn(cancelRecipientsEmailUpload, (state) => {
+    resetState(state);
+  }),
+  mutableOn(clearRecipientsEmailUpload, (state) => {
+    resetState(state);
+  }),
+  mutableOn(submitEmailRecipientsFileSuccess, (state, { requestId }) => {
+    state.status = UploadStatus.Completed;
   })
 );
 
@@ -105,4 +150,5 @@ function resetState(state) {
   state.notificationDefinition = initialState.notificationDefinition;
   state.datesConvertedToLocalTimezone =
     initialState.datesConvertedToLocalTimezone;
+  state.fileHeader = initialState.fileHeader;
 }

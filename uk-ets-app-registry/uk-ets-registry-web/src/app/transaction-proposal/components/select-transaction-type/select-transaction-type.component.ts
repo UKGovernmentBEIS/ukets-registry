@@ -67,6 +67,7 @@ export class SelectTransactionTypeComponent
     super.ngOnInit();
     this.formRadioGroupInfo = {
       radioGroupHeading: 'Choose a transaction type',
+      hideHiddenRadioGroupHeading: true,
       radioGroupHeadingCaption: 'Propose transaction',
       radioGroupHint: '',
       key: 'transactionType',

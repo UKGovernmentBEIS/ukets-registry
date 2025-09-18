@@ -372,7 +372,7 @@ public class TransactionService {
         boolean reconciliationInProgress = false;
         try {
             registryLockProvider.acquirePessimisticReadLock(RegistryLockType.RECONCILIATION, true);
-        } catch (javax.persistence.LockTimeoutException exception) {
+        } catch (jakarta.persistence.LockTimeoutException exception) {
             reconciliationInProgress = true;
         }
         if (reconciliationInProgress ||

@@ -4,6 +4,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.BusinessSecurityStore;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.AbstractTaskBusinessRule;
 import gov.uk.ets.registry.api.common.error.ErrorBody;
 import gov.uk.ets.registry.api.task.domain.Task;
+import gov.uk.ets.registry.api.task.domain.types.TaskUpdateAction;
 
 public class ClaimantCanUpdateTaskRule extends AbstractTaskBusinessRule {
     public ClaimantCanUpdateTaskRule(
@@ -18,6 +19,9 @@ public class ClaimantCanUpdateTaskRule extends AbstractTaskBusinessRule {
 
     @Override
     public Outcome permit() {
+        if (getSlice().getTaskUpdateAction() == TaskUpdateAction.UPDATE_DEADLINE) {
+            return Outcome.PERMITTED_OUTCOME;
+        }
         Task taskForUpdate = getSlice().getTaskBusinessRuleInfoList().get(0).getTask();
         if (!user.getUrid().equals(taskForUpdate.getClaimedBy().getUrid())) {
             return forbiddenOutcome();

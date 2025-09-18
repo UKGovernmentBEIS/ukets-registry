@@ -9,6 +9,7 @@ import {
 import {
   BulkActionSuccess,
   BulkActionSuccessResponse,
+  CompleteTaskInfo,
   Task,
   TaskCompleteResponse,
   TaskDetails,
@@ -163,12 +164,18 @@ export class TaskService {
     );
   }
 
-  complete(taskId: string, comment: string, taskOutCome: TaskOutcome) {
+  complete(completeTaskInfo: CompleteTaskInfo) {
     let params = new HttpParams();
-    params = params.append('taskOutcome', taskOutCome);
-    params = params.append('requestId', taskId);
-    if (comment && comment.trim().length > 0) {
-      params = params.append('comment', comment);
+    params = params.append('taskOutcome', completeTaskInfo.taskOutcome);
+    params = params.append('requestId', completeTaskInfo.taskId);
+    if (
+      completeTaskInfo.comment &&
+      completeTaskInfo.comment.trim().length > 0
+    ) {
+      params = params.append('comment', completeTaskInfo.comment);
+    }
+    if (completeTaskInfo.amountPaid) {
+      params = params.append('amountPaid', completeTaskInfo.amountPaid);
     }
     return this.http.post<TaskCompleteResponse>(`${this.completeTask}`, params);
   }

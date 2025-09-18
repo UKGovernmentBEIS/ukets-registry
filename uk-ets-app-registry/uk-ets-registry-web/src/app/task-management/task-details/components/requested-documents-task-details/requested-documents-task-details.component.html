@@ -1,10 +1,7 @@
 <div class="govuk-grid-column-full">
   <div class="govuk-grid-row">
     <hr
-      class="
-        govuk-section-break govuk-section-break--visible
-        govuk-!-margin-bottom-4
-      "
+      class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4"
     />
   </div>
   <div class="govuk-grid-row">
@@ -14,7 +11,9 @@
         <dd class="govuk-summary-list__value"></dd>
       </div>
       <ng-container
-        *ngIf="taskDetails.taskType == requestType.AH_REQUESTED_DOCUMENT_UPLOAD"
+        *ngIf="
+          taskDetails.taskType === requestType.AH_REQUESTED_DOCUMENT_UPLOAD
+        "
       >
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Recipient</dt>
@@ -24,7 +23,9 @@
         </div>
       </ng-container>
       <ng-container
-        *ngIf="taskDetails.taskType == requestType.AR_REQUESTED_DOCUMENT_UPLOAD"
+        *ngIf="
+          taskDetails.taskType === requestType.AR_REQUESTED_DOCUMENT_UPLOAD
+        "
       >
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Recipient</dt>
@@ -41,7 +42,7 @@
       </div>
     </dl>
     <ng-container
-      *ngIf="taskDetails.taskType == requestType.AH_REQUESTED_DOCUMENT_UPLOAD"
+      *ngIf="taskDetails.taskType === requestType.AH_REQUESTED_DOCUMENT_UPLOAD"
     >
       <dl class="govuk-summary-list govuk-summary-list--no-border">
         <div class="govuk-summary-list__row">
@@ -99,14 +100,11 @@
       More information about how and when to authenticate documents can be found
       in the
       <a
-        class="govuk-link"
-        target="_self"
-        href="{{ environment.documentGuidePath }}{{
-          environment.documentGuideFilename
-        }}"
-        download="{{ environment.documentGuideFilename }}"
-        >document guide</a
+        class="govuk-link govuk-link--no-visited-state"
+        [routerLink]="['/documents']"
+        >Documents</a
       >
+      page.
     </p>
 
     <details class="govuk-details" data-module="govuk-details">
@@ -116,16 +114,15 @@
         >
       </summary>
       <div class="govuk-details__text">
-        <ng-container *ngFor="let templateFile of taskDetails.referenceFiles">
-          <p>
-            <a
-              class="govuk-link"
-              (click)="onDownloadTemplateFile(templateFile)"
-              [routerLink]="[]"
-              >{{ templateFile.name }}</a
-            >
-          </p>
-        </ng-container>
+        <p class="govuk-body-m">
+          Templates can be found in the
+          <a
+            class="govuk-link govuk-link--no-visited-state"
+            [routerLink]="['/documents']"
+            >Documents</a
+          >
+          page.
+        </p>
 
         <p class="govuk-body govuk-!-margin-bottom-3">
           After you have completed, signed and uploaded your documents, the
@@ -145,15 +142,7 @@
         </p>
       </div>
     </details>
-    <app-requested-documents-form-container
-      [comment]="taskDetails.comment"
-      [documentNames]="taskDetails.documentNames"
-      [requestStatus]="taskDetails.requestStatus"
-      [claimantURID]="taskDetails.claimantURID"
-      [difference]="taskDetails.difference"
-      [uploadedFiles]="taskDetails.uploadedFiles"
-    >
-    </app-requested-documents-form-container>
+    <app-requested-documents-form-container />
   </div>
   <div
     class="govuk-grid-row"
@@ -173,7 +162,7 @@
       >
         <dt class="govuk-summary-list__key govuk-!-padding-bottom-5">
           <span class="govuk-heading-s">
-            {{ file | documentName: taskDetails.difference }}
+            {{ file | documentName : taskDetails.difference }}
           </span>
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">

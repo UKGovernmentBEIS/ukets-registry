@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +38,6 @@ public class TransactionBalanceService implements ReportTypeService<Transactions
                 "Account Type",
                 "UKAs"
             );
-    }
-
-    @Override
-    public List<TransactionsBalanceReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

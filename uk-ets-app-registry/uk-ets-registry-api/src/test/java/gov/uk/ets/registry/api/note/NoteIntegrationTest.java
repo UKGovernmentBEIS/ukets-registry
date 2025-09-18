@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.common.collect.Lists;
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
@@ -34,7 +35,6 @@ import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @RegistryIntegrationTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(locations = "/integration-test-application.properties", properties = {
     "keycloak.enabled=false"
 })
@@ -134,10 +134,8 @@ class NoteIntegrationTest {
         // given
 
         // the following code part sets a keycloak id for the current user
-        AccessToken accessToken = new AccessToken();
-        accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
-
+        Mockito.when(disabledKeycloakAuthorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).thenReturn(currentUserKeycloakId);
+        
         // Set role for the current user, this needs to be the senior-registry-administrator
         RoleRepresentation admin =
             new RoleRepresentation("senior-registry-administrator", "senior role description", true);
@@ -147,7 +145,8 @@ class NoteIntegrationTest {
         // when
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .get("/api-registry/notes.get")
-            .param("accountIdentifier", "10")
+            .param("domainId", "10")
+            .param("domainType", "ACCOUNT")
             .accept(MediaType.APPLICATION_JSON));
 
         // then
@@ -161,10 +160,8 @@ class NoteIntegrationTest {
         // given
 
         // the following code part sets a keycloak id for the current user
-        AccessToken accessToken = new AccessToken();
-        accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
-
+        Mockito.when(disabledKeycloakAuthorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).thenReturn(currentUserKeycloakId);
+        
         // Set role for the current user, this needs to be the senior-registry-administrator
         RoleRepresentation admin =
             new RoleRepresentation("senior-registry-administrator", "senior role description", true);
@@ -190,16 +187,28 @@ class NoteIntegrationTest {
         noteRepository.save(accountHolderNote);
 
         // when
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+        ResultActions accountResult = mockMvc.perform(MockMvcRequestBuilders
             .get("/api-registry/notes.get")
-            .param("accountIdentifier", "123456789")
+            .param("domainId", "123456789")
+            .param("domainType", "ACCOUNT")
             .accept(MediaType.APPLICATION_JSON));
 
+        ResultActions accountHolderResult = mockMvc.perform(MockMvcRequestBuilders
+            .get("/api-registry/notes.get")
+            .param("domainId", "11111111")
+            .param("domainType", "ACCOUNT_HOLDER")
+            .accept(MediaType.APPLICATION_JSON));
+
+
         // then
-        result.andExpect(status().isOk())
+        accountResult.andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("[0].id").value(accountNote.getId()))
+            .andReturn();
+
+        accountHolderResult.andExpect(status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
             .andExpect(MockMvcResultMatchers.jsonPath("[0].id").value(accountHolderNote.getId()))
-            .andExpect(MockMvcResultMatchers.jsonPath("[1].id").value(accountNote.getId()))
             .andReturn();
     }
 
@@ -208,10 +217,8 @@ class NoteIntegrationTest {
         // given
 
         // the following code part sets a keycloak id for the current user
-        AccessToken accessToken = new AccessToken();
-        accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
-
+        Mockito.when(disabledKeycloakAuthorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).thenReturn(currentUserKeycloakId);
+        
         // Set role for the current user, this needs to be the senior-registry-administrator
         RoleRepresentation admin =
             new RoleRepresentation("senior-registry-administrator", "senior role description", true);
@@ -238,10 +245,8 @@ class NoteIntegrationTest {
         // given
 
         // the following code part sets a keycloak id for the current user
-        AccessToken accessToken = new AccessToken();
-        accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
-
+        Mockito.when(disabledKeycloakAuthorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).thenReturn(currentUserKeycloakId);
+        
         // Set role for the current user, this needs to be the senior-registry-administrator
         RoleRepresentation admin =
             new RoleRepresentation("senior-registry-administrator", "senior role description", true);
@@ -268,10 +273,8 @@ class NoteIntegrationTest {
         // given
 
         // the following code part sets a keycloak id for the current user
-        AccessToken accessToken = new AccessToken();
-        accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
-
+        Mockito.when(disabledKeycloakAuthorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).thenReturn(currentUserKeycloakId);
+        
         // Set role for the current user, this needs to be the senior-registry-administrator
         RoleRepresentation admin =
             new RoleRepresentation("senior-registry-administrator", "senior role description", true);

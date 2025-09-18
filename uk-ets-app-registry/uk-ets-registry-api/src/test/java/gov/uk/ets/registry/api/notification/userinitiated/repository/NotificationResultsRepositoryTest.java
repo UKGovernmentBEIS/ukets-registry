@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.notification.userinitiated.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.uk.ets.registry.api.common.test.PostgresJpaTest;
+import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
 import gov.uk.ets.registry.api.notification.userinitiated.NotificationModelTestHelper;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.types.NotificationType;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchCriteria;
@@ -23,7 +24,8 @@ class NotificationResultsRepositoryTest {
     private TestEntityManager entityManager;
     @Autowired
     private NotificationDefinitionRepository definitionRepository;
-
+    @Autowired
+    private UploadedFilesRepository uploadedFilesRepository;
     @Autowired
     private NotificationRepository cut;
 
@@ -31,7 +33,7 @@ class NotificationResultsRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        notificationModelTestHelper = new NotificationModelTestHelper(entityManager, definitionRepository);
+        notificationModelTestHelper = new NotificationModelTestHelper(definitionRepository, cut, uploadedFilesRepository);
 
         notificationModelTestHelper.setUp();
     }
@@ -42,7 +44,20 @@ class NotificationResultsRepositoryTest {
         Page<NotificationSearchResult> results =
             cut.search(new NotificationSearchCriteria(null), PageRequest.of(0, 10));
 
-        assertThat(results).hasSize(8);
+        assertThat(results).hasSize(10);
+    }
+
+    @Test
+    void shouldReturnOnlyAdHocEmail() {
+
+        Page<NotificationSearchResult> results =
+            cut.search(new NotificationSearchCriteria(NotificationType.AD_HOC_EMAIL), PageRequest.of(0, 10));
+
+        assertThat(results).hasSize(1);
+        List<NotificationSearchResult> content = results.getContent();
+
+        List<NotificationType> adHocTypes = Collections.nCopies(1, NotificationType.AD_HOC_EMAIL);
+        assertThat(content).extracting(NotificationSearchResult::getType).containsAll(adHocTypes);
     }
 
 

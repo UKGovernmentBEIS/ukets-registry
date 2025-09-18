@@ -6,22 +6,27 @@ const selectRegistration = createFeatureSelector<State, RegistrationState>(
   'registration'
 );
 
-export const selectSameAddress = createSelector(
+export const selectHasWorkMobilePhone = createSelector(
   selectRegistration,
-  registrationState => registrationState.sameAddress
+  (registrationState) => registrationState.hasWorkMobilePhone
 );
 
-export const selectSameEmail = createSelector(
+export const selectMobileNumberVerificationStatus = createSelector(
   selectRegistration,
-  registrationState => registrationState.sameEmail
+  (registrationState) => registrationState.mobileNumberVerificationStatus
 );
 
 export const selectUser = createSelector(
   selectRegistration,
-  registrationState => registrationState.user
+  (registrationState) => registrationState.user
 );
 
 export const selectVerificationNextStepMessage = createSelector(
   selectRegistration,
-  registrationState => registrationState.emailVerificationNextStep
+  (registrationState) => registrationState.emailVerificationNextStep
+);
+
+export const selectDeclarationConfirmed = createSelector(
+  selectRegistration,
+  (registrationState) => registrationState.declarationConfirmed
 );

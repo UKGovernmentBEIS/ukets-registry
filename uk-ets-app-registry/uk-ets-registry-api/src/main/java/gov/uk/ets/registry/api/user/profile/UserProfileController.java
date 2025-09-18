@@ -8,8 +8,9 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.OTPBusinessRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.user.profile.rules.NoOtherUserHasNewEmailAsWorkingEmail;
 import gov.uk.ets.registry.api.authz.ruleengine.features.user.profile.rules.OtherPendingEmailChangesOfCurrentUserShouldNotExist;
 import gov.uk.ets.registry.api.authz.ruleengine.features.user.profile.rules.OtherPendingEmailChangesWithSameNewEmailShouldNotExist;
-import gov.uk.ets.registry.api.common.Mapper;
-import gov.uk.ets.registry.api.common.security.TokenVerifier;
+import gov.uk.ets.registry.api.common.keycloak.OTPValidator;
+import gov.uk.ets.registry.api.user.UserActionError;
+import gov.uk.ets.registry.api.user.UserActionException;
 import gov.uk.ets.registry.api.user.profile.service.EmailChangeDTO;
 import gov.uk.ets.registry.api.user.profile.service.EmailChangeService;
 import gov.uk.ets.registry.api.user.profile.service.EmergencyOtpChangeService;
@@ -22,8 +23,13 @@ import gov.uk.ets.registry.api.user.profile.web.EmailChangeVerifiedResponse;
 import gov.uk.ets.registry.api.user.profile.web.EmergencyOtpChangeRequest;
 import gov.uk.ets.registry.api.user.profile.web.EmergencyOtpChangeTaskRequest;
 import gov.uk.ets.registry.api.user.profile.web.EmergencyOtpChangeTaskResponse;
-import javax.validation.Valid;
+import gov.uk.ets.registry.api.user.profile.recovery.service.RecoveryMethodProcessor;
+import gov.uk.ets.registry.api.user.profile.recovery.web.RecoveryMethodRemoveRequest;
+import gov.uk.ets.registry.api.user.profile.recovery.web.RecoveryMethodUpdateRequest;
+import gov.uk.ets.registry.api.user.profile.recovery.web.RecoveryMethodUpdateResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +38,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -44,12 +51,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserProfileController {
     private final EmailChangeService emailChangeService;
-    private final TokenVerifier tokenVerifier;
     private final EmergencyOtpChangeService emergencyOtpChangeService;
     private final EmergencyPasswordOtpChangeService emergencyPasswordOtpChangeService;
     private final TokenTaskService tokenTaskService;
     private final PasswordChangeService passwordChangeService;
-    private final Mapper mapper;
+    private final RecoveryMethodProcessor recoveryMethodProcessor;
+    private final OTPValidator otpValidator;
 
     /**
      * Initiates a change email request.
@@ -84,9 +91,7 @@ public class UserProfileController {
     public EmailChangeVerifiedResponse confirmEmailChange(@RequestParam String token) {
         EmailChangeVerifiedResponse response = new EmailChangeVerifiedResponse();
         try {
-            String payload = tokenVerifier.getPayload(token);
-            EmailChangeDTO dto = mapper.convertToPojo(payload, EmailChangeDTO.class);
-            Long requestId = emailChangeService.openEmailChangeTask(dto);
+            Long requestId = emailChangeService.openEmailChangeTask(token);
             response.setRequestId(requestId);
         } catch (TokenExpiredException exception) {
             response.setTokenExpired(true);
@@ -163,5 +168,74 @@ public class UserProfileController {
     public void requestPasswordChange(@RequestBody @Valid PasswordChangeDTO dto,
                                       @RuleInput(RuleInputType.OTP) @RequestParam String otp) {
         passwordChangeService.changePassword(dto);
+    }
+
+    /**
+     * Sends security code in order to update recovery methods.
+     *
+     * @param request recovery method transfer object.
+     */
+    @PostMapping(path = "user-profile.request.security-code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RecoveryMethodUpdateResponse> generateSecurityCode(@RequestBody RecoveryMethodUpdateRequest request) {
+
+        if (!otpValidator.validate(request.getOtpCode())) {
+            throw UserActionException.create(UserActionError.INVALID_OTP);
+        }
+
+        RecoveryMethodUpdateResponse response = recoveryMethodProcessor.generateSecurityCode(request);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Resends security code in order to update recovery methods.
+     *
+     * @param request recovery method transfer object.
+     */
+    @PostMapping(path = "user-profile.resend.security-code", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RecoveryMethodUpdateResponse> resendSecurityCode(@RequestBody RecoveryMethodUpdateRequest request) {
+
+        RecoveryMethodUpdateResponse recoveryMethodUpdateResponse = recoveryMethodProcessor.resendSecurityCode(request);
+
+        return new ResponseEntity<>(recoveryMethodUpdateResponse, HttpStatus.OK);
+    }
+
+
+    /**
+     * Update recovery method.
+     *
+     * @param request recovery method transfer object.
+     */
+    @PostMapping(path = "user-profile.update.recovery", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateRecoveryMethod(@RequestBody RecoveryMethodUpdateRequest request) {
+
+        recoveryMethodProcessor.updateRecoveryMethod(request);
+    }
+
+    /**
+     * Remove recovery method.
+     *
+     * @param request recovery method transfer object.
+     */
+    @PostMapping(path = "user-profile.remove.recovery", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public void removeRecoveryMethod(@RequestBody RecoveryMethodRemoveRequest request) {
+
+        if (!otpValidator.validate(request.getOtpCode())) {
+            throw UserActionException.create(UserActionError.INVALID_OTP);
+        }
+
+        recoveryMethodProcessor.removeRecoveryMethod(request);
+    }
+
+
+    /**
+     * Ignore recovery methods notification.
+     */
+    @PostMapping(path = "user-profile.hide.recovery-methods")
+    @ResponseStatus(HttpStatus.OK)
+    public void hideRecoveryMethodsNotification() {
+        recoveryMethodProcessor.hideRecoveryMethodsNotification();
     }
 }

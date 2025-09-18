@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.10</version>
+		<version>3.2.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>uk.gov.ets</groupId>
@@ -23,10 +23,8 @@
 		<maven.spotbugs.plugin>4.5.2.0</maven.spotbugs.plugin>
 		<apt.maven.plugin.version>1.1.3</apt.maven.plugin.version>
 		<jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
-		<uk.ets.common.lib.version>1.0.0</uk.ets.common.lib.version>
-		<log4j2.logstash.layout.version>1.0.5</log4j2.logstash.layout.version>
+		<uk.ets.common.lib.version>1.0.1-SNAPSHOT</uk.ets.common.lib.version>
 		<zxcvbn.version>1.4.0</zxcvbn.version>
-		<log4j2.version>2.17.1</log4j2.version>
 		<checkstyle.version>8.45.1</checkstyle.version>
 		<springdoc.openapi.core.version>1.1.49</springdoc.openapi.core.version>
 	</properties>
@@ -112,11 +110,6 @@
            <artifactId>zxcvbn</artifactId>
            <version>${zxcvbn.version}</version>
         </dependency>
-		<dependency>
-			<groupId>com.vlkan.log4j2</groupId>
-			<artifactId>log4j2-logstash-layout</artifactId>
-			<version>${log4j2.logstash.layout.version}</version>
-		</dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-core</artifactId>
@@ -209,7 +202,7 @@
 						<plugin>
 							<groupId>com.h3xstream.findsecbugs</groupId>
 							<artifactId>findsecbugs-plugin</artifactId>
-							<version>LATEST</version> <!-- Auto-update to the latest stable -->
+							<version>1.14.0</version> <!-- Auto-update to the latest stable -->
 						</plugin>
 					</plugins>
 				</configuration>
@@ -241,8 +234,8 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 		<pluginManagement>

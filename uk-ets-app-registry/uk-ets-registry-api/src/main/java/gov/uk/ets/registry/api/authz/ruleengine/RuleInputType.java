@@ -16,6 +16,7 @@ public enum RuleInputType {
     TASK_ASSIGNEE_URID,
     TASK_OUTCOME,
     TASK_COMPLETE_COMMENT,
+    TASK_UPDATE_ACTION,
     /**
      * Transaction.
      */
@@ -64,5 +65,11 @@ public enum RuleInputType {
     /***
      *  * The otp code
      */
-    OTP;
+    OTP,
+    /**
+     * Note.
+     */
+    NOTE,
+    ACCOUNT_TRANSFER_REQUEST,
+    PAYMENT_UUID
 }

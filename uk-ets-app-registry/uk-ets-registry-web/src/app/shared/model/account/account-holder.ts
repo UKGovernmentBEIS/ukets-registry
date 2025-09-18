@@ -16,22 +16,14 @@ export interface AccountHolder {
   id: number;
   type: AccountHolderType;
   details: IndividualDetails | OrganisationDetails | GovernmentDetails;
-  address: unknown;
+  address: AccountHolderAddress;
 }
 // TODO: remove this class and use a union for different account holders
 export class Individual implements AccountHolder {
   id: number;
   type = AccountHolderType.INDIVIDUAL;
   details: IndividualDetails;
-  address: {
-    buildingAndStreet: string;
-    buildingAndStreet2: string;
-    buildingAndStreet3: string;
-    postCode: string;
-    townOrCity: string;
-    stateOrProvince: string;
-    country: string;
-  };
+  address: AccountHolderAddress;
   // TODO: replace with PhoneInfo[] and in the backend
   phoneNumber: {
     countryCode1: string;
@@ -49,22 +41,14 @@ export class Government implements AccountHolder {
   id: number;
   type = AccountHolderType.GOVERNMENT;
   details: GovernmentDetails;
-  address: unknown;
+  address: AccountHolderAddress;
 }
 
 export class Organisation implements AccountHolder {
   id: number;
   type = AccountHolderType.ORGANISATION;
   details: OrganisationDetails;
-  address: {
-    buildingAndStreet: string;
-    buildingAndStreet2: string;
-    buildingAndStreet3: string;
-    postCode: string;
-    townOrCity: string;
-    stateOrProvince: string;
-    country: string;
-  };
+  address: AccountHolderAddress;
 }
 
 export interface IndividualDetails {
@@ -76,10 +60,34 @@ export interface IndividualDetails {
   isOverEighteen?: boolean;
 }
 
+export interface IndividualContactDetails {
+  address: AccountHolderAddress;
+  phoneNumber: {
+    countryCode1: string;
+    phoneNumber1: string;
+    countryCode2: string;
+    phoneNumber2: string;
+  };
+  emailAddress: {
+    emailAddress: string;
+    emailAddressConfirmation: string;
+  };
+}
+
 export interface OrganisationDetails {
   name: string;
   registrationNumber: string;
   noRegistrationNumJustification: string;
+}
+
+export interface AccountHolderAddress {
+  buildingAndStreet: string;
+  buildingAndStreet2: string;
+  buildingAndStreet3: string;
+  postCode: string;
+  townOrCity: string;
+  stateOrProvince: string;
+  country: string;
 }
 
 export interface GovernmentDetails {

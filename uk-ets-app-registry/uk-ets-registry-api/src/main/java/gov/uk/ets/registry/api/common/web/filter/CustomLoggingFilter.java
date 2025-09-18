@@ -2,9 +2,10 @@ package gov.uk.ets.registry.api.common.web.filter;
 
 import gov.uk.ets.commons.logging.MDCLoggingFilter;
 import gov.uk.ets.commons.logging.SecurityLog;
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,8 +32,8 @@ public class CustomLoggingFilter extends MDCLoggingFilter {
             return "Public resource - no user ID";
         }
         try {
-            if (authorizationService != null && authorizationService.getToken() != null) {
-                userId = authorizationService.getToken().getSubject();
+            if (authorizationService != null && authorizationService.getClaim(OAuth2ClaimNames.SUBJECT) != null) {
+                userId = authorizationService.getClaim(OAuth2ClaimNames.SUBJECT);
             }
         } catch (Exception e) {
             SecurityLog.log(log, "A user id could not be extracted for this request", e);
@@ -49,9 +50,8 @@ public class CustomLoggingFilter extends MDCLoggingFilter {
             return "Public resource - no ETS userId";
         }
         try {
-            if (authorizationService != null && authorizationService.getToken() != null) {
-                Map<String, Object> claims = authorizationService.getToken().getOtherClaims();
-                etsUserId = claims.get("urid").toString();
+            if (authorizationService != null && authorizationService.getUrid() != null) {
+                etsUserId = authorizationService.getUrid();
             }
         } catch (Exception e) {
             SecurityLog.log(log, "ETS userId could not be extracted for this request", e);

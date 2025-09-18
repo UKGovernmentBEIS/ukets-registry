@@ -15,12 +15,13 @@ public class AllocationPreparationReportData extends ReportData {
     String accountName;
     String accountType;
     String accountStatus;
-    Long installationOrAircraftOperatorId;
+    Long operatorId;
     String permitOrMonitoringPlanId;
     String installationName;
     int year;
     String allocationType;
     Long entitlement;
+    Long totalEntitlementForSchemeYear;
     Long allocated;
     Long toBeReturned;
     Long toBeDelivered;

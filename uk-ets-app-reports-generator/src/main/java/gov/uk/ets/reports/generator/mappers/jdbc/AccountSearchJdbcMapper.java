@@ -6,7 +6,6 @@ import gov.uk.ets.reports.generator.domain.AccountSearchReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -30,11 +29,6 @@ public class AccountSearchJdbcMapper
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<AccountSearchReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
-
-    @Override
     public List<AccountSearchReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
         Comparator<AccountSearchReportData> ahNameComparator = Comparator.comparing(a -> a.getAccountHolder().getName());
         Comparator<AccountSearchReportData> accountSearchReportDataComparator = ahNameComparator.thenComparing(a -> a.getAccount().getNumber());
@@ -56,7 +50,7 @@ public class AccountSearchJdbcMapper
                     .complianceStatus(rs.getString(11))
                     .balance(rs.getLong(7))
                     .regulatorGroup(rs.getString(33))
-                    .openingDate(LocalDateTime.parse(rs.getString(17), formatter))
+                    .openingDate(LocalDateTime.parse(rs.getString(17), inputFormatter))
                     .build())
                 .accountHolder(AccountHolder.builder()
                     .id(rs.getLong(27))

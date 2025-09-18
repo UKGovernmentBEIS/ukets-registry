@@ -2,19 +2,20 @@ package gov.uk.ets.registry.api.compliance.messaging.outbox;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 
 import gov.uk.ets.registry.api.account.messaging.CompliantEntityInitializationEvent;
 import gov.uk.ets.registry.api.common.test.BaseIntegrationTest;
 import gov.uk.ets.registry.api.compliance.messaging.events.outgoing.ComplianceOutgoingEventBase;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -135,8 +136,7 @@ class ComplianceOutboxServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(outboxEntries).extracting(ComplianceOutbox::getCompliantEntityId)
             .containsExactlyInAnyOrder(TEST_COMPLIANT_ENTITY_ID_1, TEST_COMPLIANT_ENTITY_ID_1);
 
-
-        ConsumerRecords<String, ComplianceOutgoingEventBase> records = KafkaTestUtils.getRecords(consumer, 10000, 2);
+        ConsumerRecords<String, ComplianceOutgoingEventBase> records = KafkaTestUtils.getRecords(consumer, Duration.ofMillis(10000), 2);
 
         assertThat(records.count()).isEqualTo(2);
         Iterator<ConsumerRecord<String, ComplianceOutgoingEventBase>> iterator = records.iterator();
@@ -169,7 +169,7 @@ class ComplianceOutboxServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(outboxEntries).extracting(ComplianceOutbox::getStatus)
             .containsExactlyInAnyOrder(ComplianceOutboxStatus.PENDING, ComplianceOutboxStatus.PENDING);
 
-        ConsumerRecords<String, ComplianceOutgoingEventBase> records = KafkaTestUtils.getRecords(consumer, 10000, 2);
+        ConsumerRecords<String, ComplianceOutgoingEventBase> records = KafkaTestUtils.getRecords(consumer, Duration.ofMillis(10000), 2);
       
         assertThat(records.count()).isZero();
     }

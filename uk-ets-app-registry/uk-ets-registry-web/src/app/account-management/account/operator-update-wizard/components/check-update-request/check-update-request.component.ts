@@ -26,6 +26,7 @@ export class CheckUpdateRequestComponent implements OnInit {
 
   isInstallation: boolean;
   isAircraft: boolean;
+  isMaritime: boolean;
   titleOfIdentifier: string;
   activityTypes = InstallationActivityType;
   changedValues = {};
@@ -37,12 +38,18 @@ export class CheckUpdateRequestComponent implements OnInit {
       this.currentOperatorInfo.type === OperatorType.INSTALLATION;
     this.isAircraft =
       this.currentOperatorInfo.type === OperatorType.AIRCRAFT_OPERATOR;
+    this.isMaritime = 
+    this.currentOperatorInfo.type === OperatorType.MARITIME_OPERATOR;
+
     if (this.currentOperatorInfo.type === OperatorType.AIRCRAFT_OPERATOR) {
       this.titleOfIdentifier = 'Aircraft Operator ID';
     }
     if (this.currentOperatorInfo.type === OperatorType.INSTALLATION) {
       this.titleOfIdentifier = 'Installation ID';
     }
+    if (this.currentOperatorInfo.type === OperatorType.MARITIME_OPERATOR) {
+      this.titleOfIdentifier = 'Maritime Operator ID';
+    }    
     this.changedValues = this.getObjectDiff(
       this.currentOperatorInfo,
       this.newOperatorInfo
@@ -69,6 +76,7 @@ export class CheckUpdateRequestComponent implements OnInit {
       }
       return {
         ...permit,
+        ...this.getOnlyChangedValues(current, changed, 'emitterId', false),
         ...this.getOnlyChangedValues(current, changed, 'firstYear', false),
         ...this.getOnlyChangedValues(current, changed, 'lastYear', true),
         ...this.getOnlyChangedValues(current, changed, 'name', false),
@@ -91,8 +99,52 @@ export class CheckUpdateRequestComponent implements OnInit {
           ),
         };
       }
+      
       return {
         ...monitoringPlan,
+        ...this.getOnlyChangedValues(current, changed, 'emitterId', false),
+        ...this.getOnlyChangedValues(current, changed, 'firstYear', false),
+        ...this.getOnlyChangedValues(current, changed, 'lastYear', true),
+        ...this.getOnlyChangedValues(current, changed, 'regulator', false),
+      };
+    }  else if (this.isMaritime) {
+      let monitoringPlan = null;
+      if (
+        Object.entries(
+          this.getOnlyChangedValues(current, changed, 'monitoringPlan', false)
+        ).length > 0
+      ) {
+        monitoringPlan = {
+          monitoringPlan: this.getOnlyChangedValues(
+            current,
+            changed,
+            'monitoringPlan',
+            false
+          ),
+        };
+      }
+
+      let imo = null;
+      if (
+        Object.entries(
+          this.getOnlyChangedValues(current, changed, 'imo', false)
+        ).length > 0
+      ) {
+        imo = {
+          imo: this.getOnlyChangedValues(
+            current,
+            changed,
+            'imo',
+            false
+          ),
+        };
+      }
+
+
+      return {
+        ...monitoringPlan,
+        ...this.getOnlyChangedValues(current, changed, 'emitterId', false),
+        ...this.getOnlyChangedValues(current, changed, 'imo', false),
         ...this.getOnlyChangedValues(current, changed, 'firstYear', false),
         ...this.getOnlyChangedValues(current, changed, 'lastYear', true),
         ...this.getOnlyChangedValues(current, changed, 'regulator', false),
@@ -142,7 +194,9 @@ export class CheckUpdateRequestComponent implements OnInit {
         type: this.currentOperatorInfo.type,
         name: this.changedValues['name'],
         activityType: this.changedValues['activityType'],
+        emitterId: this.changedValues['emitterId'],
         monitoringPlan: this.changedValues['monitoringPlan'],
+        imo: this.changedValues['imo'],
         permit: this.setPermitValues(),
         regulator: this.currentOperatorInfo.regulator,
         changedRegulator: this.changedValues['regulator'],

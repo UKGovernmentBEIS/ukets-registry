@@ -10,6 +10,7 @@ import gov.uk.ets.registry.api.account.domain.QAccountHolder;
 import gov.uk.ets.registry.api.account.domain.QAircraftOperator;
 import gov.uk.ets.registry.api.account.domain.QCompliantEntity;
 import gov.uk.ets.registry.api.account.domain.QInstallation;
+import gov.uk.ets.registry.api.account.domain.QMaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.shared.AccountProjection;
 import gov.uk.ets.registry.api.account.shared.AccountPropertyPath;
@@ -25,8 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -83,16 +84,16 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
             filter.getPermitOrMonitoringPlanIdentifier() != null ||
             filter.getAllocationClassification() != null ||
             filter.getAllocationWithholdStatus() != null ||
-            filter.getInstallationOrAircraftOperatorId() != null) {
+            filter.getOperatorId() != null ||
+            filter.getImo() != null) {
             query = query.innerJoin(account.compliantEntity, compliantEntity)
                 .on(new OptionalBooleanBuilder(account.isNotNull())
                     .notNullAnd(compliantEntity.regulator::eq, filter.getRegulatorType())
-                    .notNullAnd(this::getPermitOrMonitoringPlanIdCondition,
-                        filter.getPermitOrMonitoringPlanIdentifier())
+                    .notNullAnd(this::getPermitOrMonitoringPlanIdCondition, filter.getPermitOrMonitoringPlanIdentifier())
                     .notNullAnd(this::getAllocationClassificationCondition, filter.getAllocationClassification())
                     .notNullAnd(compliantEntity.allocationWithholdStatus::eq, filter.getAllocationWithholdStatus())
-                    .notNullAnd(compliantEntity.identifier.stringValue()::contains,
-                        filter.getInstallationOrAircraftOperatorId())
+                    .notNullAnd(compliantEntity.identifier.stringValue()::contains, filter.getOperatorId())
+                        .notNullAnd(this::getMaritimeImoCondition, filter.getImo())
                     .build());
         } else {
             query = query.leftJoin(account.compliantEntity, compliantEntity);
@@ -193,7 +194,12 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
 
     private BooleanExpression getPermitOrMonitoringPlanIdCondition(String identifier) {
         return compliantEntity.as(QInstallation.class).permitIdentifier.containsIgnoreCase(identifier)
-            .or(compliantEntity.as(QAircraftOperator.class).monitoringPlanIdentifier.containsIgnoreCase(identifier));
+            .or(compliantEntity.as(QAircraftOperator.class).monitoringPlanIdentifier.containsIgnoreCase(identifier)
+                    .or(compliantEntity.as(QMaritimeOperator.class).maritimeMonitoringPlanIdentifier.contains(identifier)));
+    }
+
+    private BooleanExpression getMaritimeImoCondition(String imo) {
+        return compliantEntity.as(QMaritimeOperator.class).imo.contains(imo);
     }
 
     private BooleanExpression getAccountNameOrIdCondition(String accountIdOrName) {

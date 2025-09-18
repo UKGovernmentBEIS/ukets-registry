@@ -1,24 +1,21 @@
 package gov.uk.ets.registry.api.notification.userinitiated;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.uk.ets.commons.logging.Config;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.common.error.ErrorBody;
 import gov.uk.ets.registry.api.common.error.ErrorDetail;
 import gov.uk.ets.registry.api.common.search.PageParameters;
+import gov.uk.ets.registry.api.file.upload.dto.NotificationValidationRequest;
+import gov.uk.ets.registry.api.notification.userinitiated.domain.types.NotificationType;
 import gov.uk.ets.registry.api.notification.userinitiated.repository.NotificationDefinitionRepository;
+import gov.uk.ets.registry.api.notification.userinitiated.services.NotificationValidationService;
 import gov.uk.ets.registry.api.notification.userinitiated.services.UserInitiatedNotificationService;
+import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.NotificationGenerator;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationDTO;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchPageableMapper;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchResult;
 import gov.uk.ets.registry.api.user.service.UserService;
-import javax.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebFilter;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 // excludes our custom filters (like CustomLoggingFilter etc.)
 @WebMvcTest(controllers = NotificationController.class, excludeFilters = @ComponentScan.Filter(WebFilter.class))
 // disables all spring security (and probably other filters too) filters
@@ -47,7 +51,13 @@ class NotificationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private UserInitiatedNotificationService service;
+    private UserInitiatedNotificationService userInitiatedNotificationService;
+
+    @MockBean
+    private NotificationValidationService notificationValidationService;
+
+    @MockBean
+    private NotificationGenerator anyGenerator;
 
     @MockBean
     private NotificationSearchPageableMapper pageableMapper;
@@ -57,9 +67,6 @@ class NotificationControllerTest {
 
     @MockBean
     BuildProperties buildProperties;
-
-    @MockBean
-    Config config;
 
     @MockBean
     private NotificationDefinitionRepository notificationDefinitionRepository;
@@ -99,7 +106,7 @@ class NotificationControllerTest {
         pageParameters.setSortDirection(Sort.Direction.DESC);
 
         Page<NotificationSearchResult> searchResults = Mockito.mock(Page.class);
-        Mockito.when(service.search(any(), any())).thenReturn(searchResults);
+        Mockito.when(userInitiatedNotificationService.search(any(), any())).thenReturn(searchResults);
 
         mockMvc.perform(get("/api-registry/notifications.list")
                 .param("page", "0")
@@ -108,5 +115,20 @@ class NotificationControllerTest {
                 .param("sortDirection", "DESC")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void validateEmailNotification_shouldReturnNoContent() throws Exception {
+        NotificationValidationRequest request = NotificationValidationRequest.builder()
+            .body("body with no placeholders")
+            .type(NotificationType.EMISSIONS_MISSING_FOR_AOHA)
+            .build();
+
+        Mockito.when(anyGenerator.generate(any(), anyString(), anyString())).thenReturn(any());
+
+        mockMvc.perform(post("/api-registry/notifications.validate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request)))
+            .andExpect(status().isNoContent());
     }
 }

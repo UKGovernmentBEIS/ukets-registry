@@ -13,6 +13,10 @@ dos2unix default-realm-config/docker-entrypoint.sh
 # run dos2unix recursively in all migration files:
 find default-realm-config/migrations/ -type f -print0 | xargs -0 dos2unix
 docker image build -t keycloak-internal:latest -f Dockerfile .
+if [[ "$?" -ne 0 ]]; then
+  echo 'Docker image build failed.Is Docker up and running?'
+  exit 3
+fi
 sed -i "s/$ENV_VERSION/env_version/g" Dockerfile
 # revert dos2unix operations to bypass issue with LF showing as changed files in windows.
 unix2dos default-realm-config/default-setup.sh

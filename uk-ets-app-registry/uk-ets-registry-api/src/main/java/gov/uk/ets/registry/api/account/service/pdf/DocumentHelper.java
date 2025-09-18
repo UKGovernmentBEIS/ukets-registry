@@ -3,10 +3,11 @@ package gov.uk.ets.registry.api.account.service.pdf;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
+import gov.uk.ets.registry.api.common.CountryMap;
 import gov.uk.ets.registry.api.common.Mapper;
 import java.awt.Color;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -34,33 +35,25 @@ public class DocumentHelper {
 
     private final Mapper mapper;
 
-    @Value("classpath:data/countries.json")
-    private Resource countriesResource;
+    private final CountryMap countryMap;
 
     @Value("classpath:data/activityTypes.json")
     private Resource activityTypesResource;
 
-    private Map<String, String> countries;
     private Map<String, String> activityTypes;
     private Font appFont;
 
 
     @PostConstruct
     public void init() {
-        countries = loadResourceData(countriesResource);
-        activityTypes = loadResourceData(activityTypesResource);
+        activityTypes = mapper.convertResToPojo(activityTypesResource, new TypeReference<>() { });
 
         FontFactory.register(new ClassPathResource("fonts/Arial.ttf").getPath(), "ukets-font");
         appFont = FontFactory.getFont("ukets-font");
     }
 
-    private Map<String, String> loadResourceData(Resource resource) {
-        return mapper.convertResToPojo(resource, new TypeReference<>() {
-        });
-    }
-
     public String getCountry(String code) {
-        return countries.get(code);
+        return countryMap.getCountryName(code);
     }
 
     public String getActivityType(String type) {

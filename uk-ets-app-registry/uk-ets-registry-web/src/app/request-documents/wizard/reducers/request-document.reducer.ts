@@ -6,6 +6,7 @@ import {
   enterRequestDocumentsWizard,
   fetchCandidateRecipientsSuccess,
   setComment,
+  setDeadline,
   setDocumentNames,
   setRecipient,
   submitDocumentsRequestSuccess,
@@ -13,6 +14,8 @@ import {
 import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-documents-origin';
 import { User } from '@shared/user';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
+import dayjs from 'dayjs';
+import { parseDeadline } from '@registry-web/shared/shared.util';
 
 export const requestDocumentFeatureKey = 'requestDocument';
 
@@ -31,6 +34,7 @@ export interface RequestDocumentState {
   candidateRecipients: User[];
   comment: string;
   submittedRequestIdentifier: string;
+  deadline: Date;
 }
 
 export const initialState: RequestDocumentState = {
@@ -48,6 +52,7 @@ export const initialState: RequestDocumentState = {
   candidateRecipients: [],
   comment: null,
   submittedRequestIdentifier: null,
+  deadline: dayjs().add(4, 'weeks').toDate(),
 };
 
 function resetState(state: Draft<RequestDocumentState>) {
@@ -65,6 +70,7 @@ function resetState(state: Draft<RequestDocumentState>) {
   state.candidateRecipients = initialState.candidateRecipients;
   state.comment = initialState.comment;
   state.submittedRequestIdentifier = initialState.submittedRequestIdentifier;
+  state.deadline = initialState.deadline;
 }
 
 export const requestDocumentReducer = createReducer(
@@ -112,6 +118,9 @@ export const requestDocumentReducer = createReducer(
   ),
   mutableOn(setComment, (state, { comment }) => {
     state.comment = comment;
+  }),
+  mutableOn(setDeadline, (state, { deadline }) => {
+    state.deadline = parseDeadline(deadline);
   }),
   mutableOn(
     fetchCandidateRecipientsSuccess,

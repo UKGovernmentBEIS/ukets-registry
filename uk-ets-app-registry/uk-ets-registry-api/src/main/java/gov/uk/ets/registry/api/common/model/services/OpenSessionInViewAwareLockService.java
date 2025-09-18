@@ -1,8 +1,8 @@
 package gov.uk.ets.registry.api.common.model.services;
 
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

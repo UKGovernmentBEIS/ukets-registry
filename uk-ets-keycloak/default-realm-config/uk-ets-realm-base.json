@@ -289,6 +289,15 @@
       "defaultAction": false,
       "priority": 1001,
       "config": {}
+    },
+    {
+      "alias": "cleanup-security-code",
+      "name": "UK ETS User clean up security codes",
+      "providerId": "cleanup-security-code",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 1002,
+      "config": {}
     }
   ],
   "eventsListeners": [

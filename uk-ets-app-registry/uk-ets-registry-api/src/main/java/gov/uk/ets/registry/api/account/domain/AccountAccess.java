@@ -6,7 +6,7 @@ import gov.uk.ets.registry.api.user.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import lombok.ToString;
 

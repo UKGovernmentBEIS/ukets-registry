@@ -6,7 +6,6 @@ import gov.uk.ets.reports.model.ReportQueryInfo;
 import gov.uk.ets.reports.model.ReportRequestingRole;
 import gov.uk.ets.reports.model.ReportType;
 import gov.uk.ets.reports.model.ReportTypeHandler;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,8 +34,8 @@ public class ReportCreationRequest extends ReportTypeHandler {
     @Builder
     @JsonCreator // needed for deserialization
     public ReportCreationRequest(ReportType type, ReportRequestingRole requestingRole,
-    		ReportCriteria criteria, ReportQueryInfo queryInfo, String requesterUrid) {
-        super(type, criteria, queryInfo);
+           ReportQueryInfo queryInfo, String requesterUrid) {
+        super(type, queryInfo);
         this.requesterUrid = requesterUrid;
         this.requestingRole = requestingRole;
     }

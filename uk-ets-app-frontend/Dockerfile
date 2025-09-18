@@ -1,4 +1,4 @@
-FROM nginx:1.24
+FROM nginx:1.28
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY conf/ets.conf /etc/nginx/conf.d/ets.conf

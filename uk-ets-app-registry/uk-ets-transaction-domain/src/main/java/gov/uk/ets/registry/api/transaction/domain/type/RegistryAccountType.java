@@ -75,6 +75,11 @@ public enum RegistryAccountType {
     AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
 
     /**
+     * The maritime operator holding account.
+     */
+    MARITIME_OPERATOR_HOLDING_ACCOUNT,
+
+    /**
      * The national holding account.
      */
     NATIONAL_HOLDING_ACCOUNT(true),

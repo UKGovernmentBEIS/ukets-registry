@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.domain.TrustedAccount;
 import gov.uk.ets.reports.generator.domain.TrustedAccountsReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -62,11 +61,6 @@ public class TrustedAccountsJdbcMapper
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<TrustedAccountsReportData> mapData(ReportCriteria criteria) {
-        return null;
-    }
-
-    @Override
     public List<TrustedAccountsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
         return jdbcTemplate.query(REPORT_QUERY, this);
     }
@@ -84,7 +78,7 @@ public class TrustedAccountsJdbcMapper
                 .status(rs.getString("trusted_account_status"))
                 .description(rs.getString("trusted_account_description"))
                 .name(rs.getString("trusted_account_name"))
-                .activationDate(activationDate != null ? LocalDateTime.parse(activationDate, formatter) : null)
+                .activationDate(activationDate != null ? LocalDateTime.parse(activationDate, inputFormatter) : null)
                 .type(rs.getString("trusted_type"))
                 .build())
             .build();

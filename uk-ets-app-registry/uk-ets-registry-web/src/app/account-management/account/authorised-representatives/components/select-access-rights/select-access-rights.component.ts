@@ -24,6 +24,8 @@ export class SelectAccessRightsComponent
   arFullName: string;
   @Input()
   showSurrender: boolean;
+  @Input()
+  showReadonly: boolean;
   @Output() readonly selectAccessRights = new EventEmitter<ARAccessRights>();
 
   formRadioGroupInfo: FormRadioGroupInfo;
@@ -39,6 +41,12 @@ export class SelectAccessRightsComponent
       options = options?.filter(
         (option) =>
           option.value !== ARAccessRights.SURRENDER_INITIATE_AND_APPROVE
+      );
+    }
+
+    if (!this.showReadonly) {
+      options = options?.filter(
+        (option) => option.value !== ARAccessRights.READ_ONLY
       );
     }
 

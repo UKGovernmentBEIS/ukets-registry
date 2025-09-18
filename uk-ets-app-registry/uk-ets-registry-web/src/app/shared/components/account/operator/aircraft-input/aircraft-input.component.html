@@ -18,6 +18,13 @@
       </div>
       <div class="govuk-fieldset" role="group">
         <app-form-control-text
+          *ngIf="isSeniorOrJuniorAdmin"
+          [label]="'Emitter ID'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.emitterId"
+          controlName="emitter.emitterId"
+        ></app-form-control-text>
+        <app-form-control-text
           [label]="'Monitoring plan ID'"
           [maxlength]="256"
           [validationErrorMessage]="validationErrorMessage.id"

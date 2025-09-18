@@ -8,6 +8,12 @@
 
     <app-summary-list
       [class]="'govuk-summary-list--no-border'"
+      [summaryListItems]="getNotificationRecipientItems()"
+      (navigateToEmitter)="downloadFile()"
+    ></app-summary-list>
+
+    <app-summary-list
+      [class]="'govuk-summary-list--no-border'"
       [summaryListItems]="getActivationDetailsItems()"
       (navigateToEmitter)="navigateTo($event)"
     ></app-summary-list>

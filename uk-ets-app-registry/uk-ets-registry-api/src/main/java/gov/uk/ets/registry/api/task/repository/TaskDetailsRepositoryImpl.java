@@ -9,8 +9,8 @@ import gov.uk.ets.registry.api.task.web.model.QTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.user.domain.QUser;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 public class TaskDetailsRepositoryImpl implements TaskDetailsRepository {
     private static final QTask task = QTask.task;
@@ -39,7 +39,7 @@ public class TaskDetailsRepositoryImpl implements TaskDetailsRepository {
     public List<TaskDetailsDTO> getSubTaskDetails(Long parentRequestId) {
         JPAQuery<TaskDetailsDTO> query = taskDetailsQuery()
             .where(task.parentTask.requestId.eq(parentRequestId));
-        return groupBy(query).fetch();
+        return groupBy(query).orderBy(task.deadline.desc().nullsLast()).fetch();
     }
 
     private JPAQuery<TaskDetailsDTO> taskDetailsQuery() {
@@ -51,7 +51,7 @@ public class TaskDetailsRepositoryImpl implements TaskDetailsRepository {
                     account.identifier, account.fullIdentifier, account.accountName, user.firstName, user.lastName,
                     user.urid, task.file,
                     Expressions.stringTemplate("string_agg({0},{1})", taskTransaction.transactionIdentifier,","),                  
-                    task.difference, task.before, parentTask.requestId, parentTask.type, task.completedDate))
+                    task.difference, task.before, parentTask.requestId, parentTask.type, task.completedDate, task.deadline))
             .from(task)
             .leftJoin(task.account, account)
             .leftJoin(task.initiatedBy, initiatedBy)
@@ -67,6 +67,6 @@ public class TaskDetailsRepositoryImpl implements TaskDetailsRepository {
             task.initiatedDate, claimedBy.firstName, claimedBy.lastName, claimedBy.knownAs, claimedBy.urid, task.claimedDate,
             account.identifier, account.fullIdentifier, account.accountName, user.firstName, user.lastName,
             user.urid, task.file,
-            task.difference, task.before, parentTask.requestId, parentTask.type, task.completedDate); 
+            task.difference, task.before, parentTask.requestId, parentTask.type, task.completedDate, task.deadline);
     }
 }

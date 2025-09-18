@@ -35,6 +35,9 @@ public class UKTLOutboundAdapter {
         try {
             reconciliationProducerTemplate.send(properties.getReconciliationQuestionTopic(), reconciliationSummary)
                 .get();
+        } catch (InterruptedException exception) {
+            log.error("Reconciliation summary got interrupted.");
+            Thread.currentThread().interrupt();
         } catch (Exception exception) {
             log.error("Reconciliation summary failed to be send to the transaction log during initiation.");
             throw new RuntimeException(exception);

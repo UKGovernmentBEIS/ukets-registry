@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.file.upload.requesteddocs.notification;
 
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
+import gov.uk.ets.registry.api.common.DateUtils;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.Utils;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.model.DocumentsRequestDTO;
@@ -8,6 +9,7 @@ import gov.uk.ets.registry.api.file.upload.requesteddocs.model.DocumentsRequestT
 import gov.uk.ets.registry.api.notification.DocumentRequestGroupNotification;
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.api.notification.NotificationService;
+import gov.uk.ets.registry.api.notification.RequestDeadlineNotification;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.web.model.RequestDocumentUploadTaskDetailsDTO;
@@ -27,7 +29,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
 
@@ -75,6 +77,9 @@ public class RequestedDocsNotificationAppliance {
                         generateDocumentRequestFinalisationNotification(groupNotificationType,
                                 joinPoint,
                                 taskCompleteResponse.getRequestIdentifier()));
+            } else if (GroupNotificationType.DEADLINE_UPDATE.equals(groupNotificationType)) {
+                groupNotificationClient.emitGroupNotification(
+                    generateDeadlineNotification(groupNotificationType, joinPoint));
             }
         }
     }
@@ -105,6 +110,7 @@ public class RequestedDocsNotificationAppliance {
                 .documentsRequestType(documentsRequestDTO.getType())
                 .accountName(accountDetails.getLeft())
                 .accountHolderName(accountDetails.getRight())
+                .deadline(documentsRequestDTO.getDeadline())
                 .build();
     }
 
@@ -121,6 +127,7 @@ public class RequestedDocsNotificationAppliance {
                 .documentsRequestType(documentsRequestDTO.getType())
                 .userId(Utils.maskUserId(task.getUser().getUrid()))
                 .userFullName(task.getUser().getFirstName() + " " + task.getUser().getLastName())
+                .deadline(documentsRequestDTO.getDeadline())
                 .build();
     }
 
@@ -198,5 +205,21 @@ public class RequestedDocsNotificationAppliance {
             return notificationService.findEmailOfArByUserUrid(parentTaskClaimant.get().getUrid(), false);
         }
         return notificationService.findEmailOfArByUserUrid(requestDocumentUploadTaskDetailsDTO.getInitiatorUrid(), false);
+    }
+
+    private GroupNotification generateDeadlineNotification(GroupNotificationType groupNotificationType,
+                                                           JoinPoint joinPoint) {
+
+        String newDate = (String) joinPoint.getArgs()[0];
+        TaskDetailsDTO taskDetailsDTO = (TaskDetailsDTO) joinPoint.getArgs()[1];
+
+        Set<String> recipients =
+            notificationService.findUserEmail(taskDetailsDTO.getClaimantURID(), false);
+
+        return RequestDeadlineNotification.builder()
+            .recipients(recipients)
+            .type(groupNotificationType)
+            .deadline(DateUtils.parseIso(newDate))
+            .requestId(taskDetailsDTO.getRequestId().toString()).build();
     }
 }

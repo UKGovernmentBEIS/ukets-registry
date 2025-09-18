@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="piliotid" id="security-code-changelog_v_0_0_1">
+        <validCheckSum>1:any</validCheckSum>
+        <sql>
+            create sequence security_code_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "security_code"
+            ("id" bigint,
+             "user_id" varchar(256) not null,
+             "email" varchar(256),
+             "country_code" varchar(10),
+             "phone_number" varchar(256),
+             "code" varchar(256) not null,
+             "attempts" bigint,
+             "valid" boolean,
+             "logged_in" boolean,
+             "expired_at" timestamp not null,
+             "created_at" timestamp not null,
+             constraint "pk_security_code" primary key("id"));
+
+            comment on table "security_code" is 'Stores user security codes.';
+			comment on column "security_code"."id" is 'The primary key';
+			comment on column "security_code"."user_id" is 'User id';
+			comment on column "security_code"."email" is 'the related email';
+			comment on column "security_code"."country_code" is 'the related phone number code';
+			comment on column "security_code"."phone_number" is 'the related phone number';
+			comment on column "security_code"."code" is 'The code';
+			comment on column "security_code"."attempts" is 'The number of the attempts';
+			comment on column "security_code"."valid" is 'If the code is valid';
+			comment on column "security_code"."logged_in" is 'If the code is already logged in';
+			comment on column "security_code"."expired_at" is 'The date that the code expires';
+			comment on column "security_code"."created_at" is 'The date that the code was created';
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -7,6 +7,7 @@ import {
   selectAccountHolderName,
   selectAccountName,
   selectComment,
+  selectDeadlineUKDate,
   selectDocumentNames,
   selectDocumentsRequestType,
   selectRecipientName,
@@ -18,6 +19,8 @@ import {
   navigateToAssignUserComment,
   navigateToSelectDocuments,
   navigateToSelectRecipient,
+  navigateToSetDeadlineAccountHolder,
+  navigateToSetDeadlineUser,
   submitDocumentsRequest,
 } from '@request-documents/wizard/actions';
 import { ActivatedRoute, Data } from '@angular/router';
@@ -43,6 +46,7 @@ import { isAdmin, isSeniorAdmin } from '@registry-web/auth/auth.selector';
       [isSeniorAdmin]="isSeniorAdmin$ | async"
       [requestDocumentsOrigin]="requestDocumentsOrigin$ | async"
       [displayUserCommentsPage]="displayUserCommentsPage$ | async"
+      [deadline]="deadlineUkDate$ | async"
       (navigateToEmitter)="onChange($event)"
       (submitRequest)="onSubmit()"
     ></app-check-documents-request>
@@ -64,6 +68,7 @@ export class CheckDocumentsRequestContainerComponent implements OnInit {
   displayUserCommentsPage$: Observable<boolean>;
   documentRequestType$: Observable<DocumentsRequestType>;
   requestDocumentsOrigin$: Observable<RequestDocumentsOrigin>;
+  deadlineUkDate$: Observable<Date | any>;
 
   goBackPath: string;
 
@@ -85,6 +90,7 @@ export class CheckDocumentsRequestContainerComponent implements OnInit {
     );
     this.displayUserCommentsPage$ = this.store.select(displayUserCommentsPage);
     this.documentRequestType$ = this.store.select(selectDocumentsRequestType);
+    this.deadlineUkDate$ = this.store.select(selectDeadlineUKDate);
 
     this.route.data.subscribe((data: Data) => {
       this.initData(data);
@@ -118,6 +124,12 @@ export class CheckDocumentsRequestContainerComponent implements OnInit {
         break;
       case RequestDocumentsRoutePaths['assigning-user-comment']:
         this.store.dispatch(navigateToAssignUserComment());
+        break;
+      case RequestDocumentsRoutePaths['set-deadline-ah']:
+        this.store.dispatch(navigateToSetDeadlineAccountHolder());
+        break;
+      case RequestDocumentsRoutePaths['set-deadline-user']:
+        this.store.dispatch(navigateToSetDeadlineUser());
         break;
     }
   }

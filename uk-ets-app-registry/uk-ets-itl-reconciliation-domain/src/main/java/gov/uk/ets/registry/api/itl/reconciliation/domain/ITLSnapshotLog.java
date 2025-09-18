@@ -1,16 +1,16 @@
 package gov.uk.ets.registry.api.itl.reconciliation.domain;
 
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class ITLSnapshotLog {
     private Long id;
 
     // TODO: @NotFound annotation fixes a weird issue appearing ONLY in integrations tests,
-    //  when persisting the ITLReconciliationLog we get a javax.persistence.EntityNotFoundException. Maybe we should revise the relationshipo here, and use MapsId
+    //  when persisting the ITLReconciliationLog we get a jakarta.persistence.EntityNotFoundException. Maybe we should revise the relationshipo here, and use MapsId
     @NotFound(action = NotFoundAction.IGNORE)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recon_id")

@@ -1,0 +1,73 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span
+      class="
+        govuk-heading-xl govuk-grid-column-one-third govuk-!-padding-left-0
+      "
+      >Documents</span
+    >
+
+    <div
+      class="update-documents-button"
+      *ngIf="'urn:uk-ets-registry-api:actionForSeniorAdmin' | protect | async"
+    >
+      <button
+        (click)="updateDocumentsWizard()"
+        class="govuk-button"
+        data-module="govuk-button"
+      >
+        Update documents
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  class="govuk-grid-row"
+  *ngFor="let category of categories; let i = index"
+  [hidden]="category.documents.length === 0 && !isSeniorAdmin"
+>
+  <div class="govuk-grid-column-full category">
+    <p class="govuk-heading-l">
+      {{ category.name }}
+    </p>
+    <ul class="govuk-list">
+      <li
+        *ngFor="let document of category.documents; let j = index"
+        [hidden]="j + 1 > MAX_DOCS_SHOWN && !showMore[category.id]"
+      >
+        <p class="govuk-body">
+          <img
+            src="/assets/images/icon-file-download.png"
+            style="vertical-align: middle; margin-right: 10px"
+            alt=""
+          />
+          <a
+            id="csv-download-errors-link"
+            class="govuk-link govuk-link--no-visited-state"
+            (click)="downloadDocument(document.id)"
+            [routerLink]="[]"
+            >{{ document.title || document.name }}
+          </a>
+        </p>
+      </li>
+    </ul>
+    <div class="govuk-body" *ngIf="category.documents.length > MAX_DOCS_SHOWN">
+      <button
+        type="button"
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="toggleShowMore(category.id)"
+      >
+        {{
+          showMore[category.id] ? 'Show less documents' : 'Show more documents'
+        }}
+      </button>
+    </div>
+
+    <div class="govuk-body" *ngIf="category.documents.length === 0">
+      No documents added.
+    </div>
+  </div>
+  <div class="govuk-grid-column-two-thirds separator"></div>
+</div>

@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-load-notification-wizard-container',
-  template: `<app-select-notification-type-container
+  template: ` <app-select-notification-type-container
       *ngIf="(notificationId$ | async) == null"
     ></app-select-notification-type-container
     ><app-notifications-scheduled-date-container
@@ -17,7 +17,10 @@ import { ActivatedRoute } from '@angular/router';
 export class LoadNotificationWizardContainerComponent implements OnInit {
   notificationId$: Observable<string>;
 
-  constructor(private store: Store, private route: ActivatedRoute) {}
+  constructor(
+    private store: Store,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.notificationId$ = this.store.select(selectNotificationId);

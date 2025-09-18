@@ -138,6 +138,38 @@
         <p class="govuk-body">{{ comment }}</p>
       </div>
     </ng-container>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-body-l">Deadline</dt>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="
+              navigateTo(
+                requestDocumentsRoutePaths[
+                  documentRequestType === requestDocumentType.USER
+                    ? 'set-deadline-user'
+                    : 'set-deadline-ah'
+                ]
+              )
+            "
+          >
+            Change<span class="govuk-visually-hidden"> deadline</span>
+          </a>
+        </dd>
+      </div>
+      <div
+        *ngIf="deadline"
+        class="govuk-summary-list__row govuk-summary-list__row--no-border"
+      >
+        <dt class="govuk-summary-list__value govuk-summary-list govuk-body-l">
+          {{ deadline | formatUkDate }}
+        </dt>
+      </div>
+    </dl>
+
     <div>
       <button
         class="govuk-button"

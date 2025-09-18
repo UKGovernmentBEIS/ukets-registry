@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { act, Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import {
   TaskDetailsActions,
   TaskDetailsApiActions,
@@ -15,8 +16,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { SubmitDocumentService } from '@task-management/service';
-import { of } from 'rxjs';
-import { Router } from '@angular/router';
+import { Observable, of, throwError } from 'rxjs';
 import { ErrorDetail } from '@shared/error-summary';
 import { canGoBack, errors } from '@registry-web/shared/shared.action';
 import {
@@ -25,9 +25,12 @@ import {
   REQUEST_TYPE_VALUES,
   RequestedDocumentUploadTaskDetails,
   TaskActionErrorResponse,
+  TaskCompleteResponse,
   TaskDetails,
   TaskFileDownloadInfo,
   TaskOutcome,
+  TaskUpdateAction,
+  TransactionTaskDetailsBase,
 } from '@task-management/model';
 import { ExportFileService } from '@shared/export-file/export-file.service';
 import {
@@ -35,7 +38,7 @@ import {
   HttpEvent,
   HttpEventType,
 } from '@angular/common/http';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { requestUploadSelectedFileForDocumentRequest } from '@shared/file/actions/file-upload-form.actions';
 import {
   processSelectedFileError,
@@ -46,7 +49,11 @@ import {
 } from '@shared/file/actions/file-upload-api.actions';
 import { UploadStatus } from '@shared/model/file';
 import {
+  selectAmountPaid,
+  selectPaymentMethod,
+  selectPaymentUUID,
   selectTask,
+  selectTaskDeadlineAsDate,
   selectUploadedFileDetails,
   selectUserComment,
   selectUserDecisionForTask,
@@ -54,13 +61,25 @@ import {
 import { ApiErrorHandlingService } from '@shared/services';
 import { UserProfileService } from '@user-management/service';
 import {
+  bacsPaymentCancelledSuccess,
+  bacsPaymentCompleteSuccess,
+  downloadPaymentReceipt,
   fetchAccount,
   populateAccount,
+  submitChangedTaskDeadlineSuccess,
+  submitMakePaymentSuccess,
   updateTaskSuccess,
 } from '@task-details/actions/task-details.actions';
-import { AccountHolderService } from '@account-opening/account-holder/account-holder.service';
 import { AccountApiService } from '@account-management/service/account-api.service';
 import { TaskService } from '@shared/services/task-service';
+import {
+  navigateToBACSDetailsPaymentMethod,
+  navigateToChangeTaskDeadlineSuccess,
+  navigateToCheckChangeTaskDeadline,
+  navigateToGovUKPayService,
+} from '../actions/task-details-navigation.actions';
+import { TransactionType } from '@registry-web/shared/model/transaction';
+import { RequestPaymentService } from '@request-payment/services';
 
 @Injectable()
 export class TaskDetailsEffects {
@@ -68,13 +87,12 @@ export class TaskDetailsEffects {
     private taskService: TaskService,
     private exportFileService: ExportFileService,
     private actions$: Actions,
-    private router: Router,
     private store: Store,
     private apiErrorHandlingService: ApiErrorHandlingService,
     private submitDocumentService: SubmitDocumentService,
     private userProfileService: UserProfileService,
-    private accountHolderService: AccountHolderService,
-    private accountApiService: AccountApiService
+    private accountApiService: AccountApiService,
+    private requestPaymentService: RequestPaymentService
   ) {}
 
   prepareNavigationToTask$ = createEffect(() => {
@@ -89,31 +107,79 @@ export class TaskDetailsEffects {
     );
   });
 
-  fetchTask$ = createEffect(() =>
-    this.actions$.pipe(
+  /**
+   * Makes an api call to account and adds the operator in the transferring account
+   * object in task details. For Excess Allocation tasks only.
+   *
+   * @param task: TaskDetails
+   * @returns Observable<TaskDetails>
+   */
+  addOperatorToTask(task: TaskDetails): Observable<TaskDetails> {
+    const trTaskDetails = task as TransactionTaskDetailsBase;
+    if (
+      trTaskDetails.trType === TransactionType.ExcessAllocation &&
+      trTaskDetails?.transferringAccount?.identifier
+    ) {
+      return this.accountApiService
+        .fetchAccount(String(trTaskDetails?.transferringAccount?.identifier))
+        .pipe(
+          map(
+            (account) =>
+              ({
+                ...task,
+                transferringAccount: {
+                  ...(task as TransactionTaskDetailsBase).transferringAccount,
+                  operator: { ...account.operator },
+                },
+              }) as TaskDetails
+          ),
+          catchError((error) => throwError(() => new Error(error)))
+        );
+    } else {
+      return of(task);
+    }
+  }
+
+  addOperatorToTaskCompleteResponse(
+    taskCompleteResponse: TaskCompleteResponse
+  ): Observable<TaskCompleteResponse> {
+    return this.addOperatorToTask(taskCompleteResponse.taskDetailsDTO).pipe(
+      map((taskDetailsDTO) => ({
+        ...taskCompleteResponse,
+        taskDetailsDTO,
+      }))
+    );
+  }
+
+  fetchTask$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(TaskDetailsActions.fetchTask),
       switchMap((action: { taskId: string }) =>
         this.taskService.fetchOneTask(action.taskId).pipe(
-          map((result) => TaskDetailsActions.loadTask({ taskDetails: result })),
+          mergeMap((task) => this.addOperatorToTask(task)),
+          map((result: TaskDetails) =>
+            TaskDetailsActions.loadTask({ taskDetails: result })
+          ),
           catchError((httpError) => this.handleHttpError(httpError))
         )
       )
-    )
-  );
+    );
+  });
 
-  fetchTaskFromList$ = createEffect(() =>
-    this.actions$.pipe(
+  fetchTaskFromList$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(TaskDetailsActions.loadTaskFromList),
       switchMap((action: { taskId: string }) =>
         this.taskService.fetchOneTask(action.taskId).pipe(
+          mergeMap((task) => this.addOperatorToTask(task)),
           map((result) =>
             TaskDetailsActions.loadTaskFromListSuccess({ taskDetails: result })
           ),
           catchError((httpError) => this.handleHttpError(httpError))
         )
       )
-    )
-  );
+    );
+  });
 
   fetchTaskHistory$ = createEffect(() =>
     this.actions$.pipe(
@@ -207,10 +273,10 @@ export class TaskDetailsEffects {
   setCommentAndPressedComplete$ = createEffect(() =>
     this.actions$.pipe(
       ofType(TaskDetailsActions.setCompleteTask),
-      withLatestFrom(
-        this.store.pipe(select(selectTask)),
-        this.store.pipe(select(selectUserDecisionForTask))
-      ),
+      concatLatestFrom(() => [
+        this.store.select(selectTask),
+        this.store.select(selectUserDecisionForTask),
+      ]),
       map(([action, taskFromStore, userDecisionFromStore]) => {
         const taskOutcome: TaskOutcome = userDecisionFromStore;
         const taskDetails: TaskDetails = taskFromStore;
@@ -230,6 +296,7 @@ export class TaskDetailsEffects {
           } else {
             return TaskDetailsApiActions.completeTaskWithApproval({
               comment: action.completeTaskFormInfo.comment,
+              amountPaid: action.completeTaskFormInfo.amountPaid,
               taskId: taskDetails.requestId,
             });
           }
@@ -238,13 +305,20 @@ export class TaskDetailsEffects {
     )
   );
 
-  rejectTask$ = createEffect(() =>
-    this.actions$.pipe(
+  rejectTask$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(TaskDetailsApiActions.completeTaskWithRejection),
       exhaustMap((action) =>
         this.taskService
-          .complete(action.taskId, action.comment, TaskOutcome.REJECTED)
+          .complete({
+            taskId: action.taskId,
+            comment: action.comment,
+            taskOutcome: TaskOutcome.REJECTED,
+          })
           .pipe(
+            mergeMap((taskCompleteResponse) =>
+              this.addOperatorToTaskCompleteResponse(taskCompleteResponse)
+            ),
             map((taskCompleteResponse) =>
               TaskDetailsApiActions.completeTaskWithRejectionSuccess({
                 taskCompleteResponse,
@@ -261,15 +335,15 @@ export class TaskDetailsEffects {
             })
           )
       )
-    )
-  );
+    );
+  });
 
   completeOnlyTaskApprove$ = createEffect(() =>
     this.actions$.pipe(
       ofType(TaskDetailsActions.approveTaskDecisionForCompleteOnlyTask),
       withLatestFrom(
-        this.store.pipe(select(selectTask)),
-        this.store.pipe(select(selectUserComment))
+        this.store.select(selectTask),
+        this.store.select(selectUserComment)
       ),
       map(([, taskDetailsFromStore, userComment]) => {
         const taskDetails: TaskDetails = taskDetailsFromStore;
@@ -281,13 +355,21 @@ export class TaskDetailsEffects {
     )
   );
 
-  approveTask$ = createEffect(() =>
-    this.actions$.pipe(
+  approveTask$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(TaskDetailsApiActions.completeTaskWithApproval),
       exhaustMap((action) =>
         this.taskService
-          .complete(action.taskId, action.comment, TaskOutcome.APPROVED)
+          .complete({
+            taskId: action.taskId,
+            comment: action.comment,
+            amountPaid: action.amountPaid,
+            taskOutcome: TaskOutcome.APPROVED,
+          })
           .pipe(
+            mergeMap((taskCompleteResponse) =>
+              this.addOperatorToTaskCompleteResponse(taskCompleteResponse)
+            ),
             map((taskCompleteResponse) =>
               TaskDetailsApiActions.completeTaskWithApprovalSuccess({
                 taskCompleteResponse,
@@ -304,7 +386,77 @@ export class TaskDetailsEffects {
             })
           )
       )
-    )
+    );
+  });
+
+  fetchPaymentCompleteResponseWithExternalService$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        TaskDetailsApiActions.fetchPaymentCompleteResponseWithExternalService
+      ),
+      exhaustMap((action) =>
+        this.requestPaymentService
+          .getMakePaymentResponse(action.requestId)
+          .pipe(
+            map((taskCompleteResponse) =>
+              TaskDetailsApiActions.fetchPaymentCompleteResponseWithExternalServiceSuccess(
+                {
+                  taskCompleteResponse,
+                }
+              )
+            ),
+            catchError((httpErrorResponse: HttpErrorResponse) => {
+              return of(
+                errors({
+                  errorSummary: this.apiErrorHandlingService.transform({
+                    errorDetails: [
+                      {
+                        message: httpErrorResponse.error,
+                      },
+                    ],
+                  }),
+                })
+              );
+            })
+          )
+      )
+    );
+  });
+
+  fetchPaymentViaWebLinkCompleteResponseWithExternalService$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(
+          TaskDetailsApiActions.fetchPaymentViaWebLinkCompleteResponseWithExternalService
+        ),
+        exhaustMap((action) =>
+          this.requestPaymentService
+            .getMakePaymentWebLinkResponse(action.uuid)
+            .pipe(
+              map((taskCompleteResponse) =>
+                TaskDetailsApiActions.fetchPaymentViaWebLinkCompleteResponseWithExternalServiceSuccess(
+                  {
+                    taskCompleteResponse,
+                  }
+                )
+              ),
+              catchError((httpErrorResponse: HttpErrorResponse) => {
+                return of(
+                  errors({
+                    errorSummary: this.apiErrorHandlingService.transform({
+                      errorDetails: [
+                        {
+                          message: httpErrorResponse.error,
+                        },
+                      ],
+                    }),
+                  })
+                );
+              })
+            )
+        )
+      );
+    }
   );
 
   approvalSuccess$ = createEffect(() =>
@@ -353,14 +505,16 @@ export class TaskDetailsEffects {
   otpVerificationSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(TaskDetailsApiActions.optVerificationForTaskSuccess),
-      withLatestFrom(
-        this.store.pipe(select(selectTask)),
-        this.store.pipe(select(selectUserComment))
-      ),
-      map(([, taskFromStore, userCommentFromStore]) => {
+      concatLatestFrom(() => [
+        this.store.select(selectTask),
+        this.store.select(selectUserComment),
+        this.store.select(selectAmountPaid),
+      ]),
+      map(([, taskFromStore, userCommentFromStore, amountPaid]) => {
         const taskDetails: TaskDetails = taskFromStore;
         return TaskDetailsApiActions.completeTaskWithApproval({
           comment: userCommentFromStore,
+          amountPaid: amountPaid,
           taskId: taskDetails.requestId,
         });
       })
@@ -494,17 +648,20 @@ export class TaskDetailsEffects {
               }
             }),
             catchError((error: HttpErrorResponse) => {
+              const errorSummary = error.error
+                ? this.apiErrorHandlingService.transform(error.error)
+                : this.apiErrorHandlingService.buildUiError(
+                    JSON.stringify(error)
+                  );
               return of(
+                TaskDetailsActions.uploadSelectedFileError({
+                  fileUploadIndex: action.fileUploadIndex,
+                  errorMessage: errorSummary.errors[0].errorMessage,
+                }),
                 processSelectedFileError({
                   status: UploadStatus.Failed,
                 }),
-                errors({
-                  errorSummary: error.error
-                    ? this.apiErrorHandlingService.transform(error.error)
-                    : this.apiErrorHandlingService.buildUiError(
-                        JSON.stringify(error)
-                      ),
-                })
+                errors({ errorSummary })
               );
             })
           )
@@ -562,6 +719,160 @@ export class TaskDetailsEffects {
       )
     );
   });
+
+  updateTaskDeadline$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.updateTaskDeadline),
+      map(() => navigateToCheckChangeTaskDeadline())
+    );
+  });
+
+  submitChangedTaskDeadline$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.submitChangedTaskDeadline),
+      concatLatestFrom(() => [
+        this.store.select(selectTaskDeadlineAsDate),
+        this.store.select(selectTask),
+      ]),
+      mergeMap(([action, deadline, task]) =>
+        this.taskService
+          .update({
+            taskDetails: { ...task, deadline },
+            updateInfo: deadline.toISOString(),
+            taskUpdateAction: TaskUpdateAction.UPDATE_DEADLINE,
+          })
+          .pipe(
+            map((result: TaskDetails) =>
+              submitChangedTaskDeadlineSuccess({ result: result })
+            ),
+            catchError((httpError) => {
+              return of(
+                errors({
+                  errorSummary: this.apiErrorHandlingService.transform(
+                    httpError.error
+                  ),
+                })
+              );
+            })
+          )
+      )
+    );
+  });
+
+  submitChangedTaskDeadlineSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.submitChangedTaskDeadlineSuccess),
+      map(() => navigateToChangeTaskDeadlineSuccess())
+    );
+  });
+
+  bacsPaymentCompleteOrCancel$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.bacsPaymentCompleteOrCancelled),
+      concatLatestFrom(() => [this.store.select(selectPaymentUUID)]),
+      mergeMap(([action, uuid]) =>
+        this.requestPaymentService
+          .bacsPaymentCompleteOrCancel({ uuid, status: action.status })
+          .pipe(
+            map(() => {
+              if (action.status === 'SUBMITTED') {
+                return bacsPaymentCompleteSuccess();
+              } else if (action.status === 'CANCELLED') {
+                return bacsPaymentCancelledSuccess();
+              }
+            }),
+            catchError((httpErrorResponse: HttpErrorResponse) => {
+              return of(
+                errors({
+                  errorSummary: this.apiErrorHandlingService.transform({
+                    errorDetails: [
+                      {
+                        message: httpErrorResponse.error,
+                      },
+                    ],
+                  }),
+                })
+              );
+            })
+          )
+      )
+    );
+  });
+
+  submitMakePayment$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.submitMakePayment),
+      concatLatestFrom(() => [this.store.select(selectPaymentUUID)]),
+      mergeMap(([action, uuid]) =>
+        this.requestPaymentService
+          .submitMakePayment({ uuid, method: action.method })
+          .pipe(
+            map((result: string) => {
+              return submitMakePaymentSuccess({
+                nextUrl: result,
+              });
+            }),
+            catchError((httpErrorResponse: HttpErrorResponse) => {
+              return of(
+                errors({
+                  errorSummary: this.apiErrorHandlingService.transform({
+                    errorDetails: [
+                      {
+                        message: httpErrorResponse.message,
+                      },
+                    ],
+                  }),
+                })
+              );
+            })
+          )
+      )
+    );
+  });
+
+  submitMakePaymentSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.submitMakePaymentSuccess),
+      concatLatestFrom(() => [this.store.select(selectPaymentMethod)]),
+      map(([action, method]) => {
+        if (method === 'CARD_OR_DIGITAL_WALLET') {
+          return navigateToGovUKPayService(action);
+        } else if (method === 'BACS') {
+          return navigateToBACSDetailsPaymentMethod();
+        } else throw new Error('Unknown paymment method.');
+      })
+    );
+  });
+
+  downloadPaymentReceiptFile$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(downloadPaymentReceipt),
+        concatLatestFrom(() => [this.store.select(selectPaymentUUID)]),
+        mergeMap(([, uuid]) =>
+          this.requestPaymentService.downloadReceipt(uuid).pipe(
+            map((result) =>
+              this.exportFileService.export(
+                result.body,
+                this.exportFileService.getContentDispositionFilename(
+                  result.headers.get('Content-Disposition')
+                )
+              )
+            ),
+            catchError((error: HttpErrorResponse) =>
+              of(
+                errors({
+                  errorSummary: this.apiErrorHandlingService.transform(
+                    error.error
+                  ),
+                })
+              )
+            )
+          )
+        )
+      ),
+    { dispatch: false }
+  );
 
   // TODO: since the error messages are build in the server we do not nead to recreate them here
 

@@ -1,5 +1,7 @@
 package gov.uk.ets.reports.api.authz;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
+import gov.uk.ets.lib.commons.security.oauth2.token.UkEtsOpaqueTokenIntrospector;
 import gov.uk.ets.reports.api.common.keycloak.KeycloakRepository;
 import gov.uk.ets.reports.api.error.UkEtsReportsClientException;
 import gov.uk.ets.reports.api.roleaccess.service.ReportTypesPerRoleService;
@@ -7,10 +9,7 @@ import gov.uk.ets.reports.model.ReportRequestingRole;
 import gov.uk.ets.reports.model.ReportType;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
@@ -19,6 +18,8 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 
 
@@ -31,35 +32,35 @@ public class AuthorizationService {
     private final ReportTypesPerRoleService reportTypesPerRoleService;
     private final KeycloakRepository keycloakRepository;
 
-    public AccessToken getToken() {
-        return getKeycloakSecurityContext().getToken();
-
-    }
-
-    private KeycloakSecurityContext getKeycloakSecurityContext() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        KeycloakPrincipal<KeycloakSecurityContext> principal =
-            (KeycloakPrincipal<KeycloakSecurityContext>) authentication
-                .getPrincipal();
-        return principal.getKeycloakSecurityContext();
-    }
-
     public String getCurrentUserUrid() {
-        return (String) getKeycloakSecurityContext().getToken().getOtherClaims().getOrDefault("urid", "");
+        return getClaim(OAuth2ClaimNames.URID);
     }
+    
+    public String getClaim(OAuth2ClaimNames oauth2claim) {
+        return getPrincipal().getAttribute(oauth2claim.getClaimName());
+    }
+    
+    
+    private BearerTokenAuthentication getAuthentication() {
+        return BearerTokenAuthentication.class.cast(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    private DefaultOAuth2AuthenticatedPrincipal getPrincipal() {
+        Authentication authentication = getAuthentication();
+        return DefaultOAuth2AuthenticatedPrincipal.class.cast(authentication.getPrincipal());
+    }    
  
     /**
      * @param role The requesting user role
      * @return true if the current logged-in user has the provided role false otherwise
      */
     public boolean userTokenContainsRole(String role) {
-        AccessToken.Access access = getToken().getResourceAccess("uk-ets-registry-api");
-        if (access == null) {
-            return false;
-        }
-        Set<String> roles = access.getRoles();
-        return roles != null && roles.toString().contains(role);
+        
+        return getPrincipal()
+           .getAuthorities()
+           .stream()
+           .filter(a -> a.getAuthority().startsWith(UkEtsOpaqueTokenIntrospector.ROLE_PREFIX))
+           .anyMatch(a -> a.getAuthority().contains(role));
     }
     
     /**

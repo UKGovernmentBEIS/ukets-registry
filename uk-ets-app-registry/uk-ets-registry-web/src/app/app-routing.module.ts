@@ -11,6 +11,8 @@ import { ClearDeleteFileGuard } from '@registry-web/delete-file/wizard/guards/cl
 import { NotificationListGuard } from '@notifications/notifications-list/guards';
 import { ClearNotificationsResultsGuard } from '@notifications/notifications-list/guards/clear-notifications-results-guard';
 import { AboutComponent } from './about/about.component';
+import { RecoveryMethodsChangeRoutePaths } from './user-management/recovery-methods-change/recovery-methods-change.models';
+import { clearRequestPaymentGuard } from '@request-payment/guards';
 
 const routes: Routes = [
   { path: 'under-construction', component: EmptyPageComponent },
@@ -32,7 +34,6 @@ const routes: Routes = [
   },
   {
     path: 'task-details',
-    canActivate: [LoginGuard],
     loadChildren: () =>
       import('./task-management/task-details/task-details.module').then(
         (mod) => mod.TaskDetailsModule
@@ -128,6 +129,14 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'request-payment',
+    canDeactivate: [clearRequestPaymentGuard],
+    loadChildren: () =>
+      import('./request-payment/request-payment.module').then(
+        (m) => m.RequestPaymentModule
+      ),
+  },
+  {
     path: 'delete-file',
     canDeactivate: [ClearDeleteFileGuard],
     loadChildren: () =>
@@ -141,6 +150,14 @@ const routes: Routes = [
       import('./user-management/email-change/email-change.module').then(
         (m) => m.EmailChangeModule
       ),
+  },
+  {
+    path: RecoveryMethodsChangeRoutePaths.BASE_PATH,
+    canActivate: [LoginGuard],
+    loadChildren: () =>
+      import(
+        './user-management/recovery-methods-change/recovery-methods-change.module'
+      ).then((m) => m.RecoveryMethodsChangeModule),
   },
   {
     path: 'password-change',
@@ -222,6 +239,13 @@ const routes: Routes = [
   {
     path: 'about',
     component: AboutComponent,
+    title: 'About',
+  },
+  {
+    path: 'documents',
+    canActivate: [LoginGuard],
+    loadChildren: () =>
+      import('./documents/documents.module').then((mod) => mod.DocumentsModule),
   },
 ];
 

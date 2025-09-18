@@ -17,7 +17,7 @@ import gov.uk.ets.registry.api.transaction.checks.allocation.CheckAllocationAcco
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

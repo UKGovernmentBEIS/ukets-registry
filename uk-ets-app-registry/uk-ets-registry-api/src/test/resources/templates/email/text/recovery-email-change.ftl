@@ -1,0 +1,1 @@
+Use security code ${securityCode} to set your recovery email.

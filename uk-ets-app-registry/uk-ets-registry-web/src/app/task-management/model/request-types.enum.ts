@@ -99,6 +99,11 @@ export enum RequestType {
    */
   AIRCRAFT_OPERATOR_UPDATE_REQUEST = 'AIRCRAFT_OPERATOR_UPDATE_REQUEST',
 
+  /**
+   * Request to update the maritime operator info.
+   */
+  MARITIME_OPERATOR_UPDATE_REQUEST = 'MARITIME_OPERATOR_UPDATE_REQUEST',
+
   ACCOUNT_TRANSFER = 'ACCOUNT_TRANSFER',
 
   /**
@@ -115,6 +120,11 @@ export enum RequestType {
    * Request to close an account.
    */
   ACCOUNT_CLOSURE_REQUEST = 'ACCOUNT_CLOSURE_REQUEST',
+
+  /**
+   * Request for payment.
+   */
+  PAYMENT_REQUEST = 'PAYMENT_REQUEST',
 }
 
 interface RequestTypeValues {
@@ -448,6 +458,16 @@ export const REQUEST_TYPE_VALUES: Record<RequestType, RequestTypeValues> = {
     requiresOtpVerificationOnApproval: false,
     completeOnly: false,
   },
+  MARITIME_OPERATOR_UPDATE_REQUEST: {
+    label: 'Update account maritime operator details',
+    headingText: 'request',
+    approvalText: 'Enter comment (optional)',
+    rejectionText: 'Enter the reason for rejecting the request',
+    confirmationText: 'Check the update request',
+    goToConfirmationPageAfterCompletion: true,
+    requiresOtpVerificationOnApproval: false,
+    completeOnly: false,
+  },
   ACCOUNT_TRANSFER: {
     label: 'Account transfer',
     headingText: 'request',
@@ -485,6 +505,16 @@ export const REQUEST_TYPE_VALUES: Record<RequestType, RequestTypeValues> = {
     rejectionText: 'Why are you rejecting this request ?',
     confirmationText: 'Check the update request',
     goToConfirmationPageAfterCompletion: true,
+    requiresOtpVerificationOnApproval: false,
+    completeOnly: false,
+  },
+  PAYMENT_REQUEST: {
+    label: 'Payment request',
+    headingText: 'request',
+    approvalText: 'Explain why you are approving this request',
+    rejectionText: 'Why are you rejecting this request ?',
+    confirmationText: 'Check the update request',
+    goToConfirmationPageAfterCompletion: false,
     requiresOtpVerificationOnApproval: false,
     completeOnly: false,
   },

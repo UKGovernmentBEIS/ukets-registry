@@ -2,7 +2,7 @@ package gov.uk.ets.registry.api.authz.ruleengine;
 
 import java.util.EnumMap;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Simple class containing the parameter values that will be used from the business rules down the road.

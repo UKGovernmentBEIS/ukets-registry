@@ -3,6 +3,14 @@
   margin-left: 10px;
 }
 
+::ng-deep .uk_ets_menu_link {
+  float: right;
+}
+
+::ng-deep .uk_ets_menu_item_link {
+  margin-left: 10px;
+}
+
 #header:focus {
   outline: none;
 }

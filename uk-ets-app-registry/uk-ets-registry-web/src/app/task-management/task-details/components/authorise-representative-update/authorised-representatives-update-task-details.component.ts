@@ -18,11 +18,44 @@ export class AuthorisedRepresentativesUpdateTaskDetailsComponent {
   authoriseRepresentativeTaskDetails: AuthoriseRepresentativeTaskDetails;
 
   @Output() readonly requestDocumentEmitter = new EventEmitter();
+  @Output() readonly requestPaymentEmitter = new EventEmitter();
 
   updateTypes = AuthorisedRepresentativesUpdateType;
   taskNotYetApproved = TaskOutcome.SUBMITTED_NOT_YET_APPROVED;
 
   onUserRequestDocuments(requestDocumentDetails) {
     this.requestDocumentEmitter.emit(requestDocumentDetails);
+  }
+
+  onRequestPayment(requestPaymentWizardDetails) {
+    const candidateRecipients = [];
+    if (this.authoriseRepresentativeTaskDetails.newUser) {
+      candidateRecipients.push({
+        ...this.authoriseRepresentativeTaskDetails.newUser?.user,
+        urid: this.authoriseRepresentativeTaskDetails.newUser?.urid,
+      });
+    } else if (this.authoriseRepresentativeTaskDetails.currentUser) {
+      candidateRecipients.push({
+        ...this.authoriseRepresentativeTaskDetails.currentUser?.user,
+        urid: this.authoriseRepresentativeTaskDetails.currentUser?.urid,
+      });
+    }
+
+    this.requestPaymentEmitter.emit({
+      ...requestPaymentWizardDetails,
+      candidateRecipients,
+    });
+  }
+
+  showRequestPaymentButton() {
+    return (
+      this.authoriseRepresentativeTaskDetails.arUpdateType ===
+        AuthorisedRepresentativesUpdateType.ADD ||
+      this.authoriseRepresentativeTaskDetails.arUpdateType ===
+        AuthorisedRepresentativesUpdateType.REPLACE ||
+      (this.authoriseRepresentativeTaskDetails.arUpdateType ===
+        AuthorisedRepresentativesUpdateType.CHANGE_ACCESS_RIGHTS &&
+        this.authoriseRepresentativeTaskDetails.currentUserClaimant)
+    );
   }
 }

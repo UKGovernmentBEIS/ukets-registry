@@ -2,6 +2,8 @@ package gov.uk.ets.registry.api.authz.ruleengine.features.account;
 
 import gov.uk.ets.registry.api.compliance.web.model.VerifiedEmissionsDTO;
 import java.util.List;
+
+import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +18,5 @@ public class AccountSecurityStoreSlice {
     private Long pendingActivationTrustedAccounts;
     private Long pendingComplianceEntityUpdate;
     private List<VerifiedEmissionsDTO> verifiedEmissionsList;
+    protected List<TrustedAccount> linkedPendingTrustedAccounts;
 }

@@ -1,12 +1,12 @@
 package gov.uk.ets.registry.api.authz;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.user.domain.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.authorization.DecisionEffect;
@@ -24,13 +24,6 @@ public class DisabledKeycloakAuthorizationService implements AuthorizationServic
         EvaluationResultRepresentation result = new EvaluationResultRepresentation();
         result.setStatus(DecisionEffect.PERMIT);
         return result;
-    }
-
-    @Override
-    public AccessToken getToken() {
-        // TODO Implement method
-        AccessToken token = new AccessToken();
-        return token;
     }
 
     @Override
@@ -69,5 +62,10 @@ public class DisabledKeycloakAuthorizationService implements AuthorizationServic
     @Override
     public boolean hasScopePermission(Scope scope) {
         return true;
+    }
+
+    @Override
+    public String getClaim(OAuth2ClaimNames name) {
+        return "";
     }
 }

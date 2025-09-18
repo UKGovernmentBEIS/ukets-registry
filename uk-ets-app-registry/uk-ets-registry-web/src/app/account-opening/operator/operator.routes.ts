@@ -1,10 +1,11 @@
 import { LoginGuard } from '@shared/guards';
 import {
   InstallationContainerComponent,
-  AircraftOperatorContainerComponent,
   OverviewContainerComponent,
   IsItAnInstallationTransferContainerComponent,
+  MaritimeOperatorContainerComponent,
 } from '@account-opening/operator/components';
+import {AircraftOperatorContainerComponent} from "@account-opening/operator/components/aircraft-operator";
 
 export const OPERATOR_ROUTES = [
   {
@@ -28,7 +29,11 @@ export const OPERATOR_ROUTES = [
     canActivate: [LoginGuard],
     component: AircraftOperatorContainerComponent,
   },
-
+  {
+    path: 'maritime-operator',
+    canActivate: [LoginGuard],
+    component: MaritimeOperatorContainerComponent,
+  },
   {
     path: 'operator-overview',
     canActivate: [LoginGuard],

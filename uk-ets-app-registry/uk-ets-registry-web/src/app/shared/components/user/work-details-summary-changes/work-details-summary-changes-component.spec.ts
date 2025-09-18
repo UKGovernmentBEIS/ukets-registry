@@ -13,23 +13,21 @@ describe('WorkDetailsSummaryChangesComponent', () => {
   let component: WorkDetailsSummaryChangesComponent;
   let fixture: ComponentFixture<WorkDetailsSummaryChangesComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        imports: [RouterTestingModule],
-        declarations: [
-          WorkDetailsSummaryChangesComponent,
-          FormGroupDirective,
-          ConnectFormDirective,
-        ],
-        providers: [
-          { provide: FormBuilder, useValue: formBuilder },
-          CountryNamePipe,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [RouterTestingModule],
+      declarations: [
+        WorkDetailsSummaryChangesComponent,
+        FormGroupDirective,
+        ConnectFormDirective,
+      ],
+      providers: [
+        { provide: FormBuilder, useValue: formBuilder },
+        CountryNamePipe,
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkDetailsSummaryChangesComponent);
@@ -46,10 +44,11 @@ describe('WorkDetailsSummaryChangesComponent', () => {
       lastName: '',
       alsoKnownAs: '',
       countryOfBirth: '',
-      workCountryCode: '',
-      workPhoneNumber: '',
-      workEmailAddress: '',
-      workEmailAddressConfirmation: '',
+      workMobileCountryCode: '',
+      workMobilePhoneNumber: '',
+      workAlternativeCountryCode: '',
+      workAlternativePhoneNumber: '',
+      noMobilePhoneNumberReason: '',
       workBuildingAndStreet: '',
       workBuildingAndStreetOptional: '',
       workBuildingAndStreetOptional2: '',

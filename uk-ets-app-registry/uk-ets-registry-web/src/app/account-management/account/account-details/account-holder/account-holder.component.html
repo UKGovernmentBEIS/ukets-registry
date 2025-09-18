@@ -28,9 +28,7 @@
 </ng-container>
 <ng-container *ngIf="accountHolderContactInfo.primaryContact as primaryContact">
   <hr
-    class="
-      govuk-section-break govuk-section-break--m govuk-section-break--visible
-    "
+    class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
   />
   <h2 class="govuk-heading-l" style="font-size: 30px">Primary Contact</h2>
   <ng-container>
@@ -44,9 +42,7 @@
     *ngIf="accountHolderContactInfo.alternativeContact as alternativeContact"
   >
     <hr
-      class="
-        govuk-section-break govuk-section-break--l govuk-section-break--visible
-      "
+      class="govuk-section-break govuk-section-break--l govuk-section-break--visible"
     />
     <h2 class="govuk-heading-l" style="font-size: 30px">
       Alternative Primary Contact
@@ -72,4 +68,14 @@
   >
     Request Update
   </button>
+  <!--
+  <button
+    id="goToChangeAccountHolderRequestId"
+    (click)="goToChangeAccountHolderRequest()"
+    *ngIf="accountHolder && canChangeAccountHolder"
+    class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+    data-module="govuk-button"
+  >
+    Change account holder
+  </button> -->
 </div>

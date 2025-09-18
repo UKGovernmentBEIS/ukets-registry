@@ -33,18 +33,18 @@ public class ReportGeneratorService {
     public void generateReport(ReportGenerationCommand command) {
         String filename =
             ReportFileGeneratorHelper.generateFileName(
-                    command.getType() , command.getReportQueryInfo().getYear(), command.getRequestDate());
+                    command.getType(), command.getReportQueryInfo().getYear(), command.getRequestDate());
 
         byte[] reportBytes;
         
         //TODO stream for large report instead of writing in the server
-        if(ReportFormat.EXCEL.equals(command.getType().getFormat())) {
+        if (ReportFormat.EXCEL.equals(command.getType().getFormat())) {
             reportBytes = excelReportService.writeReport(command);
             s3ClientService.uploadXlsxFile(awsS3ReportsBucketName, filename, reportBytes);            
-        } else if(ReportType.R0034.equals(command.getType())) {
+        } else if (ReportType.R0034.equals(command.getType())) {
             reportBytes = pdfReportService.writeReport(command);
             s3ClientService.uploadPdfFile(awsS3ReportsBucketName, filename, reportBytes);  
-        } else if(ReportType.R0035.equals(command.getType())) {
+        } else if (ReportType.R0035.equals(command.getType())) {
             reportBytes = pdfReportR0035Service.writeReport(command);
             s3ClientService.uploadPdfFile(awsS3ReportsBucketName, filename, reportBytes);              
         } else {

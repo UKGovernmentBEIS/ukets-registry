@@ -27,6 +27,9 @@ export class OverviewAircraftOperatorComponent {
   @Input()
   regulatorChanged: boolean;
 
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+
   operatorWizardRoutes = OperatorWizardRoutes;
   activityTypes = InstallationActivityType;
   regulatorMap = regulatorMap;
@@ -34,7 +37,7 @@ export class OverviewAircraftOperatorComponent {
   constructor(private formatUkDatePipe: FormatUkDatePipe) {}
 
   getAircraftOperatorSummaryListItems(): SummaryListItem[] {
-    return [
+    const summary = [
       {
         key: { label: 'Monitoring Plan ID' },
         value: { label: this.aircraftOperator.monitoringPlan.id },
@@ -62,5 +65,14 @@ export class OverviewAircraftOperatorComponent {
         value: { label: this.aircraftOperator.lastYear },
       },
     ];
+
+    if(this.isSeniorOrJuniorAdmin){
+      summary.unshift({
+        key: { label: 'Emitter ID' },
+        value: { label: this.aircraftOperator.emitterId }
+      });
+    }
+
+    return summary;
   }
 }

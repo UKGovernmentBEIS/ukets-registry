@@ -83,6 +83,7 @@ public class ReportService {
                 .urid(currentUrid)
                 .requestingRole(savedReport.getRequestingRole())
                 .cutOffTime(queryInfo.getCutOffTime())
+                .regulators(queryInfo.getRegulators())
                 .transactionIdentifier(queryInfo.getTransactionIdentifier())
                 .accountFullIdentifier(queryInfo.getAccountFullIdentifier())
                 .build();

@@ -9,6 +9,7 @@ export interface FormRadioOption {
   showExtraInputField?: boolean;
   order?: number;
   infoTemplate?: TemplateRef<any>;
+  conditionalTemplate?: TemplateRef<any>;
 }
 
 export interface FormRadioSubGroup {
@@ -17,8 +18,9 @@ export interface FormRadioSubGroup {
 }
 
 export interface FormRadioGroupInfo {
-  radioGroupHeading: string;
-  radioGroupHeadingCaption: string;
+  radioGroupHeading?: string;
+  hideHiddenRadioGroupHeading?: boolean;
+  radioGroupHeadingCaption?: string;
   radioGroupHint?: string;
   radioGroupSubtitle?: string;
   key: string;

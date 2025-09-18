@@ -36,4 +36,9 @@ public class InstallationSearchResultDTO implements Serializable {
      */
     String installationName;
 
+    /**
+     * The emitter id.
+     */
+    String emitterId;
+
 }

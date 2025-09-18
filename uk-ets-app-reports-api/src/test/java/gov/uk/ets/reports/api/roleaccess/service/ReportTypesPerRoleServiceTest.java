@@ -30,8 +30,8 @@ public class ReportTypesPerRoleServiceTest {
         List<ReportType> reportsForAuthority = service.getReportTypes(ReportRequestingRole.authority);
         List<ReportType> reportsForAr = service.getReportTypes(null);
 
-        assertThat(reportsForAdmin).hasSize(27);
-        assertThat(reportsForAuthority).hasSize(13);
+        assertThat(reportsForAdmin).hasSize(34);
+        assertThat(reportsForAuthority).hasSize(14);
         assertThat(reportsForAr).isEmpty();
     }
 

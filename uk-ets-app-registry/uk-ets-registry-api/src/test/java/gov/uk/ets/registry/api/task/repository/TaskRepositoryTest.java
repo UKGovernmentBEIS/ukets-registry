@@ -38,8 +38,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -747,7 +747,7 @@ class TaskRepositoryTest {
         setEndUserSearchInfoAdmin(criteria);
         criteria.setExcludeUserTasks(Boolean.TRUE);
         Page<TaskProjection> results = taskRepository.adminSearch(criteria, PageRequest.of(0, 10));
-        assertEquals(7, results.getNumberOfElements());
+        assertEquals(6, results.getNumberOfElements());
     }
 
     @Test
@@ -769,6 +769,15 @@ class TaskRepositoryTest {
     }
 
     @Test
+    void adminSearchByUserKnownAsCaseInsensitive() {
+        TaskSearchCriteria criteria = new TaskSearchCriteria();
+        setEndUserSearchInfoAdmin(criteria);
+        criteria.setNameOrUserId("represent");
+        Page<TaskProjection> results = taskRepository.adminSearch(criteria, PageRequest.of(0, 10));
+        assertEquals(2,results.getNumberOfElements());
+    }
+
+    @Test
     void adminSearchByUserId() {
         TaskSearchCriteria criteria = new TaskSearchCriteria();
         setEndUserSearchInfoAdmin(criteria);
@@ -782,6 +791,15 @@ class TaskRepositoryTest {
         TaskSearchCriteria criteria = new TaskSearchCriteria();
         setEndUserSearchInfoAdmin(criteria);
         criteria.setNameOrUserId("Logged IN Auth FirstName");
+        Page<TaskProjection> results = taskRepository.adminSearch(criteria, PageRequest.of(0, 10));
+        assertEquals(2,results.getNumberOfElements());
+    }
+
+    @Test
+    void adminSearchByUserNameCaseInsensitive() {
+        TaskSearchCriteria criteria = new TaskSearchCriteria();
+        setEndUserSearchInfoAdmin(criteria);
+        criteria.setNameOrUserId("logged in auth firstname");
         Page<TaskProjection> results = taskRepository.adminSearch(criteria, PageRequest.of(0, 10));
         assertEquals(2,results.getNumberOfElements());
     }

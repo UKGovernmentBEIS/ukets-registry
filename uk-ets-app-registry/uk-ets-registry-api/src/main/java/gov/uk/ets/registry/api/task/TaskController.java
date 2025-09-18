@@ -56,7 +56,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -158,7 +158,7 @@ public class TaskController {
     public TaskDetailsDTO updateTask(@RuleInput(RuleInputType.TASK_REQUEST_ID) @RequestParam
                                      @MDCParam(TASK_REQUEST_ID) Long requestId,
                                      @RequestParam String updateInfo,
-                                     @RequestParam TaskUpdateAction taskUpdateAction,
+                                     @RuleInput(RuleInputType.TASK_UPDATE_ACTION) @RequestParam TaskUpdateAction taskUpdateAction,
                                      @RequestBody TaskDetailsDTO taskDetails) {
         return taskService.updateTask(updateInfo, taskDetails, taskUpdateAction);
     }

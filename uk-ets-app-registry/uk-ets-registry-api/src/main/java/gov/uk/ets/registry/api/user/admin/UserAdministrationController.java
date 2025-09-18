@@ -27,8 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -78,7 +78,7 @@ public class UserAdministrationController {
     @Protected(AnyAdminRule.class)
     @GetMapping(path = "users.list", produces = MediaType.APPLICATION_JSON_VALUE)
     public KeycloakUserSearchPagedResults getUsers(@Valid KeycloakUserSearchCriteria criteria) {
-        return userAdministrationService.search(criteria);
+        return userAdministrationService.search(criteria,false);
     }
 
     @GetMapping(path = "users.get.statuses")

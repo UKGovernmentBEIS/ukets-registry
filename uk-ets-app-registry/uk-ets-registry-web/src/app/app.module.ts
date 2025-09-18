@@ -5,7 +5,11 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { APP_BASE_HREF } from '@angular/common';
 import { SharedModule } from '@shared/shared.module';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { StorageModule } from '@ngx-pwa/local-storage';
 import { environment } from 'src/environments/environment';
 import {
@@ -63,7 +67,9 @@ import { SharedEffects } from '@shared/shared.effect';
 import { XRequestTimeInterceptor } from '@shared/interceptor/x-request-time.interceptor';
 import { DebounceClickInterceptor } from '@shared/interceptor/debounce-click.interceptor';
 import { DebounceClickService } from '@shared/debounce-click.service';
-import { AboutComponent } from './about/about.component';
+import { TitleStrategy } from '@angular/router';
+import { ExtendedTitleStrategyService } from '@shared/services/extended-title-strategy.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const keycloakService = new KeycloakService();
 
@@ -80,7 +86,6 @@ const keycloakService = new KeycloakService();
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     KeycloakAngularModule,
     InlineSVGModule.forRoot(),
     SharedModule,
@@ -103,6 +108,7 @@ const keycloakService = new KeycloakService();
       maxAge: 50, // Retains last 50 states
       logOnly: environment.production, // Restrict extension to log-only mode
       actionsBlocklist: [...Object.values(GenerateLogsActionTypes)], // Block all actions related to generate logs module
+      connectInZone: true,
     }),
     StoreRouterConnectingModule.forRoot({
       serializer: MinimalRouterStateSerializer,
@@ -111,6 +117,7 @@ const keycloakService = new KeycloakService();
     GoogleAnalyticsModule,
     QuillModule.forRoot(),
     GenerateLogsModule,
+    ReactiveFormsModule,
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: '/' },
@@ -204,6 +211,11 @@ const keycloakService = new KeycloakService();
       useFactory: logsFactory,
       multi: true,
     },
+    {
+      provide: TitleStrategy,
+      useClass: ExtendedTitleStrategyService,
+    },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
 })
 export class AppModule {

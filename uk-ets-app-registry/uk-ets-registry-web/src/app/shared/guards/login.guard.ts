@@ -24,7 +24,7 @@ export class LoginGuard extends KeycloakAuthGuard {
       if (!this.authenticated) {
         this.keycloakAngular
           .login({
-            redirectUri: location.origin + '/dashboard',
+            redirectUri: location.origin + '/dashboard/recovery',
           } as KeycloakLoginOptions)
           .catch((e) => console.error(e));
         return reject(false);

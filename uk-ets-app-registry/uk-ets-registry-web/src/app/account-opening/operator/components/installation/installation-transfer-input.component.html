@@ -49,6 +49,13 @@
           controlName="name"
         ></app-form-control-text>
         <app-form-control-text
+          *ngIf="isSeniorOrJuniorAdmin"
+          [label]="'Emitter ID'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.emitterId"
+          controlName="emitter.emitterId"
+        ></app-form-control-text>
+        <app-form-control-text
           [label]="'Permit ID'"
           [maxlength]="256"
           [validationErrorMessage]="validationErrorMessage.id"
@@ -65,6 +72,7 @@
 <ng-template #operator let-r="result" let-t="term">
   <ngb-highlight [result]="r.identifier" [term]="t"></ngb-highlight>
   <div>Name: {{ r.installationName }}</div>
+  <div>Emitter ID: {{ r.emitterId }}</div>
   <div>Permit ID: {{ r.permitIdentifier }}</div>
   <hr class="govuk-section-break" />
 </ng-template>

@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import {
   Account,
   AccountHoldingsResult,
+  AccountType,
   TrustedAccount,
 } from '@shared/model/account';
 import {
@@ -13,8 +14,8 @@ import {
   selectAccountHolderFiles,
   selectAccountHoldings,
   selectHasOperatorUpdatePendingApproval,
+  selectIsAOHAorMOHAorOHAO,
   selectIsKyotoAccountType,
-  selectIsOHAOrAOHA,
   selectSideMenuItems,
   selectTrustedAccountDescriptionOrFullIdentifier,
 } from '../../account.selector';
@@ -37,7 +38,7 @@ import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-
 import { enterRequestDocumentsWizard } from '@request-documents/wizard/actions';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
 import { FileDetails } from '@shared/model/file/file-details.model';
-import { isSeniorAdmin } from '@registry-web/auth/auth.selector';
+import { isSeniorAdmin, isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
 import { AccountComplianceSelector } from '@account-management/account/account-details/store/reducers';
 import {
   clearDeleteFileName,
@@ -51,7 +52,7 @@ import { selectIsReportSuccess } from '@reports/selectors';
 import {
   selectAccountHolderNotes,
   selectAccountNotes,
-} from 'src/app/notes/store/notes.selector';
+} from '@registry-web/account-management/account/account-details/notes/store/account-notes.selector';
 import { Note } from '@registry-web/shared/model/note';
 
 @Component({
@@ -77,7 +78,8 @@ import { Note } from '@registry-web/shared/model/note';
       [sideMenuItems]="sideMenuItems$ | async"
       [isAdmin]="isAdmin$ | async"
       [isSeniorAdmin]="isSeniorAdmin$ | async"
-      [isOHAOrAOHA]="isOHAOrAOHA$ | async"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
+      [isOHAOrAOHAorMOHA]="isOHAOrAOHAorMOHA$ | async"
       [isKyotoAccountType]="isKyotoAccountType$ | async"
       [isReadOnlyAdmin]="isReadOnlyAdmin$ | async"
       [accountHoldingsResult]="accountHoldingsResult$ | async"
@@ -114,8 +116,9 @@ export class AccountDataContainerComponent implements OnInit {
   countries$: Observable<IUkOfficialCountry[]>;
   isAdmin$: Observable<boolean>;
   isSeniorAdmin$: Observable<boolean>;
+  isSeniorOrJuniorAdmin$: Observable<boolean>;
   isReadOnlyAdmin$: Observable<boolean>;
-  isOHAOrAOHA$: Observable<boolean>;
+  isOHAOrAOHAorMOHA$: Observable<boolean>;
   isKyotoAccountType$: Observable<boolean>;
   sideMenuItems$: Observable<string[]>;
   accountHolderFiles$: Observable<FileDetails[]>;
@@ -142,7 +145,7 @@ export class AccountDataContainerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isOHAOrAOHA$ = this.store.select(selectIsOHAOrAOHA);
+    this.isOHAOrAOHAorMOHA$ = this.store.select(selectIsAOHAorMOHAorOHAO);
     this.isKyotoAccountType$ = this.store.select(selectIsKyotoAccountType);
     this.accountHolderFiles$ = this.store.select(selectAccountHolderFiles);
     this.accountId = this.route.snapshot.paramMap.get('accountId');
@@ -153,6 +156,7 @@ export class AccountDataContainerComponent implements OnInit {
       'urn:uk-ets-registry-api:actionForAnyAdmin'
     );
     this.isSeniorAdmin$ = this.store.select(isSeniorAdmin);
+    this.isSeniorOrJuniorAdmin$ = this.store.select(isSeniorOrJuniorAdmin);
     this.hasOperatorUpdatePendingApproval$ = this.store.select(
       selectHasOperatorUpdatePendingApproval
     );
@@ -185,8 +189,8 @@ export class AccountDataContainerComponent implements OnInit {
     );
 
     this.isReportSuccess$ = this.store.select(selectIsReportSuccess);
-    this.accountNotes$ = this.store.select(selectAccountNotes);
-    this.accountHolderNotes$ = this.store.select(selectAccountHolderNotes);
+    this.accountNotes$ = this.store.select(selectAccountNotes); //
+    this.accountHolderNotes$ = this.store.select(selectAccountHolderNotes); //
   }
 
   onSelectMenuItem(selectedMenuItem: string): void {

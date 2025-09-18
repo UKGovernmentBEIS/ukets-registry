@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_21_0_ADD_TABLE_USED_TOKEN" author="piliotid" context="migrate">
+        <comment>Add allocation_job_error table.</comment>
+        <sql>
+            create sequence used_token_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "used_token"
+            ("id" bigint,
+             "token" varchar(2000) not null,
+             "expired_at" timestamp not null,
+             "created_at" timestamp not null,
+             constraint "pk_used_token" primary key("id"));
+
+            create unique index "used_token_idx" ON "used_token" ("token");
+
+            comment on table "used_token" is 'Stores user tokens that have already been used.';
+			comment on column "used_token"."id" is 'The primary key';
+			comment on column "used_token"."token" is 'The user token';
+			comment on column "used_token"."expired_at" is 'The date that the token expires';
+			comment on column "used_token"."created_at" is 'The date that the token was used';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

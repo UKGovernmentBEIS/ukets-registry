@@ -15,11 +15,11 @@
         <dependency>
             <groupId>uk.gov.ets</groupId>
             <artifactId>uk-ets-keycloak-logs-producer</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>${jakarta.ws.rs.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
+            <artifactId>kafka-clients</artifactId>           
         </dependency>
 
         <dependency>

@@ -15,7 +15,8 @@ public class UnitBlockReportData extends ReportData {
     Long quantity;
     String unitType;
     String originatingCountryCode;
-    Long accountNumber;
+    Long holdingAccountId;
+    String accountNumber;
     String accountType;
     String originalCp;
     String applicableCp;

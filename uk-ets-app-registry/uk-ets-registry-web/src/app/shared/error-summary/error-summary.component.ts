@@ -120,6 +120,8 @@ export class ErrorSummaryComponent implements AfterViewChecked {
     switch (path) {
       case Paths.AccountList:
         return NavigationMessages.GoBackToTheAccountList;
+      case Paths.RegistrationStart:
+        return NavigationMessages.GoBackToRegistrationStart;
       default:
         return NavigationMessages.GoBackDefault;
     }

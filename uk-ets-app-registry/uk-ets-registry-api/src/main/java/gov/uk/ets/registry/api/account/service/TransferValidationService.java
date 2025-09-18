@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.account.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
@@ -60,7 +61,7 @@ public class TransferValidationService {
 		// Transfer-BR1: you can only change the installation of Operator Holding
 		// Accounts
 		CompliantEntity compliantEntity = accountToBeTransferred.getCompliantEntity();
-		if (!(compliantEntity instanceof Installation)) {
+		if (!(Hibernate.unproxy(compliantEntity) instanceof Installation)) {
 			throw AccountActionException.create(AccountActionError
 					.build(InstallationAndAccountTransferError.INSTALLATION_ID_NOT_ASSOCIATED_TO_OHA.getMessage()));
 		}
@@ -210,7 +211,7 @@ public class TransferValidationService {
 	 * Transfer-BR11: Only OHA can be transferred to another AH
 	 */
 	private void validateAccountTransferredIsOha(CompliantEntity compliantEntity) {
-		if (!(compliantEntity instanceof Installation)) {
+		if (!(Hibernate.unproxy(compliantEntity) instanceof Installation)) {
 			throw AccountActionException.create(
 					AccountActionError.build(InstallationAndAccountTransferError.TRANSFER_ONLY_OHAS.getMessage()));
 		}

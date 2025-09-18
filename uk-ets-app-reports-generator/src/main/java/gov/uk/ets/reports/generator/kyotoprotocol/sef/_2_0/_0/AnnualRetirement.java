@@ -2,7 +2,7 @@ package gov.uk.ets.reports.generator.kyotoprotocol.sef._2_0._0;
 
 import gov.uk.ets.reports.generator.kyotoprotocol.sef._1_0._0.UnitQty;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 

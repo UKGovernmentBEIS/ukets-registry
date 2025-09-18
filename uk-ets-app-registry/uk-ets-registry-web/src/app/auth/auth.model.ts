@@ -10,7 +10,7 @@ export interface AuthModel {
   readonly roles: string[];
   readonly firstName: string;
   readonly lastName: string;
-  readonly knownAs: string;
+  readonly knownAs: string | unknown;
 }
 
 export interface AccountAccess {

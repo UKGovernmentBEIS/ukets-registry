@@ -7,20 +7,34 @@
     class="govuk-fieldset"
     [attr.aria-describedby]="formRadioGroupInfo.key + '-hint'"
   >
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+    <legend
+      *ngIf="
+        formRadioGroupInfo.radioGroupHeading ||
+        formRadioGroupInfo.radioGroupHeadingCaption
+      "
+      class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-margin-bottom-5"
+    >
       <h1 class="govuk-fieldset__heading">
         <span class="govuk-caption-xl">{{
           formRadioGroupInfo.radioGroupHeadingCaption
         }}</span>
         {{ formRadioGroupInfo.radioGroupHeading }}
-        <p class="govuk-visually-hidden" aria-live="polite">
+        <p
+          *ngIf="!formRadioGroupInfo.hideHiddenRadioGroupHeading"
+          class="govuk-visually-hidden"
+          aria-live="polite"
+        >
           {{ formRadioGroupInfo.radioGroupHeading }}
         </p>
       </h1>
     </legend>
-    <span [attr.id]="formRadioGroupInfo.key + '-hint'" class="govuk-hint">
+    <div
+      *ngIf="formRadioGroupInfo.radioGroupHint"
+      [attr.id]="formRadioGroupInfo.key + '-hint'"
+      class="govuk-hint"
+    >
       {{ formRadioGroupInfo.radioGroupHint }}
-    </span>
+    </div>
     <span
       [attr.id]="formRadioGroupInfo.key + '-subtitle'"
       *ngIf="formRadioGroupInfo.radioGroupSubtitle"
@@ -34,14 +48,14 @@
         {{ formRadioGroupInfo.radioGroupSubHeading }}
       </h2>
     </ng-container>
-    <span
+    <p
       *ngIf="showError()"
       class="govuk-error-message"
       [attr.id]="formRadioGroupInfo.key + '-error-label'"
     >
       <span class="govuk-visually-hidden">Error:</span
       >{{ validationErrorMessage }}
-    </span>
+    </p>
     <div
       class="govuk-radios"
       [attr.id]="formRadioGroupInfo.key + '-radios'"
@@ -87,6 +101,16 @@
           >
             <ng-container
               *ngTemplateOutlet="option.infoTemplate"
+            ></ng-container>
+          </div>
+          <div
+            *ngIf="
+              option.conditionalTemplate && option.value === formControl.value
+            "
+            class="govuk-radios__conditional"
+          >
+            <ng-container
+              *ngTemplateOutlet="option.conditionalTemplate"
             ></ng-container>
           </div>
         </div>
@@ -141,6 +165,16 @@
               />
             </div>
           </ng-container>
+        </div>
+        <div
+          *ngIf="
+            option.conditionalTemplate && option.value === formControl.value
+          "
+          class="govuk-radios__conditional"
+        >
+          <ng-container
+            *ngTemplateOutlet="option.conditionalTemplate"
+          ></ng-container>
         </div>
         <hr
           *ngIf="separatorIndex === i"

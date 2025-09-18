@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -157,9 +157,8 @@ public class AccountNotificationAppliance {
         Long requestId = taskDTO.getRequestId();
         Task task = notificationService.findTaskByRequestId(requestId);
         if (TaskOutcome.APPROVED.equals(outcome)) {
-            Long accountIdentifier = TaskOutcome.APPROVED.equals(outcome) ? task.getAccount().getIdentifier() : null;
-            String accountFullIdentifier =
-                TaskOutcome.APPROVED.equals(outcome) ? task.getAccount().getFullIdentifier() : null;
+            Long accountIdentifier = task.getAccount().getIdentifier();
+            String accountFullIdentifier = task.getAccount().getFullIdentifier();
             return AccountClosureGroupNotification
                 .builder()
                 .recipients(notificationService.findEmailsOfArsByAccountIdentifier(accountIdentifier, false))

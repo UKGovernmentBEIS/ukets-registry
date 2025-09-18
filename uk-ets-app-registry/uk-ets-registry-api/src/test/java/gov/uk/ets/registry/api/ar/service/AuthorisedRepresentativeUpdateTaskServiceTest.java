@@ -17,6 +17,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.Mapper;
@@ -176,7 +177,7 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
             when(userConversionService.convert(newAuthRep))
                 .thenReturn(newUserDTO);
 
-            Contact newUserContact = new Contact();
+            ContactDTO newUserContact = new ContactDTO();
             when(userAdministrationService.findWorkContactDetailsByIamId(newUserDTO.getKeycloakId()))
                 .thenReturn(newUserContact);
 
@@ -329,7 +330,7 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
         when(userConversionService.convert(user))
             .thenReturn(userDTO);
 
-        Contact workContact = new Contact();
+        ContactDTO workContact = new ContactDTO();
         when(userAdministrationService.findWorkContactDetailsByIamId(userDTO.getKeycloakId()))
             .thenReturn(workContact);
     }

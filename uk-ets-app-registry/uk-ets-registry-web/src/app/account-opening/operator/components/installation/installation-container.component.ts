@@ -20,6 +20,7 @@ import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { AccountOpeningOperatorActions } from '@account-opening/operator/actions';
 import { AccountHolder } from '@registry-web/shared/model/account';
 import { selectAccountHolder } from '@registry-web/account-opening/account-holder/account-holder.selector';
+import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
 
 @Component({
   selector: 'app-installation-container',
@@ -30,6 +31,7 @@ import { selectAccountHolder } from '@registry-web/account-opening/account-holde
         [installation]="operator$ | async"
         [title]="'Add the installation and permit details'"
         [headerTitle]="'Add the installation information'"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
         (installationOutput)="onContinue($event)"
         (errorDetails)="onErrors($event)"
       ></app-installation-input>
@@ -39,6 +41,7 @@ import { selectAccountHolder } from '@registry-web/account-opening/account-holde
         [headerTitle]="'Add the installation information'"
         [installation]="operator$ | async"
         [accountHolder]="accountHolder$ | async"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
         (installationTransferEmitter)="onContinueInstallationTransfer($event)"
         (errorDetails)="onErrors($event)"
       >
@@ -50,6 +53,8 @@ import { selectAccountHolder } from '@registry-web/account-opening/account-holde
 export class InstallationContainerComponent implements OnInit {
   operator$: Observable<Operator>;
   accountHolder$: Observable<AccountHolder>;
+  isSeniorOrJuniorAdmin$: Observable<boolean>;
+
   type = OperatorType;
   readonly mainWizardRoute = MainWizardRoutes.TASK_LIST;
   readonly overviewRoute = OperatorWizardRoutes.OVERVIEW;
@@ -63,6 +68,7 @@ export class InstallationContainerComponent implements OnInit {
   ngOnInit() {
     this.operator$ = this.store.select(selectOperator);
     this.accountHolder$ = this.store.select(selectAccountHolder);
+    this.isSeniorOrJuniorAdmin$ = this.store.select(isSeniorOrJuniorAdmin);
     this.store
       .select(selectOperatorInputBackLink)
       .pipe(take(1))

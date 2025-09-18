@@ -44,6 +44,7 @@ export class SelectNotificationTypeComponent
           : 'New notification',
       key: 'notificationType',
       options: [],
+      radioGroupSubHeading: 'Email notifications',
       subGroups: [
         {
           heading: 'Compliance notifications',
@@ -90,6 +91,23 @@ export class SelectNotificationTypeComponent
         },
         {
           heading: 'Other notifications',
+          options: [
+            {
+              label: NotificationTypeLabels.USER_INACTIVITY.label,
+              value: NotificationType.USER_INACTIVITY,
+              hint: NotificationTypeLabels.USER_INACTIVITY.description,
+              enabled: !this.notificationId,
+            },
+            {
+              label: NotificationTypeLabels.AD_HOC_EMAIL.label,
+              value: NotificationType.AD_HOC_EMAIL,
+              hint: NotificationTypeLabels.AD_HOC_EMAIL.description,
+              enabled: !this.notificationId,
+            },
+          ],
+        },
+        {
+          heading: 'Dashboard notifications',
           options: [
             {
               label: NotificationTypeLabels.AD_HOC.label,

@@ -1,32 +1,58 @@
 <ng-container *ngIf="user">
   <div class="govuk-grid-row">
-    <div class="govuk-summary-list__row">
-      <h2 class="govuk-summary-list__key govuk-heading-m">
-        Work contact details
-      </h2>
-    </div>
+    <h2 class="govuk-heading-m govuk-summary-list__title">
+      Work contact details
+    </h2>
+
     <dl
-      class="
-        govuk-summary-list govuk-summary-list--no-border
-        govuk-!-margin-top-5
-      "
+      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-top-5"
     >
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Phone number 1</dt>
+      <div
+        *ngIf="user.attributes.workMobilePhoneNumber"
+        class="govuk-summary-list__row"
+      >
+        <dt class="govuk-summary-list__key">Mobile work number</dt>
         <dd class="govuk-summary-list__value">
           <app-shared-phone-number
             [countryCode]="
-              user.attributes.workCountryCode
-                ? user.attributes.workCountryCode[0]
+              user.attributes.workMobileCountryCode
+                ? user.attributes.workMobileCountryCode[0]
                 : ''
             "
             [phoneNumber]="
-              user.attributes.workPhoneNumber
-                ? user.attributes.workPhoneNumber[0]
+              user.attributes.workMobilePhoneNumber
+                ? user.attributes.workMobilePhoneNumber[0]
                 : ''
             "
-          >
-          </app-shared-phone-number>
+          />
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Alternative phone number</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-phone-number
+            [countryCode]="
+              user.attributes.workAlternativeCountryCode
+                ? user.attributes.workAlternativeCountryCode[0]
+                : ''
+            "
+            [phoneNumber]="
+              user.attributes.workAlternativePhoneNumber
+                ? user.attributes.workAlternativePhoneNumber[0]
+                : ''
+            "
+          />
+        </dd>
+      </div>
+      <div
+        *ngIf="user.attributes.noMobilePhoneNumberReason"
+        class="govuk-summary-list__row"
+      >
+        <dt class="govuk-summary-list__key">
+          Reason for not having a work mobile number
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ user.attributes.noMobilePhoneNumberReason }}
         </dd>
       </div>
       <div class="govuk-summary-list__row" *ngIf="!hideWorkAddress">

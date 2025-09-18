@@ -9,7 +9,7 @@ describe('UkTextInputComponent', () => {
   let fixture: ComponentFixture<UkTextInputComponent>;
 
   function getHintSpan(): DebugElement {
-    return fixture.debugElement.query(By.css(`span.govuk-hint`));
+    return fixture.debugElement.query(By.css(`div.govuk-hint`));
   }
 
   function getLabel(): DebugElement {
@@ -53,9 +53,9 @@ describe('UkTextInputComponent', () => {
     expect(getRenderedHintText()).toBe(ENTER_TEXT);
   });
 
-  test('The hint text is rendered inside the content of a span with id equals with "{id}-hint" ', () => {
-    const span = getHintSpan();
-    expect(span.attributes['id']).toBe(`${component.id}-hint`);
+  test('The hint text is rendered inside the content of a div with id equals with "{id}-hint" ', () => {
+    const div = getHintSpan();
+    expect(div.attributes['id']).toBe(`${component.id}-hint`);
   });
 
   test('The label for attribute is the component id', () => {

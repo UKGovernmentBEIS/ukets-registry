@@ -73,5 +73,6 @@ export class SearchUsersFormComponent
 
   onClear() {
     this.formGroup.reset();
+    this.doSubmit();
   }
 }

@@ -1,24 +1,27 @@
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import {
+  AfterViewInit,
   Component,
   EventEmitter,
   HostListener,
   Input,
   OnInit,
   Output,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
 import {
   RequestedDocumentsModel,
-  TaskDetails,
+  RequestedDocumentUploadTaskDetails,
   TaskFileDownloadInfo,
 } from '@task-management/model';
 import { AuthModel } from '@registry-web/auth/auth.model';
 import { empty, getConfigurationValue } from '@shared/shared.util';
 import { UkValidationMessageHandler } from '@shared/validation';
 import { Configuration } from '@shared/configuration/configuration.interface';
-import { debounceTime } from 'rxjs/operators';
-import { FileBase } from '@registry-web/shared/model/file';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+import { FormControl, Validators } from '@angular/forms';
+import { UkSelectFileComponent } from '@registry-web/shared/form-controls';
 
 @Component({
   selector: 'app-requested-documents-form',
@@ -27,50 +30,51 @@ import { FileBase } from '@registry-web/shared/model/file';
 })
 export class RequestedDocumentsFormComponent
   extends UkFormComponent
-  implements OnInit
+  implements OnInit, AfterViewInit
 {
-  parsedDifference: any;
-
-  @Input()
-  documentNames: string[];
-
-  @Input()
-  comment: string;
-
-  @Input() requestStatus: string;
-
-  @Input() set difference(value: string) {
-    this.parsedDifference = JSON.parse(value);
+  @Input() set taskDetails(value: RequestedDocumentUploadTaskDetails) {
+    this.parsedDifference = JSON.parse(value.difference);
+    this._taskDetails = value;
   }
+  get taskDetails(): RequestedDocumentUploadTaskDetails {
+    return this._taskDetails;
+  }
+  private _taskDetails: RequestedDocumentUploadTaskDetails;
+  @Input() isInProgress: boolean;
+  @Input() fileProgress: number;
+  @Input() fileDetails: RequestedDocumentsModel;
+  @Input() set fileUploadErrorMessages(errors: string[]) {
+    errors.forEach((error, index) =>
+      error ? (this.showErrorArray[index] = true) : null
+    );
+    this._fileUploadErrorMessages = errors;
+  }
+  get fileUploadErrorMessages(): string[] {
+    return this._fileUploadErrorMessages;
+  }
+  private _fileUploadErrorMessages: string[] = [];
 
-  @Input() uploadedFiles: FileBase[];
-
-  @Input()
-  isInProgress: boolean;
-
-  @Input()
-  fileProgress: number;
-
-  @Input()
-  fileDetails: RequestedDocumentsModel;
-
-  @Input()
-  loggedinUser: AuthModel;
-
-  @Input() claimantURID: string;
-
+  @Input() loggedinUser: AuthModel;
   @Input() configuration: Configuration[];
+  @Input() set mayShowErrors(value: boolean) {
+    this.showErrors = !!value;
 
-  @Input() taskDetails: TaskDetails;
+    if (this.showErrors) {
+      this.markAllAsTouched();
+      this.validationErrorMessage = this.processValidationMessages();
+    }
+  }
 
   @Output() readonly fileEmitter = new EventEmitter<RequestedDocumentsModel>();
   @Output() readonly commentEmitter = new EventEmitter<string>();
-
   @Output() readonly removeRequestDocumentFile = new EventEmitter<number>();
-
   @Output() readonly downloadRequestDocumentFile =
     new EventEmitter<TaskFileDownloadInfo>();
 
+  @ViewChildren('fileSelectInputs')
+  fileSelectInputs: QueryList<UkSelectFileComponent>;
+
+  parsedDifference: any;
   isInProgressActive: boolean[] = [];
   showErrorArray: boolean[] = [];
   isClaimantTheSameWithLoggedIn = false;
@@ -78,10 +82,7 @@ export class RequestedDocumentsFormComponent
   latestFileUpload: RequestedDocumentsModel[];
   allowedFileTypes: string[] = [];
   maxFileSize: number;
-
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
+  commentFormControl: FormControl<string>;
 
   ngOnInit() {
     super.ngOnInit();
@@ -93,16 +94,27 @@ export class RequestedDocumentsFormComponent
       'registry.file.max.size',
       this.configuration
     );
-    this.documentNames.forEach((s, index) => {
+    this.taskDetails.documentNames.forEach((s, index) => {
       this.isInProgressActive.push(false);
       this.showErrorArray.push(false);
     });
     this.isClaimantTheSameWithLoggedIn =
-      this.loggedinUser.urid === this.claimantURID;
-    this.formGroup
-      .get('comment')
-      .valueChanges.pipe(debounceTime(200))
+      this.loggedinUser.urid === this.taskDetails.claimantURID;
+
+    this.commentFormControl.valueChanges
+      .pipe(debounceTime(200), takeUntil(this.destroy$))
       .subscribe((data) => this.commentEmitter.emit(data));
+
+    this.taskDetails.documentNames.forEach((_, index) =>
+      this.formGroup
+        .get('file-upload-' + index)
+        .statusChanges.pipe(takeUntil(this.destroy$))
+        .subscribe(() => this.setCommentValidator())
+    );
+  }
+
+  ngAfterViewInit(): void {
+    this.setCommentValidator();
   }
 
   @HostListener('change', ['$event.target'])
@@ -164,7 +176,7 @@ export class RequestedDocumentsFormComponent
     this.isInProgressActive[this.fileIndex] = true;
     this.fileEmitter.emit({
       file: this.formGroup.controls['file-upload-' + this.fileIndex].value,
-      documentName: this.documentNames[this.fileIndex],
+      documentName: this.taskDetails.documentNames[this.fileIndex],
       index: this.fileIndex,
       id:
         this.latestFileUpload.length > 0
@@ -174,22 +186,39 @@ export class RequestedDocumentsFormComponent
   }
 
   protected getFormModel(): any {
-    const formModel = {
-      comment: [this.comment, { updateOn: 'change' }],
-    };
-    this.documentNames.forEach((s, index) => {
-      formModel['file-upload-' + index] = [''];
+    this.commentFormControl = new FormControl(this.taskDetails.comment, {
+      updateOn: 'change',
+    });
+    const formModel = { comment: this.commentFormControl };
+    this.taskDetails.documentNames.forEach((_, index) => {
+      formModel['file-upload-' + index] = ['', { updateOn: 'change' }];
     });
     return formModel;
   }
 
   protected getValidationMessages(): { [p: string]: { [p: string]: string } } {
-    return {};
+    return this.taskDetails.documentNames.reduce(
+      (acc, _currValue, currIndex) => {
+        acc['file-upload-' + currIndex] = {
+          selectFileRequired: 'Upload the requested file',
+        };
+        return acc;
+      },
+      {
+        comment: {
+          required:
+            this.taskDetails.documentNames.length > 1
+              ? 'Enter a reason for not uploading the files'
+              : 'Enter a reason for not uploading the file',
+        },
+      }
+    );
   }
 
-  removeUploadedFileById(fileId: number) {
+  removeUploadedFileById(fileId: number, fileUploadIndex: number) {
     if (fileId) {
       this.removeRequestDocumentFile.emit(fileId);
+      this.fileSelectInputs.get(fileUploadIndex)?.reset();
     }
   }
 
@@ -199,5 +228,15 @@ export class RequestedDocumentsFormComponent
       taskRequestId: this.taskDetails.requestId,
       taskType: this.taskDetails.taskType,
     });
+  }
+
+  private setCommentValidator(): void {
+    const allFileUploadsValid: boolean = this.taskDetails.documentNames.every(
+      (_value, index) => this.formGroup.get('file-upload-' + index).valid
+    );
+    allFileUploadsValid
+      ? this.commentFormControl.clearValidators()
+      : this.commentFormControl.setValidators([Validators.required]);
+    this.commentFormControl.updateValueAndValidity();
   }
 }

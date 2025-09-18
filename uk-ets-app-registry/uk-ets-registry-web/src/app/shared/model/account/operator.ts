@@ -12,12 +12,14 @@ export enum OperatorType {
   INSTALLATION = 'INSTALLATION',
   INSTALLATION_TRANSFER = 'INSTALLATION_TRANSFER',
   AIRCRAFT_OPERATOR = 'AIRCRAFT_OPERATOR',
+  MARITIME_OPERATOR = 'MARITIME_OPERATOR',
 }
 
 export const operatorTypeMap: Record<OperatorType, string> = {
   [OperatorType.INSTALLATION]: 'Installation',
   [OperatorType.INSTALLATION_TRANSFER]: 'Installation transfer',
   [OperatorType.AIRCRAFT_OPERATOR]: 'Aircraft Operator',
+  [OperatorType.MARITIME_OPERATOR]: 'Maritime Operator',
 };
 
 export enum InstallationActivityType {
@@ -60,6 +62,7 @@ export interface Operator {
   firstYear: string;
   lastYear?: string;
   lastYearChanged?: boolean;
+  emitterId: string;
 }
 
 export interface Installation extends Operator {
@@ -90,8 +93,17 @@ export interface AircraftOperator extends Operator {
   };
 }
 
+export interface MaritimeOperator extends Operator {
+  type: OperatorType.MARITIME_OPERATOR;
+  monitoringPlan: {
+    id: string;
+  };
+  imo: string;
+}
+
 export interface InstallationSearchResult {
   identifier: number;
   installationName: string;
   permitIdentifier: string;
+  emitterId: string;
 }

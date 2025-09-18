@@ -12,6 +12,7 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
@@ -21,7 +22,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.BillingContactDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
 import gov.uk.ets.registry.api.common.Mapper;
@@ -84,7 +85,7 @@ public class AccountOpeningPdfGenerator {
 
             createOperatorSection(document, accountDTO);
 
-            createAuthorizedRepresentativesSection(document, accountDTO);
+            createAuthorisedRepresentativesSection(document, accountDTO);
 
 
         } catch (DocumentException ex) {
@@ -408,20 +409,25 @@ public class AccountOpeningPdfGenerator {
 
         boolean isInstallation = "INSTALLATION".equals(accountDTO.getOperator().getType());
         boolean isAircraftOperator = "AIRCRAFT_OPERATOR".equals(accountDTO.getOperator().getType());
+        boolean isMaritimeOperator = "MARITIME_OPERATOR".equals(accountDTO.getOperator().getType());
         boolean isInstallationTransfer = "INSTALLATION_TRANSFER".equals(accountDTO.getOperator().getType());
 
         if (isInstallation) {
             createSectionTitle(document,"4. Installation", 16);
         } else if (isAircraftOperator) {
             createSectionTitle(document,"4. Aircraft Operator", 16);
-        } else if (isInstallationTransfer) {
+        }
+        else if (isMaritimeOperator) {
+            createSectionTitle(document,"4. Maritime Operator", 16);
+        }
+        else if (isInstallationTransfer) {
             createSectionTitle(document,"4. Installation Transfer", 16);
         }
 
         createHorizontalLine(document);
 
         Optional<RegulatorType> changedRegulator =
-            Optional.of(accountDTO.getOperator()).map(InstallationOrAircraftOperatorDTO::getChangedRegulator);
+            Optional.of(accountDTO.getOperator()).map(OperatorDTO::getChangedRegulator);
         boolean isRegulatorChanged = changedRegulator.isPresent() && changedRegulator.get() != accountDTO.getOperator().getRegulator();
 
         if (isRegulatorChanged) {
@@ -449,6 +455,12 @@ public class AccountOpeningPdfGenerator {
             addRow(table, "Regulator", accountDTO.getOperator().getRegulator().name(), isRegulatorChanged ? accountDTO.getOperator().getChangedRegulator().name() : null);
             addRow(table, "First year of verified emission submission", accountDTO.getOperator().getFirstYear() != null ? Integer.toString(accountDTO.getOperator().getFirstYear()) : "", null);
             addRow(table, "Last year of verified emission submission", accountDTO.getOperator().getLastYear() != null ? Integer.toString(accountDTO.getOperator().getLastYear()) : "", null);
+        } else if (isMaritimeOperator) {
+            addRow(table, "Monitoring plan ID", accountDTO.getOperator().getMonitoringPlan().getId(), null);
+            addRow(table, "Regulator", accountDTO.getOperator().getRegulator().name(), isRegulatorChanged ? accountDTO.getOperator().getChangedRegulator().name() : null);
+            addRow(table, "First year of verified emission submission", accountDTO.getOperator().getFirstYear() != null ? Integer.toString(accountDTO.getOperator().getFirstYear()) : "", null);
+            addRow(table, "Last year of verified emission submission", accountDTO.getOperator().getLastYear() != null ? Integer.toString(accountDTO.getOperator().getLastYear()) : "", null);
+            addRow(table, "Company IMO number", Optional.ofNullable(accountDTO.getOperator().getImo()).orElse(""), null);
         } else if (isInstallationTransfer) {
             createSectionTitle(document, "Installation to be transferred", 14);
             table = createTable(isRegulatorChanged);
@@ -482,9 +494,9 @@ public class AccountOpeningPdfGenerator {
         document.add(table);
     }
 
-    public void createAuthorizedRepresentativesSection(Document document, AccountDTO accountDTO) {
+    public void createAuthorisedRepresentativesSection(Document document, AccountDTO accountDTO) {
 
-        createSectionTitle(document,"5. Authorized Representatives", 16);
+        createSectionTitle(document,"5. Authorised Representatives", 16);
 
         createHorizontalLine(document);
 
@@ -500,7 +512,7 @@ public class AccountOpeningPdfGenerator {
 
         for (int i=0; i<accountDTO.getAuthorisedRepresentatives().size(); i++) {
             AuthorisedRepresentativeDTO authRep = accountDTO.getAuthorisedRepresentatives().get(i);
-            createSectionTitle(document,"Authorized Representative "+(i+1), 14);
+            createSectionTitle(document,"Authorised Representative "+(i+1), 14);
 
             PdfPTable table = createTable(false);
 

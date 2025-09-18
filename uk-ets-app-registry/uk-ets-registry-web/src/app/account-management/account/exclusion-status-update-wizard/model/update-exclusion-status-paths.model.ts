@@ -4,4 +4,5 @@ export enum UpdateExclusionStatusPathsModel {
   CHECK_UPDATE_STATUS = 'check-update-status',
   CANCEL_UPDATE_EXCLUSION_STATUS = 'cancel',
   REQUEST_SUBMITTED = 'request-submitted',
+  EXCLUSION_REASON = 'reason',
 }

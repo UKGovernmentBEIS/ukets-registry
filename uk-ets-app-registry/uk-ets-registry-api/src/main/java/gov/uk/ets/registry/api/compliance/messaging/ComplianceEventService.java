@@ -14,7 +14,12 @@ import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.transaction.messaging.SurrenderEvent;
 import gov.uk.ets.registry.api.transaction.messaging.SurrenderReversalEvent;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +53,6 @@ public class ComplianceEventService {
      */
     public boolean skipStaticComplianceStatusRequestForEntity(CompliantEntity compliantEntity,
                                                               int currentYear) {
-        int yearOfCurrentStaticComplianceStatus = currentYear - 1;
-        int yearOfPreviousStaticComplianceStatus = yearOfCurrentStaticComplianceStatus - 1;
         // UKETS-5960: end year can be null, in that case we don't want to skip.
         // the need for null check here is the unboxing that occurs when calling getEndYear method afterwards...
         if (compliantEntity.getEndYear() == null) {
@@ -64,12 +67,14 @@ public class ComplianceEventService {
         boolean lastYearOfVerifiedEmissionsHasPassed = currentYear > lastYearOfVerifiedEmissions + 1;
 
         if (lastYearOfVerifiedEmissionsHasPassed) {
-            Optional<StaticComplianceStatus> previousStaticComplianceStatus =
-                staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYear(
+            List<StaticComplianceStatus> previousStaticComplianceStatuses =
+                staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYearGreaterThanEqual(
                     compliantEntity.getIdentifier(),
-                    (long) yearOfPreviousStaticComplianceStatus);
+                    (long) lastYearOfVerifiedEmissions);
 
-            return previousStaticComplianceStatus
+            return previousStaticComplianceStatuses
+                .stream()
+                .max(Comparator.comparing(StaticComplianceStatus::getYear))
                 .map(StaticComplianceStatus::getComplianceStatus)
                 .map(complianceStatus -> complianceStatus == ComplianceStatus.A ||
                     complianceStatus == ComplianceStatus.EXCLUDED)
@@ -104,14 +109,25 @@ public class ComplianceEventService {
                     EventType.COMPLIANT_ENTITY_SURRENDER_COMPLETED, "Transaction completed.");
                 break;
             case EXCLUSION:
-                String exclusionDescription = String.format("Excluded: %s", ((ExclusionEvent) event).getYear());
+                ExclusionEvent exclusionEvent = (ExclusionEvent) event;
+                String existingEmissions = Optional.ofNullable(exclusionEvent.getEmissions())
+                    .map(emissions -> String.format("Reported Emissions: %s", emissions))
+                    .orElse(null);
+                String exclusionDescription = Stream.of(String.format("Excluded: %s", exclusionEvent.getYear()),
+                    existingEmissions,
+                    String.format("Reason: %s", exclusionEvent.getReason()))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.joining(System.lineSeparator()));
                 eventService.createAndPublishEvent(event.getCompliantEntityId().toString(), null,
                     exclusionDescription,
                     EventType.COMPLIANT_ENTITY_EXCLUSION_STATUS_UPDATED, "Exclusion status updated");
                 break;
             case REVERSAL_OF_EXCLUSION:
+                ExclusionReversalEvent exclusionReversalEvent = (ExclusionReversalEvent) event;
                 String reversalOfExclusionDescription =
-                    String.format("Exclusion reversed: %s", ((ExclusionReversalEvent) event).getYear());
+                    String.format("Exclusion reversed: %s", exclusionReversalEvent.getYear()) +
+                    System.lineSeparator() +
+                    String.format("Reason: %s", exclusionReversalEvent.getReason());
                 eventService.createAndPublishEvent(event.getCompliantEntityId().toString(), null,
                     reversalOfExclusionDescription,
                     EventType.COMPLIANT_ENTITY_EXCLUSION_STATUS_UPDATED, "Exclusion status updated");

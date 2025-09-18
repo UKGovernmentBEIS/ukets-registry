@@ -1,10 +1,8 @@
 package gov.uk.ets.reports.generator.mappers.jdbc;
 
-import gov.uk.ets.reports.generator.Util;
 import gov.uk.ets.reports.generator.domain.VerifiedEmissionsSurrenderedAllowancesReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -36,8 +34,8 @@ public class VerifiedEmissionsSurrenderedAllowancesReportJdbcMapper implements
     private static final String PERMIT_ID_OR_MONITORING_PLAN_ID_COLUMN =
         "case\n" +
         "  when acc.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' then i.permit_identifier\n" +
-        "  when acc.registry_account_type = 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT'\n" +
-        "  then ao.monitoring_plan_identifier\n" +
+        "  when acc.registry_account_type = 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT' then ao.monitoring_plan_identifier\n" +
+        "  when acc.registry_account_type = 'MARITIME_OPERATOR_HOLDING_ACCOUNT' then mo.maritime_monitoring_plan_identifier\n" +
         "end\n";
 
     private static final String VERIFIED_EMISSIONS_OR_EXCLUDED_COLUMN =
@@ -81,7 +79,7 @@ public class VerifiedEmissionsSurrenderedAllowancesReportJdbcMapper implements
                     "WHERE t.type = 'ReverseSurrenderAllowances' AND t.status = 'COMPLETED' " +
                     "GROUP BY io2.installation_id, aa.id, y.year";
 
-    private static final String OLD_INSTALLATION_ACCOUNTS_UNION_AOHA =
+    private static final String OLD_INSTALLATION_ACCOUNTS_UNION_AOHA_MOHA =
             "select io.account_id " +
                     "       from installation_ownership io\n" +
                     "       join installation ins on ins.compliant_entity_id = io.installation_id\n" +
@@ -90,6 +88,11 @@ public class VerifiedEmissionsSurrenderedAllowancesReportJdbcMapper implements
                     "  union\n" +
                     "       select acc.id from aircraft_operator ao\n" +
                     "       join compliant_entity ce on ce.id = ao.compliant_entity_id\n" +
+                    "       join account acc on acc.compliant_entity_id = ce.id\n" +
+                    "       where ce.identifier = account_data.entity_identifier" +
+                    "  union\n" +
+                    "       select acc.id from maritime_operator mo\n" +
+                    "       join compliant_entity ce on ce.id = mo.compliant_entity_id\n" +
                     "       join account acc on acc.compliant_entity_id = ce.id\n" +
                     "       where ce.identifier = account_data.entity_identifier";
 
@@ -129,22 +132,18 @@ public class VerifiedEmissionsSurrenderedAllowancesReportJdbcMapper implements
         "                  left join account_holder ah on acc.account_holder_id = ah.id\n" +
         "                  left join installation i on ce.id = i.compliant_entity_id\n" +
         "                  left join aircraft_operator ao on ce.id = ao.compliant_entity_id\n" +
+        "                  left join maritime_operator mo on ce.id = mo.compliant_entity_id\n" +
         "                  left join allocation_entry ae on ce.id = ae.compliant_entity_id and ae.allocation_year_id = (select id from allocation_year where year = years.year)\n" +
         "                  left join (" + MOST_RECENT_EMISSIONS_ROWS + ") ee on ee.compliant_entity_id = ce.identifier and ee.year = years.year\n" +
         "                  left join exclude_emissions_entry eee on eee.compliant_entity_id = ce.identifier and eee.year = years.year and ee.compliant_entity_id = eee.compliant_entity_id\n" +
         "                  left join static_compliance_status scs on scs.compliant_entity_id = ce.id and scs.year = years.year and scs.year = years.year\n" +
-        "         group by years.year, ce.id, acc.id, ah.id, i.installation_name, i.activity_type, i.permit_identifier, ao.monitoring_plan_identifier, ee.id, eee.id, scs.id\n" +
+        "         group by years.year, ce.id, acc.id, ah.id, i.installation_name, i.activity_type, i.permit_identifier, ao.monitoring_plan_identifier, mo.maritime_monitoring_plan_identifier, ee.id, eee.id, scs.id\n" +
         "     ) account_data\n" +
         "     left join (" + SURRENDER_ALLOWANCES_TX_ROWS + ") tx_surrender ON tx_surrender.year = account_data.year\n" +
-        "     and tx_surrender.id in (" + OLD_INSTALLATION_ACCOUNTS_UNION_AOHA + ")\n" +
+        "     and tx_surrender.id in (" + OLD_INSTALLATION_ACCOUNTS_UNION_AOHA_MOHA + ")\n" +
         "     left join (" + REVERSE_ALLOWANCES_TX_ROWS + ") tx_reversal on tx_reversal.year = account_data.year\n" +
-        "     and tx_reversal.id in (" + OLD_INSTALLATION_ACCOUNTS_UNION_AOHA + ")\n" +
+        "     and tx_reversal.id in (" + OLD_INSTALLATION_ACCOUNTS_UNION_AOHA_MOHA + ")\n" +
         "order by account_holder_name, account_data.year";
-
-    @Override
-    public List<VerifiedEmissionsSurrenderedAllowancesReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<VerifiedEmissionsSurrenderedAllowancesReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
@@ -158,7 +157,7 @@ public class VerifiedEmissionsSurrenderedAllowancesReportJdbcMapper implements
             .regulator(resultSet.getString("regulator"))
             .accountHolderName(resultSet.getString("account_holder_name"))
             .installationName(resultSet.getString("installation_name"))
-            .installationIdentifier(resultSet.getLong("entity_identifier"))
+            .operatorId(resultSet.getLong("entity_identifier"))
             .permitIdentifier(resultSet.getString("permit_identifier"))
             .mainActivityTypeCode(resultSet.getString("activity_type"))
             .year(resultSet.getInt("year"))

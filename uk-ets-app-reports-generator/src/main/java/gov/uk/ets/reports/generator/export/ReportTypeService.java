@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.export;
 import gov.uk.ets.reports.generator.domain.ReportData;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.List;
 
 public interface ReportTypeService<T extends ReportData> {
@@ -30,14 +29,6 @@ public interface ReportTypeService<T extends ReportData> {
      * @return
      */
     List<String> getReportHeaders(Long year);
-
-    /**
-     * Get the report data.
-     *
-     * @deprecated criteria will not be used after all, since we are passing the whole query to generator.
-     */
-    @Deprecated
-    List<T> generateReportData(ReportCriteria criteria);
 
     List<T> generateReportData(ReportQueryInfoWithMetadata reportQueryInfo);
 

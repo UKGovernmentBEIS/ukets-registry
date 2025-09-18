@@ -1,0 +1,86 @@
+<div appScreenReaderPageAnnounce [pageTitle]="'Declaration?..'"></div>
+<div class="govuk-grid-row" aria-live="polite">
+  <div class="govuk-grid-column-full">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl">Create a registry sign in</span>
+        Declaration
+      </h1>
+      <div class="govuk-body">
+        <p>
+          I understand the Environment Agency may make enquiries and obtain
+          references to validate the information I have provided as part of this
+          application, including from credit reference, law enforcement agencies
+          and tax authorities, in line with the UK Registry Privacy Notice.
+        </p>
+        <p>I confirm that I am not being/have not been:</p>
+        <ol>
+          <li>
+            investigated, arrested or convicted in the preceding five years of a
+            serious offence, including fraud, money laundering, terrorist
+            financing, or other serious crimes; or
+          </li>
+          <li>
+            involved with, associated with or employed by a company which has
+            had an application for a registry account refused or revoked, or
+            associated with an individual that has been involved in such a
+            company or who has had an account application or authorised
+            representative nomination refused or revoked.
+          </li>
+        </ol>
+        <p>
+          I understand that my access to the UK Registry may be suspended if the
+          Registry Administrator of the UK ETS Registry or the National
+          Administrator of the UK KP Registry, as appropriate, considers that
+          suspension is necessary to ensure that the UK Registry is secure and
+          protected from misuse or because they believe I have ceased to be a
+          fit or proper person to be an authorised representative, for example,
+          because I have attempted to access accounts or processes for which I
+          am not authorised, or have tried to compromise the security,
+          availability, integrity or confidentiality of the UK Registry.
+        </p>
+        <p>
+          I further understand that I may be removed as an authorised
+          representative if the Registry Administrator of the UK ETS Registry or
+          the National Administrator of the UK KP Registry, as appropriate,
+          considers that I have ceased to be a fit and proper person to be an
+          authorised representative or that circumstances that have led to my
+          suspension are unlikely to be resolved within a resonable period of
+          time.
+        </p>
+      </div>
+      <div class="govuk-form-group">
+        <div class="govuk-form-group">
+          <div class="govuk-checkboxes">
+            <div class="govuk-checkboxes__item" id="confirm-label">
+              <input
+                (change)="onChange($event)"
+                class="govuk-checkboxes__input"
+                formControlName="confirm"
+                id="confirm-checkbox"
+                name="confirm-checkbox"
+                type="checkbox"
+              />
+              <label
+                class="govuk-label govuk-checkboxes__label"
+                for="confirm-checkbox"
+              >
+                I confirm that to the best of my knowledge and belief the
+                information provided in this Declaration is true.
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

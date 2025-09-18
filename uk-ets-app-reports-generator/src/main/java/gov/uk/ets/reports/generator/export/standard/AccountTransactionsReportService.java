@@ -10,7 +10,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -68,12 +67,6 @@ public class AccountTransactionsReportService implements ReportTypeService<Accou
                 "Project ID",
                 "Running Balance"
             );
-    }
-
-    @Override
-    public List<AccountTransactionsReportData> generateReportData(
-        ReportCriteria criteria) {
-        return List.of();
     }
 
     @Override

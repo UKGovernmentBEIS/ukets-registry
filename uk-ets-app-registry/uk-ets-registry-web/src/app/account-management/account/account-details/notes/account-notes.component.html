@@ -1,8 +1,5 @@
 <dl
-  class="
-    govuk-summary-list govuk-summary-list--no-border
-    govuk-!-margin-bottom-0
-  "
+  class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0"
 >
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
@@ -11,23 +8,17 @@
   </div>
 </dl>
 <dl
-  class="
-    govuk-summary-list govuk-summary-list--no-border
-    govuk-!-margin-bottom-9
-  "
+  class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
 >
   <app-notes-list
-    [accountNotes]="accountNotes"
+    [notes]="accountNotes"
     [isSeniorAdmin]="isSeniorAdmin"
     (deleteNote)="deleteNote($event)"
   ></app-notes-list>
 </dl>
 
 <dl
-  class="
-    govuk-summary-list govuk-summary-list--no-border
-    govuk-!-margin-bottom-0
-  "
+  class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0"
 >
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
@@ -36,13 +27,10 @@
   </div>
 </dl>
 <dl
-  class="
-    govuk-summary-list govuk-summary-list--no-border
-    govuk-!-margin-bottom-9
-  "
+  class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
 >
   <app-notes-list
-    [accountNotes]="accountHolderNotes"
+    [notes]="accountHolderNotes"
     [isSeniorAdmin]="isSeniorAdmin"
     (deleteNote)="deleteNote($event)"
   ></app-notes-list>
@@ -51,7 +39,7 @@
 <div class="govuk-button-group">
   <button
     (click)="addNote()"
-    *ngIf="isSeniorAdmin"
+    *ngIf="isSeniorOrJuniorAdmin"
     class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
     data-module="govuk-button"
   >

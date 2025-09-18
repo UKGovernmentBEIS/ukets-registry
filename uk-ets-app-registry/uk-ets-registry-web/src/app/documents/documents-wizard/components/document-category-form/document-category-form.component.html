@@ -1,0 +1,47 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" aria-live="polite">
+    <span class="govuk-caption-xl">Update documents</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">
+      {{ updateType === 'ADD' ? 'Add' : 'Update' }} document category
+    </h1>
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds" aria-live="polite">
+          <app-form-control-text
+            label="Title"
+            [maxlength]="100"
+            [validationErrorMessage]="validationErrorMessage.name"
+            controlName="name"
+          ></app-form-control-text>
+        </div>
+      </div>
+
+      <div id="select-order">
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="selection-from-dropdown">
+            Display order
+          </label>
+          <select
+            class="govuk-select"
+            id="selection-from-dropdown"
+            name="order"
+            formControlName="order"
+          >
+            <option *ngFor="let option of orderOptions" [value]="option">
+              {{ option }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

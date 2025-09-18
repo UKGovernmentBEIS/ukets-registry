@@ -8,7 +8,6 @@ import {
 } from '@shared/model/account/account-holder';
 import {
   AbstractControl,
-  UntypedFormBuilder,
   ValidationErrors,
   ValidatorFn,
   Validators,
@@ -54,10 +53,6 @@ export class AccountHolderSelectionComponent
   selectedIdFromSearch: number;
   requestParams: HttpParams;
   validationErrorMessage: ValidationErrors = {};
-
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
 
   accountHolderResultFormatter(
     item: AccountHolderTypeAheadSearchResult

@@ -8,7 +8,7 @@
   <div class="govuk-warning-text">
     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
     <strong class="govuk-warning-text__text">
-      <span class="govuk-warning-text__assistive">Warning</span>
+      <span class="govuk-visually-hidden">Warning</span>
       There are update requests pending approval
     </strong>
   </div>
@@ -17,15 +17,7 @@
   [class]="
     'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
   "
-  [lines]="{
-    'Installation name': installation.name,
-    'Installation ID': installation.identifier,
-    'Installation activity type': activityTypes[installation.activityType],
-    'Permit ID': installation.permit ? installation.permit.id : '',
-    Regulator: regulators[installation.regulator],
-    'First year of verified emission submission': installation.firstYear,
-    'Last year of verified emission submission': installation.lastYear
-  }"
+  [lines]="summaryListLines"
 ></app-summary-list>
 <div class="govuk-button-group">
   <div *ngIf="canRequestUpdate">

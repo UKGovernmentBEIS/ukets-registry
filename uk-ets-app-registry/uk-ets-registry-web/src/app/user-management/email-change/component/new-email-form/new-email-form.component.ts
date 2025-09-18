@@ -22,7 +22,10 @@ export class NewEmailFormComponent extends UkFormComponent implements OnInit {
   @Input() state: EmailChangeState;
   @Input() currentUser: KeycloakUser;
 
-  constructor(private store: Store, protected formBuilder: UntypedFormBuilder) {
+  constructor(
+    private store: Store,
+    protected formBuilder: UntypedFormBuilder
+  ) {
     super();
   }
 
@@ -60,7 +63,7 @@ export class NewEmailFormComponent extends UkFormComponent implements OnInit {
           Validators.required,
           Validators.email,
           Validators.maxLength(256),
-          UkRegistryValidators.shouldNotBeEqual(this.currentUser?.email),
+          UkRegistryValidators.notPermittedValue(this.currentUser?.email),
         ],
       ],
       newEmailConfirmation: [

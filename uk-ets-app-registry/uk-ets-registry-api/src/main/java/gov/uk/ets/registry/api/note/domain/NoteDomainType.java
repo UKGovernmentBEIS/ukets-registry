@@ -3,5 +3,6 @@ package gov.uk.ets.registry.api.note.domain;
 public enum NoteDomainType {
 
     ACCOUNT,
-    ACCOUNT_HOLDER;
+    ACCOUNT_HOLDER,
+    TASK
 }

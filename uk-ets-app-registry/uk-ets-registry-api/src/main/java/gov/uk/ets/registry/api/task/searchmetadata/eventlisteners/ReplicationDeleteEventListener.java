@@ -23,7 +23,7 @@ public class ReplicationDeleteEventListener implements PreDeleteEventListener {
                             "DELETE FROM task_search_metadata " +
                             "WHERE task_id = :task_id")
                         .setParameter("task_id", task.getId())
-                        .setFlushMode(FlushMode.MANUAL)
+                        .setHibernateFlushMode(FlushMode.MANUAL)
                         .executeUpdate();
             }
         }

@@ -5,8 +5,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import gov.uk.ets.registry.api.reconciliation.domain.QReconciliation;
 import gov.uk.ets.registry.api.reconciliation.domain.Reconciliation;
 import gov.uk.ets.registry.api.reconciliation.type.ReconciliationStatus;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 /**
  * Implementation of {@link ReconciliationCustomRepository}

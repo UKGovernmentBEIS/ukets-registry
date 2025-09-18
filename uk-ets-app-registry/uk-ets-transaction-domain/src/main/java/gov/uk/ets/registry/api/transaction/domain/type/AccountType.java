@@ -31,6 +31,14 @@ public enum AccountType {
         "ETS - Aircraft operator holding account"),
 
     /**
+     * The Maritime operator holding account (ETS) type.
+     */
+    MARITIME_OPERATOR_HOLDING_ACCOUNT(
+            RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
+            KyotoAccountType.PARTY_HOLDING_ACCOUNT,
+            "ETS - Maritime operator holding account"),
+
+    /**
      * The Trading account (ETS) type.
      */
     TRADING_ACCOUNT(

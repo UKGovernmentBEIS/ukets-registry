@@ -2,10 +2,12 @@ import { createAction, props } from '@ngrx/store';
 import { IUser, User } from '@shared/user';
 import { ErrorDetail } from '@shared/error-summary';
 import { UserRepresentation } from './registration.service';
+import { MobileNumberVerificationStatus } from '@registry-web/shared/form-controls/uk-select-phone';
 
 export enum RegistrationActionTypes {
   CHECK_PASSWORD_REQUESTED = '[Blacklist API] Check Password Requested',
   SET_PASSWORD_SUCCESS = '[Registration] Set Password Success',
+  CONFIRM_DECLARATION = '[Registration] Confirm Declaration',
   SUBMIT = '[Registration] Submit',
   VERIFY_USER_EMAIL = '[Registration] Verify User Email',
   SET_EMAIL_VERIFICATION_NEXT_STEP = '[Registration] Set email verification next step',
@@ -14,8 +16,9 @@ export enum RegistrationActionTypes {
   DELETED = '[Registration] Deleted',
   FAILED = '[Registration] Failed due to error in Registry',
   SAME_EMAIL = '[Registration] Same Email',
-  SAME_ADDRESS = '[Registration] Same Address',
   PERSIST = '[Registration] Persist',
+  HAS_WORK_MOBILE_PHONE_CHANGE = '[Registration] Has Work Mobile Phone Change',
+  MOBILE_NUMBER_VERIFICATION_STATUS_CHANGE = '[Registration] Work Mobile Number Verification Status Change',
 }
 
 export const updateUserWorkDetails = createAction(
@@ -60,6 +63,11 @@ export const setPasswordSuccess = createAction(
   RegistrationActionTypes.SET_PASSWORD_SUCCESS
 );
 
+export const confirmDeclaration = createAction(
+  RegistrationActionTypes.CONFIRM_DECLARATION,
+  props<{ confirmed: boolean }>()
+);
+
 export const submitRegistration = createAction(
   RegistrationActionTypes.SUBMIT,
   props<{ user: User }>()
@@ -99,12 +107,14 @@ export const cleanUpRegistration = createAction(
   RegistrationActionTypes.CLEAN_UP_REGISTRATION
 );
 
-export const sameEmail = createAction(
-  RegistrationActionTypes.SAME_EMAIL,
-  props<{ sameEmail: boolean }>()
+export const hasWorkMobilePhoneChange = createAction(
+  RegistrationActionTypes.HAS_WORK_MOBILE_PHONE_CHANGE,
+  props<{ hasWorkMobilePhone: boolean }>()
 );
 
-export const sameAddress = createAction(
-  RegistrationActionTypes.SAME_ADDRESS,
-  props<{ sameAddress: boolean }>()
+export const mobileNumberVerificationStatusChange = createAction(
+  RegistrationActionTypes.MOBILE_NUMBER_VERIFICATION_STATUS_CHANGE,
+  props<{
+    mobileNumberVerificationStatus: MobileNumberVerificationStatus;
+  }>()
 );

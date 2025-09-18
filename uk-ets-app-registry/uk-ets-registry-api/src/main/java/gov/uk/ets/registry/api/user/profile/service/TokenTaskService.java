@@ -10,6 +10,7 @@ import gov.uk.ets.registry.api.common.Utils;
 import gov.uk.ets.registry.api.common.error.ErrorBody;
 import gov.uk.ets.registry.api.common.exception.BusinessRuleErrorException;
 import gov.uk.ets.registry.api.common.security.TokenVerifier;
+import gov.uk.ets.registry.api.common.security.UsedTokenService;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
@@ -62,6 +63,8 @@ public class TokenTaskService implements TaskTypeService<TokenTaskDetailsDTO> {
     private final TokenChangeService tokenChangeService;
 
     private final TokenVerifier tokenVerifier;
+
+    private final UsedTokenService usedTokenService;
 
     private final ServiceAccountAuthorizationService serviceAccountAuthorizationService;
 
@@ -144,29 +147,28 @@ public class TokenTaskService implements TaskTypeService<TokenTaskDetailsDTO> {
     public TaskCompleteResponse complete(TokenTaskDetailsDTO taskDTO, TaskOutcome taskOutcome, String comment) {
         if (TaskOutcome.APPROVED.equals(taskOutcome)) {
             tokenChangeService.sendEmailMessage(taskDTO);
-        } else {
-            User user = userService.getUserByUrid(taskDTO.getReferredUserURID());
-            userStatusService.changeUserStatus(createUserStatusChange(user,user.getPreviousState()),
-                serviceAccountAuthorizationService.obtainAccessToken().getToken());            
         }
+
+        User user = userService.getUserByUrid(taskDTO.getReferredUserURID());
+        userStatusService.changeUserStatus(createUserStatusChange(user,user.getPreviousState()),
+            serviceAccountAuthorizationService.obtainAccessToken().getToken());
+
         return null;
     }
 
-    @Transactional
     public Boolean proceed(String token) {
         boolean result = true;
+
+        if (usedTokenService.isTokenAlreadyUsed(token)) {
+            return true;
+        }
+
         try {
             String payload = tokenVerifier.getPayload(token);
             User user = userService.getUserByUrid(Utils.deserialiseFromJson(payload, String.class));
 
-            // If the user is not SUSPENDED it means that the user has clicked the link for a second time.
-            if (user.getState() != UserStatus.SUSPENDED) {
-                return true;
-            }
-
             serviceAccountAuthorizationService.addRequiredActionToUser(user.getIamIdentifier(), CONFIGURE_OTP_REQUIRED_ACTION);
-            userStatusService.changeUserStatus(createUserStatusChange(user,user.getPreviousState()),
-                serviceAccountAuthorizationService.obtainAccessToken().getToken());
+            usedTokenService.saveToken(token, tokenVerifier.getExpiredAt(token));
         } catch(TokenExpiredException exc) {
             log.info("Email token for 2FA change has expired", exc);
             result = false;

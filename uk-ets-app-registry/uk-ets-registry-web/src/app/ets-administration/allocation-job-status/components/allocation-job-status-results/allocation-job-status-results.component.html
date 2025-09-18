@@ -1,0 +1,135 @@
+<span class="sr-only"
+  >Header buttons in the following table can be used to sort the data.</span
+>
+
+<table appSortableTable (sorting)="sort.emit($event)" class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'requestIdentifier'"
+        [sortDirection]="
+          sortParameters?.sortField === 'requestIdentifier'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Task ID
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'id'"
+        [sortDirection]="
+          sortParameters?.sortField === 'id'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Job ID
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'year'"
+        [sortDirection]="
+          sortParameters?.sortField === 'year'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Allocation year
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'category'"
+        [sortDirection]="
+          sortParameters?.sortField === 'category'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Allocation category
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'executionDate'"
+        [sortDirection]="
+          sortParameters?.sortField === 'executionDate'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Execution date
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortField]="'status'"
+        [sortDirection]="
+          sortParameters?.sortField === 'status'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Status
+      </th>
+      <th class="govuk-table__header">Actions</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let job of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a
+          class="govuk-link govuk-link--no-visited-state"
+          [routerLink]="['/task-details/' + job.requestIdentifier]"
+          (click)="goToTask(job.requestIdentifier)"
+        >
+          {{ job.requestIdentifier }}</a
+        >
+      </td>
+      <td class="govuk-table__cell">
+        {{ job.id }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ job.year }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ operatorTypeMap[job.category] || job.category }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ job.executionDate | gdsDateTimeShort }}
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag [color]="allocationJobStatusMap[job.status].color">
+          {{ allocationJobStatusMap[job.status].label }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell">
+        <a
+          class="govuk-link govuk-link--no-visited-state"
+          *ngIf="job.status === AllocationJobStatus.SCHEDULED"
+          [routerLink]="[]"
+          (click)="onCancelAllocations(job)"
+        >
+          Cancel</a
+        >
+
+        <a
+          class="govuk-link govuk-link&#45;&#45;no-visited-state"
+          *ngIf="
+            job.status !== AllocationJobStatus.SCHEDULED &&
+            job.status !== AllocationJobStatus.CANCELLED
+          "
+          [routerLink]="[]"
+          (click)="download(job)"
+        >
+          Download report</a
+        >
+      </td>
+    </tr>
+  </tbody>
+</table>

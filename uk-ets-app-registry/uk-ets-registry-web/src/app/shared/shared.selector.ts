@@ -127,6 +127,11 @@ export const selectErrorDetailByErrorId = createSelector(
   }
 );
 
+export const selectErrorDetails = createSelector(
+  selectErrorSummary,
+  (summary) => summary.errors
+);
+
 export const selectErrorDetail = createSelector(
   selectErrorSummary,
   (
@@ -246,6 +251,9 @@ export const selectVisibleSubMenuItems = createSelector(
   selectActiveMenutem,
   selectIsMenuRoute,
   (menu, activeMenu, isMenuRoute) => {
+    menu.menuItems.find((menuItem) => {
+      return menuItem.activeMenuItem === activeMenu;
+    })?.subMenus;
     return !isMenuRoute
       ? []
       : menu.menuItems.find(
@@ -296,7 +304,7 @@ export const allocationYears = createSelector(
 
 export const allocationYearOptions = createSelector(selectShared, (state) => {
   const options = state.allocationYears.map(
-    (year) => ({ label: String(year), value: year } as Option)
+    (year) => ({ label: String(year), value: year }) as Option
   );
   options.unshift({ label: '', value: null });
   return options;

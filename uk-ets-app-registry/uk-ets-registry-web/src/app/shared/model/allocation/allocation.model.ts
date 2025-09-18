@@ -18,9 +18,9 @@ export const ALLOCATION_TYPE_LABELS: Record<
   AllocationType,
   { label: string; description?: string }
 > = {
-  NAT: { label: 'Installations' },
-  NAVAT: { label: 'Aircraft operators' },
-  NER: { label: 'New Entrants Reserve' },
+  NAT: { label: 'Installations - National Allocation Table (NAT)' },
+  NAVAT: { label: 'Aviation - National Aviation Allocation Table (NAVAT)' },
+  NER: { label: 'Installations - New Entrants Reserve (NER)' },
 };
 
 export interface AllocationOverview {
@@ -44,5 +44,6 @@ export enum AllocationCategory {
 
 export const AllocationCategoryLabel = {
   [AllocationCategory.Installation]: 'Installations',
-  [AllocationCategory.AircraftOperator]: 'Aviation',
+  [AllocationCategory.AircraftOperator]:
+  'Aviation',
 };

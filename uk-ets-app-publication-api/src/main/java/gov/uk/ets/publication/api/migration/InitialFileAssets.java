@@ -8,10 +8,10 @@ import lombok.Getter;
 public enum InitialFileAssets {
 
     COOKIES_CSS("assets/css/cookies.css","text/css"),
-    GOVUK_CSS("assets/css/govuk-frontend-3.9.1.min.css","text/css"),
+    GOVUK_CSS("assets/css/govuk-frontend-5.9.0.min.css","text/css"),
     STYLES_CSS("assets/css/styles.css","text/css"),
     COOKIES_JS("assets/js/cookies.js","text/javascript"),
-    GOVUK_JS("assets/js/gov.uk-frontend-3.9.1.min.js","text/javascript"),
+    GOVUK_JS("assets/js/govuk-frontend-5.9.0.min.js","text/javascript"),
     SECTIONS_JS("assets/js/sections.js","text/javascript"),
     FAVICON_ICO("assets/images/favicon.ico","image/x-icon"),
     APPLE_TOUCH_PNG("assets/images/govuk-apple-touch-icon.png","image/png"),
@@ -24,7 +24,9 @@ public enum InitialFileAssets {
     ICON_FILE_PNG("assets/images/icon-file-download.png","image/png"),
     MASK_SVG("assets/images/govuk-mask-icon.svg","image/svg+xml"),
     MASK_COPY_SVG("assets/images/govuk-mask-icon copy.svg","image/svg+xml"),
-    INDEX_HTML("index.html","text/html");
+    INDEX_HTML("index.html","text/html"),
+    FONT_BOLD("assets/fonts/bold-b542beb274-v2.woff2","font/woff2"),
+    FONT_LIGHT("assets/fonts/light-94a07e06a1-v2.woff2","font/woff2");
 
     private final String filePath;
     private final String contentType;

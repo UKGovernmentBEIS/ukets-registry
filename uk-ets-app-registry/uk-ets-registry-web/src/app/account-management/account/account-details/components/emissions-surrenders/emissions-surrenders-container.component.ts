@@ -72,6 +72,10 @@ export class EmissionsSurrendersContainerComponent implements OnInit {
   getEmissionsReportingTitle(): string {
     if (AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT === this.accountType) {
       return 'Aviation';
+    } else if (
+      AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT === this.accountType
+    ) {
+      return 'Maritime'; //TODO what to set here??
     } else if (AccountType.OPERATOR_HOLDING_ACCOUNT === this.accountType) {
       return 'Reportable';
     }
@@ -82,6 +86,10 @@ export class EmissionsSurrendersContainerComponent implements OnInit {
   getEmissionsReportingHelpMessageTitle(): string {
     if (AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT === this.accountType) {
       return 'Help with aviation emissions';
+    } else if (
+      AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT === this.accountType
+    ) {
+      return 'Help with reportable emissions'; //TODO what to set here??
     } else if (AccountType.OPERATOR_HOLDING_ACCOUNT === this.accountType) {
       return 'Help with reportable emissions';
     }

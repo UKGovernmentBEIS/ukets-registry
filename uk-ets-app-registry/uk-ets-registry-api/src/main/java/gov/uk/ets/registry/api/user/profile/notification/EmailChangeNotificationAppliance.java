@@ -6,7 +6,7 @@ import gov.uk.ets.registry.api.user.profile.domain.EmailChange;
 import gov.uk.ets.registry.api.user.profile.notification.EmailChangeNotificationService.NotifyTaskFinalizationCommand;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

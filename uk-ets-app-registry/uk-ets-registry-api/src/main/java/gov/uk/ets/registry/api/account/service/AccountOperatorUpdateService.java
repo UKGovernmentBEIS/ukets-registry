@@ -4,11 +4,12 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.messaging.compliance.UpdateFirstYearOfVerifiedEmissionsEvent;
 import gov.uk.ets.registry.api.account.messaging.compliance.UpdateLastYearOfVerifiedEmissionsEvent;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.common.ConversionService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
@@ -40,6 +41,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static gov.uk.ets.registry.api.account.web.model.OperatorType.AIRCRAFT_OPERATOR;
+import static gov.uk.ets.registry.api.account.web.model.OperatorType.MARITIME_OPERATOR;
 import static java.time.ZoneOffset.UTC;
 
 @Service
@@ -76,8 +79,10 @@ public class AccountOperatorUpdateService {
         task.setInitiatedDate(new Date());
         task.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
         task.setAccount(actualAccount);
-        if (dto.getCurrent().getType().equals("AIRCRAFT_OPERATOR")) {
+        if (dto.getCurrent().getType().equals(AIRCRAFT_OPERATOR.name())) {
             task.setType(RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST);
+        } else if (dto.getCurrent().getType().equals(MARITIME_OPERATOR.name())){
+            task.setType(RequestType.MARITIME_OPERATOR_UPDATE_REQUEST);
         } else {
             task.setType(RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST);
         }
@@ -99,7 +104,7 @@ public class AccountOperatorUpdateService {
      * @param type              The task type (Aircraft or Installation)
      */
     @Transactional
-    public void updateOperator(InstallationOrAircraftOperatorDTO updatedValues, Long accountIdentifier,
+    public void updateOperator(OperatorDTO updatedValues, Long accountIdentifier,
                                RequestType type, Account account) {
 
         CompliantEntity compliantEntity = account.getCompliantEntity();
@@ -118,12 +123,22 @@ public class AccountOperatorUpdateService {
             }
             updateCommonOperatorInfo(updatedValues, aircraftOperator);
             persistenceService.save(aircraftOperator);
+        } else if (type == RequestType.MARITIME_OPERATOR_UPDATE_REQUEST) {
+            MaritimeOperator maritimeOperator = (MaritimeOperator) Hibernate.unproxy(compliantEntity);
+            if (updatedValues.getMonitoringPlan() != null && updatedValues.getMonitoringPlan().getId() != null) {
+                maritimeOperator.setMaritimeMonitoringPlanIdentifier(updatedValues.getMonitoringPlan().getId());
+            }
+            if (updatedValues.getImo() != null) {
+                maritimeOperator.setImo(updatedValues.getImo());
+            }
+            updateCommonOperatorInfo(updatedValues, maritimeOperator);
+            persistenceService.save(maritimeOperator);
         } else {
             throw new IllegalStateException("Unsupported Update Operator Type " + type + ".");
         }
     }
 
-    public void sendComplianceEvents(InstallationOrAircraftOperatorDTO dto, String actorId,
+    public void sendComplianceEvents(OperatorDTO dto, String actorId,
                                      Long compliantEntityId, Date taskCompletionDate) {
         Integer firstYear = dto.getFirstYear();
         Integer lastYear = dto.getLastYear();
@@ -149,7 +164,7 @@ public class AccountOperatorUpdateService {
         }
     }
 
-    private void validateAccountOperatorUpdateRequest(Account account, InstallationOrAircraftOperatorDTO dto) {
+    private void validateAccountOperatorUpdateRequest(Account account, OperatorDTO dto) {
 
         Integer firstYear = dto.getFirstYear();
         Integer lastYear = dto.getLastYear();
@@ -237,7 +252,7 @@ public class AccountOperatorUpdateService {
     }
 
 
-    private void updateInstallationInfo(InstallationOrAircraftOperatorDTO updatedValues, Installation installation) {
+    private void updateInstallationInfo(OperatorDTO updatedValues, Installation installation) {
         if (updatedValues.getName() != null) {
             installation.setInstallationName(updatedValues.getName());
         }
@@ -251,7 +266,7 @@ public class AccountOperatorUpdateService {
         }
     }
 
-    private void updateCommonOperatorInfo(InstallationOrAircraftOperatorDTO updatedValues,
+    private void updateCommonOperatorInfo(OperatorDTO updatedValues,
                                           CompliantEntity compliantEntity) {
         if (updatedValues.getChangedRegulator() != null) {
             compliantEntity.setRegulator(updatedValues.getChangedRegulator());
@@ -261,6 +276,9 @@ public class AccountOperatorUpdateService {
         }
         if (updatedValues.getLastYearChanged() != null && updatedValues.getLastYearChanged()) {
             compliantEntity.setEndYear(updatedValues.getLastYear());
+        }
+        if (updatedValues.getEmitterId() != null) {
+            compliantEntity.setEmitterId(updatedValues.getEmitterId());
         }
     }
 

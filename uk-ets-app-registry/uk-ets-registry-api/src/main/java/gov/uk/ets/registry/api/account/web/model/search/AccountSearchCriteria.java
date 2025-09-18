@@ -2,8 +2,8 @@ package gov.uk.ets.registry.api.account.web.model.search;
 
 import gov.uk.ets.registry.api.allocation.type.AllocationClassification;
 import gov.uk.ets.registry.api.allocation.type.AllocationStatusType;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -62,14 +62,19 @@ public class AccountSearchCriteria {
      */
     private AllocationStatusType allocationWithholdStatus;
     /**
-     * The Installation or Aircraft Operator ID.
+     * The Operator ID (Installation/Aircraft/Maritime)
      */
     @Size(min = 3)
-    private String installationOrAircraftOperatorId;
+    private String operatorId;
 
     /**
      * The year of the exclusion from emissions.
      */
     @Digits(integer = 4, fraction = 0, message = "Not a valid year.")
     private Long excludedForYear;
+
+    /**
+     * Company IMO number
+     */
+    private String imo;
 }

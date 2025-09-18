@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { SearchActionPayload, UserProjection } from './user-list.model';
 import { PagedResults } from '@shared/search/util/search-service.util';
@@ -10,6 +10,7 @@ import { UserListService } from '@user-management/service';
 import * as UserListActions from './user-list.actions';
 import { selectPageParameters } from './user-list.selector';
 import { Store } from '@ngrx/store';
+import { concatLatestFrom } from '@ngrx/operators';
 
 @Injectable()
 export class UserListEffect {
@@ -58,7 +59,6 @@ export class UserListEffect {
       ofType(UserListActions.loadUsers),
       concatLatestFrom(() => this.store.select(selectPageParameters)),
       concatMap(([action, storedPageParameters]) => {
-        console.log(action.loadPageParametersFromState, storedPageParameters);
         const pageParameters = action.loadPageParametersFromState
           ? storedPageParameters
           : action.pageParameters;

@@ -26,6 +26,7 @@ public class UserActionExceptionControllerAdvice {
         ResponseEntity<ErrorBody> errorBodyResponseEntity = new ResponseEntity<>(ErrorBody.builder().errorDetails(
             Arrays.asList(ErrorDetail.builder()
                 .message(retrieveMessage(exception))
+                .componentId(retrieveComponentId(exception))
                 .build())
         ).build(), status);
 
@@ -41,6 +42,16 @@ public class UserActionExceptionControllerAdvice {
             return exception.getUserActionError().toString();
         }
         return exception.getUserActionError().getMessage();
+    }
+
+    /**
+     * Retrives component id if it is not an empty string.
+     */
+    private String retrieveComponentId(UserActionException exception) {
+        if (exception.getUserActionError().getComponentId().equals("")) {
+            return null;
+        }
+        return exception.getUserActionError().getComponentId();
     }
 
 }

@@ -24,6 +24,7 @@ export enum AccountListActionTypes {
   SEARCH_RESULTS_PAGE_LOADED = '[Account list Effect] Account results and pagination info loaded',
   LOAD_ACCOUNTS = '[Account list Effect] Load the Accounts and pagination',
   CLEAR_STATE = '[Account list resolver] Clear the state of Account List (default mode)',
+  CLEAR_STATE_PER_ROLE = '[Account list resolver] Clear the state of Account List (per user role)',
   RESET_RESULTS_LOADED = '[Account list resolver] Set the resultsLoaded flag to false (LOAD mode)',
   REPLAY_SEARCH = '[Account List resolver] Replay the search by using the stored criteria, page number, page size (LOAD mode)',
   SORT_RESULTS = '[Account List results sort column] Sort results by column',
@@ -103,6 +104,11 @@ export const showAdvancedSearch = createAction(
 );
 
 export const clearState = createAction(AccountListActionTypes.CLEAR_STATE);
+
+export const clearStatePerRole = createAction(
+  AccountListActionTypes.CLEAR_STATE_PER_ROLE,
+  props<{ isAdmin: boolean }>()
+);
 
 export const resetResultsLoaded = createAction(
   AccountListActionTypes.RESET_RESULTS_LOADED

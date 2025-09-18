@@ -1,0 +1,93 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <h2 class="govuk-summary-list__key">{{ heading }}</h2>
+      </div>
+    </dl>
+
+    <!-- Case of account holder individual -->
+    <ng-container
+      *ngIf="
+        accountHolder && accountHolder.type === accountHolderTypes.INDIVIDUAL
+      "
+    >
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+        *ngIf="accountHolder.details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">First and middle names</dt>
+          <dd class="govuk-summary-list__value">
+            {{
+              (accountHolder | individual).details
+                | individualFirstAndMiddleNames
+            }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Last name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ (accountHolder | individual).details.lastName }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Country of birth</dt>
+          <dd class="govuk-summary-list__value">
+            {{ (accountHolder | individual).details.countryOfBirth }}
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            I confirm that the account holder is aged 18 or over
+          </dt>
+          <dd class="govuk-summary-list__value">Yes</dd>
+        </div>
+      </dl>
+    </ng-container>
+
+    <!-- Case of account holder organisation -->
+    <ng-container
+      *ngIf="
+        accountHolder && accountHolder.type === accountHolderTypes.ORGANISATION
+      "
+    >
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+        *ngIf="accountHolder.details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountHolder.details.name }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Registration number</dt>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="(accountHolder | organisation).details.registrationNumber"
+          >
+            {{ (accountHolder | organisation).details.registrationNumber }}
+          </dd>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="
+              (accountHolder | organisation).details
+                .noRegistrationNumJustification
+            "
+          >
+            No registration number <br />
+            {{
+              (accountHolder | organisation).details
+                .noRegistrationNumJustification
+            }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
+  </div>
+</div>

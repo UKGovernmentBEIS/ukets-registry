@@ -11,6 +11,7 @@ import gov.uk.ets.registry.api.note.domain.Note;
 import gov.uk.ets.registry.api.note.domain.NoteDomainType;
 import gov.uk.ets.registry.api.note.repository.NoteRepository;
 import gov.uk.ets.registry.api.note.web.model.NoteDto;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import java.util.List;
@@ -33,13 +34,15 @@ class NoteServiceTest {
     private AccountHolderRepository accountHolderRepository;
     @Mock
     private AuthorizationService authorizationService;
+    @Mock
+    private TaskRepository taskRepository;
 
     private NoteService service;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        service = new NoteService(noteRepository, userRepository, accountRepository, accountHolderRepository, authorizationService);
+        service = new NoteService(noteRepository, userRepository, accountRepository, accountHolderRepository, taskRepository, authorizationService);
         service.init();
     }
 
@@ -64,11 +67,11 @@ class NoteServiceTest {
         User user2 = getUser("Unknown");
         note2.setUser(user2);
 
-        Mockito.when(noteRepository.findByAccountIdentifierWithAccountHolder(111L))
+        Mockito.when(noteRepository.findByDomainIdAndDomainTypeOrderByCreationDateDesc("111", NoteDomainType.ACCOUNT))
             .thenReturn(List.of(note, note2));
 
         // when
-        List<NoteDto> results = service.findNotesForAccount(111L);
+        List<NoteDto> results = service.findNotes("111", NoteDomainType.ACCOUNT);
 
         // then
         assertEquals(2, results.size());

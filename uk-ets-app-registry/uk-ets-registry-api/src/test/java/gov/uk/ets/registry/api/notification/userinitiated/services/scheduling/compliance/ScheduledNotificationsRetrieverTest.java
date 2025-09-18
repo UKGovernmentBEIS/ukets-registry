@@ -11,6 +11,8 @@ import gov.uk.ets.registry.api.notification.userinitiated.domain.types.Notificat
 import gov.uk.ets.registry.api.notification.userinitiated.repository.NotificationSchedulingRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.ScheduledNotificationsRetriever;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,7 +102,7 @@ class ScheduledNotificationsRetrieverTest {
         when(schedulingRepository.getActiveNotifications(NotificationType.getComplianceNotificationTypes()))
             .thenReturn(notifications);
 
-        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent();
+        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent(NotificationType.getComplianceNotificationTypes());
 
         assertThat(notificationsToBeSent).hasSize(1);
         assertThat(notificationsToBeSent.get(0).getId()).isEqualTo(NOTIFICATION1_ID);
@@ -112,7 +114,7 @@ class ScheduledNotificationsRetrieverTest {
         when(schedulingRepository.getActiveNotifications(NotificationType.getComplianceNotificationTypes()))
             .thenReturn(notifications);
 
-        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent();
+        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent(NotificationType.getComplianceNotificationTypes());
 
         assertThat(notificationsToBeSent).hasSize(1);
         assertThat(notificationsToBeSent.get(0).getId()).isEqualTo(NOTIFICATION3_ID);
@@ -124,7 +126,7 @@ class ScheduledNotificationsRetrieverTest {
         when(schedulingRepository.getActiveNotifications(NotificationType.getComplianceNotificationTypes()))
             .thenReturn(notifications);
 
-        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent();
+        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent(NotificationType.getComplianceNotificationTypes());
 
         assertThat(notificationsToBeSent).hasSize(0);
     }
@@ -137,7 +139,7 @@ class ScheduledNotificationsRetrieverTest {
             .thenReturn(notifications);
 
 
-        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent();
+        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent(NotificationType.getComplianceNotificationTypes());
 
         assertThat(notificationsToBeSent).hasSize(1);
         assertThat(notificationsToBeSent.get(0).getId()).isEqualTo(NOTIFICATION5_ID);
@@ -152,7 +154,7 @@ class ScheduledNotificationsRetrieverTest {
             .thenReturn(notifications);
 
 
-        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent();
+        List<Notification> notificationsToBeSent = cut.getNotificationsToBeSent(NotificationType.getComplianceNotificationTypes());
 
         assertThat(notificationsToBeSent).hasSize(0);
     }

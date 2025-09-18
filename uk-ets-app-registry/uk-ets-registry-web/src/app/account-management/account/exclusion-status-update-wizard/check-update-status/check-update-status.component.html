@@ -4,7 +4,21 @@
 
     <div class="govuk-heading-l">Check the update and confirm</div>
 
-    <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-body" *ngIf="hasEmissions">
+      <div class="govuk-warning-text">
+        <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
+
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          Emissions have already been reported for the selected year. If you
+          continue with the exclusion, the emissions will be deleted.
+        </strong>
+      </div>
+    </div>
+
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0"
+    >
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
           Year to update the operator exclusion status
@@ -23,7 +37,9 @@
         </dd>
       </div>
     </dl>
-    <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-0"
+    >
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Exclusion of the operator</dt>
         <dd class="govuk-summary-list__value">
@@ -35,7 +51,26 @@
             [routerLink]="[]"
             (click)="navigateTo(routePathForExclusionStatus)"
           >
-            Change <span class="govuk-visually-hidden"> Exclusion status</span>
+            Change
+            <span class="govuk-visually-hidden"> Exclusion status</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reason of exclusion</dt>
+        <dd class="govuk-summary-list__value">
+          {{ exclusionReason }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            class="govuk-link"
+            [routerLink]="[]"
+            (click)="navigateTo(routePathForExclusionReason)"
+          >
+            Change
+            <span class="govuk-visually-hidden"> reason of exclusion</span>
           </a>
         </dd>
       </div>
@@ -59,7 +94,7 @@
   [lines]="{
     'Installation name': installation.name,
     'Installation ID': installation.identifier,
-    'Permit ID': installation.permit?.id
+    'Permit ID': installation.permit?.id,
   }"
 ></app-summary-list>
 <app-summary-list
@@ -69,7 +104,7 @@
   "
   [lines]="{
     'Aircraft Operator ID': aircraftOperator.identifier,
-    'Monitoring plan ID': aircraftOperator.monitoringPlan?.id
+    'Monitoring plan ID': aircraftOperator.monitoringPlan?.id,
   }"
 ></app-summary-list>
 

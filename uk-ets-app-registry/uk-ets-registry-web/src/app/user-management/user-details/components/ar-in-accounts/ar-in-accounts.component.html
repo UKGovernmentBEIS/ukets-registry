@@ -1,14 +1,12 @@
 <div class="govuk-grid-row govuk-!-margin-top-6">
-  <div class="govuk-summary-list__row">
-    <h2 class="govuk-summary-list__key govuk-heading-m">
-      Authorised Representative in accounts
-    </h2>
-  </div>
+  <h2 class="govuk-heading-m govuk-summary-list__title">
+    Authorised Representative in accounts
+  </h2>
 
   <ng-container
     *ngIf="arInAccount !== null && arInAccount?.length === 0; else elseBlock"
   >
-    <span class="govuk-hint"> No items added.</span>
+    <div class="govuk-hint">No items added.</div>
   </ng-container>
   <ng-template #elseBlock>
     <table

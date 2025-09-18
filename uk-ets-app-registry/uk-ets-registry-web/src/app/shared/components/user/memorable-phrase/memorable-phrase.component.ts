@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { IUser } from '@shared/user';
 
 @Component({
@@ -8,23 +8,12 @@ import { IUser } from '@shared/user';
   templateUrl: './memorable-phrase.component.html',
   styleUrls: [],
 })
-export class MemorablePhraseComponent
-  extends UkFormComponent
-  implements OnInit
-{
+export class MemorablePhraseComponent extends UkFormComponent {
   @Input() caption: string;
   @Input() header: string;
   @Input() isRequestUpdateProcess = false;
   @Input() user: IUser;
   @Output() readonly outputUser = new EventEmitter<IUser>();
-
-  constructor(protected formBuilder: UntypedFormBuilder) {
-    super();
-  }
-
-  ngOnInit(): void {
-    super.ngOnInit();
-  }
 
   protected getFormModel() {
     return {

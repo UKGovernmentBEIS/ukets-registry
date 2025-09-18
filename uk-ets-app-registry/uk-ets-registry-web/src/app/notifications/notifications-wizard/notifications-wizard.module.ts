@@ -28,6 +28,12 @@ import {
 import { NotificationRequestSubmittedContainerComponent } from '@notifications/notifications-wizard/component/notification-request-submitted';
 import { GdsDatePipe } from '@shared/pipes';
 
+import { NotificationsEmailUploadFileContainerComponent } from '@notifications/notifications-wizard/component/notifications-email-upload-file/notifications-email-upload-file-container.component';
+import { UploadFileComponent } from '@registry-web/documents/documents-wizard/components/upload-file/upload-file.component';
+import { NotificationsEmailUploadFileComponent } from '@notifications/notifications-wizard/component/notifications-email-upload-file/notifications-email-upload-file.component';
+import { CancelActiveOrPendingNotificationContainerComponent } from './component/cancel-active-or-pending-notification';
+import { CancelNotificationSubmittedContainerComponent } from './component/cancel-notification-submitted';
+
 @NgModule({
   declarations: [
     SelectNotificationTypeContainerComponent,
@@ -41,6 +47,10 @@ import { GdsDatePipe } from '@shared/pipes';
     NotificationCheckAndSubmitComponent,
     NotificationRequestSubmittedContainerComponent,
     LoadNotificationWizardContainerComponent,
+    NotificationsEmailUploadFileContainerComponent,
+    NotificationsEmailUploadFileComponent,
+    CancelActiveOrPendingNotificationContainerComponent,
+    CancelNotificationSubmittedContainerComponent
   ],
   imports: [
     CommonModule,
@@ -52,6 +62,7 @@ import { GdsDatePipe } from '@shared/pipes';
       fromNotifications.reducer
     ),
     EffectsModule.forFeature([NotificationsWizardEffect]),
+    UploadFileComponent,
   ],
   providers: [GdsDatePipe],
 })

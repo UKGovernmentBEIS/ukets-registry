@@ -1,65 +1,49 @@
 package gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.compliance;
 
-import static gov.uk.ets.registry.api.notification.userinitiated.util.NotificationFinders.findDefinition;
-import static gov.uk.ets.registry.api.notification.userinitiated.util.NotificationFinders.findNotification;
-import static java.time.ZoneOffset.UTC;
-import static java.util.stream.Collectors.toList;
-
 import gov.uk.ets.registry.api.notification.userinitiated.domain.Notification;
+import gov.uk.ets.registry.api.notification.userinitiated.domain.types.NotificationType;
 import gov.uk.ets.registry.api.notification.userinitiated.messaging.model.IdentifiableEmailNotification;
 import gov.uk.ets.registry.api.notification.userinitiated.messaging.model.NotificationParameterHolder;
 import gov.uk.ets.registry.api.notification.userinitiated.repository.NotificationSchedulingRepository;
-import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.NotificationInstanceService;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
+import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.AbstractNotificationInstanceService;
+import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.NotificationUpdater;
+import gov.uk.ets.registry.api.notification.userinitiated.services.scheduling.ScheduledNotificationsRetriever;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Orchestrates the generation of notifications.
- */
+import java.util.List;
+
 @Service
-@RequiredArgsConstructor
-public class ComplianceNotificationInstanceService implements NotificationInstanceService {
+public class ComplianceNotificationInstanceService extends AbstractNotificationInstanceService {
 
-    private final NotificationSchedulingRepository schedulingRepository;
-    private final ScheduledNotificationsRetriever notificationsRetriever;
-    private final NotificationParameterRetriever parameterRetriever;
-    private final ComplianceNotificationGenerator generator;
     private final ComplianceNotificationDomainEventGenerator eventGenerator;
-    private final NotificationUpdater updater;
 
-    @Transactional
+    public ComplianceNotificationInstanceService(NotificationSchedulingRepository schedulingRepository,
+                                                 ScheduledNotificationsRetriever notificationsRetriever,
+                                                 NotificationUpdater updater,
+                                                 ComplianceNotificationParameterRetriever parameterRetriever,
+                                                 ComplianceNotificationGenerator generator,
+                                                 ComplianceNotificationDomainEventGenerator eventGenerator) {
+        super(schedulingRepository, notificationsRetriever, updater, parameterRetriever, generator);
+        this.eventGenerator = eventGenerator;
+    }
+
     @Override
-    public List<IdentifiableEmailNotification> generateNotificationInstances() {
-        // update statuses
-        schedulingRepository.changeComplianceNotificationsStatus(LocalDateTime.now(UTC));
+    protected String getSubject(Notification notification) {
+        return notification.getDefinition().getShortText();
+    }
 
-        // filter notifications that must be sent according to schedule
-        List<Notification> notifications = notificationsRetriever.getNotificationsToBeSent();
+    @Override
+    protected String getBody(Notification notification) {
+        return notification.getDefinition().getLongText();
+    }
 
-        // retrieve a flat list (for all notifications) of all parameters together with the recipient emails
-        List<NotificationParameterHolder> parameterHolders =
-            notifications.stream()
-                .map(parameterRetriever::getNotificationParameters)
-                .flatMap(Collection::stream)
-                .collect(toList());
+    @Override
+    protected void handleEventGeneration(NotificationParameterHolder holder, IdentifiableEmailNotification emailNotification) {
+        eventGenerator.generateAccountEvent(holder, emailNotification);
+    }
 
-        // create email messages
-        List<IdentifiableEmailNotification> emailNotifications = parameterHolders.stream()
-            .map(holder -> generator.generate(holder, findDefinition(notifications, holder.getNotificationId())))
-            .collect(toList());
-
-        // update schedule information
-        notifications.forEach(updater::update);
-
-        // create domain events
-        parameterHolders.forEach(
-            ph -> eventGenerator.generateAccountEvent(ph, findNotification(emailNotifications, ph))
-        );
-
-        return emailNotifications;
+    @Override
+    public List<NotificationType> getSupportedNotificationTypes() {
+        return NotificationType.getComplianceNotificationTypes();
     }
 }

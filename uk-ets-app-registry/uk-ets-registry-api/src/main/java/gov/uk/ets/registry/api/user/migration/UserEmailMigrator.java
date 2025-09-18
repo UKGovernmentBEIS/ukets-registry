@@ -9,10 +9,11 @@ import gov.uk.ets.registry.api.migration.domain.MigratorName;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,8 @@ public class UserEmailMigrator implements Migrator {
             return;
         }
         userRepository.findAll()
+                .stream()
+                .filter(user -> StringUtils.isBlank(user.getEmail()))
                 .forEach(user -> {
                     try {
                         UserRepresentation keycloakUser =

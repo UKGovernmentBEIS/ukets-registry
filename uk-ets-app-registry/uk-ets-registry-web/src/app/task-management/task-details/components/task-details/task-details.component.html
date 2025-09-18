@@ -1,3 +1,4 @@
+<h1 class="govuk-heading-l">Task details</h1>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full" *ngIf="taskDetails">
     <ng-container
@@ -23,6 +24,13 @@
     <ng-container
       *ngIf="taskDetails.subTasks && taskDetails.subTasks.length > 0"
     >
+      <div class="govuk-warning-text" *ngIf="showOverdueSubtaskWarning">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          Some of the associated subtasks are overdue.
+        </strong>
+      </div>
       <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary">
           <span class="govuk-details__summary-text"> Associated subtasks </span>
@@ -36,6 +44,7 @@
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">Request ID</th>
                 <th scope="col" class="govuk-table__header">Task name</th>
+                <th scope="col" class="govuk-table__header">Deadline</th>
                 <th scope="col" class="govuk-table__header">Status</th>
               </tr>
             </thead>
@@ -53,7 +62,12 @@
                   >
                 </td>
                 <td class="govuk-table__cell">
-                  {{ getTaskTypeLabel(subtask?.taskType) }}
+                  {{ subtask?.taskType | taskTypeLabel }}
+                </td>
+                <td class="govuk-table__cell">
+                  <span *ngIf="subtask?.deadline">{{
+                    subtask?.deadline | gdsDate
+                  }}</span>
                 </td>
                 <td class="govuk-table__cell">
                   <app-govuk-tag
@@ -88,23 +102,24 @@
     >
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
         Some documents have been uploaded but the task has not been completed.
       </strong>
     </div>
-    <fieldset class="govuk-fieldset">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-        <p class="govuk-body">
-          <a
-            *ngIf="taskDetails?.requestId"
-            class="govuk-link"
-            [routerLink]="['/task-details/history', taskDetails.requestId]"
-            skipLocationChange
-            >History and comments</a
-          >
-        </p>
-      </legend>
-    </fieldset>
+    <div
+      class="govuk-warning-text"
+      *ngIf="
+        taskDetails.deadline &&
+        taskDetails.taskStatus !== 'COMPLETED' &&
+        (taskDetails.deadline | isPastDate)
+      "
+    >
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-visually-hidden">Warning</span>
+        This task is overdue
+      </strong>
+    </div>
     <ng-container [ngSwitch]="taskDetails.taskType">
       <app-account-opening-task-details-container
         *ngSwitchCase="requestTypes.ACCOUNT_OPENING_REQUEST"
@@ -152,6 +167,11 @@
         [operatorUpdateTaskDetails]="taskDetails"
       >
       </app-operator-update-task-details>
+      <app-operator-update-task-details
+        *ngSwitchCase="requestTypes.MARITIME_OPERATOR_UPDATE_REQUEST"
+        [operatorUpdateTaskDetails]="taskDetails"
+      >
+      </app-operator-update-task-details>
 
       <!-- Task Update Authorise Representative -->
       <ng-container
@@ -195,6 +215,7 @@
           (requestDocumentEmitter)="
             onAccountHolderOrUserRequestDocuments($event)
           "
+          (requestPaymentEmitter)="onRequestPayment($event)"
         ></app-authorise-representatives-update-task-details-container>
       </ng-template>
 
@@ -238,6 +259,15 @@
         (downloadRequestDocumentFile)="downloadRequestDocument($event)"
         (userDecision)="onUserDecisionForTask($event)"
       ></app-requested-documents-task-details>
+      <app-request-payment-task-details
+        *ngSwitchCase="requestTypes.PAYMENT_REQUEST"
+        [taskDetails]="taskDetails"
+        [configuration]="configuration"
+        [taskActionsVisibility]="true"
+        (downloadTemplateFile)="downloadTemplate($event)"
+        (downloadRequestDocumentFile)="downloadRequestDocument($event)"
+        (userDecision)="onUserDecisionForTask($event)"
+      ></app-request-payment-task-details>
       <app-account-holder-update-details-container
         *ngSwitchCase="requestTypes.ACCOUNT_HOLDER_UPDATE_DETAILS"
         [taskDetails]="taskDetails"
@@ -299,6 +329,7 @@
       <app-account-transfer-task-details
         *ngSwitchCase="requestTypes.ACCOUNT_TRANSFER"
         [taskDetails]="taskDetails"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
         (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
       ></app-account-transfer-task-details>
 

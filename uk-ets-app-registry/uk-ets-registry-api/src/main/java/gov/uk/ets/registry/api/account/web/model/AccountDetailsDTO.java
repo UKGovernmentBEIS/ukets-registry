@@ -5,10 +5,10 @@ import gov.uk.ets.registry.api.common.view.AddressDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import java.io.Serializable;
 import java.util.Date;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import lombok.Getter;
@@ -43,6 +43,11 @@ public class AccountDetailsDTO implements Serializable {
      * The full account number.
      */
     private String accountNumber;
+
+    /**
+     * The public account identifier
+     */
+    private String publicAccountIdentifier;
 
     /**
      * The account holder identifier.

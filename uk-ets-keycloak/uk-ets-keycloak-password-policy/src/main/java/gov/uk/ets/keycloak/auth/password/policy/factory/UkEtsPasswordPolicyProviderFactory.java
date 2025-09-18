@@ -13,7 +13,7 @@ public class UkEtsPasswordPolicyProviderFactory implements PasswordPolicyProvide
     public static final String ID = "uk-ets-password-policy";
 	
 	public PasswordPolicyProvider create(KeycloakSession session) {
-		return new UkEtsPasswordPolicyProvider(session.getContext());
+		return new UkEtsPasswordPolicyProvider(session);
 	}
 
 	public void init(Scope config) {

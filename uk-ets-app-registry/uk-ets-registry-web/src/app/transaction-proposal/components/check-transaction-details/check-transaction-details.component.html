@@ -6,7 +6,7 @@
 <div *ngIf="approvalRequired" class="govuk-warning-text">
   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
   <strong class="govuk-warning-text__text">
-    <span class="govuk-warning-text__assistive">Warning</span>
+    <span class="govuk-visually-hidden">Warning</span>
     <ng-container
       *ngIf="trTypeValues[proposedTransactionType.type].isETSTransaction"
     >
@@ -42,6 +42,11 @@
   [isTransactionReversal]="
     trTypeValues[proposedTransactionType?.type].isTransactionReversed
   "
+  [operator]="
+    proposedTransactionType?.type === transactionType.ExcessAllocation
+      ? transferringAccountInfo.operator
+      : null
+  "
 >
 </app-account-summary>
 
@@ -53,7 +58,7 @@
   [ngTemplateOutletContext]="{
     header: 'Transaction type',
     route: transactionProposalRoutePaths['select-transaction-type'],
-    id: 'transaction-type-container'
+    id: 'transaction-type-container',
   }"
 >
 </ng-container>
@@ -75,9 +80,7 @@
   <div class="govuk-grid-row govuk-summary-list govuk-!-padding-bottom-2">
     <h2 class="govuk-heading-l govuk-!-margin-bottom-0">Transaction type</h2>
     <hr
-      class="
-        govuk-section-break govuk-section-break--m govuk-section-break--visible
-      "
+      class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
     />
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-third">
@@ -102,9 +105,7 @@
     [itlNotification]="itlNotification"
   ></app-itl-notification-summary>
   <hr
-    class="
-      govuk-section-break govuk-section-break--m govuk-section-break--visible
-    "
+    class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
   />
 </ng-container>
 
@@ -114,7 +115,7 @@
   [ngTemplateOutletContext]="{
     header: 'Unit types and quantity to transfer',
     route: transactionProposalRoutePaths['select-unit-types-quantity'],
-    id: 'units-quantity-container'
+    id: 'units-quantity-container',
   }"
 >
 </ng-container>
@@ -200,7 +201,7 @@
   [ngTemplateOutletContext]="{
     header: 'Transaction reference',
     route: transactionProposalRoutePaths['set-transaction-reference'],
-    id: 'transaction-reference-container'
+    id: 'transaction-reference-container',
   }"
 >
 </ng-container>
@@ -228,11 +229,7 @@
 <ng-template #header let-header="header" let-route="route" let-id="id">
   <div
     [id]="id"
-    class="
-      govuk-grid-row govuk-summary-list
-      section-border
-      govuk-!-padding-bottom-2
-    "
+    class="govuk-grid-row govuk-summary-list section-border govuk-!-padding-bottom-2"
   >
     <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">{{ header }}</h2>
@@ -245,6 +242,7 @@
         class="govuk-link right-aligned govuk-!-margin-top-2"
         [routerLink]="[]"
         (click)="navigateTo(route)"
+        [attr.aria-label]="'Change ' + header"
       >
         Change<span class="govuk-visually-hidden">
           {{ header | lowercase }}</span

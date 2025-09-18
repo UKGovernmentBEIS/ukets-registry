@@ -52,7 +52,7 @@
           <div class="govuk-warning-text">
             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
             <strong class="govuk-warning-text__text">
-              <span class="govuk-warning-text__assistive">Warning</span>
+              <span class="govuk-visually-hidden">Warning</span>
               New account holder
             </strong>
           </div>
@@ -78,6 +78,19 @@
             data-module="govuk-button"
           >
             Request documents
+          </button>
+        </dd>
+        <dd
+          class="govuk-summary-list__actions"
+          *ngIf="taskDetails.currentUserClaimant"
+        >
+          <button
+            class="govuk-button govuk-button--secondary"
+            (click)="onRequestPayment()"
+            (keypress)="onRequestPayment()"
+            data-module="govuk-button"
+          >
+            Request payment
           </button>
         </dd>
       </div>
@@ -620,7 +633,7 @@
           <div class="govuk-warning-text">
             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
             <strong class="govuk-warning-text__text">
-              <span class="govuk-warning-text__assistive">Warning</span>
+              <span class="govuk-visually-hidden">Warning</span>
               Account Holder has changed
             </strong>
           </div>
@@ -811,6 +824,7 @@
         [installation]="taskDetails.account.operator"
         [operatorCompleted]="true"
         [regulatorChanged]="hasRegulatorChanged(taskDetails.account.operator)"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
       >
         <ng-container
           [ngTemplateOutlet]="regulatorForm"
@@ -820,6 +834,7 @@
       <app-overview-aircraft-operator
         *ngSwitchCase="operatorType.AIRCRAFT_OPERATOR"
         [aircraftOperator]="taskDetails.account.operator"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
         [operatorCompleted]="true"
         [regulatorChanged]="hasRegulatorChanged(taskDetails.account.operator)"
       >
@@ -828,6 +843,18 @@
           [ngTemplateOutletContext]="{ operator: taskDetails.account.operator }"
         ></ng-container>
       </app-overview-aircraft-operator>
+      <app-overview-maritime-operator
+        *ngSwitchCase="operatorType.MARITIME_OPERATOR"
+        [maritimeOperator]="taskDetails.account.operator"
+        [operatorCompleted]="true"
+        [regulatorChanged]="hasRegulatorChanged(taskDetails.account.operator)"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
+      >
+        <ng-container
+          [ngTemplateOutlet]="regulatorForm"
+          [ngTemplateOutletContext]="{ operator: taskDetails.account.operator }"
+        ></ng-container>
+      </app-overview-maritime-operator>
       <app-overview-installation-transfer
         *ngSwitchCase="operatorType.INSTALLATION_TRANSFER"
         [installationToBeTransferred]="
@@ -835,6 +862,7 @@
         "
         [installationTransfer]="taskDetails.account.operator"
         [operatorCompleted]="true"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
       >
         <ng-container
           [ngTemplateOutlet]="regulatorForm"
@@ -905,7 +933,7 @@
               <a
                 class="govuk-link govuk-link--no-visited-state"
                 [routerLink]="[
-                  '/task-details/' + taskDetails.requestId + '/user/' + ar.urid
+                  '/task-details/' + taskDetails.requestId + '/user/' + ar.urid,
                 ]"
                 >{{ ar.urid }}</a
               >
@@ -991,7 +1019,7 @@
           <div class="govuk-warning-text">
             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
             <strong class="govuk-warning-text__text">
-              <span class="govuk-warning-text__assistive">Warning</span>
+              <span class="govuk-visually-hidden">Warning</span>
               Regulator has changed
             </strong>
           </div>

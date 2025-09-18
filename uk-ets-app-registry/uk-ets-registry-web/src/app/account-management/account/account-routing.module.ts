@@ -30,19 +30,15 @@ import { EditBillingDetailsContainerComponent } from './account-details/details/
 import { ExcludeBillingContainerComponent } from './account-details/details/exclude-billing-container.component';
 import { CancelExcludeBillingContainerComponent } from './account-details/details/cancel-exclude-billing-container.component';
 import { ExcludeBillingSucessContainerComponent } from './account-details/details/exclude-billing-success-container.component';
-import { AddNoteFormContainerComponent } from '@registry-web/notes/components/add-note-form/add-note-form-container.component';
-import { AddNoteSuccessContainerComponent } from '@registry-web/notes/components/add-note-success/add-note-success-container.component';
-import { CancelAddNoteContainerComponent } from '@registry-web/notes/components/cancel-add-note-container/cancel-add-note-container.component';
-import { CheckAndConfirmAddNoteContainerComponent } from '@registry-web/notes/components/check-and-confirm-add-note/check-and-confirm-add-note-container.component';
-import { DeleteNoteSuccessContainerComponent } from '@registry-web/notes/components/delete-note-success/delete-note-success-container.component';
-import { DeleteNoteContainerComponent } from '@registry-web/notes/components/delete-note/delete-note-container.component';
-import { SelectEntityFormContainerComponent } from '@registry-web/notes/components/select-entity-form/select-entity-form-container.component';
+import { ChangeAccountHolderWizardPathsModel } from '@change-account-holder-wizard/model';
+import { clearChangeAccountHolderRequestGuard } from '@change-account-holder-wizard/guards';
 
 const routes: Routes = [
   {
     path: ':accountId',
     canActivate: [LoginGuard, AccountHeaderGuard],
     component: AccountDataContainerComponent,
+    title: 'Account Details',
   },
   {
     path: '',
@@ -103,32 +99,12 @@ const routes: Routes = [
         component: ExcludeBillingSucessContainerComponent,
       },
       {
-        path: ':accountId/select-entity',
-        component: SelectEntityFormContainerComponent,
-      },
-      {
-        path: ':accountId/add-note',
-        component: AddNoteFormContainerComponent,
-      },
-      {
-        path: ':accountId/check-and-confirm-add-note',
-        component: CheckAndConfirmAddNoteContainerComponent,
-      },
-      {
-        path: ':accountId/add-note-success',
-        component: AddNoteSuccessContainerComponent,
-      },
-      {
-        path: ':accountId/cancel-add-note',
-        component: CancelAddNoteContainerComponent,
-      },
-      {
-        path: ':accountId/delete-note',
-        component: DeleteNoteContainerComponent,
-      },
-      {
-        path: ':accountId/delete-note-success',
-        component: DeleteNoteSuccessContainerComponent,
+        path: ':accountId/notes',
+        canDeactivate: [AccountHeaderGuard],
+        loadChildren: () =>
+          import(
+            './account-details/notes/account-notes-wizard/account-notes-wizard-routing.module'
+          ).then((m) => m.AccountNotesRoutingModule),
       },
       {
         path: ':accountId/transactions',
@@ -145,6 +121,14 @@ const routes: Routes = [
           import(
             './account-holder-details-wizard/account-holder-details-wizard.module'
           ).then((m) => m.AccountHolderDetailsWizardModule),
+      },
+      {
+        path: ':accountId/' + ChangeAccountHolderWizardPathsModel.BASE_PATH,
+        canDeactivate: [clearChangeAccountHolderRequestGuard],
+        loadChildren: () =>
+          import(
+            './change-account-holder-wizard/change-account-holder-wizard.module'
+          ).then((m) => m.ChangeAccountHolderWizardModule),
       },
       {
         path: ':accountId/tal-transaction-rules',

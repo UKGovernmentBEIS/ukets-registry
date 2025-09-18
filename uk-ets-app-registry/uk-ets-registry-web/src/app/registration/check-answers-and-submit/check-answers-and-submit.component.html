@@ -15,6 +15,20 @@
         </div>
       </div>
     </div>
+
+    @if (showMobileNumberWarning$ | async) {
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          It's important that your mobile number is valid if we need to contact
+          you to verify your identity and to administer your access to the
+          Registry. If you are sure that the mobile number provided is correct,
+          you may continue.
+        </strong>
+      </div>
+    }
+
     <div class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <h2 class="govuk-summary-list__key">Your details</h2>
@@ -27,10 +41,7 @@
     </div>
 
     <dl
-      class="
-        govuk-summary-list govuk-!-margin-bottom-9
-        govuk-summary-list--no-border
-      "
+      class="govuk-summary-list govuk-!-margin-bottom-9 govuk-summary-list--no-border"
       *ngIf="user.firstName"
     >
       <div class="govuk-summary-list__row">
@@ -107,6 +118,17 @@
           }}
         </dd>
       </div>
+      <div
+        *ngIf="user.differentCountryLastFiveYears !== null"
+        class="govuk-summary-list__row"
+      >
+        <dt class="govuk-summary-list__key">
+          Have you lived in another country the last five years?
+        </dt>
+        <dd class="govuk-summary-list__value" id="country-of-birth">
+          {{ user.differentCountryLastFiveYears ? 'Yes' : 'No' }}
+        </dd>
+      </div>
     </dl>
 
     <div class="govuk-summary-list">
@@ -121,19 +143,39 @@
     </div>
 
     <dl
-      class="
-        govuk-summary-list govuk-!-margin-bottom-9
-        govuk-summary-list--no-border
-      "
-      *ngIf="user.firstName"
+      *ngIf="user.workMobilePhoneNumber || user.workAlternativePhoneNumber"
+      class="govuk-summary-list govuk-!-margin-bottom-9 govuk-summary-list--no-border"
     >
+      <div *ngIf="user.workMobilePhoneNumber" class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Work mobile number</dt>
+        <dd class="govuk-summary-list__value" id="mobile-phone-number">
+          <app-shared-phone-number
+            [countryCode]="user.workMobileCountryCode"
+            [phoneNumber]="user.workMobilePhoneNumber"
+          />
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Alternative phone number</dt>
+        <dd class="govuk-summary-list__value" id="alternative-phone-number">
+          <app-shared-phone-number
+            [countryCode]="user.workAlternativeCountryCode"
+            [phoneNumber]="user.workAlternativePhoneNumber"
+          />
+        </dd>
+      </div>
       <div
-        *ngIf="phoneNumberFull$ | async as phoneNumberFull"
+        *ngIf="user.noMobilePhoneNumberReason"
         class="govuk-summary-list__row"
       >
-        <dt class="govuk-summary-list__key">Work phone number</dt>
-        <dd class="govuk-summary-list__value" id="phone-number">
-          <span>{{ phoneNumberFull }}</span>
+        <dt class="govuk-summary-list__key">
+          Reason for not having a work mobile number
+        </dt>
+        <dd
+          class="govuk-summary-list__value"
+          id="no-mobile-phone-number-reason"
+        >
+          {{ user.noMobilePhoneNumberReason }}
         </dd>
       </div>
       <div *ngIf="user.workBuildingAndStreet" class="govuk-summary-list__row">
@@ -173,6 +215,32 @@
         </dd>
       </div>
     </dl>
+
+    <div class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <h2 class="govuk-summary-list__key">Declaration</h2>
+        <div class="govuk-summary-list__actions">
+          <a class="govuk-link" routerLink="/registration/declaration">
+            Change<span class="govuk-visually-hidden"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <dl
+      class="govuk-summary-list govuk-!-margin-bottom-9 govuk-summary-list--no-border"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          I confirm that to the best of my knowledge and belief the information
+          provided in this Declaration is true.
+        </dt>
+        <dd class="govuk-summary-list__value" id="phone-number">
+          <span>{{ (declarationConfirmated$ | async) ? 'Yes' : 'No' }}</span>
+        </dd>
+      </div>
+    </dl>
+
     <ng-container *ngIf="user.firstName">
       <div class="govuk-summary-list govuk-!-margin-bottom-9">
         <div class="govuk-summary-list__row">

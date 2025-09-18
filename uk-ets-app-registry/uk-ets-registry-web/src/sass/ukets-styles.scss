@@ -1,4 +1,4 @@
-@import 'node_modules/govuk-frontend/govuk/all';
+@import 'node_modules/govuk-frontend/dist/govuk/index';
 @import 'variables';
 @import 'sub-header';
 @import 'summary-list-helpers';
@@ -126,7 +126,8 @@ dialog.fixed {
 }
 
 .tabular-numbers {
-  font-family: $govuk-font-family-tabular;
+  @include govuk-font($size: 19, $tabular: true);
+  font-family: govuk-font('tabular-numbers');
 }
 
 /*
@@ -144,8 +145,8 @@ dialog.fixed {
   border: 0;
 }
 
-button[aria-sort],
-button[aria-sort]:hover {
+button[sort],
+button[sort]:hover {
   background-color: transparent;
   border-width: 0;
   -webkit-box-shadow: 0 0 0 0;
@@ -163,58 +164,64 @@ button[aria-sort]:hover {
   right: auto;
 }
 
-button[aria-sort]:focus {
+button[sort]:focus {
   outline: 3px solid transparent;
   color: govuk-colour('black');
   background-color: govuk-colour('yellow');
-  box-shadow: 0 -2px govuk-colour('yellow'), 0 4px govuk-colour('black');
+  box-shadow:
+    0 -2px govuk-colour('yellow'),
+    0 4px govuk-colour('black');
   text-decoration: none;
   position: relative;
   z-index: 1;
 }
 
-button[aria-sort]:before {
+button[sort]:before {
   content: ' \25bc';
   position: absolute;
-  right: -1px;
-  top: 9px;
+  right: -10px;
+  top: 10px;
   font-size: 0.5em;
 }
 
-button[aria-sort]:after {
+button[sort]:after {
   content: ' \25b2';
   position: absolute;
-  right: -1px;
+  right: -10px;
   top: 1px;
   font-size: 0.5em;
 }
 
-button[aria-sort='ascending']:before,
-button[aria-sort='descending']:before {
+button[sort='ascending']:before,
+button[sort='descending']:before {
   content: none;
 }
 
-button[aria-sort='ascending']:after {
+button[sort='ascending']:after {
   content: ' \25b2';
   font-size: 0.8em;
   position: absolute;
-  right: -5px;
+  right: -10px;
   top: 2px;
 }
 
-button[aria-sort='descending']:after {
+button[sort='descending']:after {
   content: ' \25bc';
   font-size: 0.8em;
   position: absolute;
-  right: -5px;
+  right: -10px;
   top: 2px;
 }
 
 a.govuk-header__link.govuk-header__link--homepage.govuk-header__link--home-custom:focus,
-a.govuk-header__link.govuk-header__link--service-name.govuk-header__link--service-custom:focus,
+a.govuk-header__link.govuk-header__service-name.govuk-header__link--service-custom:focus,
 a.govuk-header__link.govuk-header__link--custom:focus,
 a.govuk-header__link.uk_ets_sign_in_out_link.govuk-header__link--sign-custom:focus {
   border-bottom: 4px solid govuk-colour('white');
+}
+
+.govuk-header__link--homepage {
+  font-weight: 700;
 }
 
 /* Dropdown styling for the typeahead input field */
@@ -457,4 +464,36 @@ the app.
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+/*
+* Re-applies base GDS link styles to all .govuk-link elements
+* to also encompass links without the href attribute
+*/
+.govuk-link {
+  color: $govuk-link-colour;
+  cursor: pointer;
+}
+
+.govuk-summary-list__title {
+  padding-block: govuk-spacing(2);
+  border-bottom: 1px solid $govuk-border-colour;
+}
+
+/*
+* Adds disabled styles for .govuk-input elements
+*/
+.govuk-input:disabled {
+  opacity: 0.5;
+  color: inherit;
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.govuk-hint {
+  display: block;
+}
+
+.govuk-select {
+  min-width: auto;
 }

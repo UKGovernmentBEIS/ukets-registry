@@ -35,6 +35,7 @@ public class SearchFiltersUtils {
         List<AccountTypeOption> accountTypeOptions = Stream.of(
             AccountType.OPERATOR_HOLDING_ACCOUNT,
             AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+            AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
             AccountType.TRADING_ACCOUNT,
             AccountType.UK_AUCTION_DELIVERY_ACCOUNT,
             AccountType.PERSON_HOLDING_ACCOUNT,

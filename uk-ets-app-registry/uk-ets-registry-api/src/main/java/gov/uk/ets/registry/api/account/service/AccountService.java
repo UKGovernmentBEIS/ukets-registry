@@ -13,6 +13,7 @@ import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.InstallationOwnership;
 import gov.uk.ets.registry.api.account.domain.InstallationOwnershipStatus;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.SalesContact;
 import gov.uk.ets.registry.api.account.domain.UnitBlockFilter;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
@@ -43,9 +44,9 @@ import gov.uk.ets.registry.api.account.web.model.AccountHoldingsSummaryResultDTO
 import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
@@ -107,8 +108,10 @@ import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 import gov.uk.ets.reports.model.ReportQueryInfo;
 import gov.uk.ets.reports.model.ReportType;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.keycloak.authorization.client.AuthorizationDeniedException;
@@ -117,7 +120,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -212,7 +214,8 @@ public class AccountService {
     private TrustedAccountListRulesDTO getDefaultTrustedAccountRules(AccountDTO accountDTO){
         TrustedAccountListRulesDTO rulesDTO = new TrustedAccountListRulesDTO();
         if(AccountType.OPERATOR_HOLDING_ACCOUNT.toString().equals(accountDTO.getAccountType()) ||
-                AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.toString().equals(accountDTO.getAccountType())){
+                AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.toString().equals(accountDTO.getAccountType()) ||
+                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.toString().equals(accountDTO.getAccountType()) ){
             rulesDTO.setRule1(true);
             rulesDTO.setRule2(false);
             rulesDTO.setRule3(false);
@@ -269,7 +272,13 @@ public class AccountService {
      */
     @Transactional
     public AccountDTO openAccount(AccountDTO accountDTO) {
+        Account account = createAccount(accountDTO);
+        return this.getAccountDTO(account.getIdentifier());
+    }
+
+    public Account createAccount(AccountDTO accountDTO) {
         Account account = new Account();
+        account.setPublicIdentifier(generateUniquePublicIdentifier());
         account.setAccountName(accountDTO.getAccountDetails().getName());
         final AccountType type = AccountType.parse(accountDTO.getAccountType());
         account.setRegistryAccountType(type.getRegistryType());
@@ -336,26 +345,27 @@ public class AccountService {
             }
         }
         account.setAccountHolder(holder);
-        InstallationOrAircraftOperatorDTO installationOrAircraftOperatorDTO = accountDTO.getOperator();
-        if (installationOrAircraftOperatorDTO != null) {
-            OperatorType operatorType = OperatorType.valueOf(installationOrAircraftOperatorDTO.getType());
+        OperatorDTO operatorDTO = accountDTO.getOperator();
+        if (operatorDTO != null) {
+            OperatorType operatorType = OperatorType.valueOf(operatorDTO.getType());
             switch (operatorType) {
                 case INSTALLATION:
-                    Installation installation = createInstallation(installationOrAircraftOperatorDTO);
+                    Installation installation = createInstallation(operatorDTO);
                     account.setCompliantEntity(installation);
                     handleInstallationOwnership(account, installation, insertDate);
                     break;
                 case INSTALLATION_TRANSFER:
                     Optional<CompliantEntity> compliantEntity =
-                        compliantEntityRepository.findByIdentifier(installationOrAircraftOperatorDTO.getIdentifier());
+                        compliantEntityRepository.findByIdentifier(operatorDTO.getIdentifier());
                     if (compliantEntity.isEmpty()) {
                         throw new IllegalStateException("Compliant entity not found in DB.");
                     }
                     Installation existingInstallation = (Installation) Hibernate.unproxy(compliantEntity.get());
-                    existingInstallation.setInstallationName(installationOrAircraftOperatorDTO.getName());
-                    existingInstallation.setPermitIdentifier(installationOrAircraftOperatorDTO.getPermit().getId());
-                    if (installationOrAircraftOperatorDTO.getChangedRegulator() != null) {
-                        existingInstallation.setRegulator(installationOrAircraftOperatorDTO.getChangedRegulator());
+                    existingInstallation.setInstallationName(operatorDTO.getName());
+                    existingInstallation.setPermitIdentifier(operatorDTO.getPermit().getId());
+                    existingInstallation.setEmitterId(operatorDTO.getEmitterId());
+                    if (operatorDTO.getChangedRegulator() != null) {
+                        existingInstallation.setRegulator(operatorDTO.getChangedRegulator());
                     }
                     account.setCompliantEntity(existingInstallation);
                     persistenceService.save(existingInstallation);
@@ -363,15 +373,19 @@ public class AccountService {
                         existingInstallation, insertDate);
                     break;
                 case AIRCRAFT_OPERATOR:
-                    AircraftOperator aircraftOperator = createAircraftOperator(installationOrAircraftOperatorDTO);
+                    AircraftOperator aircraftOperator = createAircraftOperator(operatorDTO);
                     account.setCompliantEntity(aircraftOperator);
+                    break;
+                case MARITIME_OPERATOR:
+                    MaritimeOperator maritimeOperator = createMaritimeOperator(operatorDTO);
+                    account.setCompliantEntity(maritimeOperator);
                     break;
             }
         }
         handleAccountOwnership(account, holder);
         persistenceService.save(account);
         createAuthorisedRepresentatives(accountDTO, account, AccountAccessState.ACTIVE);
-        return this.getAccountDTO(account.getIdentifier());
+        return account;
     }
 
     private TrustedAccountListRulesDTO provideTransactionRulesDefaultValues(TrustedAccountListRulesDTO dto) {
@@ -387,7 +401,7 @@ public class AccountService {
         return dto;
     }
 
-    private Installation createInstallation(InstallationOrAircraftOperatorDTO installationDTO) {
+    private Installation createInstallation(OperatorDTO installationDTO) {
         Installation installation = new Installation();
         installation.setIdentifier(compliantEntityRepository.getNextIdentifier());
         installation.setActivityType(installationDTO.getActivityType().name());
@@ -396,19 +410,34 @@ public class AccountService {
         installation.setRegulator(getRegulatorIfChanged(installationDTO));
         installation.setStartYear(installationDTO.getFirstYear());
         installation.setEndYear(installationDTO.getLastYear());
+        installation.setEmitterId(installationDTO.getEmitterId());
         installation = persistenceService.save(installation);
         return installation;
     }
 
-    private AircraftOperator createAircraftOperator(InstallationOrAircraftOperatorDTO aircraftOperatorDTO) {
+    private AircraftOperator createAircraftOperator(OperatorDTO aircraftOperatorDTO) {
         AircraftOperator aircraftOperator = new AircraftOperator();
         aircraftOperator.setIdentifier(compliantEntityRepository.getNextIdentifier());
         aircraftOperator.setRegulator(getRegulatorIfChanged(aircraftOperatorDTO));
         aircraftOperator.setMonitoringPlanIdentifier(aircraftOperatorDTO.getMonitoringPlan().getId());
         aircraftOperator.setStartYear(aircraftOperatorDTO.getFirstYear());
         aircraftOperator.setEndYear(aircraftOperatorDTO.getLastYear());
+        aircraftOperator.setEmitterId(aircraftOperatorDTO.getEmitterId());
         aircraftOperator = persistenceService.save(aircraftOperator);
         return aircraftOperator;
+    }
+
+    private MaritimeOperator createMaritimeOperator(OperatorDTO maritimeOperatorDTO) {
+        MaritimeOperator maritimeOperator = new MaritimeOperator();
+        maritimeOperator.setIdentifier(compliantEntityRepository.getNextIdentifier());
+        maritimeOperator.setRegulator(getRegulatorIfChanged(maritimeOperatorDTO));
+        maritimeOperator.setMaritimeMonitoringPlanIdentifier(maritimeOperatorDTO.getMonitoringPlan().getId());
+        maritimeOperator.setStartYear(maritimeOperatorDTO.getFirstYear());
+        maritimeOperator.setEndYear(maritimeOperatorDTO.getLastYear());
+        maritimeOperator.setImo(maritimeOperatorDTO.getImo());
+        maritimeOperator.setEmitterId(maritimeOperatorDTO.getEmitterId());
+        maritimeOperator = persistenceService.save(maritimeOperator);
+        return maritimeOperator;
     }
     
     private SalesContact createSalesContactDetails(SalesContactDetailsDTO salesContactDetailsDTO) {
@@ -421,11 +450,11 @@ public class AccountService {
         return salesContact;
     }
 
-    private RegulatorType getRegulatorIfChanged(InstallationOrAircraftOperatorDTO installationOrAircraftOperatorDTO) {
-        if (installationOrAircraftOperatorDTO.getChangedRegulator() != null) {
-            return installationOrAircraftOperatorDTO.getChangedRegulator();
+    private RegulatorType getRegulatorIfChanged(OperatorDTO operatorDTO) {
+        if (operatorDTO.getChangedRegulator() != null) {
+            return operatorDTO.getChangedRegulator();
         } else {
-            return installationOrAircraftOperatorDTO.getRegulator();
+            return operatorDTO.getRegulator();
         }
     }
 
@@ -439,7 +468,7 @@ public class AccountService {
         installationOwnershipRepository.save(newInstallationOwnership);
     }
 
-    private void handleInstallationOwnershipOnTransfer(InstallationOrAircraftOperatorDTO installationToBeTransferred,
+    private void handleInstallationOwnershipOnTransfer(OperatorDTO installationToBeTransferred,
                                                        Account newAccount, Installation installation,
                                                        Date insertDate) {
         Optional<Account> oldAccount = accountRepository
@@ -644,6 +673,7 @@ public class AccountService {
             persistenceService.save(contact);
 
             holder = accountConversionService.convert(holderDTO);
+            holder.setName(holderDTO.getDetails().getName());
             holder.setContact(contact);
             holder.setIdentifier(persistenceService.getNextBusinessIdentifier(AccountHolder.class));
             persistenceService.save(holder);
@@ -719,16 +749,16 @@ public class AccountService {
     }
 
     /**
-     * Get Installation or Aircraft operator account information
+     * Get Installation or Aircraft or Maritime operator account information
      *
      * @param identifier Account Identifier
      * @return The Operator information
      */
     @Transactional(readOnly = true)
-    public InstallationOrAircraftOperatorDTO getInstallationOrAircraftOperatorDTO(Long identifier) {
+    public OperatorDTO getInstallationOrAircraftOperatorDTO(Long identifier) {
         Account account = accountRepository.findByIdentifier(identifier).orElse(null);
         if (account == null) {
-            return new InstallationOrAircraftOperatorDTO();
+            return new OperatorDTO();
         }
         checkViewAccountPermissions(account);
         AccountDTO accountDTO = new AccountDTO();
@@ -945,23 +975,57 @@ public class AccountService {
     }
 
     /**
-     * Returns true/false if Monitoring Plan Identifier exists and account is not closed.
+     * Returns true/false if Monitoring Plan Identifier of Aircraft operator exists and account is not closed.
      *
-     * @param monitoringPlanId The monitoring Plan Identifier to check.
+     * @param aircraftMonitoringPlanId The monitoring Plan Identifier to check.
      * @return true/false if Monitoring Plan Identifier exists and account is not closed.
      */
-    public boolean monitoringPlanIdExists(String monitoringPlanId) {
-        Long aircraftOperatorCount =
-            accountRepository.getMonitoringPlanIdsForNonClosedAccounts(StringUtils.upperCase(monitoringPlanId));
-        String error = "An account with the same monitoring plan ID already exists. " +
-            " A second account is not permitted.";
-        if (aircraftOperatorCount != 0) {
-            throw AccountActionException.create(AccountActionError.builder()
-                .code(AccountActionError.MULTIPLE_MONITORING_PLAN_IDS_NOT_ALLOWED)
-                .message(error)
-                .build());
-        }
-        return false;
+    public boolean aircraftMonitoringPlanIdExists(String aircraftMonitoringPlanId) {
+        Long operatorCount =
+            accountRepository.getAircraftMonitoringPlanIdsForNonClosedAccounts(StringUtils.upperCase(aircraftMonitoringPlanId));
+        return operatorCount != 0;
+    }
+
+    /**
+     * Returns true/false if Monitoring Plan Identifier of Maritime operator exists and account is not closed.
+     *
+     * @param maritimeMonitoringPlanId The monitoring Plan Identifier to check.
+     * @return true/false if Monitoring Plan Identifier exists and account is not closed.
+     */
+    public boolean maritimeMonitoringPlanIdExists(String maritimeMonitoringPlanId) {
+        Long operatorCount =
+            accountRepository.getMaritimeMonitoringPlanIdsForNonClosedAccounts(StringUtils.upperCase(maritimeMonitoringPlanId));
+        return operatorCount != 0;
+    }
+
+    /**
+     * Returns true/false if Maritime IMO exists and account is not closed.
+     *
+     * @param imo The Maritime Company IMO number
+     * @return true/false if Maritime IMO exists and account is not closed.
+     */
+    public boolean maritimeImoExists(String imo) {
+        return accountRepository.countMaritimeIMOsForNonClosedAccounts(imo) != 0;
+    }
+
+    /**
+     * Returns true/false if Emitter ID exists and account is not closed.
+     *
+     * @param emitterId The Emitter ID
+     * @return true/false if Emitter ID exists and account is not closed.
+     */
+    public boolean emitterIdExists(String emitterId) {
+        return accountRepository.existsByCompliantEntity_EmitterIdAndAccountStatusNot(emitterId, AccountStatus.CLOSED);
+    }
+
+    /**
+     * Returns true/false if Emitter ID exists on an account that is not closed and whose CompliantEntity identifier is NOT 'operatorIdentifier'.
+     * @param emitterId
+     * @param operatorIdentifier
+     * @return true/false if Emitter ID exists on an account that is not closed and whose CompliantEntity identifier is NOT 'operatorIdentifier'.
+     */
+    public boolean isExistingEmitterId(String emitterId,Long operatorIdentifier) {
+        return accountRepository.isExistingEmitterId(operatorIdentifier,emitterId,AccountStatus.CLOSED);
     }
 
     /**
@@ -1132,7 +1196,7 @@ public class AccountService {
         return false;
     }
 
-    public InstallationOrAircraftOperatorDTO getInstallationByIdentifier(Long identifier) {
+    public OperatorDTO getInstallationByIdentifier(Long identifier) {
         Optional<CompliantEntity> byIdentifier = compliantEntityRepository.findByIdentifier(identifier);
         if (byIdentifier.isPresent()) {
             return accountConversionService.convert((Installation) byIdentifier.get());
@@ -1146,7 +1210,7 @@ public class AccountService {
 		return accountRepository.installationsByIdentifierForNonClosedOrRejectedAccounts(installationId, excludeAccountHolderIdentifier.orElse(null));
 	}
 
-    public void validateOperator(InstallationOrAircraftOperatorDTO operatorDTO) {
+    public void validateOperator(OperatorDTO operatorDTO) {
         //TODO refactor installationPermitIdExists which is  common rule for account opening
         //Transfer-BR4
         if(operatorDTO.getPermit().getPermitIdUnchanged() == null || !operatorDTO.getPermit().getPermitIdUnchanged()) {
@@ -1434,4 +1498,12 @@ public class AccountService {
 																  .message("You are not allowed to perform this action.").build());
 		}
 	}
+
+    public String generateUniquePublicIdentifier() {
+        String pid;
+        do {
+            pid = "UK" + RandomStringUtils.randomAlphanumeric(10).toUpperCase();
+        } while (accountRepository.existsByPublicIdentifier(pid)); // Ensures uniqueness
+        return pid;
+    }
 }

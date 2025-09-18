@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.notification;
 
+import java.util.Date;
 import java.util.Set;
 
 import gov.uk.ets.registry.api.file.upload.requesteddocs.model.DocumentsRequestType;
@@ -24,10 +25,11 @@ public class DocumentRequestGroupNotification extends EmailNotification {
     private String userFullName;
     private String accountName;
     private String accountHolderName;
+    private Date deadline;
 
     @Builder
     public DocumentRequestGroupNotification(Set<String> recipients, GroupNotificationType type, String requestId, DocumentsRequestType documentsRequestType,
-                                            String userId, String userFullName, String accountName, String accountHolderName) {
+                                            String userId, String userFullName, String accountName, String accountHolderName, Date deadline) {
         super(recipients, type, null, null, null);
         this.requestId = requestId;
         this.documentsRequestType = documentsRequestType;
@@ -35,5 +37,6 @@ public class DocumentRequestGroupNotification extends EmailNotification {
         this.accountName = accountName;
         this.accountHolderName = accountHolderName;
         this.userFullName = userFullName;
+        this.deadline = deadline;
     }
 }

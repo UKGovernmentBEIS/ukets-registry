@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_17_0_ADD_TABLE_ALLOCATION_JOB_ERROR" author="piliotid" context="migrate">
+        <comment>Add allocation_job_error table.</comment>
+        <sql>
+            create sequence allocation_job_error_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "allocation_job_error"
+            ("id" bigint,
+             "error_code" integer,
+             "allocation_job_id" bigint not null,
+             "details" varchar(2000),
+             "date_occurred" timestamp,
+             constraint "pk_allocation_job_error" primary key("id"));
+
+            alter table "allocation_job_error" add constraint "fk_alloc_job_error_alloc_job" foreign key ("allocation_job_id")
+                references "allocation_job" ("id");
+
+            comment on table "allocation_job_error" is 'Stores error codes related to allocation_job.';
+			comment on column "allocation_job_error"."id" is 'The primary key';
+			comment on column "allocation_job_error"."error_code" is 'The error code';
+			comment on column "allocation_job_error"."allocation_job_id" is 'Foreign key to allocation_job.';
+			comment on column "allocation_job_error"."details" is 'The description of the error that occurred during the allocation_job.';
+			comment on column "allocation_job_error"."date_occurred" is 'the date that the error occurred.';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

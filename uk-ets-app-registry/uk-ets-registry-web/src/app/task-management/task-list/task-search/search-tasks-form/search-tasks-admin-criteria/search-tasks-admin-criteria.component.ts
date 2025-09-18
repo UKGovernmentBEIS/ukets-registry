@@ -23,7 +23,10 @@ import {
   USER_TASK_OPTIONS,
 } from '../search-tasks-form.model';
 import { ErrorDetail } from '@registry-web/shared/error-summary';
-import { UkValidationMessageHandler } from '@registry-web/shared/validation';
+import {
+  UkRegistryValidators,
+  UkValidationMessageHandler,
+} from '@registry-web/shared/validation';
 import { Option } from '@registry-web/shared/form-controls/uk-select-input/uk-select.model';
 
 @Component({
@@ -66,27 +69,51 @@ export class SearchTasksAdminCriteriaComponent
 
     this.validationMessages = {
       claimedOnFrom: {
-        pattern: 'The date you have entered is invalid.',
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Claimed on from" field',
         ngbDate: ' ',
       },
       claimedOnTo: {
-        pattern: 'The date you have entered is invalid.',
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Claimed on to" field',
         ngbDate: ' ',
       },
       createdOnFrom: {
-        pattern: 'The date you have entered is invalid.',
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Created on from" field',
         ngbDate: ' ',
       },
       createdOnTo: {
-        pattern: 'The date you have entered is invalid.',
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Created on to" field',
         ngbDate: ' ',
       },
       completedOnFrom: {
-        pattern: 'The date you have entered is invalid.',
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Completed on from" field',
         ngbDate: ' ',
       },
       completedOnTo: {
-        pattern: 'The date you have entered is invalid.',
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Completed on to" field',
+        ngbDate: ' ',
+      },
+      deadlineFrom: {
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Deadline from" field',
+        ngbDate: ' ',
+      },
+      deadlineTo: {
+        pattern: ' ',
+        invalidDate:
+          'The date you have entered is invalid. Please enter at least 8 valid numbers in the format "DD/MM/YYYY", in the "Deadline to" field',
         ngbDate: ' ',
       },
     };
@@ -147,12 +174,14 @@ export class SearchTasksAdminCriteriaComponent
       allocationCategory: [],
       allocationYear: [],
       nameOrUserId: [],
-      claimedOnFrom: [],
-      claimedOnTo: [],
-      createdOnFrom: [],
-      createdOnTo: [],
-      completedOnFrom: [],
-      completedOnTo: [],
+      claimedOnFrom: [null, UkRegistryValidators.isValidDate()],
+      claimedOnTo: [null, UkRegistryValidators.isValidDate()],
+      createdOnFrom: [null, UkRegistryValidators.isValidDate()],
+      createdOnTo: [null, UkRegistryValidators.isValidDate()],
+      completedOnFrom: [null, UkRegistryValidators.isValidDate()],
+      completedOnTo: [null, UkRegistryValidators.isValidDate()],
+      deadlineFrom: [null, UkRegistryValidators.isValidDate()],
+      deadlineTo: [null, UkRegistryValidators.isValidDate()],
     });
   }
 

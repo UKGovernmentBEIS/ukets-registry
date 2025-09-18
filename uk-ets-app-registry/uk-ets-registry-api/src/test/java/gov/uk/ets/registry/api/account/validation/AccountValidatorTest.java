@@ -13,7 +13,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.DateInfo;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.MonitoringPlanDTO;
 import gov.uk.ets.registry.api.account.web.model.PermitDTO;
@@ -208,7 +208,22 @@ public class AccountValidatorTest {
         Mockito.when(planDTO.getId()).thenReturn("77666666");
         Mockito.when(account.getOperator().getMonitoringPlan()).thenReturn(planDTO);
 
-        Mockito.when(accountService.monitoringPlanIdExists(any())).thenReturn(true);
+        Mockito.when(accountService.aircraftMonitoringPlanIdExists(any())).thenReturn(true);
+
+        assertThrows(AccountValidationException.class, () -> validator.validate(account));
+    }
+
+    @Test
+    @DisplayName("maritime operator holding account with same monitoring plan ID is invalid")
+    void test_maritime_operator_holding_account_with_same_monitoring_plan_id() {
+        AccountDTO account = mockValidAccountDTO();
+        Mockito.when(account.getAccountType()).thenReturn("MARITIME_OPERATOR_HOLDING_ACCOUNT");
+        Mockito.when(account.getOperator().getType()).thenReturn("MARITIME_OPERATOR");
+        MonitoringPlanDTO planDTO = Mockito.mock(MonitoringPlanDTO.class);
+        Mockito.when(planDTO.getId()).thenReturn("77666666");
+        Mockito.when(account.getOperator().getMonitoringPlan()).thenReturn(planDTO);
+
+        Mockito.when(accountService.maritimeMonitoringPlanIdExists(any())).thenReturn(true);
 
         assertThrows(AccountValidationException.class, () -> validator.validate(account));
     }
@@ -286,7 +301,7 @@ public class AccountValidatorTest {
         TrustedAccountListRulesDTO rulesDTO = Mockito.mock(TrustedAccountListRulesDTO.class);
         Mockito.when(rulesDTO.getRule1()).thenReturn(false);
         Mockito.when(rulesDTO.getRule2()).thenReturn(false);
-        InstallationOrAircraftOperatorDTO operator = Mockito.mock(InstallationOrAircraftOperatorDTO.class);
+        OperatorDTO operator = Mockito.mock(OperatorDTO.class);
         PermitDTO permitDTO = Mockito.mock(PermitDTO.class);
         DateDTO dateDTO = Mockito.mock(DateDTO.class);
         Mockito.when(dateDTO.getDay()).thenReturn(1);
@@ -299,6 +314,7 @@ public class AccountValidatorTest {
         Mockito.when(operator.getType()).thenReturn("INSTALLATION");
         Mockito.when(operator.getFirstYear()).thenReturn(2021);
         Mockito.when(operator.getPermit()).thenReturn(permitDTO);
+        Mockito.when(operator.getEmitterId()).thenReturn("EMITTER ID");
         AccountHolderRepresentativeDTO representativeDTO = Mockito.mock(AccountHolderRepresentativeDTO.class);
         Mockito.when(representativeDTO.getAddress()).thenReturn(addressDTO);
         EmailAddressDTO emailAddressDTO = Mockito.mock(EmailAddressDTO.class);

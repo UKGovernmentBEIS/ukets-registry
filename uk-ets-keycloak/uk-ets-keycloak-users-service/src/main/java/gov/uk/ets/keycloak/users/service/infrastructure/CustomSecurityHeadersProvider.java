@@ -5,8 +5,8 @@ import org.jboss.logging.Logger;
 import org.keycloak.headers.DefaultSecurityHeadersProvider;
 import org.keycloak.headers.SecurityHeadersOptions;
 import org.keycloak.models.KeycloakSession;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
 
 /**
  * This overrides {@link org.keycloak.headers.DefaultSecurityHeadersProvider} in order to record logs with the

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.keycloak.models.jpa.entities.QClientEntity;
 import org.keycloak.models.jpa.entities.QRealmEntity;

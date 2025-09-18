@@ -3,6 +3,7 @@ import { RequestDocumentsRoutePaths } from '@request-documents/wizard/model/requ
 import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-documents-origin';
 import { SummaryListItem } from '@shared/summary-list/summary-list.info';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
+import { UkDate } from '@registry-web/shared/model/uk-date';
 @Component({
   selector: 'app-check-documents-request',
   templateUrl: './check-documents-request.component.html',
@@ -32,6 +33,8 @@ export class CheckDocumentsRequestComponent {
   isAdmin: boolean;
   @Input()
   isSeniorAdmin: boolean;
+  @Input()
+  deadline: UkDate;
 
   @Output()
   readonly navigateToEmitter = new EventEmitter<RequestDocumentsRoutePaths>();

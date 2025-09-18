@@ -88,6 +88,17 @@ export enum ReportType {
   R0037 = 'R0037',
   R0038 = 'R0038',
   R0039 = 'R0039',
+  R0040 = 'R0040',
+  R0041 = 'R0041',
+  R0042 = 'R0042',
+  R0043 = 'R0043',
+  R0044 = 'R0044',
+  R0045 = 'R0045',
+  R0046 = 'R0046',
+  R0047 = 'R0047',
+  R0048 = 'R0048',
+  R0049 = 'R0049',
+  R0050 = 'R0050',
 }
 
 export const SEFYearOptions: Option[] = [
@@ -114,6 +125,15 @@ export const CommitmentPeriodOptions: SelectableOption[] = [
     value: '2',
     selected: true,
   },
+];
+
+export const RegulatorsOptions: Option[] = [
+  { label: '', value: null },
+  { label: 'EA', value: ['EA'] },
+  { label: 'NRW', value: ['NRW'] },
+  { label: 'SEPA', value: ['SEPA'] },
+  { label: 'DAERA', value: ['DAERA'] },
+  { label: 'OPRED', value: ['OPRED'] },
 ];
 
 export enum ReportRequestingRole {
@@ -169,6 +189,43 @@ export interface ReportTypeValue {
   order?: number;
   filters?: Filters[];
   groupValidators?: ValidatorFn[];
+}
+
+export function generate050YearOptions(date: string) {
+  const initialYear = 2025;
+  const now = new Date();
+  const finalYear = now.getFullYear();
+
+  const [day, month] = date.split('/');
+  const configurationDate = new Date(
+    finalYear,
+    parseInt(month, 10) - 1,
+    parseInt(day, 10)
+  );
+
+  const options: Option[] = [];
+  const length = finalYear - initialYear;
+  if (length === 0) {
+    if (configurationDate < now) {
+      options.push({ label: initialYear.toString(), value: initialYear });
+      reportTypeMap.R0050.filters[0].optionsValues = options;
+    }
+  }
+
+  if (length > 0) {
+    for (let i = 0; i <= length; i++) {
+      let year = initialYear;
+      year += i;
+      if (i == length) {
+        if (now > configurationDate) {
+          options.push({ label: year.toString(), value: year });
+        }
+      } else {
+        options.push({ label: year.toString(), value: year });
+      }
+    }
+    reportTypeMap.R0050.filters[0].optionsValues = options;
+  }
 }
 
 export const reportTypeMap: Record<ReportType, ReportTypeValue> = {
@@ -251,7 +308,7 @@ export const reportTypeMap: Record<ReportType, ReportTypeValue> = {
     filters: [
       {
         period: false,
-        model: { year: '' },
+        model: { year: ['', Validators.required] },
         optionsValues: generateYearOptions(2021),
         inputType: 'select',
         label: 'Select year to generate the report',
@@ -267,7 +324,7 @@ export const reportTypeMap: Record<ReportType, ReportTypeValue> = {
     filters: [
       {
         period: false,
-        model: { year: '' },
+        model: { year: ['', Validators.required] },
         optionsValues: generateYearOptions(2021),
         inputType: 'select',
         label: 'Select year to generate the report',
@@ -608,7 +665,129 @@ export const reportTypeMap: Record<ReportType, ReportTypeValue> = {
     summary:
       'This report shows details of all pending tasks that form the RA view of the task list in the Registry.',
     isStandard: true,
-    order: 39,
+    order: 11,
+  },
+  [ReportType.R0040]: {
+    label: 'Annual Task List',
+    summary:
+      'This report shows details of all completed tasks that form the RA view of the task list in the Registry.',
+    isStandard: true,
+    order: 40,
+  },
+  [ReportType.R0044]: {
+    label: 'UK ETS Registry Participants (MOHA)',
+    summary:
+      'This report shows details of all Account Holders on all MOHA accounts.',
+    isStandard: true,
+    filters: [
+      {
+        period: false,
+        model: { year: ['', Validators.required] },
+        optionsValues: generateYearOptions(2021),
+        inputType: 'select',
+        label: 'Select year to generate the report',
+      },
+    ],
+    order: 41,
+  },
+  [ReportType.R0045]: {
+    label: 'UK ETS Registry Participants (MOHA)',
+    summary:
+      'This report shows details of all Account Holders on all MOHA accounts.',
+    isStandard: true,
+    filters: [
+      {
+        period: false,
+        model: { year: ['', Validators.required] },
+        optionsValues: generateYearOptions(2021),
+        inputType: 'select',
+        label: 'Select year to generate the report',
+      },
+    ],
+    order: 42,
+  },
+  [ReportType.R0041]: {
+    label: 'UK ETS Registry Participants and Allocations (OHA)',
+    summary:
+      'This report shows details of all Account Holders on all OHA accounts, including those with zero allocations for all allocation years. It does not show details for accounts without an installation.',
+    isStandard: true,
+    order: 16,
+  },
+  [ReportType.R0042]: {
+    label: 'UK ETS Registry Participants and Allocations (AOHA)',
+    summary:
+      'This report shows details of all Account Holders on all AOHA accounts, including those with zero allocations for all allocation years.',
+    isStandard: true,
+    order: 15,
+  },
+  [ReportType.R0043]: {
+    label: 'Allocation Returns',
+    summary:
+      'This report shows the allocated Allowances that have been returned through the completed transactions.',
+    isStandard: true,
+    groupValidators: [UkRegistryValidators.dateRangeValidator('from', 'to')],
+    order: 5,
+    filters: [
+      {
+        period: true,
+        model: { from: [null, UkRegistryValidators.dateFormatValidator()] },
+        inputType: 'datepicker',
+        isHorizontal: true,
+      },
+      {
+        period: true,
+        model: {
+          to: [null, UkRegistryValidators.dateFormatValidator()],
+        },
+        inputType: 'datepicker',
+        isHorizontal: true,
+      },
+      {
+        period: false,
+        model: { regulators: [null] },
+        optionsValues: RegulatorsOptions,
+        inputType: 'select',
+        label: 'Select Regulator',
+      },
+    ],
+  },
+  [ReportType.R0046]: {
+    label: 'Notes of all Account Holders',
+    summary: 'This report shows the Notes of all account holders.',
+    isStandard: true,
+    order: 43,
+  },
+  [ReportType.R0047]: {
+    label: 'UKETS ARs one year since login',
+    summary:
+      'This report shows details for ARs linked to all accounts to identify those, who have not logged in for 12 months or more (i.e. more than 52 weeks).',
+    isStandard: true,
+    order: 44,
+  },
+  [ReportType.R0048]: {
+    label: 'Compliance Management Report',
+    summary: 'Compliance Management Report (CMR).',
+  },
+  [ReportType.R0049]: {
+    label: 'Compliance data report',
+    summary: 'Compliance data report',
+    order: 45,
+    isStandard: true,
+  },
+  [ReportType.R0050]: {
+    label: 'Transaction List report (3 years old)',
+    summary:
+      'This report includes all transactions involving an Installation, Aviation or Maritime Operator or a Trader, that were completed during the reporting year that is 3 years before the one selected (e.g. the 2026 report includes transactions completed from 01 May 2022 and up to 30 Apr 2023).',
+    isStandard: true,
+    filters: [
+      {
+        period: false,
+        model: { year: ['', Validators.required] },
+        inputType: 'select',
+        label: 'Select year to generate the report',
+      },
+    ],
+    order: 46,
   },
 };
 

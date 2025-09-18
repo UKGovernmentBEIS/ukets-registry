@@ -215,7 +215,11 @@ public class NotificationService {
 		return Pair.of(accountName, accountHolderName);
 	}
 
-    public Set<String> findEmails(Set<String> recipients, boolean withServiceAccountAccess) {
+    public Set<String> findUserEmail(String userUrid, boolean withServiceAccountAccess) {
+        return findEmails(Set.of(userUrid), withServiceAccountAccess);
+    }
+
+    private Set<String> findEmails(Set<String> recipients, boolean withServiceAccountAccess) {
         return userWorkContactRepository
             .fetch(recipients, withServiceAccountAccess)
             .stream()

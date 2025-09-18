@@ -50,7 +50,7 @@ export class SortableColumnDirective implements OnInit, OnDestroy {
 
     if (!this.sortDisable) {
       const buttonElem = document.createElement('BUTTON');
-      buttonElem.setAttribute('aria-sort', this.getAriaSort());
+      buttonElem.setAttribute('sort', this.getAriaSort());
       const headerLabel = document.createTextNode(thElem.innerText);
       buttonElem.appendChild(headerLabel);
       thElem.innerHTML = '';
@@ -67,7 +67,7 @@ export class SortableColumnDirective implements OnInit, OnDestroy {
         }
         this.renderer.setAttribute(
           this.elRef.nativeElement.children[0],
-          'aria-sort',
+          'sort',
           this.getAriaSort()
         );
       });
@@ -80,6 +80,8 @@ export class SortableColumnDirective implements OnInit, OnDestroy {
   private getAriaSort(): string {
     return this.ariaSortMap[this.sortDirection]
       ? this.ariaSortMap[this.sortDirection]
-      : this.sortDirection;
+      : this.sortDirection
+        ? this.sortDirection
+        : 'none';
   }
 }

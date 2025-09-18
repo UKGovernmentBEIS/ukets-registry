@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  selectIsOHAOrAOHA,
+  selectIsOHAOrAOHAorMOHA,
   selectMaxNumberOfARs,
   selectMinNumberOfARs,
 } from '@account-opening/account-opening.selector';
@@ -18,5 +18,5 @@ export class RulesForAuthorisedRepresentativeComponent {
 
   minNumberOfARs$: Observable<number> = this.store.select(selectMinNumberOfARs);
 
-  showSurrenderText$ = this.store.select(selectIsOHAOrAOHA);
+  showSurrenderText$ = this.store.select(selectIsOHAOrAOHAorMOHA);
 }

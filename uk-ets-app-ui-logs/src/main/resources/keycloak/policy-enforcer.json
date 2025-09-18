@@ -1,0 +1,24 @@
+{
+  "realm": "uk-ets",
+  "resource": "uk-ets-ui-logs-api",
+  "enforcement-mode": "PERMISSIVE",
+  "lazy-load-paths": "true",
+  "user-managed-access": {},
+  "paths": [
+    {
+      "path": "/*",
+      "enforcement-mode": "DISABLED",
+      "static": "true"
+    },
+    {
+      "path": "/api-ui-logs/actuator/health",
+      "enforcement-mode": "DISABLED",
+      "static": "true",
+      "methods": [
+        {
+          "method": "GET"
+        }
+      ]
+    }
+  ]
+}

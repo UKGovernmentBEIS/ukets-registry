@@ -12,6 +12,7 @@ import gov.uk.ets.publication.api.model.SectionStatus;
 import gov.uk.ets.publication.api.repository.PublicationScheduleRepository;
 import gov.uk.ets.publication.api.repository.SectionRepository;
 import gov.uk.ets.publication.api.service.ReportGenerationService;
+import gov.uk.ets.publication.api.service.SectionUtil;
 import gov.uk.ets.reports.model.ReportQueryInfo;
 import gov.uk.ets.reports.model.ReportType;
 import java.sql.Timestamp;
@@ -37,7 +38,8 @@ public class ReportScheduler {
     private final SectionRepository sectionRepository;
     private final ReportFilesRepository reportFilesRepository;
     private final PublicationScheduleRepository scheduleRepository;
-    
+    private final SectionUtil sectionUtil;
+
     @Scheduled(cron = "${scheduler.publication.start}")
     @SchedulerLock(name = "publicationSchedulerLock", lockAtLeastFor = "500ms")
     public void execute() {
@@ -68,7 +70,9 @@ public class ReportScheduler {
                     requestGenerationOfReport(truncatedNow, truncatedNow.getYear(), section, schedule, null);
                 }
                 if (section.getDisplayType().equals(DisplayType.ONE_FILE_PER_YEAR)) {
-                    Iterator<Integer> it = IntStream.rangeClosed(2021, truncatedNow.getYear()).boxed().iterator();
+                    // If the first year is different among the reports, this logic should be moved to SectionUtil.
+                    int firstYear = section.getReportType() == ReportType.R0050 ? 2025 : 2021;
+                    Iterator<Integer> it = IntStream.rangeClosed(firstYear, truncatedNow.getYear()).boxed().iterator();
                     while (it.hasNext()) {
                         requestGenerationOfReport(truncatedNow, it.next(), section, schedule, section.getId() + "_" + now);
                     }
@@ -90,7 +94,7 @@ public class ReportScheduler {
         ReportFile savedFile = reportFilesRepository.save(file);
 
         ReportQueryInfo queryInfo = new ReportQueryInfo();
-        if (ReportType.R0013.equals(section.getReportType()) || ReportType.R0014.equals(section.getReportType())) {
+        if (sectionUtil.isYearlyReport(section.getReportType())) {
             queryInfo.setYear((long) year);	
         }      
         queryInfo.setTo(schedule.getGenerationDate() != null ? Timestamp.valueOf(schedule.getGenerationDate().withYear(year)) : null);

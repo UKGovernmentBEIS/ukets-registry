@@ -53,14 +53,10 @@
             </p>
 
             <ng-container *ngIf="validationErrorMessage.regNum">
-              <span
-                id="event-name-error"
-                class="govuk-error-message"
-                role="alert"
-              >
+              <p id="event-name-error" class="govuk-error-message" role="alert">
                 <span class="govuk-visually-hidden">Error:</span>
                 {{ validationErrorMessage.regNum }}
-              </span>
+              </p>
             </ng-container>
 
             <!--    *********************        -->
@@ -105,7 +101,10 @@
                     selectRegNumType(regNumTypes.REGISTRATION_NUMBER_REASON)
                   "
                 />
-                <label class="govuk-label govuk-radios__label" for="regNum">
+                <label
+                  class="govuk-label govuk-radios__label"
+                  for="regNumReason"
+                >
                   I do not have a registration number
                 </label>
               </div>

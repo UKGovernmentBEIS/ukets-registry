@@ -1,7 +1,7 @@
 <div class="govuk-warning-text" *ngIf="hasReversalRequests()">
   <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
   <strong class="govuk-warning-text__text">
-    <span class="govuk-warning-text__assistive">Warning</span>
+    <span class="govuk-visually-hidden">Warning</span>
     {{ hasReversalRequests() }}
   </strong>
 </div>
@@ -32,7 +32,7 @@
             <a
               [routerLink]="[
                 '/account',
-                transactionDetails.transferringAccountIdentifier
+                transactionDetails.transferringAccountIdentifier,
               ]"
               data-testid="transferring-account-link"
               >{{ transactionDetails.transferringAccountName }}</a
@@ -81,7 +81,7 @@
             <a
               [routerLink]="[
                 '/account',
-                transactionDetails.acquiringAccountIdentifier
+                transactionDetails.acquiringAccountIdentifier,
               ]"
               data-testid="acquiring-account-link"
               >{{ transactionDetails.acquiringAccountName }}</a

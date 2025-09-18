@@ -1,9 +1,8 @@
 import {
   AfterContentInit,
   Component,
-  Injector,
+  inject,
   Input,
-  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { UkProtoFormCompositeComponent } from '@shared/form-controls/uk-proto-form-composite.component';
@@ -22,7 +21,8 @@ import {
   ARSelectionType,
   AuthorisedRepresentative,
 } from '@shared/model/account';
-import { map, Subject, takeUntil } from 'rxjs';
+import { map, takeUntil } from 'rxjs';
+import { ErrorDetail } from '@shared/error-summary';
 
 @Component({
   selector: 'app-uk-select-authorised-representative',
@@ -45,7 +45,7 @@ import { map, Subject, takeUntil } from 'rxjs';
 })
 export class UkSelectAuthorisedRepresentativeComponent
   extends UkProtoFormCompositeComponent
-  implements AfterContentInit, Validator, OnInit, OnDestroy
+  implements AfterContentInit, Validator, OnInit
 {
   arSelectionTypes = ARSelectionType;
   arSelectionType: ARSelectionType;
@@ -62,20 +62,14 @@ export class UkSelectAuthorisedRepresentativeComponent
 
   @Input() showErrors: boolean;
 
+  @Input() errorDetails: ErrorDetail[] = [];
+
   /**
    * If true the radio buttons and the dropdown are hidden.
    */
   @Input() showOnlyUserIdInput: false;
 
-  private readonly unsubscribe$: Subject<void> = new Subject();
-
-  constructor(
-    protected parentF: FormGroupDirective,
-    private fb: UntypedFormBuilder,
-    protected injector: Injector
-  ) {
-    super(parentF, injector);
-  }
+  private fb = inject(UntypedFormBuilder);
 
   ngOnInit(): void {
     super.ngOnInit();
@@ -91,7 +85,7 @@ export class UkSelectAuthorisedRepresentativeComponent
               .setValue(trimmedVal, { emitEvent: false });
           }
         }),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.destroy$)
       )
       .subscribe();
   }
@@ -164,9 +158,14 @@ export class UkSelectAuthorisedRepresentativeComponent
     this.nestedForm.get('userIdInput').reset();
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+  getErrors(): String[] {
+    return this.errorDetails
+      .filter((error) => error.componentId === 'userIdInput')
+      .map((error) => error.errorMessage);
+  }
+
+  showError(): boolean {
+    return this.errorDetails.length > 0 && this.showErrors;
   }
 }
 

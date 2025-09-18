@@ -1,0 +1,27 @@
+<span *ngIf="maritime == null" class="govuk-caption-m govuk-!-margin-bottom-5">
+  No operator is linked to this account.
+</span>
+<ng-container *ngIf="hasOperatorUpdatePendingApproval">
+  <div class="govuk-warning-text">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      There are update requests pending approval
+    </strong>
+  </div>
+</ng-container>
+<app-summary-list
+  [class]="
+    'govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9'
+  "
+  [lines]="summaryListLines"
+></app-summary-list>
+<div *ngIf="canRequestUpdate">
+  <button
+    (click)="goToRequestUpdate()"
+    class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+    data-module="govuk-button"
+  >
+    Request Update
+  </button>
+</div>

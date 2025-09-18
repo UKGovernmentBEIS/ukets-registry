@@ -5,7 +5,11 @@ import gov.uk.ets.registry.api.account.service.TransferValidationService;
 import gov.uk.ets.registry.api.accounttransfer.service.AccountTransferService;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferActionType;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferRequestDTO;
-import javax.validation.Valid;
+import gov.uk.ets.registry.api.authz.ruleengine.Protected;
+import gov.uk.ets.registry.api.authz.ruleengine.RuleInput;
+import gov.uk.ets.registry.api.authz.ruleengine.RuleInputType;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.PendingTALRequestsRule;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,8 +38,12 @@ public class AccountTransferController {
      * @param request The account transfer request
      * @return The task request id
      */
+    @Protected(
+    {
+        PendingTALRequestsRule.class
+    })
     @PostMapping(path = "account-transfer.perform", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Long> accountTransferExistingHolder(@RequestBody @Valid @MDCParam(DTO) AccountTransferRequestDTO request) {
+    public ResponseEntity<Long> accountTransferExistingHolder(@RuleInput(RuleInputType.ACCOUNT_TRANSFER_REQUEST) @RequestBody @Valid @MDCParam(DTO) AccountTransferRequestDTO request) {
         // TODO BRs should be annotations
         transferValidationService.validateTransferRequestForAccountIdentifier(request.getAccountIdentifier(),
             request.getAcquiringAccountHolder().getId(),
@@ -43,5 +51,4 @@ public class AccountTransferController {
         Long taskRequestId = service.accountTransfer(request);
         return new ResponseEntity<>(taskRequestId, HttpStatus.OK);
     }
-
 }

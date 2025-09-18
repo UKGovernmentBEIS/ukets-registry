@@ -1,12 +1,14 @@
 package gov.uk.ets.registry.api.notification.emailgeneration;
 
 import freemarker.template.Configuration;
+import gov.uk.ets.registry.api.common.DateUtils;
 import gov.uk.ets.registry.api.common.mail.MailConfiguration;
 import gov.uk.ets.registry.api.notification.*;
 import gov.uk.ets.registry.usernotifications.GroupNotification;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class DocumentRequestEmailGenerator extends EmailGenerator {
         params.put("userFullName", notification.getUserFullName());
         params.put("accountName", notification.getAccountName());
         params.put("accountHolderName", notification.getAccountHolderName());
+        params.put("deadline", Optional.ofNullable(notification.getDeadline()).map(DateUtils::prettyCalendarDate).orElse(""));
 
         return params;
     }

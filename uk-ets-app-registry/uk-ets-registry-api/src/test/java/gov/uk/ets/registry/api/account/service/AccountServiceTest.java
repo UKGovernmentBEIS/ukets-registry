@@ -26,6 +26,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountHoldingsSummaryResultDTO
 import gov.uk.ets.registry.api.account.web.model.AccountStatusAction;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
+import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.auditevent.web.AuditEventDTO;
@@ -76,6 +77,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.util.CollectionUtils;
+import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,6 +90,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -923,6 +926,68 @@ class AccountServiceTest {
         verify(accountDTOFactory, Mockito.times(1)).setupOperator(argument2.capture(), argument3.capture());
     }
 
+    @Test
+    @DisplayName("Test maritimeMonitoringPlanIdExists method")
+    void test_maritimeMonitoringPlanIdExists() {
+        String maritimeMonitoringPlanId = "PLAN123";
+        Mockito.when(accountRepository.getMaritimeMonitoringPlanIdsForNonClosedAccounts(StringUtils.upperCase(maritimeMonitoringPlanId)))
+            .thenReturn(0L);
+        boolean result = accountService.maritimeMonitoringPlanIdExists(maritimeMonitoringPlanId);
+        assertFalse(result, "The result should be false when no matching account is found.");
+        verify(accountRepository, Mockito.times(1)).getMaritimeMonitoringPlanIdsForNonClosedAccounts(StringUtils.upperCase(maritimeMonitoringPlanId));
+    }
+
+    @Test
+    @DisplayName("Test maritimeMonitoringPlanIdExists returns true when account exists")
+    void test_maritimeMonitoringPlanIdExists_returnsTrue() {
+        String maritimeMonitoringPlanId = "PLAN123";
+        Mockito.when(accountRepository.getMaritimeMonitoringPlanIdsForNonClosedAccounts(StringUtils.upperCase(maritimeMonitoringPlanId)))
+            .thenReturn(1L);
+
+        boolean result = accountService.maritimeMonitoringPlanIdExists(maritimeMonitoringPlanId);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void test_emitterIdNotExists() {
+        String emitterId = "EMITTER_ID_123";
+        Mockito.when(accountRepository.existsByCompliantEntity_EmitterIdAndAccountStatusNot(emitterId, AccountStatus.CLOSED)).thenReturn(false);
+        boolean result = accountService.emitterIdExists(emitterId);
+        assertFalse(result, "The result should be false when no similar emitter id exists");
+        verify(accountRepository, Mockito.times(1)).existsByCompliantEntity_EmitterIdAndAccountStatusNot(emitterId, AccountStatus.CLOSED);
+    }
+
+    @Test
+    void test_emitterIdExists() {
+        String emitterId = "EMITTER_ID_123";
+        Mockito.when(accountRepository.existsByCompliantEntity_EmitterIdAndAccountStatusNot(emitterId, AccountStatus.CLOSED)).thenReturn(true);
+        boolean result = accountService.emitterIdExists(emitterId);
+        assertTrue(result, "The result should be true when similar emitter id exists");
+        verify(accountRepository, Mockito.times(1)).existsByCompliantEntity_EmitterIdAndAccountStatusNot(emitterId, AccountStatus.CLOSED);
+    }
+
+    @Test
+    @DisplayName("Verify isExistingEmitterId returns true, if an emitterId exists for an Operator account other than the one specified or a Closed Account")
+    void test_isExistingEmitterId() {
+        String emitterId = "EMITTER_ID_123";
+        Long operatorId = 1000024L;
+        Mockito.when(accountRepository.isExistingEmitterId(operatorId,emitterId, AccountStatus.CLOSED)).thenReturn(true);
+        boolean result = accountService.isExistingEmitterId(emitterId,operatorId);
+        assertTrue(result, "The result should be true when a similar emitter id exists on another account");
+        verify(accountRepository, Mockito.times(1)).isExistingEmitterId(operatorId,emitterId, AccountStatus.CLOSED);
+    }
+
+    @Test
+    @DisplayName("Verify isExistingEmitterId returns false, if an emitterId does not exists for an Operator account other than the one specified or a Closed Account")
+    void test_isNotExistingEmitterId() {
+        String emitterId = "EMITTER_ID_123";
+        Long operatorId = 1000024L;
+        Mockito.when(accountRepository.isExistingEmitterId(operatorId,emitterId, AccountStatus.CLOSED)).thenReturn(false);
+        boolean result = accountService.isExistingEmitterId(emitterId,operatorId);
+        assertFalse(result, "The result should be false when a similar emitter id does not exist");
+        verify(accountRepository, Mockito.times(1)).isExistingEmitterId(operatorId,emitterId, AccountStatus.CLOSED);
+    }
 
     @Test
     @DisplayName("Check retrieval of account system events")
@@ -1077,4 +1142,65 @@ class AccountServiceTest {
         verify(eventService, times(1)).createAndPublishEvent(accountIdentifier.toString(),user.getUrid(), "", EventType.ACCOUNT_INCLUSION_IN_BILLING,
 				 "Account inclusion in Billing");
     }
+
+    @Test
+    void testFindInstallationById() {
+        List<InstallationSearchResultDTO> mockResults = List.of(
+            new InstallationSearchResultDTO(123L, "PERMIT001", "Test Installation", "EMITTER001")
+        );
+
+        when(accountRepository.installationsByIdentifierForNonClosedOrRejectedAccounts("123", null))
+            .thenReturn(mockResults);
+
+        List<InstallationSearchResultDTO> result =
+            accountService.findInstallationById("123", Optional.empty());
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(123L, result.get(0).getIdentifier());
+        assertEquals("PERMIT001", result.get(0).getPermitIdentifier());
+        assertEquals("EMITTER001", result.get(0).getEmitterId());
+    }
+
+    @Test
+    @DisplayName("Generated Public Account ID should be valid and unique")
+    void testGenerateUniqueUkPid() {
+        // Mock that the repository does not already have a Public Account ID
+        Mockito.when(accountRepository.existsByPublicIdentifier(Mockito.anyString())).thenReturn(false);
+
+        // Generate Public Account ID
+        String generatedPublicAccountId = accountService.generateUniquePublicIdentifier();
+
+        // Ensure the Public Account ID matches the expected format (UK + 10 alphanumeric characters)
+        assertNotNull(generatedPublicAccountId, "Generated Public Account ID should not be null");
+        assertTrue(generatedPublicAccountId.startsWith("UK"), "Public Account ID should start with 'UK'");
+        assertTrue(generatedPublicAccountId.length() == 12, "Public Account ID should be exactly 12 characters long");
+        assertTrue(generatedPublicAccountId.substring(2).matches("[A-Z0-9]{10}"), "Public Account ID should contain only uppercase letters and digits");
+
+        // Ensure that the generated UK-PID is unique (not found in the database)
+        Mockito.verify(accountRepository, Mockito.times(1)).existsByPublicIdentifier(generatedPublicAccountId);
+    }
+
+    @Test
+    @DisplayName("Generated Public Account ID should be retried if a duplicate is found")
+    void testGenerateUniqueUkPidWithCollision() {
+        // Simulate a collision: The first generated ID exists, the second one does not.
+        Mockito.when(accountRepository.existsByPublicIdentifier(Mockito.anyString()))
+            .thenReturn(true)  // First check: ID exists, triggering a retry
+            .thenReturn(false); // Second check: ID does not exist, so it is accepted
+
+        // Generate Public Account ID
+        String generatedPublicAccountId = accountService.generateUniquePublicIdentifier();
+
+        // Ensure the Public Account ID matches the expected format (UK + 10 alphanumeric characters)
+        assertNotNull(generatedPublicAccountId, "Generated Public Account ID should not be null");
+        assertTrue(generatedPublicAccountId.startsWith("UK"), "Public Account ID should start with 'UK'");
+        assertTrue(generatedPublicAccountId.length() == 12, "Public Account ID should be exactly 12 characters long");
+        assertTrue(generatedPublicAccountId.substring(2).matches("[A-Z0-9]{10}"), "Public Account ID should contain only uppercase letters and digits");
+
+        // Verify that `existsByPublicIdentifier` was called at least twice (due to retry)
+        Mockito.verify(accountRepository, Mockito.atLeast(2)).existsByPublicIdentifier(Mockito.anyString());
+    }
+
 }

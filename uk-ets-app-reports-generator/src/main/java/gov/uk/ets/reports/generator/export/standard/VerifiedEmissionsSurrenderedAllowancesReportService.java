@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ public class VerifiedEmissionsSurrenderedAllowancesReportService
         data.add(reportData.getRegulator());
         data.add(reportData.getAccountHolderName());
         data.add(reportData.getInstallationName());
-        data.add(reportData.getInstallationIdentifier());
+        data.add(reportData.getOperatorId());
         data.add(reportData.getPermitIdentifier());
         data.add(reportData.getMainActivityTypeCode());
         data.add(reportData.getYear());
@@ -54,7 +53,7 @@ public class VerifiedEmissionsSurrenderedAllowancesReportService
                 "Regulator",
                 "AH Name",
                 "Installation Name",
-                "Installation ID or Aircraft Operator ID",
+                "Operator ID",
                 "Permit ID or Monitoring Plan ID",
                 "Activity Type",
                 "Year",
@@ -68,11 +67,6 @@ public class VerifiedEmissionsSurrenderedAllowancesReportService
                 "DSS",
                 "SSS"
             );
-    }
-
-    @Override
-    public List<VerifiedEmissionsSurrenderedAllowancesReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

@@ -1,7 +1,3 @@
-.govuk-width-container {
-  max-width: 1320px;
-}
-
 .gem-o-template--modal {
   overflow-y: hidden !important;
 }
@@ -46,7 +42,7 @@ button.gem-c-modal-dialogue__close-button.gem-c-modal-dialogue__close-button-bot
   padding-right: 10px;
 }
 
-.toggle-password {
-  margin-bottom: 0;
+.govuk-header__logotype-crown {
+  top: -3px;
+  margin-right: -2px;
 }
-

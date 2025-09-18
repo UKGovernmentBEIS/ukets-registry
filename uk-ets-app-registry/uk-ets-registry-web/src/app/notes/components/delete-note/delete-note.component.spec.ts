@@ -7,7 +7,7 @@ describe('DeleteNoteComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DeleteNoteComponent],
+      imports: [DeleteNoteComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeleteNoteComponent);

@@ -29,6 +29,11 @@ export const setRecipient = createAction(
   props<{ recipientUrid: string; recipientName: string; comment: string }>()
 );
 
+export const setDeadline = createAction(
+  '[Request Documents] Set deadline',
+  props<{ deadline: Date | any }>()
+);
+
 export const setComment = createAction(
   '[Request Documents] Set comment',
   props<{ comment: string }>()
@@ -66,6 +71,14 @@ export const navigateToSelectRecipient = createAction(
 
 export const navigateToAssignUserComment = createAction(
   '[Request Documents] Navigate to Assign User comment'
+);
+
+export const navigateToSetDeadlineAccountHolder = createAction(
+  '[Request Documents] Navigate to Set Deadline for account holder'
+);
+
+export const navigateToSetDeadlineUser = createAction(
+  '[Request Documents] Navigate to Set Deadline for user'
 );
 
 export const submitDocumentsRequest = createAction(

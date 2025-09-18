@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,7 @@ public class UnitBlockReportService implements ReportTypeService<UnitBlockReport
         data.add(reportData.getQuantity());
         data.add(reportData.getUnitType());
         data.add(reportData.getOriginatingCountryCode());
+        data.add(reportData.getHoldingAccountId());
         data.add(reportData.getAccountNumber());
         data.add(reportData.getAccountType());
         data.add(reportData.getOriginalCp());
@@ -56,6 +56,7 @@ public class UnitBlockReportService implements ReportTypeService<UnitBlockReport
                 "Unit type",
                 "Originating country code",
                 "Holding account ID",
+                "Account number",
                 "Holding account type",
                 "Original CP",
                 "Applicable CP",
@@ -67,11 +68,6 @@ public class UnitBlockReportService implements ReportTypeService<UnitBlockReport
                 "Reserved for transaction",
                 "Replaced",
                 "Reserved for replacement");
-    }
-
-    @Override
-    public List<UnitBlockReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

@@ -4,10 +4,13 @@ package gov.uk.ets.registry.api.user.service;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionRepository;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
+
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.UserDetailsUtil;
@@ -38,22 +41,23 @@ import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserStatusChangeResultDTO;
 import gov.uk.ets.registry.api.user.domain.*;
+import gov.uk.ets.registry.api.user.profile.recovery.web.RecoveryMethodUpdateRequest;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -189,11 +193,10 @@ public class UserService {
      */
     public User getCurrentUser() {
         // Retrieve the currently logged in user
-        AccessToken accessToken = authorizationService.getToken();
-        User user = userRepository.findByIamIdentifier(accessToken.getSubject());
+        User user = userRepository.findByIamIdentifier(authorizationService.getClaim(OAuth2ClaimNames.SUBJECT));
         if (user == null) {
             throw new AuthorizationServiceException(
-                String.format("The current user %s does not exist in DB", accessToken.getSubject()));
+                String.format("The current user %s does not exist in DB", authorizationService.getClaim(OAuth2ClaimNames.SUBJECT)));
         }
         return user;
     }
@@ -449,6 +452,38 @@ public class UserService {
     }
 
     /**
+     * Checks if a user has Senior or Junior Admin role.
+     * This check depends on registry DB.
+     *
+     * @param user the user
+     * @return true if the user has Senior or Junior role, otherwise false
+     */
+    public boolean isSeniorOrJuniorAdminUser(User user) {
+        return hasRoles(user, UserRole::isSeniorOrJuniorRegistryAdministrator);
+    }
+
+    /**
+     * Checks if a user has any Admin role.
+     * This check depends on registry DB.
+     *
+     * @param user the user
+     * @return true if the user has any admin role, otherwise false
+     */
+    public boolean isAdminUser(User user) {
+        return hasRoles(user, UserRole::isRegistryAdministrator);
+    }
+
+    private boolean hasRoles(User user, Predicate<UserRole> roleCheck) {
+        return user.getUserRoles()
+            .stream()
+            .map(UserRoleMapping::getRole)
+            .map(IamUserRole::getRoleName)
+            .filter(UserRole::belongsToRegistryRoles)
+            .map(UserRole::fromKeycloakLiteral)
+            .anyMatch(roleCheck);
+    }
+
+    /**
      * Retrieves the user by its urid.
      *
      * @param urid The user urid.
@@ -542,7 +577,7 @@ public class UserService {
                     "Another request to update the user details is pending approval."));
         }
 
-        validateUserPhoneNumber(dto);
+        validateUserPhoneNumbers(dto);
 
     	Task task = new Task();
         task.setRequestId(persistenceService.getNextBusinessIdentifier(Task.class));
@@ -644,19 +679,36 @@ public class UserService {
     public void updateUserDetails(UserDetailsUpdateTaskDetailsDTO dto) {
     	this.updateUserDetails(dto.getCurrent(), dto.getChanged());
     }
+
+    public void updateUserRecoveryMethods(RecoveryMethodUpdateRequest recoveryMethodUpdateRequest) {
+        UserRepresentation storedUserRepresentation = Optional.ofNullable(userAdministrationService.findByIamId(getCurrentUser().getIamIdentifier()))
+            .orElseThrow(() -> new IllegalArgumentException("Illegal user representation"));
+
+        Optional.ofNullable(recoveryMethodUpdateRequest.getEmail()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "recoveryEmailAddress", Collections.singletonList(value)));
+        Optional.ofNullable(recoveryMethodUpdateRequest.getCountryCode()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "recoveryCountryCode", Collections.singletonList(value)));
+        Optional.ofNullable(recoveryMethodUpdateRequest.getPhoneNumber()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "recoveryPhoneNumber", Collections.singletonList(value)));
+
+        userAdministrationService.updateUserDetails(storedUserRepresentation);
+    }
+
+    public void setHideRecoveryMethodsNotification() {
+        UserRepresentation storedUserRepresentation = Optional.ofNullable(userAdministrationService.findByIamId(getCurrentUser().getIamIdentifier()))
+            .orElseThrow(() -> new IllegalArgumentException("Illegal user representation"));
+
+        storedUserRepresentation.getAttributes().put("hideRecoveryMethodsNotification", Collections.singletonList("true"));
+
+        userAdministrationService.updateUserDetails(storedUserRepresentation);
+    }
     
     private void updateUserDetails(UserDetailsDTO currentDto, UserDetailsDTO changedDto) {
-        Optional<UserRepresentation> storedUserOptional = userAdministrationService.findByEmail(currentDto.getUsername());
-        if (storedUserOptional.isEmpty()) {
-            throw new IllegalArgumentException("Illegal user representation");
-        }
-        UserRepresentation storedUserRepresentation = storedUserOptional.get();
-        
-        User storedUser = userRepository.findByIamIdentifier(storedUserRepresentation.getId());
-        if (storedUser == null) {
-            throw new UkEtsException(
-                String.format("The user %s does not exist in registry DB", storedUserRepresentation.getId()));
-        }
+        User storedUser = Optional.ofNullable(userRepository.findByUrid(currentDto.getUrid()))
+            .orElseThrow(() -> new UkEtsException(String.format("The user %s does not exist in registry DB", currentDto.getUrid())));
+
+        UserRepresentation storedUserRepresentation = Optional.ofNullable(userAdministrationService.findByIamId(storedUser.getIamIdentifier()))
+            .orElseThrow(() -> new IllegalArgumentException("Illegal user representation"));
         
         //update both registry and keycloak DB with first/last name
         Optional.ofNullable(changedDto.getFirstName()).ifPresent(value -> {
@@ -668,7 +720,7 @@ public class UserService {
             storedUser.setLastName(value); 
         });
         Optional.ofNullable(changedDto.getAlsoKnownAs()).ifPresent(value -> {
-            storedUserRepresentation.getAttributes().replace("alsoKnownAs", Collections.singletonList(value));
+            storedUserRepresentation.getAttributes().put("alsoKnownAs", Collections.singletonList(value));
             storedUser.setKnownAs(value);
         });
         if (changedDto.getAlsoKnownAs() != null || changedDto.getFirstName() != null 
@@ -690,33 +742,39 @@ public class UserService {
 
     private void replaceUpdatedAttributes(UserDetailsDTO changed,
         UserRepresentation storedUserRepresentation) {
-        Optional.ofNullable(changed.getCountryOfBirth()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+        Optional.ofNullable(changed.getCountryOfBirth()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "countryOfBirth", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkCountryCode()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
-            "workCountryCode", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkPhoneNumber()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
-            "workPhoneNumber", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkBuildingAndStreet()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+        Optional.ofNullable(changed.getWorkBuildingAndStreet()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "workBuildingAndStreet", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkBuildingAndStreetOptional()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+        Optional.ofNullable(changed.getWorkBuildingAndStreetOptional()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "workBuildingAndStreetOptional", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkBuildingAndStreetOptional2()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+        Optional.ofNullable(changed.getWorkBuildingAndStreetOptional2()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "workBuildingAndStreetOptional2", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkTownOrCity()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+        Optional.ofNullable(changed.getWorkTownOrCity()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "workTownOrCity", Collections.singletonList(value)));
         Optional.ofNullable(changed.getWorkStateOrProvince()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "workStateOrProvince", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkPostCode()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+        Optional.ofNullable(changed.getWorkPostCode()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "workPostCode", Collections.singletonList(value)));
-        Optional.ofNullable(changed.getWorkCountry()).ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+        Optional.ofNullable(changed.getWorkCountry()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
             "workCountry", Collections.singletonList(value)));
+        Optional.ofNullable(changed.getWorkMobileCountryCode()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "workMobileCountryCode", Collections.singletonList(value)));
+        Optional.ofNullable(changed.getWorkMobilePhoneNumber()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "workMobilePhoneNumber", Collections.singletonList(value)));
+        Optional.ofNullable(changed.getWorkAlternativeCountryCode()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "workAlternativeCountryCode", Collections.singletonList(value)));
+        Optional.ofNullable(changed.getWorkAlternativePhoneNumber()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "workAlternativePhoneNumber", Collections.singletonList(value)));
+        Optional.ofNullable(changed.getNoMobilePhoneNumberReason()).ifPresent(value -> storedUserRepresentation.getAttributes().put(
+            "noMobilePhoneNumberReason", Collections.singletonList(value)));
         if (changed.getBirthDate() != null) {
             String formattedDate = changed.getBirthDate().getDay() + "/" + changed.getBirthDate().getMonth() +
                     "/" + changed.getBirthDate().getYear();
-            storedUserRepresentation.getAttributes().replace("birthDate", Collections.singletonList(formattedDate));
+            storedUserRepresentation.getAttributes().put("birthDate", Collections.singletonList(formattedDate));
         }
         Optional.ofNullable(changed.getMemorablePhrase())
-            .ifPresent(value -> storedUserRepresentation.getAttributes().replace(
+            .ifPresent(value -> storedUserRepresentation.getAttributes().put(
                 "memorablePhrase", Collections.singletonList(value)));
     }
 
@@ -776,19 +834,57 @@ public class UserService {
 		}
 	}
 
-    private void validateUserPhoneNumber(UserDetailsUpdateDTO userDetailsUpdateDTO) {
+    private void validateUserPhoneNumbers(UserDetailsUpdateDTO userDetailsUpdateDTO) {
         UserDetailsDTO changedUserDetailsDTO = userDetailsUpdateDTO.getDiff();
-        if (changedUserDetailsDTO.getWorkCountryCode() == null && changedUserDetailsDTO.getWorkPhoneNumber() == null) {
-            return;
+        UserDetailsDTO currentUserDetailsDto = userDetailsUpdateDTO.getCurrent();
+
+        // work mobile phone number
+        validateMobilePhoneNumber(currentUserDetailsDto.getWorkMobileCountryCode(), changedUserDetailsDTO.getWorkMobileCountryCode(),
+            currentUserDetailsDto.getWorkMobilePhoneNumber(), changedUserDetailsDTO.getWorkMobilePhoneNumber());
+
+        // work alternative phone number
+        validatePhoneNumber(currentUserDetailsDto.getWorkAlternativeCountryCode(), changedUserDetailsDTO.getWorkAlternativeCountryCode(),
+            currentUserDetailsDto.getWorkAlternativePhoneNumber(), changedUserDetailsDTO.getWorkAlternativePhoneNumber());
+    }
+
+    private void validatePhoneNumber(String currentCode, String changedCode, String currentPhone, String changedPhone) {
+        getNewPhoneNumber(currentCode, changedCode, currentPhone, changedPhone);
+    }
+
+    private void validateMobilePhoneNumber(String currentCode, String changedCode, String currentPhone, String changedPhone) {
+        Phonenumber.PhoneNumber number = getNewPhoneNumber(currentCode, changedCode, currentPhone, changedPhone);
+        if (number != null) {
+            fixedLineNotAllowedCheck(number);
+        }
+    }
+
+    private void fixedLineNotAllowedCheck(Phonenumber.PhoneNumber number) {
+        if (PhoneNumberUtil.getInstance().getNumberType(number) == PhoneNumberUtil.PhoneNumberType.FIXED_LINE) {
+            throw new BusinessRuleErrorException(ErrorBody.from("Enter a valid mobile number"));
+        }
+    }
+
+    private Phonenumber.PhoneNumber getNewPhoneNumber(String currentCode,
+                                                      String changedCode,
+                                                      String currentPhone,
+                                                      String changedPhone) {
+
+        if (changedCode == null && changedPhone == null) {
+            return null;
         }
 
-        String code = Stream.of(changedUserDetailsDTO.getWorkCountryCode(), userDetailsUpdateDTO.getCurrent().getWorkCountryCode())
+        // allow phone removal
+        if (isBlank(changedCode) && isBlank(changedPhone)) {
+            return null;
+        }
+
+        String code = Stream.of(changedCode, currentCode)
             .filter(Objects::nonNull)
             .map(PhoneNumberUtil::normalizeDigitsOnly)
             .findFirst()
             .orElse("");
 
-        String phone = Stream.of(changedUserDetailsDTO.getWorkPhoneNumber(), userDetailsUpdateDTO.getCurrent().getWorkPhoneNumber())
+        String phone = Stream.of(changedPhone, currentPhone)
             .filter(Objects::nonNull)
             .findFirst()
             .orElse("");
@@ -799,9 +895,14 @@ public class UserService {
             if (!phoneUtil.isValidNumber(number)) {
                 throw new BusinessRuleErrorException(ErrorBody.from("Invalid phone number given"));
             }
+            return number;
         } catch (NumberParseException e) {
             throw new BusinessRuleErrorException(ErrorBody.from("Invalid phone number format"));
         }
+    }
+
+    private boolean isBlank(String str) {
+        return str != null && str.isBlank();
     }
 		
 	private void checkForBlockingTasksForUserDetailsUpdateRequest(String urid) {

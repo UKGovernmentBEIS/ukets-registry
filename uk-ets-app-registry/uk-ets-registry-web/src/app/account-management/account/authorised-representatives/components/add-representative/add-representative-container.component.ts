@@ -6,11 +6,12 @@ import { selectAuthorisedRepresentativesOtherAccounts } from '@authorised-repres
 import {
   cancelClicked,
   fetchAuthorisedRepresentativesOtherAccounts,
-  selectAuthorisedRepresentative
+  selectAuthorisedRepresentative,
 } from '@authorised-representatives/actions/authorised-representatives.actions';
 import { canGoBack, errors } from '@shared/shared.action';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
+import { selectErrorSummary } from '@shared/shared.selector';
 
 @Component({
   selector: 'app-add-representative-container',
@@ -21,14 +22,16 @@ import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
         onAuthorizedRepresentativeSelected($event)
       "
       (errorDetails)="onError($event)"
+      [errorSummary]="errorSummary$ | async"
     ></app-add-representative>
     <app-cancel-request-link (goToCancelScreen)="onCancel()">
     </app-cancel-request-link>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddRepresentativeContainerComponent implements OnInit {
   authorisedRepresentatives$: Observable<AuthorisedRepresentative[]>;
+  errorSummary$: Observable<ErrorSummary>;
 
   constructor(
     private store: Store,
@@ -43,13 +46,15 @@ export class AddRepresentativeContainerComponent implements OnInit {
       canGoBack({
         goBackRoute: `/account/${this.activatedRoute.snapshot.paramMap.get(
           'accountId'
-        )}/authorised-representatives/select-update-type`
+        )}/authorised-representatives/select-update-type`,
       })
     );
 
     this.authorisedRepresentatives$ = this.store.select(
       selectAuthorisedRepresentativesOtherAccounts
     );
+
+    this.errorSummary$ = this.store.select(selectErrorSummary);
   }
 
   onAuthorizedRepresentativeSelected(urid: string) {
@@ -64,7 +69,7 @@ export class AddRepresentativeContainerComponent implements OnInit {
 
   onError(details: ErrorDetail[]) {
     const summary: ErrorSummary = {
-      errors: details
+      errors: details,
     };
     this.store.dispatch(errors({ errorSummary: summary }));
   }

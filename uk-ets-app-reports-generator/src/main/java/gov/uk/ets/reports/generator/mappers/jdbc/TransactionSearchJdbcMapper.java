@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.domain.Transaction;
 import gov.uk.ets.reports.generator.domain.TransactionSearchReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,11 +31,6 @@ public class TransactionSearchJdbcMapper
     private List<String> governmentAccountTypeLabels = new ArrayList<>();
     private List<String> userAccountsfullIdentifiers = new ArrayList<>();
     Map<String, String> trustedAccounts = new HashMap<>();
-
-    @Override
-    public List<TransactionSearchReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<TransactionSearchReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

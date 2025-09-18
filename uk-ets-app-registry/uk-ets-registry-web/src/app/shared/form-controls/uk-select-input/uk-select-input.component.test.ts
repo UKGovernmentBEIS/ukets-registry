@@ -13,7 +13,7 @@ describe('SearchTasksFormComponent', () => {
   let fixture: ComponentFixture<UkSelectInputComponent>;
 
   function getHintSpan(): DebugElement {
-    return fixture.debugElement.query(By.css(`span.govuk-hint`));
+    return fixture.debugElement.query(By.css(`div.govuk-hint`));
   }
 
   function getLabel(): DebugElement {
@@ -65,7 +65,7 @@ describe('SearchTasksFormComponent', () => {
     expect(getRenderedHintText()).toBe(SELECT_FROM_LIST);
   });
 
-  test('The hint text is rendered inside the content of a span with id equals with "{id}-hint" ', () => {
+  test('The hint text is rendered inside the content of a div with id equals with "{id}-hint" ', () => {
     expect(getHintSpan().attributes['id']).toBe(`${component.id}-hint`);
   });
 

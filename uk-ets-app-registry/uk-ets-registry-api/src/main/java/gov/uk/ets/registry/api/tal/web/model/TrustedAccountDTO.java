@@ -3,9 +3,9 @@ package gov.uk.ets.registry.api.tal.web.model;
 import gov.uk.ets.registry.api.tal.domain.types.TrustedAccountStatus;
 import lombok.*;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 
 /**

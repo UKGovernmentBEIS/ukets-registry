@@ -7,6 +7,7 @@ import {
   OperatorType,
 } from '@shared/model/account';
 import { InstallationPipe, AircraftOperatorPipe } from '@shared/pipes';
+import { VerifiedEmissions } from '@registry-web/account-shared/model';
 
 @Component({
   selector: 'app-check-update-status',
@@ -23,17 +24,26 @@ export class CheckUpdateStatusComponent implements OnInit {
   @Input()
   exclusionStatus: boolean;
   @Input()
+  exclusionReason: string;
+  @Input()
+  emissions: VerifiedEmissions[];
+  @Input()
   account: Account;
   @Input()
   routePathForYearSelection: string;
   @Input()
   routePathForExclusionStatus: string;
-  values: OperatorEmissionsExclusionStatus = {} as OperatorEmissionsExclusionStatus;
+  @Input()
+  routePathForExclusionReason: string;
+
+  values: OperatorEmissionsExclusionStatus =
+    {} as OperatorEmissionsExclusionStatus;
   isInstallation: boolean;
   isAircraft: boolean;
   title: string;
   installation: Installation;
   aircraftOperator: AircraftOperator;
+  hasEmissions: boolean;
 
   constructor(
     private installationPipe: InstallationPipe,
@@ -43,6 +53,7 @@ export class CheckUpdateStatusComponent implements OnInit {
   ngOnInit() {
     this.values.year = this.year;
     this.values.excluded = this.exclusionStatus;
+    this.values.reason = this.exclusionReason;
 
     this.isInstallation =
       this.account.operator.type === OperatorType.INSTALLATION;
@@ -60,6 +71,13 @@ export class CheckUpdateStatusComponent implements OnInit {
         this.account.operator
       );
     }
+
+    this.hasEmissions = this.emissions?.some(
+      (e) =>
+        e.year === this.year &&
+        e.reportableEmissions != null &&
+        e.reportableEmissions !== 'Excluded'
+    );
   }
 
   onSubmit() {

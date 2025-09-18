@@ -1,3 +1,4 @@
+@import 'node_modules/govuk-frontend/dist/govuk/objects/width-container';
 @import '_variables';
 
 /* ==========================================================================
@@ -21,22 +22,8 @@
 }
 
 .hmcts-identity-bar__container {
-  max-width: 1320px;
-  margin: 0 15px;
+  @include govuk-width-container(1320px);
   font-size: 0;
-  /* Hide whitespace between elements */
-}
-
-@media (min-width: 40.0625em) {
-  .hmcts-identity-bar__container {
-    margin: 0 30px;
-  }
-}
-
-@media (min-width: 1020px) {
-  .hmcts-identity-bar__container {
-    margin: 0 auto;
-  }
 }
 
 .hmcts-identity-bar__container:after {

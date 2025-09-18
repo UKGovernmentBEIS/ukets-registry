@@ -13,24 +13,22 @@ import gov.uk.ets.registry.api.user.domain.User;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 /**
  * Represents a task.
@@ -134,33 +132,27 @@ public class Task implements Serializable {
     /**
      * The business information before approving this task.
      */
-    @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Type(type = "org.hibernate.type.TextType")
     @Column(
-        columnDefinition = "TEXT"
+        columnDefinition = "CLOB"
     )
     private String before;
 
     /**
      * The business information after approving this task.
      */
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(
-        columnDefinition = "TEXT"
+        columnDefinition = "CLOB"
     )
     private String after;
 
     /**
      * The difference in business information introduced by this task.
      */
-    // TODO: verify that the type annotation is indeed needed
-    @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Type(type = "org.hibernate.type.TextType")
     @Column(
-        columnDefinition = "TEXT"
+        columnDefinition = "CLOB"
     )
     private String difference;
 
@@ -197,6 +189,9 @@ public class Task implements Serializable {
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private List<TaskAssignment> taskAssignments;
 
+    @Column(name = "deadline")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date deadline;
 
     /**
      * Returns whether this task is currently claimed.
@@ -367,6 +362,8 @@ public class Task implements Serializable {
                 return "Installation operator update request task" + appendText;
             case AIRCRAFT_OPERATOR_UPDATE_REQUEST:
                 return "Aircraft operator update request task" + appendText;
+            case MARITIME_OPERATOR_UPDATE_REQUEST:
+                return "Maritime operator update request task" + appendText;
             case ACCOUNT_TRANSFER:
                 return "Account transfer request task" + appendText;
             case ACCOUNT_CLOSURE_REQUEST:

@@ -15,26 +15,35 @@ import { isSeniorAdmin } from '@registry-web/auth/auth.selector';
 
 @Component({
   selector: 'app-notifications-details-container',
-  template: `<app-feature-header-wrapper
-      ><app-notification-header
-        [notification]="notificationDetails$ | async"
+  template: `
+  <ng-container *ngIf="{ 
+      notification: notificationDetails$ | async, 
+      isSeniorAdmin: isSeniorAdmin$ | async,
+      notificationId: notificationId$ | async,
+      timeOptions: timeOptions$ | async 
+    } as vs">
+      <app-feature-header-wrapper><app-notification-header
+        [notification]="vs.notification"
         [notificationHeaderVisibility]="true"
         [showRequestUpdate]="
-          (notificationDetails$ | async)?.status !== 'EXPIRED' &&
-          (isSeniorAdmin$ | async) === true
-        "
+          vs.notification?.status !== 'EXPIRED' &&
+          vs.notification?.status !== 'CANCELLED' &&
+          vs.isSeniorAdmin === true"
         [showClone]="
-          (notificationDetails$ | async)?.type === NotificationType.AD_HOC &&
-          (notificationDetails$ | async)?.status === 'EXPIRED' &&
-          (isSeniorAdmin$ | async) === true
-        "
+          vs.notification?.type === NotificationType.AD_HOC &&
+          vs.notification?.status === 'EXPIRED' &&
+          vs.isSeniorAdmin === true"
         [showBackToList]="true"
+        [showCancelUpdate]="vs.notification?.status === 'ACTIVE' || 
+          vs.notification?.status === 'PENDING' &&
+          vs.isSeniorAdmin === true"
       ></app-notification-header></app-feature-header-wrapper
     ><app-notifications-details
-      [notificationId]="notificationId$ | async"
-      [notificationDetails]="notificationDetails$ | async"
-      [timeOptions]="timeOptions$ | async"
-    ></app-notifications-details>`,
+      [notificationId]="vs.notificationId"
+      [notificationDetails]="vs.notification"
+      [timeOptions]="vs.timeOptions"
+    ></app-notifications-details>
+ </ng-container>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationDetailsContainerComponent implements OnInit {

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType, concatLatestFrom } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { SearchActionPayload } from './transaction-list.model';
 import { PagedResults } from '@shared/search/util/search-service.util';

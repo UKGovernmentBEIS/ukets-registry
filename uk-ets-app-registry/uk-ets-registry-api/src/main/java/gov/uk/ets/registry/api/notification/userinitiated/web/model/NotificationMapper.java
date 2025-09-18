@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.notification.userinitiated.web.model;
 
+import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.Notification;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.NotificationDefinition;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.NotificationSchedule;
@@ -7,6 +8,7 @@ import gov.uk.ets.registry.api.notification.userinitiated.domain.types.Notificat
 import gov.uk.ets.registry.api.user.service.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Component;
@@ -33,11 +35,12 @@ public class NotificationMapper {
                     : null
             )
             .status(notification.getStatus())
+            .uploadedFileId(Optional.ofNullable(notification.getUploadedFile()).map(UploadedFile::getId).orElse(null))
             .build();
     }
 
     public Notification toEntity(NotificationDTO request, NotificationDefinition definition,
-                                 String creatorUrid) {
+                                 String creatorUrid, UploadedFile uploadedFile) {
         return Notification.builder()
             .definition(definition)
             .status(request.getActivationDetails().calculateStatus())
@@ -47,6 +50,7 @@ public class NotificationMapper {
             .creator(creatorUrid)
             .lastUpdated(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
             .updatedBy(creatorUrid)
+            .uploadedFile(uploadedFile)
             .build();
     }
 

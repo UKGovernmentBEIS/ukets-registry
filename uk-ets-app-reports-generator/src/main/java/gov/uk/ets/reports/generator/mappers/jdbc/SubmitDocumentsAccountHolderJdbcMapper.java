@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.SubmitDocumentsAccountHolderReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,11 +63,6 @@ public class SubmitDocumentsAccountHolderJdbcMapper implements ReportDataMapper<
                 "AND CAST(TRIM(SUBSTRING ( f.file_size FROM 1 FOR (length(f.file_size)-2))) AS DECIMAL) > 0 \n" +
                 "AND current_timestamp >= (t.completed_date  + "+minutes+" * interval '1 minute')\n"+
                 "ORDER BY ah.identifier DESC";
-    }
-
-    @Override
-    public List<SubmitDocumentsAccountHolderReportData> mapData(ReportCriteria criteria) {
-        return List.of();
     }
 
     @Override

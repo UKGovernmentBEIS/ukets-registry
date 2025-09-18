@@ -1,16 +1,16 @@
 package gov.uk.ets.keycloak.authentication.authenticators.browser;
 
-import java.util.concurrent.TimeUnit;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+
+import java.io.IOException;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordForm;
+import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.events.Errors;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -23,11 +23,6 @@ public class UkEtsAuthenticator extends UsernamePasswordForm {
 
 	private static final String PASSWD_POLICY_VIOLATION = "password_policy_violation";
 	private static final String PASSWD_PWNED = "pwned";
-
-	private Client client = ClientBuilder.newBuilder().
-			connectTimeout(1, TimeUnit.SECONDS).
-			readTimeout(1, TimeUnit.SECONDS).
-			build();
 
 	@Override
 	public void action(AuthenticationFlowContext context) {
@@ -57,9 +52,10 @@ public class UkEtsAuthenticator extends UsernamePasswordForm {
 		}
 
 		try {
-			ValidatePasswordResponse response = client.target(passwdValidateAPIServiceUrl)
-					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(password, MediaType.TEXT_PLAIN), ValidatePasswordResponse.class);
+			ValidatePasswordResponse response = SimpleHttp
+					.doPost(passwdValidateAPIServiceUrl, context.getSession())
+					.json(password)
+					.asJson(ValidatePasswordResponse.class);
 
 			if (!response.isValid()) {
 				if (PASSWD_POLICY_VIOLATION.equals(response.getErrorCode())) {
@@ -71,7 +67,7 @@ public class UkEtsAuthenticator extends UsernamePasswordForm {
 					return;
 				}
 			}
-		} catch (ProcessingException e) {
+		} catch (ProcessingException | IOException e) {
 			// Do nothing.
 		}
 		super.action(context);

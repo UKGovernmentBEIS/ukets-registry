@@ -3,13 +3,16 @@ package gov.uk.ets.registry.api.user.admin.service;
 import static gov.uk.ets.registry.api.account.domain.QAccountAccess.accountAccess;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationServiceImpl;
+
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.Utils;
-import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.user.KeycloakUser;
 import gov.uk.ets.registry.api.user.admin.AssignUsersCriteriaDTO;
@@ -104,7 +107,7 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
     @Override
     @Transactional
     public List<UserSearchByNameResultDTO> findAccountTaskAssignEntitledUsers(AssignUsersCriteriaDTO criteria) {
-        String iamId = authorizationServiceImpl.getToken().getSubject();
+        String iamId = authorizationServiceImpl.getClaim(OAuth2ClaimNames.SUBJECT);
         boolean isSeniorAdmin = authorizationServiceImpl.hasClientRole(UserRole.SENIOR_REGISTRY_ADMINISTRATOR);
         boolean isJuniorAdmin = authorizationServiceImpl.hasClientRole(UserRole.JUNIOR_REGISTRY_ADMINISTRATOR);
         boolean isAR = authorizationServiceImpl.hasClientRole(UserRole.AUTHORISED_REPRESENTATIVE);
@@ -241,11 +244,10 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
 
 
     @Override
-    public Contact findWorkContactDetailsByIamId(String id, boolean noUserToken) {
-        Contact userWorkContact = new Contact();
+    public ContactDTO findWorkContactDetailsByIamId(String id, boolean noUserToken) {
+        ContactDTO userWorkContact = new ContactDTO();
         UserRepresentation user = noUserToken ? serviceAccountAuthorizationService.getUser(id) : findByIamId(id);
         if (!CollectionUtils.isEmpty(user.getAttributes())) {
-            userWorkContact.setEmailAddress(getValue(user, UserAttributes.WORK_EMAIL_ADDRESS));
             userWorkContact.setLine1(getValue(user, UserAttributes.WORK_BUILDING_AND_STREET));
             userWorkContact.setLine2(getValue(user, UserAttributes.WORK_BUILDING_AND_STREET_OPTIONAL));
             userWorkContact.setLine3(getValue(user, UserAttributes.WORK_BUILDING_AND_STREET_OPTIONAL2));
@@ -253,15 +255,18 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
             userWorkContact.setCity(getValue(user, UserAttributes.WORK_TOWN_OR_CITY));
             userWorkContact.setStateOrProvince(getValue(user, UserAttributes.WORK_STATE_OR_PROVINCE));
             userWorkContact.setCountry(getValue(user, UserAttributes.WORK_COUNTRY));
-            userWorkContact.setCountryCode1(getValue(user, UserAttributes.WORK_COUNTRY_CODE));
-            userWorkContact.setPhoneNumber1(getValue(user, UserAttributes.WORK_PHONE_NUMBER));
+            userWorkContact.setMobileCountryCode(getValue(user, UserAttributes.WORK_MOBILE_COUNTRY_CODE));
+            userWorkContact.setMobilePhoneNumber(getValue(user, UserAttributes.WORK_MOBILE_PHONE_NUMBER));
+            userWorkContact.setAlternativeCountryCode(getValue(user, UserAttributes.WORK_ALTERNATIVE_COUNTRY_CODE));
+            userWorkContact.setAlternativePhoneNumber(getValue(user, UserAttributes.WORK_ALTERNATIVE_PHONE_NUMBER));
+            userWorkContact.setNoMobilePhoneNumberReason(getValue(user, UserAttributes.NO_MOBILE_PHONE_NUMBER_REASON));
             userWorkContact.setEmailAddress(user.getEmail());
         }
         return userWorkContact;
     }
 
     @Override
-    public Contact findWorkContactDetailsByIamId(String id) {
+    public ContactDTO findWorkContactDetailsByIamId(String id) {
         return this.findWorkContactDetailsByIamId(id, false);
     }
 
@@ -297,10 +302,17 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
      * {@inheritDoc}
      */
     @Override
-    public KeycloakUserSearchPagedResults search(KeycloakUserSearchCriteria criteria) {
-        return keycloakUserRepository.fetch(criteria, accessToken());
+    public KeycloakUserSearchPagedResults search(KeycloakUserSearchCriteria criteria,boolean withServiceAccountAccess) {
+        String accessToken = "";
+        if(withServiceAccountAccess){
+            accessToken = serviceAccountAuthorizationService.obtainAccessToken().getToken();
+        } else{
+            accessToken = accessToken();
+        }
+        return keycloakUserRepository.fetch(criteria, accessToken);
     }
 
+    
     /**
      * {@inheritDoc}
      */

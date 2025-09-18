@@ -7,13 +7,14 @@ import {
   TransactionDetailsContainerComponent,
 } from '@transaction-management/transaction-details/components';
 import { TransactionHeaderGuard } from '@transaction-management/guards';
-import { ClearTransactionProposalGuard } from "@transaction-proposal/guards/clear-transaction-proposal-guard.service";
+import { ClearTransactionProposalGuard } from '@transaction-proposal/guards/clear-transaction-proposal-guard.service';
 
 const routes: Routes = [
   {
     path: ':transactionIdentifier',
     canActivate: [LoginGuard, TransactionHeaderGuard],
     component: TransactionDetailsContainerComponent,
+    title: 'Transaction Details',
   },
   {
     path: ':transactionIdentifier/cancel',

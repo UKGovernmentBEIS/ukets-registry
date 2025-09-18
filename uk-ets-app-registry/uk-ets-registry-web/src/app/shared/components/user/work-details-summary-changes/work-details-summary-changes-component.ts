@@ -63,31 +63,7 @@ export class WorkDetailsSummaryChangesComponent {
           },
         ],
       },
-      {
-        key: { label: 'Phone number' },
-        value: [
-          {
-            label:
-              this.current.workCountryCode + ' ' + this.current.workPhoneNumber,
-          },
-          {
-            label:
-              (this.changed.workCountryCode
-                ? this.changed.workCountryCode
-                : this.changed.workPhoneNumber
-                ? this.current.workCountryCode
-                : '') +
-              ' ' +
-              (this.changed.workPhoneNumber
-                ? this.changed.workPhoneNumber
-                : ''),
-            class:
-              this.changed.workCountryCode || this.changed.workPhoneNumber
-                ? 'summary-list-change-notification'
-                : '',
-          },
-        ],
-      },
+      ...this.getPhoneListItems(),
       ...SummaryListAddressUtil.constructAddressItems(
         addressLine1,
         addressLine2,
@@ -179,5 +155,97 @@ export class WorkDetailsSummaryChangesComponent {
     }
 
     return summaryListItems;
+  }
+
+  private getPhoneListItems(): SummaryListItem[] {
+    const phoneListItems: SummaryListItem[] = [];
+
+    if (
+      this.current.workMobilePhoneNumber ||
+      this.changed.workMobilePhoneNumber
+    ) {
+      phoneListItems.push({
+        key: { label: 'Work mobile number' },
+        value: [
+          {
+            label: this.current.workMobilePhoneNumber
+              ? `${this.current.workMobileCountryCode} ${this.current.workMobilePhoneNumber}`
+              : '',
+          },
+          {
+            label:
+              this.changed.workMobileCountryCode ||
+              this.changed.workMobilePhoneNumber
+                ? `${
+                    this.changed.workMobileCountryCode ||
+                    this.current.workMobileCountryCode
+                  } ${
+                    this.changed.workMobilePhoneNumber ||
+                    this.current.workMobilePhoneNumber
+                  }`
+                : '',
+            class:
+              'workMobileCountryCode' in this.changed ||
+              'workMobilePhoneNumber' in this.changed
+                ? 'summary-list-change-notification'
+                : '',
+          },
+        ],
+      });
+    }
+
+    phoneListItems.push({
+      key: { label: 'Alternative phone number' },
+      value: [
+        {
+          label: this.current.workAlternativePhoneNumber
+            ? `${this.current.workAlternativeCountryCode} ${this.current.workAlternativePhoneNumber}`
+            : '',
+        },
+        {
+          label:
+            this.changed.workAlternativeCountryCode ||
+            this.changed.workAlternativePhoneNumber
+              ? `${
+                  this.changed.workAlternativeCountryCode ||
+                  this.current.workAlternativeCountryCode
+                } ${
+                  this.changed.workAlternativePhoneNumber ||
+                  this.current.workAlternativePhoneNumber
+                }`
+              : '',
+          class:
+            ('workAlternativeCountryCode' in this.changed ||
+              'workAlternativePhoneNumber' in this.changed) &&
+            (this.current.workAlternativePhoneNumber ||
+              this.changed.workAlternativePhoneNumber)
+              ? 'summary-list-change-notification'
+              : '',
+        },
+      ],
+    });
+
+    if (
+      this.current.noMobilePhoneNumberReason ||
+      this.changed.noMobilePhoneNumberReason
+    ) {
+      phoneListItems.push({
+        key: { label: 'Reason for not having a work mobile number' },
+        value: [
+          {
+            label: this.current.noMobilePhoneNumberReason,
+          },
+          {
+            label: this.changed.noMobilePhoneNumberReason,
+            class:
+              'noMobilePhoneNumberReason' in this.changed
+                ? 'summary-list-change-notification'
+                : '',
+          },
+        ],
+      });
+    }
+
+    return phoneListItems;
   }
 }

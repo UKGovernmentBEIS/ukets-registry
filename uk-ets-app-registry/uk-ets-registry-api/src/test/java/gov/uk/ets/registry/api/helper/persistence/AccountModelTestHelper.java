@@ -7,6 +7,7 @@ import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
@@ -26,7 +27,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.Date;
 import java.util.Optional;
 
@@ -169,6 +170,25 @@ public class AccountModelTestHelper {
         return command.account;
     }
 
+    /***
+     * Creates and perists a new {@link MaritimeOperator} and links it to the {@link Account} entity of the command argument
+     * @param command The {@link AddMaritimeEntityToAccountCommand} command
+     * @return The updated {@link Account} of command
+     */
+    public Account addMaritimeToAccount(AddMaritimeEntityToAccountCommand command) {
+        MaritimeOperator maritimeOperator = new MaritimeOperator();
+        maritimeOperator.setMaritimeMonitoringPlanIdentifier(command.monitoringPlanId);
+        maritimeOperator.setRegulator(command.regulatorType);
+        maritimeOperator.setStartYear(2017);
+        maritimeOperator.setEndYear(2020);
+        maritimeOperator.setIdentifier(command.identifier);
+        entityManager.persist(maritimeOperator);
+        command.account.setCompliantEntity(maritimeOperator);
+        entityManager.persist(command.account);
+
+        return command.account;
+    }
+
     /**
      * Command object for creating and persisting an {@link AccountHolder} entity
      */
@@ -300,6 +320,34 @@ public class AccountModelTestHelper {
         private String monitoringPlanId;
         /**
          * The {@link Account} account which relates to the aircraft entity
+         */
+        private Account account;
+    }
+
+    /**
+     * Command object for creating account's maritime entity
+     */
+    @Builder
+    @Getter
+    public static class AddMaritimeEntityToAccountCommand {
+        /**
+         * The name of maritime entity
+         */
+        private String name;
+        /**
+         * The identifier of the maritime entity
+         */
+        private Long identifier;
+        /**
+         * The regulator type of the maritime entity
+         */
+        private RegulatorType regulatorType;
+        /**
+         * The monitoring plan id of the maritime entity
+         */
+        private String monitoringPlanId;
+        /**
+         * The {@link Account} account which relates to the maritime entity
          */
         private Account account;
     }

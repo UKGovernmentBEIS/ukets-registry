@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
 import { HttpClient } from '@angular/common/http';
 import { Installation, InstallationTransfer } from '@shared/model/account';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +14,9 @@ export class OperatorService {
     private httpClient: HttpClient
   ) {}
 
-  fetchExistsMonitoringPlanId(monitoringPlanIdentifier: string) {
+  fetchExistsAircraftMonitoringPlanId(monitoringPlanIdentifier: string) {
     return this.httpClient.get<boolean>(
-      `${this.ukEtsRegistryApiBaseUrl}/accounts.get.monitoring-plan`,
+      `${this.ukEtsRegistryApiBaseUrl}/accounts.get.aircraft-monitoring-plan`,
       {
         params: {
           monitoringPlanId: monitoringPlanIdentifier,
@@ -39,6 +40,28 @@ export class OperatorService {
     return this.httpClient.post<Installation>(
       `${this.ukEtsRegistryApiBaseUrl}/account.validate.installation-transfer`,
       installationTransfer
+    );
+  }
+
+  fetchExistsMaritimeMonitoringPlanId(monitoringPlanIdentifier: string) {
+    return this.httpClient.get<boolean>(
+      `${this.ukEtsRegistryApiBaseUrl}/accounts.get.maritime-monitoring-plan`,
+      {
+        params: {
+          monitoringPlanId: monitoringPlanIdentifier,
+        },
+      }
+    );
+  }
+
+  fetchExistsImo(imo: string): Observable<boolean> {
+    return this.httpClient.get<boolean>(
+      `${this.ukEtsRegistryApiBaseUrl}/accounts.get.maritime-imo`,
+      {
+        params: {
+          imo: imo,
+        },
+      }
     );
   }
 }

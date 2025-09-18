@@ -3,6 +3,9 @@ package gov.uk.ets.registry.api.notification.emailgeneration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,6 +78,7 @@ class DocumentRequestEmailGeneratorTest {
                     .documentsRequestType(DocumentsRequestType.USER)
                     .userId(Utils.maskUserId(USER_ID))
                     .userFullName(USER_FULL_NAME)
+                    .deadline(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
                     .build(), freemarkerConfiguration, mailConfiguration);
         MultipartEmailWithSubject email = documentRequestEmailGenerator.generate();
 
@@ -94,6 +98,7 @@ class DocumentRequestEmailGeneratorTest {
                     .documentsRequestType(DocumentsRequestType.fromTaskRequestType(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD))
                     .accountName(ACCOUNT_NAME)
                     .accountHolderName(ACCOUNT_HOLDER_NAME)
+                    .deadline(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
                     .build(), freemarkerConfiguration, mailConfiguration);
         MultipartEmailWithSubject email = documentRequestEmailGenerator.generate();
 

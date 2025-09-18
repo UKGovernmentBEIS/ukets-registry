@@ -17,26 +17,24 @@ describe('UserDetailsUpdateTaskDetailsComponent', () => {
   let component: UserDetailsUpdateTaskDetailsComponent;
   let fixture: ComponentFixture<UserDetailsUpdateTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterModule.forRoot([])],
-        declarations: [
-          UserDetailsUpdateTaskDetailsComponent,
-          PersonalDetailsSummaryChangesComponent,
-          WorkDetailsSummaryChangesComponent,
-          MemorablePhraseSummaryChangesComponent,
-          SummaryListComponent,
-        ],
-        providers: [
-          { provide: APP_BASE_HREF, useValue: '/' },
-          FormatUkDatePipe,
-          CountryNamePipe,
-          provideMockStore(),
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [RouterModule.forRoot([])],
+      declarations: [
+        UserDetailsUpdateTaskDetailsComponent,
+        PersonalDetailsSummaryChangesComponent,
+        WorkDetailsSummaryChangesComponent,
+        MemorablePhraseSummaryChangesComponent,
+        SummaryListComponent,
+      ],
+      providers: [
+        { provide: APP_BASE_HREF, useValue: '/' },
+        FormatUkDatePipe,
+        CountryNamePipe,
+        provideMockStore(),
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(UserDetailsUpdateTaskDetailsComponent);
@@ -102,10 +100,11 @@ describe('UserDetailsUpdateTaskDetailsComponent', () => {
             workBuildingAndStreetOptional: [''],
             workBuildingAndStreetOptional2: [''],
             workCountry: [''],
-            workCountryCode: [''],
-            workEmailAddress: [''],
-            workEmailAddressConfirmation: [''],
-            workPhoneNumber: [''],
+            workMobileCountryCode: [''],
+            workMobilePhoneNumber: [''],
+            workAlternativeCountryCode: [''],
+            workAlternativePhoneNumber: [''],
+            noMobilePhoneNumberReason: [''],
             workPostCode: [''],
             workTownOrCity: [''],
             workStateOrProvince: [''],

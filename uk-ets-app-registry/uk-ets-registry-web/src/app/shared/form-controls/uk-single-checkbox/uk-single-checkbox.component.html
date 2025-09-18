@@ -1,17 +1,16 @@
-
 <div
   class="govuk-form-group"
   [class.govuk-form-group--error]="showError()"
   [attr.id]="key + '-label'"
 >
-      <span
-        *ngIf="showError()"
-        class="govuk-error-message"
-        [attr.id]="key + '-error-label'"
-      >
-        <span class="govuk-visually-hidden">Error:</span
-        >{{ validationErrorMessage }}
-      </span>
+  <p
+    *ngIf="showError()"
+    class="govuk-error-message"
+    [attr.id]="key + '-error-label'"
+  >
+    <span class="govuk-visually-hidden">Error:</span
+    >{{ validationErrorMessage }}
+  </p>
   <div class="govuk-checkboxes">
     <div class="govuk-checkboxes__item">
       <input

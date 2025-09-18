@@ -25,7 +25,7 @@ public class PendingUKTransactionsChecker {
         }
         try {
             registryLockProvider.acquirePessimisticWriteLock(RegistryLockType.RECONCILIATION, true);
-        } catch(javax.persistence.LockTimeoutException exception) {
+        } catch(jakarta.persistence.LockTimeoutException exception) {
             throw new PendingUKTransactionsException();
         }
     }

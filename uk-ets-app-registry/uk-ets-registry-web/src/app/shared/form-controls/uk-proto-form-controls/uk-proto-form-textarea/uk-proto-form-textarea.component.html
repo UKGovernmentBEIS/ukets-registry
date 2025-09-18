@@ -7,21 +7,18 @@
   >
     {{ label }}
   </label>
-  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+  <div *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
     {{ hint }}
-  </span>
-  <ng-container *ngIf="showError()">
-    <span
-      *ngIf="showError()"
-      id="event-name-error"
-      class="govuk-error-message"
-      role="alert"
-      [attr.aria-describedby]="labelId"
-    >
-      <span class="govuk-visually-hidden">Error:</span>
-      {{ validationErrorMessage }}
-    </span>
-  </ng-container>
+  </div>
+  <p
+    *ngIf="showError()"
+    class="govuk-error-message"
+    role="alert"
+    [attr.aria-describedby]="labelId"
+  >
+    <span class="govuk-visually-hidden">Error:</span>
+    {{ validationErrorMessage }}
+  </p>
   <textarea
     class="govuk-textarea"
     [class.govuk-input--error]="showError()"
@@ -34,5 +31,6 @@
     [required]="hasRequiredField(formControl)"
     [readonly]="readonly"
     [attr.aria-invalid]="showError()"
+    [rows]="rows"
   ></textarea>
 </div>

@@ -137,11 +137,11 @@ $(function() {
                 data: formData,
                 success: function(response) {
                     console.log('success');
-                    window.location.href = "confirmation.html";
+                    window.location.href = "/digital-confirmation.html";
                 },
                 error: function(response) {
                     console.error('error');            
-                    window.location.href = "error.html";
+                    window.location.href = "/digital-error.html";
                 }
             })      
         }

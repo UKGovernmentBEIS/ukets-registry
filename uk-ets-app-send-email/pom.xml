@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.10</version>
+        <version>3.2.2</version>
         <relativePath />
     </parent>
 
@@ -19,7 +19,6 @@
         <java.version>17</java.version>
         <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
-        <log4j2.version>2.17.1</log4j2.version>
         <checkstyle.version>8.45.1</checkstyle.version>
     </properties>
 
@@ -82,11 +81,6 @@
         <dependency>
             <groupId>uk.gov.ets</groupId>
             <artifactId>uk-ets-lib-commons-kafka-clients</artifactId>
-            <version>${uk-ets-lib-commons.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.gov.ets</groupId>
-            <artifactId>uk-ets-lib-commons-s3-client</artifactId>
             <version>${uk-ets-lib-commons.version}</version>
         </dependency>
         <dependency>
@@ -159,8 +153,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <pluginManagement>

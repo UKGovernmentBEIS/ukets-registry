@@ -6,6 +6,12 @@ import {
   Output,
 } from '@angular/core';
 import { MenuItemEnum } from '@registry-web/account-management/account/account-details/model';
+import {
+  AircraftOperator,
+  Installation,
+  Operator,
+  OperatorType,
+} from '@registry-web/shared/model/account';
 import { AccountInfo } from '@shared/model/transaction';
 
 @Component({
@@ -45,6 +51,10 @@ export class AccountSummaryComponent {
   isTransactionReversal: boolean;
   @Input()
   selectedSideMenu?: MenuItemEnum;
+  @Input()
+  operator?: Installation | AircraftOperator | any;
 
   @Output() readonly linkClicked = new EventEmitter<void>();
+
+  OperatorType = OperatorType;
 }

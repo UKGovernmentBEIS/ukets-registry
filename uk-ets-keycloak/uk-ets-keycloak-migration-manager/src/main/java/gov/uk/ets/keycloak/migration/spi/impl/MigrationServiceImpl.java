@@ -4,7 +4,7 @@ import gov.uk.ets.keycloak.migration.jpa.Migration;
 import gov.uk.ets.keycloak.migration.spi.MigrationService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.KeycloakSession;
 

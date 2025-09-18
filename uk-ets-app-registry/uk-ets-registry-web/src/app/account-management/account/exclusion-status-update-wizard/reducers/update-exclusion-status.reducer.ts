@@ -10,12 +10,14 @@ export interface UpdateExclusionStatusState {
   emissionEntries: VerifiedEmissions[];
   year: number;
   excluded: boolean;
+  reason: string;
 }
 
 export const initialState: UpdateExclusionStatusState = {
   emissionEntries: null,
   year: null,
   excluded: null,
+  reason: null,
 };
 
 const updateExclusionStatusReducer = createReducer(
@@ -39,6 +41,12 @@ const updateExclusionStatusReducer = createReducer(
     }
   ),
   mutableOn(
+    UpdateExclusionStatusActions.setExclusionReason,
+    (state: Draft<UpdateExclusionStatusState>, { reason }) => {
+      state.reason = reason;
+    }
+  ),
+  mutableOn(
     UpdateExclusionStatusActions.clearUpdateExclusionStatus,
     (state) => {
       resetState(state);
@@ -57,4 +65,5 @@ function resetState(state) {
   state.emissionEntries = initialState.emissionEntries;
   state.year = initialState.year;
   state.excluded = initialState.excluded;
+  state.reason = initialState.reason;
 }

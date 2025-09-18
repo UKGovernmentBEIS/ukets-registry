@@ -81,8 +81,11 @@ public class KeycloakDbService {
             "       ua_toc.value          as townOrCity,\n" +
             "       ua_sorp.value         as stateOrProvince,\n" +
             "       ua_wc.value           as workCountry,\n" +
-            "       ua_wcc.value          as workCountryCode,\n" +
-            "       ua_wpn.value          as workPhoneNumber,\n" +
+            "       ua_wmcc.value         as workMobileCountryCode,\n" +
+            "       ua_wmpn.value         as workMobilePhoneNumber,\n" +
+            "       ua_wacc.value         as workAlternativeCountryCode,\n" +
+            "       ua_wapn.value         as workAlternativePhoneNumber,\n" +
+            "       ua_nmpnr.value        as noMobilePhoneNumberReason,\n" +
             "       ua_wbas.value         as workBuildingAndStreet,\n" +
             "       ua_wbaso.value        as workBuildingAndStreetOptional,\n" +
             "       ua_wbaso2.value       as workBuildingAndStreetOptional2,\n" +
@@ -120,10 +123,16 @@ public class KeycloakDbService {
             "    and ua_sorp.name = 'stateOrProvince'\n" +
             "         left join user_attribute ua_wc on ue.id = ua_wc.user_id\n" +
             "    and ua_wc.name = 'workCountry'\n" +
-            "         left join user_attribute ua_wcc on ue.id = ua_wcc.user_id\n" +
-            "    and ua_wcc.name = 'workCountryCode'\n" +
-            "         left join user_attribute ua_wpn on ue.id = ua_wpn.user_id\n" +
-            "    and ua_wpn.name = 'workPhoneNumber'\n" +
+            "         left join user_attribute ua_wmcc on ue.id = ua_wmcc.user_id\n" +
+            "    and ua_wmcc.name = 'workMobileCountryCode'\n" +
+            "         left join user_attribute ua_wmpn on ue.id = ua_wmpn.user_id\n" +
+            "    and ua_wmpn.name = 'workMobilePhoneNumber'\n" +
+            "         left join user_attribute ua_wacc on ue.id = ua_wacc.user_id\n" +
+            "    and ua_wacc.name = 'workAlternativeCountryCode'\n" +
+            "         left join user_attribute ua_wapn on ue.id = ua_wapn.user_id\n" +
+            "    and ua_wapn.name = 'workAlternativePhoneNumber'\n" +
+            "         left join user_attribute ua_nmpnr on ue.id = ua_nmpnr.user_id\n" +
+            "    and ua_nmpnr.name = 'noMobilePhoneNumberReason'\n" +
             "         left join user_attribute ua_wbas on ue.id = ua_wbas.user_id\n" +
             "    and ua_wbas.name = 'workBuildingAndStreet'\n" +
             "         left join user_attribute ua_wbaso on ue.id = ua_wbaso.user_id\n" +
@@ -172,8 +181,11 @@ public class KeycloakDbService {
                 .townOrCity(rs.getString("townOrCity"))
                 .stateOrProvince(rs.getString("stateOrProvince"))
                 .workCountry(rs.getString("workCountry"))
-                .workCountryCode(rs.getString("workCountryCode"))
-                .workPhoneNumber(rs.getString("workPhoneNumber"))
+                .workMobileCountryCode(rs.getString("workMobileCountryCode"))
+                .workMobilePhoneNumber(rs.getString("workMobilePhoneNumber"))
+                .workAlternativeCountryCode(rs.getString("workAlternativeCountryCode"))
+                .workAlternativePhoneNumber(rs.getString("workAlternativePhoneNumber"))
+                .noMobilePhoneNumberReason(rs.getString("noMobilePhoneNumberReason"))
                 .workBuildingAndStreet(rs.getString("workBuildingAndStreet"))
                 .workBuildingAndStreetOptional(rs.getString("workBuildingAndStreetOptional"))
                 .workBuildingAndStreetOptional2(rs.getString("workBuildingAndStreetOptional2"))

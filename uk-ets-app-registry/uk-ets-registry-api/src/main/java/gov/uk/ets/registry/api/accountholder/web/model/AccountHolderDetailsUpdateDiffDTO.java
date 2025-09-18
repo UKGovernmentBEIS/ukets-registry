@@ -6,7 +6,7 @@ import gov.uk.ets.registry.api.common.view.AddressDTO;
 import gov.uk.ets.registry.api.common.view.EmailAddressDTO;
 import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
 import java.io.Serializable;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

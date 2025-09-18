@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.accountclosure.service;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.AccountClosureDTO;
@@ -12,10 +13,7 @@ import gov.uk.ets.registry.api.allocation.service.RequestAllocationService;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.OnlySeniorOrJuniorCanClaimTaskRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.SeniorAdminCanClaimTaskInitiatedByAdminRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.CommentMandatoryWhenApproved;
-import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.FourEyesPrincipleRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlyRegistryAdminCanCompleteTaskRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.RegistryAdminCanApproveTaskWhenAccountNotClosedRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.*;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.event.service.EventService;
@@ -95,6 +93,15 @@ public class AccountClosureTaskService implements TaskTypeService<AccountClosure
                         requestAllocationService.getEntitiesInPendingAllocationRequestTaskOrJob()
                         .contains(aircraftOperator.getIdentifier()));
                 }
+            } else if (AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.equals(accountType)) {
+                Optional<Account> accountOptional =  accountRepository.findByAccountIdentifierWithCompliantEntity(Long.valueOf(taskDetails.getAccountNumber()));
+                if (accountOptional.isPresent()) {
+                    MaritimeOperator maritimeOperator = (MaritimeOperator) Hibernate.unproxy(accountOptional.get().getCompliantEntity());
+                    response.setMonitoringPlanId(maritimeOperator.getMaritimeMonitoringPlanIdentifier());
+                    response.setPendingAllocationTaskExists(allocationTableService.getEntitiesInPendingAllocationTableUploadTask().contains(maritimeOperator.getIdentifier()) ||
+                        requestAllocationService.getEntitiesInPendingAllocationRequestTaskOrJob()
+                            .contains(maritimeOperator.getIdentifier()));
+                }
             }
         }
         response.setAccountDetails(accountDetailsDTO);
@@ -110,7 +117,8 @@ public class AccountClosureTaskService implements TaskTypeService<AccountClosure
                     FourEyesPrincipleRule.class,
                     OnlyRegistryAdminCanCompleteTaskRule.class,
                     RegistryAdminCanApproveTaskWhenAccountNotClosedRule.class,
-                    CommentMandatoryWhenApproved.class
+                    CommentMandatoryWhenApproved.class,
+                    CannotCompletePendingTALRequestsRule.class
             }
     )
     @Transactional

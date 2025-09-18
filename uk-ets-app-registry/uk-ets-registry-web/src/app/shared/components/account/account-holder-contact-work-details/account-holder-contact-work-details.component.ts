@@ -20,8 +20,11 @@ import {
   UkRegistryValidators,
   UkValidationMessageHandler,
 } from '@shared/validation';
-import { ActivatedRoute } from '@angular/router';
 import { ContactType } from '@shared/model/account-holder-contact-type';
+import { selectIsMOHA } from '@account-opening/account-opening.selector';
+import { take } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { CountryCodeModel } from '@shared/countries/country-code.model';
 
 @Component({
   selector: 'app-account-holder-contact-work-details',
@@ -48,6 +51,7 @@ export class AccountHolderContactWorkDetailsComponent
   _phoneInfo1: PhoneInfo;
   _phoneInfo2: PhoneInfo;
   formGroup: UntypedFormGroup;
+  isMOHA: boolean;
 
   showErrors: boolean;
 
@@ -58,10 +62,17 @@ export class AccountHolderContactWorkDetailsComponent
 
   constructor(
     private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute
+    private store: Store
   ) {}
 
   ngOnInit() {
+    this.store
+      .select(selectIsMOHA)
+      .pipe(take(1))
+      .subscribe((type) => {
+        this.isMOHA = type;
+      });
+
     this.formGroup = this.initForm();
 
     this.formGroup.get('address.country').valueChanges.subscribe((value) => {
@@ -211,6 +222,19 @@ export class AccountHolderContactWorkDetailsComponent
       this.formGroup.patchValue({ sameWorkAddress: true });
       this.updateWorkAddress();
     }
+    if (this.isMOHA) {
+      this.formGroup.patchValue({ sameWorkAddress: true });
+      this.updateWorkAddress();
+      this.formGroup.patchValue({ positionInCompany: 'Primary Contact' });
+      this.formGroup.get('phone1').patchValue({
+        countryCode: 'UK (44)',
+        phoneNumber: '1234567890',
+      });
+      this.formGroup.get('emailAddress').patchValue({
+        emailAddress: 'etregistryhelp@environment-agency.gov.uk',
+        emailAddressConfirmation: 'etregistryhelp@environment-agency.gov.uk',
+      });
+    }
   }
 
   onContinue() {
@@ -231,15 +255,14 @@ export class AccountHolderContactWorkDetailsComponent
       );
     }
   }
+
   // TODO: Angular does not mark as touched  https://github.com/angular/angular/issues/24003
-  // this should be also part of a base component
-  markAllAsTouched() {
+  private markAllAsTouched() {
     this.formGroup.markAllAsTouched();
     this.formGroup.get('address').markAllAsTouched();
     this.formGroup.get('emailAddress').markAllAsTouched();
   }
 
-  // TODO: phoneNumber should be converted to an array and this convertion will be simplified
   convertToAccountHolderContact(): AccountHolderContact {
     const updateObject = new AccountHolderContact();
     updateObject.positionInCompany =
@@ -256,7 +279,6 @@ export class AccountHolderContactWorkDetailsComponent
     updateObject.emailAddress = this.formGroup.get('emailAddress').value;
     return updateObject;
   }
-  // TODO: this will be simplified when the API change
 
   initFormValues(legalRep: AccountHolderContact) {
     this.formGroup

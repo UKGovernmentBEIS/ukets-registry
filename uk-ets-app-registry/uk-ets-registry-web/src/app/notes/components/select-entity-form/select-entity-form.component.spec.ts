@@ -1,7 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { SharedModule } from '@registry-web/shared/shared.module';
-import { ReactiveFormsModule } from '@angular/forms';
 import { SelectEntityFormComponent } from './select-entity-form.component';
 import { NoteType } from '@registry-web/shared/model';
 
@@ -11,8 +8,8 @@ describe('SelectEntityFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, SharedModule],
-      declarations: [SelectEntityFormComponent],
+      imports: [],
+      declarations: [],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SelectEntityFormComponent);
@@ -33,10 +30,12 @@ describe('SelectEntityFormComponent', () => {
     component.formGroup.controls['noteType'].updateValueAndValidity();
     fixture.detectChanges();
 
-    const submitButton = fixture.nativeElement.querySelector('#continue');
-    submitButton.click();
+    fixture.whenStable().then(() => {
+      const submitButton = fixture.nativeElement.querySelector('#continue');
+      submitButton.click();
 
-    expect(component.handleSubmit.emit).toHaveBeenCalledWith(selectedType);
+      expect(component.handleSubmit.emit).toHaveBeenCalledWith(selectedType);
+    });
   });
 
   it('should emit handleCancel when cancel link is clicked', () => {
@@ -49,9 +48,11 @@ describe('SelectEntityFormComponent', () => {
     component.storedType = selectedType;
     fixture.detectChanges();
 
-    const cancelButton = fixture.nativeElement.querySelector('.govuk-link');
-    cancelButton.click();
+    fixture.whenStable().then(() => {
+      const cancelButton = fixture.nativeElement.querySelector('.govuk-link');
+      cancelButton.click();
 
-    expect(component.handleCancel.emit).toHaveBeenCalledWith(selectedType);
+      expect(component.handleCancel.emit).toHaveBeenCalledWith(selectedType);
+    });
   });
 });

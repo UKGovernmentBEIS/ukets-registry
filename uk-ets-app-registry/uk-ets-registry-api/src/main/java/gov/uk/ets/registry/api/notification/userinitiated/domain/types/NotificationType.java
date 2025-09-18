@@ -8,7 +8,9 @@ public enum NotificationType {
     EMISSIONS_MISSING_FOR_AOHA,
     SURRENDER_DEFICIT_FOR_AOHA,
     YEARLY_INTRODUCTION_TO_OHA_AOHA_WITH_OBLIGATIONS,
-    AD_HOC;
+    AD_HOC, // dashboard registry
+    AD_HOC_EMAIL,
+    USER_INACTIVITY;
 
     public static List<NotificationType> getComplianceNotificationTypes() {
         return List.of(

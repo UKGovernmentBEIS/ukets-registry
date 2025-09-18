@@ -10,7 +10,7 @@ import gov.uk.ets.registry.api.transaction.domain.data.TransactionSummary;
 import gov.uk.ets.registry.api.transaction.domain.type.TransactionType;
 import gov.uk.ets.registry.api.transaction.service.TransactionPersistenceService;
 import java.util.Optional;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

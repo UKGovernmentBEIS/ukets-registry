@@ -1,8 +1,8 @@
 package uk.gov.ets.registration.user.filter;
 
 import gov.uk.ets.commons.ratelimiter.ThrottlingFilter;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;

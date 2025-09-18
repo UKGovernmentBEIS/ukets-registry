@@ -18,6 +18,7 @@ import { MainWizardRoutes } from '@account-opening/main-wizard.routes';
 import { AccountOpeningOperatorActions } from '@account-opening/operator/actions';
 import { take } from 'rxjs/operators';
 import { canGoBack } from '@shared/shared.action';
+import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
 
 @Component({
   selector: 'app-operator-overview-container',
@@ -26,6 +27,7 @@ import { canGoBack } from '@shared/shared.action';
     [operator]="operator$ | async"
     [operatorCompleted]="operatorCompleted$ | async"
     [installationToBeTransferred]="installationToBeTransferred$ | async"
+    [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
     (editEmitter)="onEdit($event)"
     (applyEmitter)="onApply()"
     (deleteEmitter)="onDelete()"
@@ -46,6 +48,8 @@ export class OverviewContainerComponent implements OnInit {
     selectInstallationToBeTransferred
   );
 
+  isSeniorOrJuniorAdmin$:Observable<boolean> = this.store.select(isSeniorOrJuniorAdmin);
+
   type = OperatorType;
   operatorWizardRoutes = OperatorWizardRoutes;
   activityTypes = InstallationActivityType;
@@ -53,6 +57,7 @@ export class OverviewContainerComponent implements OnInit {
   readonly mainWizardRoute = MainWizardRoutes.TASK_LIST;
   readonly installationRoute = OperatorWizardRoutes.INSTALLATION;
   readonly aircraftOperatorRoute = OperatorWizardRoutes.AIRCRAFT_OPERATOR;
+  readonly maritimeOperatorRoute = OperatorWizardRoutes.MARITIME_OPERATOR;
 
   constructor(
     private route: ActivatedRoute,
@@ -81,6 +86,13 @@ export class OverviewContainerComponent implements OnInit {
                 extras: { skipLocationChange: true },
               })
             );
+          } else if (type === OperatorType.MARITIME_OPERATOR) {
+            this.store.dispatch(
+              canGoBack({
+                goBackRoute: this.maritimeOperatorRoute,
+                extras: { skipLocationChange: true },
+              })
+            );
           } else {
             this.store.dispatch(
               canGoBack({
@@ -97,6 +109,10 @@ export class OverviewContainerComponent implements OnInit {
   onEdit(type: OperatorType) {
     if (type === OperatorType.AIRCRAFT_OPERATOR) {
       this._router.navigate([this.aircraftOperatorRoute], {
+        skipLocationChange: true,
+      });
+    } else if (type === OperatorType.MARITIME_OPERATOR) {
+      this._router.navigate([this.maritimeOperatorRoute], {
         skipLocationChange: true,
       });
     } else {

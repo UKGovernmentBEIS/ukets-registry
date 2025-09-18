@@ -24,3 +24,14 @@
   {{ accessRights | accessRights }}
 </div>
 <hr class="govuk-section-break govuk-section-break--m" />
+
+<ng-container *ngIf="showRequestPaymentButton">
+  <button
+    class="govuk-button govuk-button--secondary"
+    (click)="onRequestPayment()"
+    (keypress)="onRequestPayment()"
+    data-module="govuk-button"
+  >
+    Request payment
+  </button>
+</ng-container>

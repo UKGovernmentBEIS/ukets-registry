@@ -29,6 +29,12 @@
 			<artifactId>keycloak-services</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-rest</artifactId>
+			<version>${quarkus.version}</version>
+			<scope>provided</scope>
+		</dependency>		
 	</dependencies>
 
 	<build>

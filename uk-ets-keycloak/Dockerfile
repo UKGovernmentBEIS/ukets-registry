@@ -1,8 +1,8 @@
 FROM registry.access.redhat.com/ubi9 AS ubi-micro-build
 RUN mkdir -p /mnt/rootfs
-RUN dnf install --installroot /mnt/rootfs curl jq --releasever 9 --setopt install_weak_deps=false --nodocs -y; dnf --installroot /mnt/rootfs clean all
+RUN ulimit -n 1024 && dnf install --installroot /mnt/rootfs curl jq --releasever 9 --setopt install_weak_deps=false --nodocs -y; dnf --installroot /mnt/rootfs clean all
 
-FROM quay.io/keycloak/keycloak:21.1.2
+FROM quay.io/keycloak/keycloak:26.1.0
 COPY --from=ubi-micro-build /mnt/rootfs /
 
 USER root
@@ -18,13 +18,10 @@ COPY uk-ets-keycloak-users-service/target/uk-ets-keycloak-users-service-env_vers
 COPY uk-ets-keycloak-otp-validator/target/uk-ets-keycloak-otp-validator-env_version.jar /opt/keycloak/providers/
 COPY uk-ets-keycloak-event-producer/target/uk-ets-keycloak-event-producer-env_version.jar /opt/keycloak/providers/
 COPY uk-ets-keycloak-password-policy/target/uk-ets-keycloak-password-policy-env_version.jar /opt/keycloak/providers/
-# RESTEasy jars needed for Authenticator REST client.
-COPY uk-ets-keycloak-authenticator/target/org.jboss.resteasy.resteasy-client.jar /opt/keycloak/providers/
-COPY uk-ets-keycloak-authenticator/target/org.jboss.resteasy.resteasy-client-api.jar /opt/keycloak/providers/
-COPY uk-ets-keycloak-authenticator/target/org.wildfly.client.wildfly-client-config.jar /opt/keycloak/providers/
 COPY uk-ets-keycloak-authenticator/target/uk-ets-keycloak-authenticator-env_version.jar /opt/keycloak/providers/
 COPY uk-ets-keycloak-password-validator/target/uk-ets-keycloak-password-validator-env_version.jar /opt/keycloak/providers/
 COPY uk-ets-keycloak-migration-manager/target/uk-ets-keycloak-migration-manager-env_version.jar /opt/keycloak/providers/
+COPY uk-ets-keycloak-code-service/target/uk-ets-keycloak-code-service-env_version.jar /opt/keycloak/providers/
 
 
 ENV KC_DB=postgres

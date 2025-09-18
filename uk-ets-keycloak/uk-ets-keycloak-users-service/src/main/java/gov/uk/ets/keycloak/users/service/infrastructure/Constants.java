@@ -117,7 +117,43 @@ public class Constants {
      */
     public static final String WORK_PHONE_NUMBER = "workPhoneNumber";
     /**
+     * The country code of the work mobile phone
+     */
+    public static final String WORK_MOBILE_COUNTRY_CODE = "workMobileCountryCode";
+    /**
+     * The work mobile phone number
+     */
+    public static final String WORK_MOBILE_PHONE_NUMBER = "workMobilePhoneNumber";
+    /**
+     * The country code of the work alternative phone
+     */
+    public static final String WORK_ALTERNATIVE_COUNTRY_CODE = "workAlternativeCountryCode";
+    /**
+     * The work alternative phone number
+     */
+    public static final String WORK_ALTERNATIVE_PHONE_NUMBER = "workAlternativePhoneNumber";
+    /**
+     * The work alternative phone number
+     */
+    public static final String NO_MOBILE_PHONE_NUMBER_REASON = "noMobilePhoneNumberReason";
+    /**
      * The work email address
      */
     public static final String WORK_EMAIL_ADDRESS = "workEmailAddress";
+    /**
+     * The recovery country code
+     */
+    public static final String RECOVERY_COUNTRY_CODE = "recoveryCountryCode";
+    /**
+     * The recovery phone number
+     */
+    public static final String RECOVERY_PHONE_NUMBER = "recoveryPhoneNumber";
+    /**
+     * The recovery email address
+     */
+    public static final String RECOVERY_EMAIL_ADDRESS = "recoveryEmailAddress";
+    /**
+     * The flag for hiding recovery methods notification
+     */
+    public static final String HIDE_RECOVERY_METHODS_NOTIFICATION = "hideRecoveryMethodsNotification";
 }

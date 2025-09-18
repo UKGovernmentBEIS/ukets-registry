@@ -1,4 +1,4 @@
-<div class="govuk-grid-row" *ngIf="taskResponse?.tokenExpired; else other">
+<div class="govuk-grid-row" *ngIf="taskResponse?.tokenExpired">
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-l">The emergency access link has expired</h2>
     <p>
@@ -8,29 +8,3 @@
     </p>
   </div>
 </div>
-<ng-template #other>
-  <div class="govuk-grid-row govuk-!-margin-bottom-7">
-    <div class="govuk-panel govuk-panel--confirmation">
-      <h1 class="govuk-panel__title">Emergency access request submitted</h1>
-      <div class="govuk-panel__body">
-        Request ID<br /><span class="govuk-!-font-weight-bold">{{
-          taskResponse?.requestId
-        }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <h1 class="govuk-heading-m">What happens next</h1>
-    <p class="govuk-body">
-      Your request will be reviewed by the Registry Administrator.
-      <br />
-      If your request is approved you will be able to activate a new
-      authenticator app.
-    </p>
-    <p>
-      <a [routerLink]="['/dashboard']" class="govuk-link" id="back"
-        >Back to Sign in</a
-      >
-    </p>
-  </div>
-</ng-template>

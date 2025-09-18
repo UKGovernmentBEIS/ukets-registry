@@ -42,7 +42,7 @@ export const environment = {
   keycloakOptions,
   gtag: 'https://www.googletagmanager.com/gtag/js?id=',
   documentGuidePath: './assets/documentation/',
-  documentGuideFilename: 'UK Registry Document Guide v3.3.pdf',
+  documentGuideFilename: 'UK Registry Document Guide v4.0.pdf',
   documentSurrenderGuideFilename:
     'Surrender Guidance - UK ETS Registry - v1.0.pdf',
   guidanceVideoUrl: 'https://www.youtube.com/embed/clq2fdw6dCA',

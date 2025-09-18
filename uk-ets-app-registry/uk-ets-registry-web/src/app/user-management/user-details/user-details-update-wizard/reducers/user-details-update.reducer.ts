@@ -71,11 +71,16 @@ const userDetailsUpdateReducer = createReducer(
   mutableOn(
     UserDetailsUpdateActions.setWorkDetailsRequest,
     (state: Draft<UserDetailsUpdateState>, { userDetails }) => {
-      state.newUserDetails.workCountryCode = userDetails.workCountryCode;
-      state.newUserDetails.workPhoneNumber = userDetails.workPhoneNumber;
-      state.newUserDetails.workEmailAddress = userDetails.workEmailAddress;
-      state.newUserDetails.workEmailAddressConfirmation =
-        userDetails.workEmailAddressConfirmation;
+      state.newUserDetails.workMobileCountryCode =
+        userDetails.workMobileCountryCode;
+      state.newUserDetails.workMobilePhoneNumber =
+        userDetails.workMobilePhoneNumber;
+      state.newUserDetails.workAlternativeCountryCode =
+        userDetails.workAlternativeCountryCode;
+      state.newUserDetails.workAlternativePhoneNumber =
+        userDetails.workAlternativePhoneNumber;
+      state.newUserDetails.noMobilePhoneNumberReason =
+        userDetails.noMobilePhoneNumberReason;
       state.newUserDetails.workBuildingAndStreet =
         userDetails.workBuildingAndStreet;
       state.newUserDetails.workBuildingAndStreetOptional =

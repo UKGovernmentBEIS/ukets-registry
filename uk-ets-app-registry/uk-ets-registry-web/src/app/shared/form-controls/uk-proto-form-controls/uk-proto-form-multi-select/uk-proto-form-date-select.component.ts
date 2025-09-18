@@ -1,4 +1,4 @@
-import { Component, Injector, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import {
   AbstractControl,
   ControlContainer,
@@ -38,7 +38,7 @@ import { GdsDatePipe } from '@shared/pipes';
 })
 export class UkProtoFormDateSelectComponent
   extends UkProtoFormCompositeComponent
-  implements OnInit, Validator
+  implements Validator
 {
   @Input() label: string;
   @Input() hint: string;
@@ -52,18 +52,8 @@ export class UkProtoFormDateSelectComponent
   selectedMonthLabel: string;
   selectedYear: number;
 
-  constructor(
-    protected parentF: FormGroupDirective,
-    private fb: UntypedFormBuilder,
-    protected injector: Injector,
-    private gdsDatePipe: GdsDatePipe
-  ) {
-    super(parentF, injector);
-  }
-
-  ngOnInit(): void {
-    super.ngOnInit();
-  }
+  private fb = inject(UntypedFormBuilder);
+  private gdsDatePipe = inject(GdsDatePipe);
 
   get dayControl(): UntypedFormControl {
     return this.nestedForm.get('day') as UntypedFormControl;
@@ -110,6 +100,7 @@ export class UkProtoFormDateSelectComponent
       value: year,
     }));
   }
+
   transformMonthToLiteral(date: string) {
     if (empty(date)) {
       return null;

@@ -53,8 +53,8 @@ import java.util.Map;
 import java.util.function.LongSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -65,7 +65,7 @@ public class TaskRepositoryImpl implements TaskProjectionRepository {
     private static final QAccount account = QAccount.account;
     private static final QAccount transactionAcquiringAccount = QAccount.account;
     private static final QAccountHolder holder = QAccountHolder.accountHolder;
-    private static final QUser claimedBy = QUser.user;
+    private static final QUser claimedBy = new QUser("claimedBy");
     private static final QUser disclosedName = QUser.user;
     private static final QUser createdBy = new QUser("initiatedBy");
     private static final QAccountAccess accountAccess = QAccountAccess.accountAccess;
@@ -166,9 +166,9 @@ public class TaskRepositoryImpl implements TaskProjectionRepository {
                     .innerJoin(task.user, relatedToUser)
                     .on(new BooleanBuilder(
                         relatedToUser.iamIdentifier.eq(criteria.getEndUserSearch().getIamIdentifier())))
-                    .where(task.account.isNull()
-                        .or(task.type.eq(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD)
-                            .and(task.account.accountStatus
+                    .where(account.isNull()
+                        .or(task.type.in(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD,RequestType.PAYMENT_REQUEST)
+                            .and(account.accountStatus
                                 .notIn(AccountStatus.SUSPENDED, AccountStatus.SUSPENDED_PARTIALLY)))))
             ),
         task.type.notIn(RequestType.getTasksNotDisplayedToAR()),
@@ -400,7 +400,9 @@ public class TaskRepositoryImpl implements TaskProjectionRepository {
             .notNullAnd(this::getClaimedOnFromBooleanExpression, criteria.getClaimedOnFrom())
             .notNullAnd(this::getClaimedOnToBooleanExpression, criteria.getClaimedOnTo())
             .notNullAnd(this::getCompletedOnFromBooleanExpression, criteria.getCompletedOnFrom())
-            .notNullAnd(this::getCompletedOnToBooleanExpression, criteria.getCompletedOnTo());
+            .notNullAnd(this::getCompletedOnToBooleanExpression, criteria.getCompletedOnTo())
+            .notNullAnd(this::getDeadlineFromBooleanExpression, criteria.getDeadlineFrom())
+            .notNullAnd(this::getDeadlineToBooleanExpression, criteria.getDeadlineTo());
     }
 
 
@@ -426,6 +428,14 @@ public class TaskRepositoryImpl implements TaskProjectionRepository {
 
     private BooleanExpression getCompletedOnToBooleanExpression(Date completedOnTo) {
         return getUntilDatePredicate(completedOnTo, task.completedDate);
+    }
+
+    private BooleanExpression getDeadlineFromBooleanExpression(Date completedOnFrom) {
+        return getFromDatePredicate(completedOnFrom, task.deadline);
+    }
+
+    private BooleanExpression getDeadlineToBooleanExpression(Date completedOnTo) {
+        return getUntilDatePredicate(completedOnTo, task.deadline);
     }
 
     private BooleanExpression getFromDatePredicate(Date input, DateTimePath<Date> path) {
@@ -514,7 +524,7 @@ public class TaskRepositoryImpl implements TaskProjectionRepository {
                 .where(subTaskSearchMetadata.task.eq(task)
                         .and(
                                 subTaskSearchMetadata.metadataName.eq(MetadataName.USER_ID_NAME_KNOWN_AS)
-                                        .and(subTaskSearchMetadata.metadataValue.contains(nameOrUserId))
+                                        .and(subTaskSearchMetadata.metadataValue.containsIgnoreCase(nameOrUserId))
                         )
                 )
                 .exists();

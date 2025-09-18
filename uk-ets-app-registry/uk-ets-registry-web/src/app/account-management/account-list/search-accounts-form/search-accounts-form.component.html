@@ -138,8 +138,15 @@
               class="govuk-grid-column-one-third"
             >
               <app-form-control-text
-                controlName="installationOrAircraftOperatorId"
-                [label]="'Installation or Aircraft Operator ID'"
+                controlName="operatorId"
+                [label]="'Operator ID'"
+                [hint]="'Enter text'"
+              ></app-form-control-text>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <app-form-control-text
+                controlName="imo"
+                [label]="'Company IMO number'"
                 [hint]="'Enter text'"
               ></app-form-control-text>
             </div>
@@ -162,11 +169,7 @@
       <button
         type="button"
         (click)="onClear()"
-        class="
-          govuk-button govuk-button--secondary
-          govuk-!-margin-left-3
-          clear-form
-        "
+        class="govuk-button govuk-button--secondary govuk-!-margin-left-3 clear-form"
         data-module="govuk-button"
       >
         Clear

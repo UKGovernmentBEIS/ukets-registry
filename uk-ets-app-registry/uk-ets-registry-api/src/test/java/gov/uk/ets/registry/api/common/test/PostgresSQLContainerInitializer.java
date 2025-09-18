@@ -16,6 +16,7 @@ public class PostgresSQLContainerInitializer implements ApplicationContextInitia
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse(POSTGRES_DOCKER_IMAGE));
     static {
+        postgres.setCommand("postgres", "-c", "max_connections=1000");
         postgres.start();
     }
 

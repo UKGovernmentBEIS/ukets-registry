@@ -11,11 +11,10 @@ import { selectCookiesAccepted } from '@shared/shared.selector';
     <app-email-info
       [cookiesAccepted]="cookiesAccepted$ | async"
       (navigationEmitter)="navigateToEmailAddress($event)"
-    >
-    </app-email-info>
+    />
   `,
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmailInfoContainerComponent implements OnInit {
   cookiesAccepted$: Observable<boolean>;
@@ -29,7 +28,7 @@ export class EmailInfoContainerComponent implements OnInit {
 
   navigateToEmailAddress(path) {
     this._router.navigate([path], {
-      skipLocationChange: true
+      skipLocationChange: true,
     });
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {
@@ -92,7 +93,7 @@ export class RequestDocumentsEffects {
   submitDocumentsRequest$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(submitDocumentsRequest),
-      withLatestFrom(this.store.pipe(select(selectDocumentsRequest))),
+      concatLatestFrom(() => this.store.select(selectDocumentsRequest)),
       switchMap(([, documentsRequest]) => {
         return this.requestDocumentsService
           .submitRequest(documentsRequest)

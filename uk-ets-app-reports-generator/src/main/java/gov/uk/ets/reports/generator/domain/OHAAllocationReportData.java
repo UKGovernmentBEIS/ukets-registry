@@ -16,6 +16,7 @@ public class OHAAllocationReportData extends ReportData {
     private Integer firstYear;
     private String regulator;
     private Integer allocated;
+    private Integer entitled;
     private String salesContactEmail;
     private String salesContactPhone;
 }

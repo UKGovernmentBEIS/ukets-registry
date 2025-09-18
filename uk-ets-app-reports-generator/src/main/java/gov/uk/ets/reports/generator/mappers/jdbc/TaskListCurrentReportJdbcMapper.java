@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.domain.RequestType;
 import gov.uk.ets.reports.generator.domain.TaskListCurrentReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -35,8 +34,8 @@ public class TaskListCurrentReportJdbcMapper
         " ta.initial_assignment as ownership_date,\n" +
         " docs.open_document_requests,\n" +
         " docs.completed_document_requests,\n" +
-        " DATE_PART('day', ct.document_date - ta.initial_assignment) as work_initiation_lag,\n" +
-        " -- Deadline\n" +
+        " COALESCE(DATE_PART('day', t.initiated_date - ta.initial_assignment)::text, 'Not Allocated') AS work_allocation_lag_days,\n" +
+        " t.deadline,\n" +
         " case when t.type = 'ACCOUNT_OPENING_REQUEST' \n" +
         "  then case when aot.ah_type = 'INDIVIDUAL' then concat_ws(' ', aot.ah_first_name, aot.ah_last_name) else aot.ah_name end\n" +
         "  else case when ah.type = 'INDIVIDUAL' then concat_ws(' ', ah.first_name, ah.last_name) else ah.name end \n" +
@@ -63,11 +62,6 @@ public class TaskListCurrentReportJdbcMapper
         " left join lateral (\n" +
         "  select task_id, min(assignment_date) as initial_assignment from task_assignment group by task_id\n" +
         " ) ta on ta.task_id = t.id\n" +
-        " -- work_initiation_lag\n" +
-        " left join lateral (\n" +
-        "  select parent_task_id, min(initiated_date) document_date  from task \n" +
-        "  where parent_task_id is not null and type in ('AH_REQUESTED_DOCUMENT_UPLOAD', 'AR_REQUESTED_DOCUMENT_UPLOAD') group by parent_task_id\n" +
-        " ) ct on ct.parent_task_id = t.id" +
         " -- User-Initiated\n" +
         " left join lateral (\n" +
         "  select user_id from user_role_mapping urm\n" +
@@ -125,7 +119,7 @@ public class TaskListCurrentReportJdbcMapper
         " left join lateral (\n" +
         "  select tp.id as task_id,\n" +
         "  COALESCE(\n" +
-        "   case when tp.type in ('LOST_TOKEN', 'LOST_PASSWORD_AND_TOKEN') then 1 end, \n" +
+        "   case when tp.type in ('LOST_TOKEN', 'LOST_PASSWORD_AND_TOKEN', 'CHANGE_TOKEN') then 1 end, \n" +
         "   case when tp.type in ('AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST', 'AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST') \n" +
         "   and ap.registry_account_type in ('OPERATOR_HOLDING_ACCOUNT', 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT')\n" +
         "   and ap.compliance_status in ('B', 'C') then 2 end,\n" +
@@ -152,13 +146,8 @@ public class TaskListCurrentReportJdbcMapper
         " left join account ap on tp.account_id = ap.id\n" +
         " ) p on p.task_id = t.id\n" +
         " where t.status = 'SUBMITTED_NOT_YET_APPROVED'" +
-        " and t.type not in ('AR_REQUESTED_DOCUMENT_UPLOAD', 'ADD_TRUSTED_ACCOUNT_REQUEST', 'DELETE_TRUSTED_ACCOUNT_REQUEST', 'TRANSACTION_REQUEST')" +
+        " and t.type not in ('AH_REQUESTED_DOCUMENT_UPLOAD', 'AR_REQUESTED_DOCUMENT_UPLOAD', 'ADD_TRUSTED_ACCOUNT_REQUEST', 'DELETE_TRUSTED_ACCOUNT_REQUEST', 'TRANSACTION_REQUEST', 'ALLOCATION_TABLE_UPLOAD_REQUEST')" +
         " order by t.request_identifier";
-
-    @Override
-    public List<TaskListCurrentReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<TaskListCurrentReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
@@ -180,8 +169,8 @@ public class TaskListCurrentReportJdbcMapper
             .ownershipDate(prettyDate(rs.getString("ownership_date")))
             .openDocumentRequests(rs.getInt("open_document_requests"))
             .completedDocumentRequests(rs.getInt("completed_document_requests"))
-            .workInitiationLag(Util.getNullableInteger(rs, "work_initiation_lag"))
-            .deadline(null) // todo: set it when deadline feature is in place.
+            .workAllocationLagDays(rs.getString("work_allocation_lag_days"))
+            .deadline(prettyDate(rs.getString("deadline")))
             .accountHolder(rs.getString("account_holder"))
             .accountType(rs.getString("account_type"))
             .accountNumber(rs.getString("account_number"))

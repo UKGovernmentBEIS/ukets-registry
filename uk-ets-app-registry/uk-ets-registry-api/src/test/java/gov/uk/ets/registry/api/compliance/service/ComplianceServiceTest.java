@@ -9,9 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -42,6 +44,7 @@ import gov.uk.ets.registry.api.compliance.web.model.VerifiedEmissionsDTO;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.emissionstable.model.EmissionsEntry;
 import gov.uk.ets.registry.api.file.upload.emissionstable.repository.EmissionsEntryRepository;
+import gov.uk.ets.registry.api.file.upload.emissionstable.services.EmissionsTableService;
 import gov.uk.ets.registry.api.transaction.repository.TransactionRepository;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
@@ -92,6 +95,8 @@ class ComplianceServiceTest {
     private AllocationCalculationService allocationCalculationService;
     @Mock
     private AllocationEntryRepository allocationEntryRepository;
+    @Mock
+    private EmissionsTableService emissionsTableService;
 
     private ComplianceService complianceService;
 
@@ -101,7 +106,7 @@ class ComplianceServiceTest {
         complianceService = new ComplianceService(accountService, eventService, userService,
             complianceEventService, excludeEmissionsRepository, emissionsEntryRepository,
             staticComplianceStatusRepository,transactionRepository,compliantEntityRepository,installationOwnershipRepository,
-                allocationCalculationService, allocationEntryRepository);
+                allocationCalculationService, allocationEntryRepository, emissionsTableService);
     }
 
     @Test
@@ -179,10 +184,11 @@ class ComplianceServiceTest {
 
     @Test
     @Order(5)
-    @DisplayName("Update exclusion status, emissions exist for this year, expected to fail")
+    @DisplayName("Update exclusion status, emissions exist for this year, expected to pass")
     void testUpdateExclusionStatus_emissionsExist() {
         int currentYear = LocalDate.now().getYear();
         Installation installation = new Installation();
+        installation.setId(1L);
         installation.setIdentifier(1234L);
         installation.setStartYear(2020);
         installation.setEndYear(currentYear);
@@ -194,6 +200,9 @@ class ComplianceServiceTest {
         request.setExcluded(true);
         request.setYear((long) currentYear);
 
+        User user = new User();
+        user.setUrid("123456");
+
         EmissionsEntry entry = new EmissionsEntry();
         entry.setEmissions(100L);
         Mockito.when(accountService.getAccount(1234L)).thenReturn(account);
@@ -201,13 +210,30 @@ class ComplianceServiceTest {
             Optional.of((CompliantEntity) installation));
         Mockito.when(emissionsEntryRepository.findAllByCompliantEntityIdAndYear(1234L, (long) currentYear))
             .thenReturn(Collections.singletonList(entry));
+        Mockito.when(userService.getCurrentUser()).thenReturn(user);
+        Mockito.when(allocationCalculationService.calculateAllocationClassification(currentYear, 1L))
+            .thenReturn(new AllocationClassificationSummary(1L, AllocationClassification.NOT_YET_ALLOCATED.name()));
 
-        BusinessRuleErrorException exception = assertThrows(
-            BusinessRuleErrorException.class,
-            () -> complianceService.updateExclusionStatus(1234L, request));
+        complianceService.updateExclusionStatus(1234L, request);
 
-        assertTrue(exception.getErrorBody().getErrorDetails().get(0).toString()
-            .contains("Emissions have already been reported for the selected year"));
+        verify(emissionsEntryRepository, times(1))
+            .save(any(EmissionsEntry.class));
+        verify(emissionsTableService, times(1))
+            .publishUpdateOfVerifiedEmissionsEvent(any(EmissionsEntry.class), any(Date.class));
+
+        verify(allocationEntryRepository, Mockito.times(1)).updateAllocationClassification(1L,
+            AllocationClassification.NOT_YET_ALLOCATED.name());
+        verify(userService, Mockito.times(1)).getCurrentUser();
+
+        ArgumentCaptor<ExcludeEmissionsEntry> argument = ArgumentCaptor.forClass(ExcludeEmissionsEntry.class);
+        verify(excludeEmissionsRepository, Mockito.times(1)).save(argument.capture());
+        assertEquals(1234L, argument.getValue().getCompliantEntityId());
+        assertEquals(currentYear, argument.getValue().getYear());
+
+        ArgumentCaptor<ExclusionEvent> argument2 = ArgumentCaptor.forClass(ExclusionEvent.class);
+        verify(complianceEventService, Mockito.times(1)).processEvent(argument2.capture());
+        assertEquals(1234L, argument2.getValue().getCompliantEntityId());
+        assertEquals(currentYear, argument2.getValue().getYear());
     }
 
     @Test

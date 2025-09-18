@@ -50,9 +50,23 @@ public class TokenVerifier {
      * @return The payload of token
      */
     public String getPayload(String token) { // throws expiration exception
+        DecodedJWT jwt = getDecodedJWT(token);
+        return jwt.getSubject();
+    }
+
+    /**
+     * Decodes the token and returns the expiration time.
+     * @param token The token
+     * @return The expiration of token
+     */
+    public Date getExpiredAt(String token) { // throws expiration exception
+        DecodedJWT jwt = getDecodedJWT(token);
+        return jwt.getExpiresAt();
+    }
+
+    private DecodedJWT getDecodedJWT(String token) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         JWTVerifier verifier = JWT.require(algorithm).withIssuer(keycloakUrl).build();
-        DecodedJWT jwt = verifier.verify(token);
-        return jwt.getSubject();
+        return verifier.verify(token);
     }
 }

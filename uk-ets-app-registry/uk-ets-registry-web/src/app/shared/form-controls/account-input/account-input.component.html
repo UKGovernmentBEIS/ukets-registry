@@ -2,13 +2,13 @@
   <label class="govuk-label" for="userDefinedNumber">
     <strong>{{ titleToDisplay }}</strong>
   </label>
-  <span id="account-number-hint" class="govuk-hint">
+  <div id="account-number-hint" class="govuk-hint">
     {{ subTitleToDisplay }}
-  </span>
+  </div>
   <div class="govuk-grid-column-full">
     <div class="govuk-grid-row" id="userDefinedNumber">
       <div class="flexbox">
-        <div style="flex: 0 0 5%;">
+        <div style="flex: 0 0 5%">
           <app-form-control-text
             [controlName]="countryCode"
             [maxlength]="3"
@@ -17,11 +17,9 @@
           ></app-form-control-text>
         </div>
         <div class="dash">
-          <div>
-            -
-          </div>
+          <div>-</div>
         </div>
-        <div style="flex: 0 0 5%;">
+        <div style="flex: 0 0 5%">
           <app-form-control-text
             [controlName]="accountType"
             [maxlength]="3"
@@ -30,11 +28,9 @@
           ></app-form-control-text>
         </div>
         <div class="dash">
-          <div>
-            -
-          </div>
+          <div>-</div>
         </div>
-        <div style="flex: 0 0 21%;">
+        <div style="flex: 0 0 21%">
           <app-form-control-text
             [controlName]="accountId"
             [maxlength]="15"
@@ -43,11 +39,9 @@
           ></app-form-control-text>
         </div>
         <div class="dash">
-          <div>
-            -
-          </div>
+          <div>-</div>
         </div>
-        <div style="flex: 0 0 4%;">
+        <div style="flex: 0 0 4%">
           <app-form-control-text
             [controlName]="period"
             [maxlength]="2"
@@ -56,11 +50,9 @@
           ></app-form-control-text>
         </div>
         <div class="dash">
-          <div>
-            -
-          </div>
+          <div>-</div>
         </div>
-        <div style="flex: 0 0 4%;">
+        <div style="flex: 0 0 4%">
           <app-form-control-text
             [controlName]="checkDigits"
             [maxlength]="2"

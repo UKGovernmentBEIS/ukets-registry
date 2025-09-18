@@ -9,8 +9,8 @@ describe('AddNoteFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, SharedModule],
-      declarations: [AddNoteFormComponent],
+      imports: [AddNoteFormComponent],
+      declarations: [],
     }).compileComponents();
   });
 

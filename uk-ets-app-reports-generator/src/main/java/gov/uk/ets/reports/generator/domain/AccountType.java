@@ -21,6 +21,11 @@ public enum AccountType {
     AIRCRAFT_OPERATOR_HOLDING_ACCOUNT("ETS - Aircraft operator holding account"),
 
     /**
+     * The Maritime operator holding account (ETS) type.
+     */
+    MARITIME_OPERATOR_HOLDING_ACCOUNT("ETS - Maritime operator holding account"),
+
+    /**
      * The Trading account (ETS) type.
      */
     TRADING_ACCOUNT("ETS - Trading account"),

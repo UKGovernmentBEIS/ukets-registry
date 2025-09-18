@@ -10,7 +10,7 @@ import gov.uk.ets.registry.api.common.exception.NotAuthorizedException;
 import gov.uk.ets.registry.api.common.exception.NotFoundException;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.http.HttpStatus;
@@ -84,7 +84,7 @@ public class UkEtsExceptionControllerAdvice {
     }
 
     /**
-     * Handles javax validation errors by handling the {@link MethodArgumentNotValidException} exception.
+     * Handles jakarta validation errors by handling the {@link MethodArgumentNotValidException} exception.
      * <p>
      * Handles both field-level errors AND class-level errors (From custom constraints/validators).
      *

@@ -35,6 +35,7 @@ public enum RequestType {
     LOST_PASSWORD_AND_TOKEN("Request password and two factor authentication emergency access"),
     INSTALLATION_OPERATOR_UPDATE_REQUEST("Update account installation details"),
     AIRCRAFT_OPERATOR_UPDATE_REQUEST("Update account aircraft operator details"),
+    MARITIME_OPERATOR_UPDATE_REQUEST("Update account maritime operator details"),
     ACCOUNT_TRANSFER("Account transfer"),
     USER_DETAILS_UPDATE_REQUEST("Update user details"),
     USER_DEACTIVATION_REQUEST("Deactivate user"),

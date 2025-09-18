@@ -6,6 +6,7 @@
       notificationRequest === NotificationRequestEnum.UPDATE
     "
     [showRequestUpdate]="false"
+    [showCancelUpdate]="false"
     [showClone]="false"
     [showBackToList]="false"
   ></app-notification-header
@@ -19,7 +20,9 @@
             <span class="govuk-caption-xl">{{
               notificationRequest === NotificationRequestEnum.NEW ||
               notificationRequest === NotificationRequestEnum.CLONE
-                ? 'New ' + notificationTypeLabels[newNotification?.type].label
+                ? 'New ' +
+                  notificationTypeLabels[newNotification?.type].label +
+                  ' Notification'
                 : 'Request to update the notification'
             }}</span>
             Add the notification details
@@ -44,7 +47,13 @@
         [label]="'Content'"
         [labelTitleBold]="true"
         [moreInfo]="
-          NotificationType.AD_HOC !== newNotification.type ? infoText1 : ''
+          NotificationType.AD_HOC_EMAIL === newNotification.type
+            ? infoText2
+            : NotificationType.AD_HOC === newNotification.type
+              ? infoText1
+              : NotificationType.USER_INACTIVITY === newNotification.type
+                ? userInactivityInfoText
+                : ''
         "
         [showFormattingButtons]="
           NotificationType.AD_HOC !== newNotification.type

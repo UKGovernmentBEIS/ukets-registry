@@ -12,7 +12,7 @@ public class VerifiedEmissionsSurrenderedAllowancesReportData extends ReportData
     String regulator;
     String accountHolderName;
     String installationName;
-    Long installationIdentifier;
+    Long operatorId;
     String permitIdentifier;
     String mainActivityTypeCode;
     Long allocationEntitlement;

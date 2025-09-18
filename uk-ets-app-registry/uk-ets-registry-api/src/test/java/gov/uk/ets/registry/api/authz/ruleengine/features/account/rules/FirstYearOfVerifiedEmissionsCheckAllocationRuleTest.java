@@ -2,7 +2,7 @@ package gov.uk.ets.registry.api.authz.ruleengine.features.account.rules;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.Installation;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
 import gov.uk.ets.registry.api.authz.ruleengine.BusinessSecurityStore;
@@ -27,7 +27,7 @@ class FirstYearOfVerifiedEmissionsCheckAllocationRuleTest {
     private Account account;
 
     @Mock
-    private InstallationOrAircraftOperatorDTO requestedOperatorUpdate;
+    private OperatorDTO requestedOperatorUpdate;
 
     @Mock
     private List<AllocationSummary> allocationEntries;
@@ -69,9 +69,9 @@ class FirstYearOfVerifiedEmissionsCheckAllocationRuleTest {
         account.setCompliantEntity(installation);
         securityStore.setAccount(account);
 
-        InstallationOrAircraftOperatorDTO installationOrAircraftOperatorDTO = new InstallationOrAircraftOperatorDTO();
-        installationOrAircraftOperatorDTO.setFirstYear(2022);
-        securityStore.setRequestedOperatorUpdate(installationOrAircraftOperatorDTO);
+        OperatorDTO operatorDTO = new OperatorDTO();
+        operatorDTO.setFirstYear(2022);
+        securityStore.setRequestedOperatorUpdate(operatorDTO);
 
         List<AllocationSummary> allocationEntries = new ArrayList<>();
         securityStore.setAllocationEntries(allocationEntries);

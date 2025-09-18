@@ -1,6 +1,8 @@
-<app-banner [type]="BannerType.SUCCESS" *ngIf="fileDeleted">
-  <span> {{ fileDeleted }} has been deleted </span>
-</app-banner>
+<div aria-live="polite">
+  <app-banner [type]="BannerType.SUCCESS" *ngIf="fileDeleted">
+    <span> {{ fileDeleted }} has been deleted </span>
+  </app-banner>
+</div>
 <div class="govuk-width-container" *ngIf="account">
   <div class="govuk-grid-row">
     <app-side-menu
@@ -118,6 +120,7 @@
         [countries]="countries"
         (requestDocuments)="onAccountHolderRequestDocuments()"
         [canDeleteFile]="isAdmin && !isReadOnlyAdmin"
+        [canChangeAccountHolder]="isSeniorOrJuniorAdmin"
         *ngSwitchCase="menuItems.ACCOUNT_HOLDER"
       ></app-account-holder>
       <app-aircraft-operator
@@ -127,12 +130,28 @@
         [canRequestUpdate]="
           isAdmin &&
           !isReadOnlyAdmin &&
-          account.accountDetails.accountStatus != 'CLOSURE_PENDING' &&
-          account.accountDetails.accountStatus != 'CLOSED' &&
-          account.accountDetails.accountStatus != 'PROPOSED'
+          account.accountDetails.accountStatus !== 'CLOSURE_PENDING' &&
+          account.accountDetails.accountStatus !== 'CLOSED' &&
+          account.accountDetails.accountStatus !== 'PROPOSED'
         "
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
         (requestAircraftUpdateEmitter)="goToRequestOperatorUpdate()"
       ></app-aircraft-operator>
+      <app-maritime-operator
+        [maritime]="account.operator | maritimeOperator"
+        *ngSwitchCase="menuItems.MARITIME_OPERATOR_DETAILS"
+        [hasOperatorUpdatePendingApproval]="hasOperatorUpdatePendingApproval"
+        [canRequestUpdate]="
+          isAdmin &&
+          !isReadOnlyAdmin &&
+          account.accountDetails.accountStatus !== 'CLOSURE_PENDING' &&
+          account.accountDetails.accountStatus !== 'CLOSED' &&
+          account.accountDetails.accountStatus !== 'PROPOSED'
+        "
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
+        (requestMaritimeUpdateEmitter)="goToRequestOperatorUpdate()"
+      ></app-maritime-operator>
+
       <app-installation
         [installation]="account.operator | installation"
         (requestInstallationUpdateEmitter)="goToRequestOperatorUpdate()"
@@ -155,6 +174,7 @@
             | protect
             | async)
         "
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
         *ngSwitchCase="menuItems.INSTALLATION_DETAILS"
       ></app-installation>
       <app-authorised-representatives
@@ -198,9 +218,9 @@
         [compliantEntityIdentifier]="compliantEntityIdentifier"
         [canRequestUpdateExclusionStatus]="
           isSeniorAdmin &&
-          account.accountDetails.accountStatus != 'CLOSURE_PENDING' &&
-          account.accountDetails.accountStatus != 'CLOSED' &&
-          account.accountDetails.accountStatus != 'TRANSFER_PENDING'
+          account.accountDetails.accountStatus !== 'CLOSURE_PENDING' &&
+          account.accountDetails.accountStatus !== 'CLOSED' &&
+          account.accountDetails.accountStatus !== 'TRANSFER_PENDING'
         "
         *ngSwitchCase="menuItems.EMISSIONS_SURRENDERS"
       ></app-emissions-surrenders-container>
@@ -216,7 +236,7 @@
       <app-transactions-container
         [fullIdentifier]="account.accountDetails.accountNumber"
         [trustedAccountListRules]="account.trustedAccountListRules"
-        [isOHAOrAOHA]="isOHAOrAOHA"
+        [isOHAOrAOHAorMOHA]="isOHAOrAOHAorMOHA"
         [isKyotoAccountType]="isKyotoAccountType"
         [canRequestUpdate]="
           (isAdmin
@@ -274,6 +294,7 @@
         [accountNotes]="accountNotes"
         [accountHolderNotes]="accountHolderNotes"
         [isSeniorAdmin]="isSeniorAdmin"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
         [isAdmin]="isAdmin"
       ></app-account-notes>
       <app-account-allocation
@@ -319,7 +340,8 @@
       <h1 class="govuk-heading-xl">{{ currentMenuItem }}</h1>
       <span
         *ngIf="
-          compliantEntityIdentifier == null &&
+          (compliantEntityIdentifier === null ||
+            compliantEntityIdentifier === undefined) &&
           'OPERATOR_HOLDING_ACCOUNT' === account.accountType
         "
         class="govuk-caption-m govuk-!-margin-bottom-5"
@@ -328,7 +350,8 @@
       </span>
       <span
         *ngIf="
-          compliantEntityIdentifier == null &&
+          (compliantEntityIdentifier === null ||
+            compliantEntityIdentifier === undefined) &&
           'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT' === account.accountType
         "
         class="govuk-caption-m govuk-!-margin-bottom-5"
@@ -339,7 +362,8 @@
     <div
       class="govuk-grid-column-one-third"
       *ngIf="
-        compliantEntityIdentifier != null &&
+        (compliantEntityIdentifier !== null ||
+          compliantEntityIdentifier !== undefined) &&
         currentMenuItem === menuItems.ALLOCATION &&
         (isSeniorAdmin
           | canRequestUpdate

@@ -1,0 +1,110 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <hr
+      class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4"
+    />
+  </div>
+  <div class="govuk-grid-row">
+    <h2 class="govuk-heading-m">Payment details</h2>
+    <hr
+      class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4"
+    />
+  </div>
+  <div class="govuk-grid-row">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Amount requested</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          {{
+            taskDetails.amountRequested
+              | currency: 'GBP' : 'symbol' : '1.2-2' : 'en-GB'
+          }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Amount paid</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          {{
+            taskDetails.amountPaid
+              | currency: 'GBP' : 'symbol' : '1.2-2' : 'en-GB'
+          }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Description</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          {{ taskDetails.description }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reference number</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          {{ taskDetails.requestId }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Invoice</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          <a
+            class="govuk-link govuk-link--no-visited-state"
+            (click)="onDownloadInvoice()"
+            [routerLink]="[]"
+            >Invoice.pdf
+          </a>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row" *ngIf="shouldShowPaymentReceipt()">
+        <dt class="govuk-summary-list__key">Receipt</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          <a
+            class="govuk-link govuk-link--no-visited-state"
+            (click)="onDownloadReceipt()"
+            [routerLink]="[]"
+            >Receipt.pdf
+          </a>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row" *ngIf="shouldShowPaymentLink()">
+        <dt class="govuk-summary-list__key">Payment link</dt>
+        <dd class="govuk-summary-list__value" *ngIf="taskDetails">
+          <a
+            class="govuk-link govuk-link--no-visited-state"
+            target="_blank"
+            [href]="taskDetails.paymentLink"
+          >
+            {{ taskDetails.paymentLink }}
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <div
+    class="govuk-grid-row"
+    *ngIf="
+      taskDetails.taskType === RequestType.PAYMENT_REQUEST &&
+      taskDetails.taskStatus !== 'COMPLETED' &&
+      taskDetails.currentUserClaimant &&
+      taskActionsVisibility &&
+      checkIfCanOnlyComplete(taskDetails.taskType)
+    "
+  >
+    <p class="govuk-body hint">
+      This task will not be completed until you click on the button below
+    </p>
+    <div>
+      <button
+        (click)="proceedWith(TaskOutcome.APPROVED)"
+        class="govuk-button"
+        data-module="govuk-button"
+      >
+        Complete task
+      </button>
+    </div>
+  </div>
+</div>

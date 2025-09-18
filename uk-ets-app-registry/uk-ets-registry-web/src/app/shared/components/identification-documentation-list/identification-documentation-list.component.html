@@ -1,7 +1,7 @@
 <div class="govuk-grid-row govuk-!-margin-top-5">
   <div class="govuk-grid-column-full">
     <ng-container *ngIf="documents && documents.length === 0; else elseBlock">
-      <span class="govuk-hint"> No items added.</span>
+      <div class="govuk-hint">No items added.</div>
     </ng-container>
     <ng-template #elseBlock>
       <table aria-describedby="show-user-files" class="govuk-table">

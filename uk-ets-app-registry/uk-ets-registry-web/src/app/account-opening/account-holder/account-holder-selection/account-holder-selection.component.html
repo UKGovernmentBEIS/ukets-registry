@@ -20,13 +20,13 @@
               Add the {{ accountHolderTypeText }}
             </h1>
           </legend>
-          <span
+          <p
             *ngFor="let error of getErrors()"
             class="govuk-error-message"
             [attr.id]="'account-holder-selection-error-label'"
           >
             <span class="govuk-visually-hidden">Error:</span>{{ error }}
-          </span>
+          </p>
           <div
             class="govuk-radios__item"
             *ngIf="
@@ -135,7 +135,7 @@
               class="govuk-label govuk-radios__label"
               for="existing-search"
             >
-              Search by name
+              Search by Account Holder name or Account Holder ID
             </label>
           </div>
           <div
@@ -153,13 +153,13 @@
           >
             <div class="govuk-form-group">
               <app-type-ahead
-                [label]="'Enter a name'"
+                [label]="'Enter a name or an ID'"
                 [url]="searchByNameRequestUrl"
                 [params]="requestParams"
                 searchKey="name"
                 [resultTemplate]="accountHolder"
                 [inputFormatter]="accountHolderResultFormatter"
-                placeHolder="Search by name"
+                placeHolder="Search by name or ID"
                 (resultItem)="onSelectFromSearch($event)"
               ></app-type-ahead>
             </div>

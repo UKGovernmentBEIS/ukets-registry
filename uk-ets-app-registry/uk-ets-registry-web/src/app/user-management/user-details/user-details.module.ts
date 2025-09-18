@@ -26,10 +26,13 @@ import { PasswordChangeModule } from '@user-management/password-change/password-
 import { UserHeaderComponent } from '@user-management/headers/user-header/user-header.component';
 import { DeleteFileModule } from '@registry-web/delete-file/delete-file.module';
 import { KeycloakUserDisplayNamePipe } from '@registry-web/shared/pipes';
+import { RecoveryMethodsComponent } from './components/recovery-methods/recovery-methods.component';
+import { RecoveryMethodsChangeModule } from '../recovery-methods-change/recovery-methods-change.module';
 
 @NgModule({
   declarations: [
     RegistrationDetailsComponent,
+    RecoveryMethodsComponent,
     PersonalDetailsComponent,
     WorkContactDetailsComponent,
     IdentificationDocumentationComponent,
@@ -53,8 +56,14 @@ import { KeycloakUserDisplayNamePipe } from '@registry-web/shared/pipes';
       fromUserDetails.reducer
     ),
     EffectsModule.forFeature([UserDetailsEffect]),
+    RecoveryMethodsChangeModule,
   ],
   exports: [UserDetailsContainerComponent, UserHeaderComponent],
-  providers: [UserDetailService, ExportFileService, UserHeaderGuard, KeycloakUserDisplayNamePipe,],
+  providers: [
+    UserDetailService,
+    ExportFileService,
+    UserHeaderGuard,
+    KeycloakUserDisplayNamePipe,
+  ],
 })
 export class UserDetailsModule {}

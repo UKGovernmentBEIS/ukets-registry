@@ -19,9 +19,10 @@
           <app-uk-select-authorised-representative
             formControlName="selectAr"
             [authorisedRepresentatives]="authorisedRepresentatives"
-            [showErrors]="false"
             hint="User ID"
             hintClass="govuk-heading-s"
+            [showErrors]="showErrors"
+            [errorDetails]="errorSummary.errors"
           >
           </app-uk-select-authorised-representative>
         </fieldset>

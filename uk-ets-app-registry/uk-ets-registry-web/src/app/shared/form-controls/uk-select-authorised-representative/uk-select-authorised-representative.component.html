@@ -4,7 +4,7 @@
     [id]="compositeFormGroupId"
     [class.govuk-form-group--error]="this.showErrors && formControl.invalid"
   >
-    <span
+    <p
       *ngIf="this.showErrors && formControl.invalid"
       id="event-name-error"
       class="govuk-error-message"
@@ -15,7 +15,7 @@
       <span *ngFor="let errorCode of getObjectKeys(formControl.errors)">
         {{ validationErrorMessages[errorCode] || errorCode }}
       </span>
-    </span>
+    </p>
 
     <span
       *ngIf="hint && !showOnlyUserIdInput"
@@ -121,17 +121,25 @@
           Enter a user ID
         </label>
       </span>
-      <span id="ar-selection-by-ID-hint" class="govuk-hint">
+      <div id="ar-selection-by-ID-hint" class="govuk-hint">
         Your representative must create a registry sign in for the UK Emissions
         Trading Registry and tell you their user ID, for example UK39664797446
-      </span>
+      </div>
       <div
         class="govuk-form-group"
         [ngClass]="{ 'govuk-!-margin-bottom-4': showOnlyUserIdInput }"
       >
+        <p
+          *ngFor="let error of getErrors()"
+          class="govuk-error-message"
+          [attr.id]="'selection-by-id-error-label'"
+        >
+          <span class="govuk-visually-hidden">Error:</span>{{ error }}
+        </p>
+
         <input
           class="govuk-input"
-          [class.govuk-input--error]="this.showErrors && formControl.invalid"
+          [class.govuk-input--error]="showError()"
           [attr.aria-label]="showOnlyUserIdInput ? null : 'User ID'"
           id="selection-by-id"
           name="selection-by-id"

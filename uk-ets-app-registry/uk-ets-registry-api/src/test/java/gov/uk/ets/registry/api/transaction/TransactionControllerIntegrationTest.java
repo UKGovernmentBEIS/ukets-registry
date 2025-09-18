@@ -132,7 +132,6 @@ class TransactionControllerIntegrationTest {
 
         String currentUserKeycloakId = "fc4c4b91-efd8-4cc9-a96e-4efdae59b4ba";
         accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
 
         // create two users one is the task initiator and one is the task claimant and store them in the database
         UserDTO taskInitiatorDTO = new UserDTO();

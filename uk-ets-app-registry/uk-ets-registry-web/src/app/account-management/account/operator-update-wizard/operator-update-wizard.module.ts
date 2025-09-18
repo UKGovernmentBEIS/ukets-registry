@@ -21,6 +21,7 @@ import {
 import { CancelUpdateRequestContainerComponent } from '@operator-update/components/cancel-update-request';
 import { RequestSubmittedContainerComponent } from '@operator-update/components/request-submitted';
 import { AircraftUpdateComponent } from '@operator-update/components/aircraft-update';
+import { MaritimeUpdateComponent } from './components/maritime-update';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { AircraftUpdateComponent } from '@operator-update/components/aircraft-up
     CheckUpdateRequestComponent,
     RequestSubmittedContainerComponent,
     AircraftUpdateComponent,
+    MaritimeUpdateComponent
   ],
   imports: [
     CommonModule,

@@ -4,13 +4,13 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.task.domain.TaskTransaction;
 
 import java.io.Serializable;
-import javax.persistence.ConstraintMode;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.NotFound;
@@ -34,7 +34,7 @@ public class SearchableTransaction extends BaseTransactionEntity implements Seri
         referencedColumnName = "full_identifier",
         insertable = false,
         updatable = false,
-        foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+        foreignKey = @jakarta.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     @NotFound(action = NotFoundAction.IGNORE)
     private Account transferringUkRegistryAccount;
 
@@ -42,7 +42,7 @@ public class SearchableTransaction extends BaseTransactionEntity implements Seri
     @JoinColumn(name = "acquiring_account_full_identifier",
         referencedColumnName = "full_identifier",
         insertable = false, updatable = false,
-        foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT)
+        foreignKey = @jakarta.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT)
     )
     @NotFound(action = NotFoundAction.IGNORE)
     private Account acquiringUkRegistryAccount;
@@ -51,7 +51,7 @@ public class SearchableTransaction extends BaseTransactionEntity implements Seri
     @JoinColumn(name = "identifier",
         referencedColumnName = "transaction_identifier",
         insertable = false, updatable = false,
-        foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+        foreignKey = @jakarta.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     @NotFound(action = NotFoundAction.IGNORE)
     private TaskTransaction taskTransaction;
     
@@ -60,7 +60,7 @@ public class SearchableTransaction extends BaseTransactionEntity implements Seri
         referencedColumnName = "transaction_identifier",
         insertable = false, 
         updatable = false,
-        foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+        foreignKey = @jakarta.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     @NotFound(action = NotFoundAction.IGNORE)
     private TransactionAccountBalance accountsBalances;
 }

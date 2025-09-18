@@ -1,6 +1,8 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
+  standalone: true,
+  imports: [],
   selector: 'app-delete-note',
   templateUrl: './delete-note.component.html',
 })

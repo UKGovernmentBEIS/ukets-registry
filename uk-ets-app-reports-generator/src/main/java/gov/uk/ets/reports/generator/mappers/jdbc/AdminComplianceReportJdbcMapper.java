@@ -4,7 +4,6 @@ import gov.uk.ets.reports.generator.domain.AdminComplianceReportData;
 import gov.uk.ets.reports.generator.export.util.DateRangeUtil;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -30,11 +29,16 @@ public class AdminComplianceReportJdbcMapper
             "   else ''\n" +
             "end";
 
-    private static final String PERMIT_OR_MONITORING_PLAN_ID_COLUMN =
-        "case\n" +
-            "   when a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' then (select permit_identifier from installation i where i.compliant_entity_id = ce.id)\n" +
-            "   else (select monitoring_plan_identifier from aircraft_operator ao where ao.compliant_entity_id = ce.id)\n" +
-            "end";
+    private static final String PERMIT_OR_MONITORING_PLAN_ID_COLUMN = """
+                    CASE
+                        WHEN a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT permit_identifier FROM installation i WHERE i.compliant_entity_id = ce.id)
+                        WHEN a.registry_account_type = 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT monitoring_plan_identifier FROM aircraft_operator ao WHERE ao.compliant_entity_id = ce.id)
+                        WHEN a.registry_account_type = 'MARITIME_OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT maritime_monitoring_plan_identifier FROM maritime_operator mo WHERE mo.compliant_entity_id = ce.id)
+                    END
+            """;
 
     private static final String MOST_RECENT_EMISSIONS_ROWS =
         "select *\n" +
@@ -55,8 +59,8 @@ public class AdminComplianceReportJdbcMapper
         "                   cross join years\n" +
         "          where t.type = 'SurrenderAllowances'\n" +
         "            and t.status = 'COMPLETED'\n" +
-        "            and execution_date >= TO_TIMESTAMP(concat(years.year - 1, '-05-01'), 'YYYY-MM-DD')\n" +
-        "            and execution_date < TO_TIMESTAMP(concat(years.year, '-05-01'), 'YYYY-MM-DD')\n" +
+        "            and execution_date >= TO_TIMESTAMP(concat(years.year, '-05-01'), 'YYYY-MM-DD')\n" +
+        "            and execution_date < TO_TIMESTAMP(concat(years.year + 1, '-05-01'), 'YYYY-MM-DD')\n" +
         "            and execution_date <= ? " +
         "          group by io2.installation_id, aa.id, years.year";
 
@@ -69,8 +73,8 @@ public class AdminComplianceReportJdbcMapper
         "                   cross join years\n" +
         "          where t.type = 'ReverseSurrenderAllowances'\n" +
         "            and t.status = 'COMPLETED'\n" +
-        "            and execution_date >= TO_TIMESTAMP(concat(years.year - 1, '-05-01'), 'YYYY-MM-DD')\n" +
-        "            and execution_date < TO_TIMESTAMP(concat(years.year, '-05-01'), 'YYYY-MM-DD')\n" +
+        "            and execution_date >= TO_TIMESTAMP(concat(years.year, '-05-01'), 'YYYY-MM-DD')\n" +
+        "            and execution_date < TO_TIMESTAMP(concat(years.year + 1, '-05-01'), 'YYYY-MM-DD')\n" +
         "            and execution_date <= ? \n" +
         "          group by io2.installation_id, aa.id, years.year";
 
@@ -203,11 +207,6 @@ public class AdminComplianceReportJdbcMapper
         "order by ah_name, permit_or_monitoring_plan_id desc";
 
     @Override
-    public List<AdminComplianceReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
-
-    @Override
     public List<AdminComplianceReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
         LocalDateTime cutOffDateTime = DateRangeUtil.getCutOffDateTime(reportQueryInfo);
         return jdbcTemplate.query(REPORT_QUERY, this, cutOffDateTime, cutOffDateTime,
@@ -224,7 +223,7 @@ public class AdminComplianceReportJdbcMapper
             .accountStatus(rs.getString("account_status"))
             .accountType(rs.getString("account_type"))
             .installationName(rs.getString("installation_name"))
-            .installationIdentifier(rs.getLong("identifier"))
+            .operatorId(rs.getLong("identifier"))
             .permitOrMonitoringPlanId(rs.getString("permit_or_monitoring_plan_id"))
             .firstYearOfVerifiedEmissions(rs.getString("start_year"))
             .lastYearOfVerifiedEmissions(rs.getString("end_year"))

@@ -9,55 +9,34 @@ import gov.uk.ets.registry.api.notification.userinitiated.messaging.model.BaseNo
 import gov.uk.ets.registry.api.notification.userinitiated.messaging.model.InstallationParameters;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface NotificationSchedulingRepository extends JpaRepository<Notification, Long> {
 
-
     @Modifying
-    @Query(value = "update notification " +
-        "set status = ad_hoc_status.updated_status " +
-        "from (select n.id as notification_id," +
-        "       case when n.start_date_time <= ?1 and n.end_date_time >= ?1 then 'ACTIVE' " +
-        "       when n.start_date_time <= ?1 and n.end_date_time is null then 'ACTIVE' " +
-        "       when n.start_date_time > ?1  then 'PENDING' " +
-        "       when n.end_date_time < ?1 then 'EXPIRED' " +
-        "       else 'EXPIRED' " +
-        "       end as updated_status " +
-        "from notification n inner join notification_definition nd on n.notification_definition_id = nd.id " +
-        "where nd.type = 'AD_HOC' and n.status <> 'EXPIRED') as ad_hoc_status " +
-        "where notification.id = ad_hoc_status.notification_id ", nativeQuery = true)
-    void changeAdHocNotificationsStatus(LocalDateTime dateTime);
-
-    /**
-     * The first when checks if there is a non-recurring notification that has already been sent once.
-     * If so it must be set to EXPIRED (this is for the case of old notifications, instead of a migration).
-     */
-    @Modifying
-    @Query(value = "update notification " +
-        "set status = compliance_status.updated_status " +
-        "from (select n.id as notification_id," +
-        "       case " +
-        "       when n.start_date_time <= ?1 and n.end_date_time is null and n.run_every_x_days is null and " +
-        "            n.times_fired = 1 then 'EXPIRED'" +
-        "       when n.start_date_time <= ?1 and n.end_date_time >= ?1 then 'ACTIVE' " +
-        "       when n.start_date_time <= ?1 and n.end_date_time is null then 'ACTIVE' " +
-        "       when n.start_date_time > ?1  then 'PENDING' " +
-        "       when n.end_date_time < ?1 then 'EXPIRED' " +
-        "       else 'EXPIRED' " +
-        "       end as updated_status " +
-        "from notification n inner join notification_definition nd on n.notification_definition_id = nd.id " +
-        "where nd.type in(" +
-        "'EMISSIONS_MISSING_FOR_OHA','SURRENDER_DEFICIT_FOR_OHA','EMISSIONS_MISSING_FOR_AOHA'," +
-        "'SURRENDER_DEFICIT_FOR_AOHA', 'YEARLY_INTRODUCTION_TO_OHA_AOHA_WITH_OBLIGATIONS'" +
-        ")  " +
-        "and n.status <> 'EXPIRED') as compliance_status " +
-        "where notification.id = compliance_status.notification_id ", nativeQuery = true)
-    void changeComplianceNotificationsStatus(LocalDateTime dateTime);
+    @Query(value = "UPDATE notification n " +
+        "SET status = temp.updated_status " +
+        "FROM (SELECT n.id AS notification_id, " +
+        "             CASE " +
+        "                 WHEN nd.type <> 'AD_HOC' AND n.start_date_time <= :dateTime AND n.end_date_time IS NULL " +
+        "                   AND n.run_every_x_days IS NULL AND n.times_fired = 1 THEN 'EXPIRED' " +
+        "                 WHEN n.start_date_time <= :dateTime AND n.end_date_time >= :dateTime THEN 'ACTIVE' " +
+        "                 WHEN n.start_date_time <= :dateTime AND n.end_date_time IS NULL THEN 'ACTIVE' " +
+        "                 WHEN n.start_date_time > :dateTime THEN 'PENDING' " +
+        "                 WHEN n.end_date_time < :dateTime THEN 'EXPIRED' " +
+        "                 ELSE 'EXPIRED' " +
+        "             END AS updated_status " +
+        "      FROM notification n " +
+        "      INNER JOIN notification_definition nd ON n.notification_definition_id = nd.id " +
+        "      WHERE nd.type IN :types AND n.status not in ('CANCELLED','EXPIRED')) AS temp " +
+        "WHERE n.id = temp.notification_id", nativeQuery = true)
+    void changeNotificationsStatus(@Param("dateTime") LocalDateTime dateTime, @Param("types") List<String> types);
 
     @Query(
         "select n from Notification n join fetch n.definition " +
@@ -90,6 +69,28 @@ public interface NotificationSchedulingRepository extends JpaRepository<Notifica
                                                                     List<AccountAccessState> arStatuses,
                                                                     List<ComplianceStatus> complianceStatuses);
 
+    @Query(
+        "select distinct new gov.uk.ets.registry.api.notification.userinitiated.messaging.model.BaseNotificationParameters(" +
+            "u.urid, u.firstName, u.lastName, u.disclosedName, " +
+            "null,null,null,null,null,null, " +
+            "current_date, year(current_date)" +
+            ") " +
+            " from Account a " +
+            "         inner join a.accountAccesses aa " +
+            "         inner join aa.user u " +
+            "         inner join a.accountHolder ah " +
+            " where u.urid in ?1 " +
+            "  and a.accountStatus in ?2 " +
+            "  and aa.user.state in ?3 " +
+            "  and aa.state in ?4 " +
+            "  and aa.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED"
+    )
+    List<BaseNotificationParameters> getUserInactivityNotificationParameters( List<String> validUserIds,
+                                                                                List<AccountStatus> accountStatuses,
+                                                                                List<UserStatus> userStatuses,
+                                                                                List<AccountAccessState> arStatuses);
+    
+    
     /**
      * We need to join unrelated entities, so we use an explicit join.
      */

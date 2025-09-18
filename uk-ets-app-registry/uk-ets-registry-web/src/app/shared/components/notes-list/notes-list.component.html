@@ -1,7 +1,7 @@
-<ng-container *ngIf="!accountNotes || accountNotes?.length === 0">
-  <span class="govuk-hint"> No items added.</span>
+<ng-container *ngIf="!notes || notes?.length === 0">
+  <div class="govuk-hint">No items added.</div>
 </ng-container>
-<ng-container *ngIf="accountNotes?.length > 0">
+<ng-container *ngIf="notes?.length > 0">
   <table class="govuk-table" aria-describedby="Domain events table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
@@ -14,25 +14,25 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <tr *ngFor="let accountNote of accountNotes" class="govuk-table__row">
+      <tr *ngFor="let note of notes" class="govuk-table__row">
         <td class="govuk-table__cell date">
-          {{ accountNote.creationDate | gdsDateTimeShort }}
+          {{ note.creationDate | gdsDateTimeShort }}
         </td>
         <td class="govuk-table__cell break-word">
           <a
             class="govuk-link govuk-link--no-visited-state"
-            [routerLink]="['/user-details/' + accountNote.userIdentifier]"
-            >{{ accountNote.userName }}</a
+            [routerLink]="['/user-details/' + note.userIdentifier]"
+            >{{ note.userName }}</a
           >
         </td>
         <td class="govuk-table__cell break-word">
-          <app-read-more>{{ accountNote.description }}</app-read-more>
+          <app-read-more>{{ note.description }}</app-read-more>
         </td>
         <td class="govuk-table__cell" *ngIf="isSeniorAdmin">
           <a
             class="govuk-link govuk-link--no-visited-state"
             [routerLink]="[]"
-            (click)="deleteNoteClick(accountNote.id)"
+            (click)="deleteNoteClick(note.id)"
             >Delete</a
           >
         </td>

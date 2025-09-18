@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_11_0_CREATE_DOCUMENTS_CATEGORY_TABLE" author="piliotid" context="migrate">
+        <comment>Create document_category table.</comment>
+        <sql>
+            CREATE SEQUENCE document_category_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "document_category"
+            (
+                "id" bigint,
+                "name" varchar(256),
+                "position" integer,
+                "created_on" timestamp,
+                "updated_on" timestamp,
+                constraint "pk_document_category" primary key("id")
+            );
+
+            COMMENT ON TABLE  "document_category" is 'Represents the categories of the documents';
+            COMMENT ON COLUMN "document_category"."id" is 'The primary key';
+            COMMENT ON COLUMN "document_category"."name" is 'The name of the category';
+            COMMENT ON COLUMN "document_category"."position" is 'The position of the category';
+            COMMENT ON COLUMN "document_category"."created_on" is 'The creation date of the category';
+            COMMENT ON COLUMN "document_category"."updated_on" is 'The updated date of the category';
+                </sql>
+    </changeSet>
+
+    <changeSet id="4_11_0_CREATE_DOCUMENTS_TABLE" author="piliotid" context="migrate">
+        <comment>Create document table.</comment>
+        <sql>
+            CREATE SEQUENCE document_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "document"
+            (
+                "id" bigint,
+                "document_category_id" bigint,
+                "title" varchar(256),
+                "name" varchar(256),
+                "data" bytea,
+                "position" integer,
+                "created_on" timestamp,
+                "updated_on" timestamp,
+                constraint "pk_document" primary key("id")
+            );
+
+            alter table "document" add constraint "fk_document" foreign key ("document_category_id") references "document_category" ("id");
+
+            COMMENT ON TABLE  "document" is 'Represents the documents';
+            COMMENT ON COLUMN "document"."id" is 'The primary key';
+            COMMENT ON COLUMN "document"."document_category_id" is 'Foreign key for the document category';
+            COMMENT ON COLUMN "document"."title" is 'The title of the document';
+            COMMENT ON COLUMN "document"."name" is 'The name of the document';
+            COMMENT ON COLUMN "document"."data" is 'The date of the document';
+            COMMENT ON COLUMN "document"."position" is 'The position of the document';
+            COMMENT ON COLUMN "document"."created_on" is 'The creation date of the document';
+            COMMENT ON COLUMN "document"."updated_on" is 'The updated date of the document';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

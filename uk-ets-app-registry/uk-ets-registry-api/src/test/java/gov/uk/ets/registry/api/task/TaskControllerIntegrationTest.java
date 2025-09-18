@@ -3,10 +3,9 @@ package gov.uk.ets.registry.api.task;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Optional;
-
 import com.google.common.collect.Lists;
 import freemarker.template.Configuration;
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.authz.DisabledKeycloakAuthorizationService;
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.Utils;
@@ -20,11 +19,11 @@ import gov.uk.ets.registry.api.user.admin.service.DisabledKeycloakUserAdministra
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
-import gov.uk.ets.registry.api.user.service.UserService;
+import java.util.Map;
+import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.mockito.Mockito;
@@ -40,7 +39,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @RegistryIntegrationTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(locations = "/integration-test-application.properties", properties = {
     "keycloak.enabled=false",
     "spring.datasource.hikari.auto-commit=false",
@@ -54,9 +53,6 @@ class TaskControllerIntegrationTest {
 
     @MockBean
     private ServiceAccountAuthorizationService serviceAccountAuthorizationService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -84,10 +80,8 @@ class TaskControllerIntegrationTest {
     void testCompleteTask() throws Exception {
 
         // the following code part sets a keycloak id for the current user
-        AccessToken accessToken = new AccessToken();
         String currentUserKeycloakId = "fc4c4b91-efd8-4cc9-a96e-4efdae59b4bc";
-        accessToken.setSubject(currentUserKeycloakId);
-        Mockito.when(disabledKeycloakAuthorizationService.getToken()).thenReturn(accessToken);
+        Mockito.when(disabledKeycloakAuthorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).thenReturn(currentUserKeycloakId);
 
         // create two users one is the task initiator and one is the task claimant and store them in the database
         String initiatorKeykloakId = "fc4c4b91-efd8-4cc9-a96e-4efdae59b4ba";
@@ -123,6 +117,7 @@ class TaskControllerIntegrationTest {
         userRepresentation.setFirstName(taskClaimantDTOUrid);
         userRepresentation.setLastName(taskClaimantDTOUrid);
         userRepresentation.setEmail(oldEmail);
+        userRepresentation.setAttributes(Map.of());
         Mockito.when(disabledKeycloakUserAdministrationService.findByEmail(oldEmail)).thenReturn(
             Optional.of(userRepresentation));
         Mockito.when(disabledKeycloakUserAdministrationService.findByIamId(initiatorKeykloakId)).thenReturn(userRepresentation);

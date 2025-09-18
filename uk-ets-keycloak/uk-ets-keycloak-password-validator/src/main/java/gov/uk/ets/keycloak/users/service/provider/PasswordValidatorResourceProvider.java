@@ -1,16 +1,15 @@
 package gov.uk.ets.keycloak.users.service.provider;
 
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Optional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.annotations.cache.NoCache;
+import org.jboss.resteasy.reactive.NoCache;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.services.managers.AppAuthManager;
@@ -53,14 +52,12 @@ public class PasswordValidatorResourceProvider implements RealmResourceProvider 
     }
 
     private Boolean validate(String password, UserModel userModel) {
-        RealmModel realmModel = session.getContext().getRealm();
-        return session.userCredentialManager()
-            .isValid(realmModel, userModel, UserCredentialModel.password(password));
+        return userModel.credentialManager().isValid(UserCredentialModel.password(password));
     }
 
     private Optional<UserModel> getAuthenticatedUser() {
-    	AppAuthManager.BearerTokenAuthenticator  authenticator = new AppAuthManager.BearerTokenAuthenticator(session);
-    	AuthenticationManager.AuthResult authResult =  authenticator.authenticate();
+        AppAuthManager.BearerTokenAuthenticator  authenticator = new AppAuthManager.BearerTokenAuthenticator(session);
+        AuthenticationManager.AuthResult authResult =  authenticator.authenticate();
 
         if (authResult != null) {
             return Optional.of(authResult.getUser());

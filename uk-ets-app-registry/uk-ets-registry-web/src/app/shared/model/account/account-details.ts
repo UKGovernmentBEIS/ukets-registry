@@ -10,10 +10,12 @@ export type AccountStatus =
   | 'TRANSFER_PENDING'
   | 'CLOSURE_PENDING'
   | 'PROPOSED'
-  | 'CLOSED';
+  | 'CLOSED'
+  | 'ALL_EXCEPT_CLOSED';
 
 export class AccountDetails {
   name: string;
+  publicAccountIdentifier: string;
   accountType: string;
   accountNumber: string;
   accountHolderName: string;

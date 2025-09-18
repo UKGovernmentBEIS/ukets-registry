@@ -1,0 +1,10 @@
+.govuk-details {
+  padding: 5px;
+}
+
+.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: grey;
+  text-decoration: none;
+}

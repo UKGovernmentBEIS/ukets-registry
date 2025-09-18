@@ -5,7 +5,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.BusinessRule;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 /**

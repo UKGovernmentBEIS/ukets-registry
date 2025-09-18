@@ -26,6 +26,8 @@ public enum GroupNotificationType {
     TASK_COMPLETE_OUTCOME,
 
     ACCOUNT_OPENING_FINALISATION,
+    DEADLINE_REMINDER,
+    DEADLINE_UPDATE,
     DOCUMENT_REQUEST,
     DOCUMENT_REQUEST_FINALISATION,
     DOCUMENT_REQUEST_REMINDER,
@@ -138,4 +140,20 @@ public enum GroupNotificationType {
      * Notification type that is invoked when the upload allocation table request request task is rejected.
      */
     UPLOAD_ALLOCATION_TABLE_REJECTED,
+    /**
+     * Notification type that is invoked when user request to update recovery email.
+     */
+    RECOVERY_EMAIL_CHANGE_REQUEST,
+    /**
+     * Notification type that is invoked when a request via integration points was not processed correctly.
+     */
+    INTEGRATION_ERROR_OUTCOME,
+    /**
+     * Notification type that is invoked when a request via account opening integration point was processed correctly.
+     */
+    INTEGRATION_ACCOUNT_OPENING_SUCCESS_OUTCOME,
+    
+    //Payments Related
+    PAYMENT_REQUEST,
+    
 }

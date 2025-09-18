@@ -37,7 +37,9 @@ public class UserDetailsDTO implements Serializable {
     private DateDTO birthDate;
     @UserDetailsUpdateField(label="Country of birth")
     private String countryOfBirth;
+    @Deprecated(forRemoval = true)
     private String workCountryCode;
+    @Deprecated(forRemoval = true)
     @UserDetailsUpdateField(label="(Work)Phone number")
     private String workPhoneNumber;
     @UserDetailsUpdateField(label="(Work)Address 1", isMinor=true)
@@ -59,4 +61,16 @@ public class UserDetailsDTO implements Serializable {
     private UserStatus status;
     @UserDetailsUpdateField(label="Memorable phrase")
     private String memorablePhrase;
+    private String workMobileCountryCode;
+    @UserDetailsUpdateField(label="(Work)Mobile Phone number")
+    private String workMobilePhoneNumber;
+    private String workAlternativeCountryCode;
+    @UserDetailsUpdateField(label="(Work)Alternative Phone number")
+    private String workAlternativePhoneNumber;
+    @UserDetailsUpdateField(label="(Work)Reason for not providing mobile phone")
+    private String noMobilePhoneNumberReason;
+    private String recoveryCountryCode;
+    @UserDetailsUpdateField(label="Recovery Mobile Phone number")
+    private String recoveryPhoneNumber;
+    private String recoveryEmailAddress;
 }

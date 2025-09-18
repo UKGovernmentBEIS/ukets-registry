@@ -26,10 +26,6 @@
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-services</artifactId>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-		    <groupId>org.wildfly.client</groupId>
-		    <artifactId>wildfly-client-config</artifactId>
 		</dependency> 		
 	</dependencies>
 
@@ -98,55 +94,7 @@
                     </includeOnlyProperties>
                     <commitIdGenerationMode>full</commitIdGenerationMode>
                 </configuration>
-            </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.3.0</version>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<artifactItems>
-						<artifactItem>
-							<groupId>org.jboss.resteasy</groupId>
-							<artifactId>resteasy-client</artifactId>
-							<version>${resteasy.version}</version>
-							<type>jar</type>
-							<overWrite>false</overWrite>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<destFileName>org.jboss.resteasy.resteasy-client.jar</destFileName>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.jboss.resteasy</groupId>
-							<artifactId>resteasy-client-api</artifactId>
-							<version>${resteasy.version}</version>
-							<type>jar</type>
-							<overWrite>false</overWrite>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<destFileName>org.jboss.resteasy.resteasy-client-api.jar</destFileName>
-						</artifactItem>	
-						<artifactItem>
-							<groupId>org.wildfly.client</groupId>
-							<artifactId>wildfly-client-config</artifactId>
-							<version>${wildfly.client.config.version}</version>
-							<type>jar</type>
-							<overWrite>false</overWrite>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<destFileName>org.wildfly.client.wildfly-client-config.jar</destFileName>
-						</artifactItem>																						
-					</artifactItems>
-					<outputDirectory>${project.build.directory}/wars</outputDirectory>
-					<overWriteReleases>false</overWriteReleases>
-					<overWriteSnapshots>true</overWriteSnapshots>
-				</configuration>
-			</plugin>
+            </plugin>			
 		</plugins>
 	</build>
 </project>

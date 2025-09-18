@@ -1,5 +1,5 @@
 import { BulkAssignComponent } from '@task-management/task-list/bulk-assign/bulk-assign.component';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideMockStore } from '@ngrx/store/testing';
@@ -11,7 +11,7 @@ describe('BulkAssignComponent', () => {
   let fixture: ComponentFixture<BulkAssignComponent>;
   const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [ReactiveFormsModule, RouterTestingModule],
@@ -21,9 +21,9 @@ describe('BulkAssignComponent', () => {
         { provide: FormBuilder, useValue: formBuilder },
         {
           provide: UK_ETS_REGISTRY_API_BASE_URL,
-          useValue: 'apiBaseUrl'
-        }
-      ]
+          useValue: 'apiBaseUrl',
+        },
+      ],
     }).compileComponents();
   }));
 

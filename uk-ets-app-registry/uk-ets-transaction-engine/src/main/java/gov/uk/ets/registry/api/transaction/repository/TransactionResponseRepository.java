@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionResponseRepository extends JpaRepository<TransactionResponse, Long> {
 
+    TransactionResponse findByTransactionId(Long transactionId);
+
 }

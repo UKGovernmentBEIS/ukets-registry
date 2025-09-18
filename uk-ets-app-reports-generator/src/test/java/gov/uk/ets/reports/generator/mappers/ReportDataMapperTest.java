@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -12,10 +11,6 @@ import org.junit.jupiter.api.Test;
 class ReportDataMapperTest {
 
     ReportDataMapper mapper = new ReportDataMapper() {
-        @Override
-        public List mapData(ReportCriteria criteria) {
-            return null;
-        }
 
         @Override
         public List mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

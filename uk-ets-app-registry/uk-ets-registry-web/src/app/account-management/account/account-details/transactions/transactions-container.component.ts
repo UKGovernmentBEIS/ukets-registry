@@ -36,7 +36,7 @@ export class TransactionsContainerComponent implements OnInit {
   @Input()
   canRequestUpdate: boolean;
   @Input()
-  isOHAOrAOHA: boolean;
+  isOHAOrAOHAorMOHA: boolean;
   @Input()
   isKyotoAccountType: boolean;
 

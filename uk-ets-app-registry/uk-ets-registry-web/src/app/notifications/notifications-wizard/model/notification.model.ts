@@ -11,4 +11,5 @@ export interface Notification {
   updatedBy?: string;
   status?: NotificationStatus;
   tentativeRecipients?: number;
+  uploadedFileId?: number;
 }

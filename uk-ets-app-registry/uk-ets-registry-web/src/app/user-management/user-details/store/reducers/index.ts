@@ -4,7 +4,6 @@ import {
   UserDetailsState,
 } from './user-details.reducer';
 import { UserStatus } from '@shared/user';
-import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
 
 export * from './user-details.reducer';
 

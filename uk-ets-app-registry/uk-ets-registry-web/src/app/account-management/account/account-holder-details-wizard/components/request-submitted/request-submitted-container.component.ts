@@ -23,7 +23,10 @@ export class RequestSubmittedContainerComponent implements OnInit {
   accountId: string;
   isAdmin$: Observable<boolean>;
 
-  constructor(private store: Store, private route: ActivatedRoute) {}
+  constructor(
+    private store: Store,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.isAdmin$ = this.store.select(isAdmin);

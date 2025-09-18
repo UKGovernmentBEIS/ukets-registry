@@ -6,6 +6,7 @@
       notificationRequest === NotificationRequestEnum.UPDATE
     "
     [showRequestUpdate]="false"
+    [showCancelUpdate]="false"
     [showClone]="false"
     [showBackToList]="false"
   ></app-notification-header
@@ -20,7 +21,9 @@
               >{{
                 notificationRequest === NotificationRequestEnum.NEW ||
                 notificationRequest === NotificationRequestEnum.CLONE
-                  ? 'New ' + notificationTypeLabels[newNotification?.type].label
+                  ? 'New ' +
+                    notificationTypeLabels[newNotification?.type].label +
+                    ' Notification'
                   : 'Request to update the notification'
               }}
             </span>
@@ -86,14 +89,10 @@
           >
           </app-uk-single-checkbox>
           <ng-container *ngIf="validationErrorMessage.recurrenceDetails">
-            <span
-              id="event-name-error2"
-              class="govuk-error-message"
-              role="alert"
-            >
+            <p id="event-name-error2" class="govuk-error-message" role="alert">
               <span class="govuk-visually-hidden">Error:</span>
               {{ validationErrorMessage.recurrenceDetails }}
-            </span>
+            </p>
           </ng-container>
           <div
             [ngClass]="
@@ -146,14 +145,10 @@
           </div>
 
           <ng-container *ngIf="validationErrorMessage.expirationDateDetails">
-            <span
-              id="event-name-error"
-              class="govuk-error-message"
-              role="alert"
-            >
+            <p id="event-name-error" class="govuk-error-message" role="alert">
               <span class="govuk-visually-hidden">Error:</span>
               {{ validationErrorMessage.expirationDateDetails }}
-            </span>
+            </p>
           </ng-container>
 
           <div class="govuk-radios govuk-radios--conditional">

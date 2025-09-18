@@ -66,7 +66,13 @@ export class CheckUserDetailsUpdateRequestComponent implements OnInit {
     const diff = {};
     if (updatedValues) {
       Object.keys(updatedValues).forEach((r) => {
-        if (updatedValues[r] !== initialValues[r]) {
+        const updatedValue = updatedValues[r];
+        const initialValue = initialValues[r];
+
+        const isNullOrEmpty =
+          (updatedValue === null || updatedValue === '') &&
+          (initialValue === null || initialValue === '');
+        if (updatedValues[r] !== initialValues[r] && !isNullOrEmpty) {
           diff[r] = updatedValues[r];
         }
       });
@@ -81,7 +87,10 @@ export class CheckUserDetailsUpdateRequestComponent implements OnInit {
   onSubmit() {
     if (!Object.keys(this.changedValues).length) {
       this.errorDetails.emit(
-        new ErrorDetail(null, 'At least one field must be updated')
+        new ErrorDetail(
+          null,
+          'Cannot submit a request that does not include a change'
+        )
       );
     } else {
       this.submitRequest.emit(this.changedValues as IUser);

@@ -32,6 +32,8 @@ const updatePublicationDetailsReducer = createReducer(
   mutableOn(submitSectionDetails, (state, { sectionDetails }) => {
     state.title = sectionDetails.title;
     state.summary = sectionDetails.summary;
+    state.displayType = sectionDetails.displayType;
+    state.reportType = sectionDetails.reportType;
   }),
   mutableOn(submitPublicationDetails, (state, { publicationDetails }) => {
     state.reportPublicationFrequency = publicationDetails.publicationFrequency;

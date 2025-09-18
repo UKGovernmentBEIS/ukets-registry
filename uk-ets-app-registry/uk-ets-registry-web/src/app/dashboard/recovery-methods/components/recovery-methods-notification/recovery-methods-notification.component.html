@@ -1,0 +1,74 @@
+<div
+  *ngIf="showPage$ | async"
+  class="govuk-grid-row"
+  aria-label="Recovery Methods Notification"
+  role="alert"
+>
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+      <h1 class="govuk-fieldset__heading">
+        Recovery methods to regain access to the UK Emissions Trading Registry
+      </h1>
+    </div>
+    <hr class="govuk-section-break govuk-section-break--m" />
+    <div class="govuk-form-group">
+      <p class="govuk-body">
+        Please update your profile with details of your recovery phone number
+        and email address. This information can expedite the process of
+        regaining access to the UK Emissions Trading Registry if you lose access
+        to your Two Factor Authentication application and password.
+      </p>
+      <p class="govuk-body">
+        By either skipping this step or selecting the option to not show this
+        message again, you accept the potential for delays due to manual
+        verification.
+      </p>
+      <div class="govuk-form-group" id="work-address-form-checkbox">
+        <div class="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input
+              (change)="toggle($event.target.checked)"
+              class="govuk-checkboxes__input"
+              id="work-address-checkbox"
+              name="work-address-checkbox"
+              type="checkbox"
+              value="carcasses"
+            />
+            <label
+              class="govuk-label govuk-checkboxes__label"
+              for="work-address-checkbox"
+            >
+              Don't show this again
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      *ngIf="!this.phoneSet"
+      appDebounceClick
+      (click)="onUpdateRecoveryPhone()"
+      class="govuk-button govuk-button--info"
+      data-module="govuk-button"
+    >
+      Set up recovery phone number
+    </button>
+    <button
+      *ngIf="!this.emailSet"
+      appDebounceClick
+      (click)="onUpdateRecoveryEmail()"
+      class="govuk-button govuk-button--info govuk-!-margin-left-3"
+      data-module="govuk-button"
+    >
+      Set up recovery email
+    </button>
+    <button
+      appDebounceClick
+      (click)="onSkip()"
+      class="govuk-button govuk-button--secondary govuk-!-margin-left-3"
+      data-module="govuk-button"
+    >
+      Skip
+    </button>
+  </div>
+</div>

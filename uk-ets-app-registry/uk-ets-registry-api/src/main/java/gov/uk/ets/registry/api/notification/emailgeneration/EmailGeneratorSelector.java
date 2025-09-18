@@ -4,6 +4,8 @@ import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.common.mail.MailConfiguration;
 import gov.uk.ets.registry.api.file.upload.allocationtable.notification.UploadAllocationTableEmailNotification;
 import gov.uk.ets.registry.api.notification.*;
+import gov.uk.ets.registry.api.notification.integration.AccountOpeningSuccessOutcomeNotification;
+import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotification;
 import gov.uk.ets.registry.api.user.profile.domain.EmergencyOtpChangeRequestedNotification;
 import gov.uk.ets.registry.api.user.profile.domain.EmergencyOtpChangeTaskApprovedNotification;
 import gov.uk.ets.registry.api.user.profile.domain.EmergencyPasswordOtpChangeRequestedNotification;
@@ -82,6 +84,10 @@ public class EmailGeneratorSelector {
                 // Email for account opening approval with ARs status change from REGISTERED to VALIDATED
                 return new ARAccountOpeningEmailGenerator(notificationProperties,
                     (EmailChangeUserStatusNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case DEADLINE_UPDATE:
+            case DEADLINE_REMINDER:
+                return new DeadlineEmailGenerator(notificationProperties.getRequestDeadline(),
+                    (RequestDeadlineNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             case DOCUMENT_REQUEST:
             case DOCUMENT_REQUEST_FINALISATION:
                 return new DocumentRequestEmailGenerator(notificationProperties,
@@ -133,6 +139,9 @@ public class EmailGeneratorSelector {
             case PASSWORD_CHANGE_SUCCESS:
                 return new PasswordChangeSuccessEmailGenerator(notificationProperties,
                         (PasswordChangeSuccessNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case RECOVERY_EMAIL_CHANGE_REQUEST:
+                return new RecoveryEmailChangeEmailGenerator(notificationProperties,
+                    (RecoveryEmailChangeNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             case USER_DETAILS_UPDATE_REQUEST:
                 return new UserDetailsUpdateRequestEmailGenerator((UserDetailsUpdateNotification) groupNotification,
                     notificationProperties, freemarkerConfiguration, mailConfiguration);
@@ -156,7 +165,16 @@ public class EmailGeneratorSelector {
             case UPLOAD_ALLOCATION_TABLE_REJECTED:
                 return new UploadAllocationTableRejectedEmailGenerator((UploadAllocationTableEmailNotification) 
                     groupNotification, notificationProperties.getUploadAllocationTable(), 
-                    freemarkerConfiguration, mailConfiguration);                       
+                    freemarkerConfiguration, mailConfiguration);
+            case INTEGRATION_ERROR_OUTCOME:
+                return new IntegrationErrorOutcomeEmailGenerator(notificationProperties.getIntegrationErrorOutcome(),
+                    (IntegrationErrorOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case INTEGRATION_ACCOUNT_OPENING_SUCCESS_OUTCOME:
+                return new IntegrationAccountOpeningSuccessOutcomeEmailGenerator(notificationProperties.getIntegrationAccountOpening(),
+                    (AccountOpeningSuccessOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case PAYMENT_REQUEST:
+                return new PaymentRequestEmailGenerator(notificationProperties.getRequestPayment(),
+                    (PaymentRequestGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration);                
             default:
                 return new DoNothingEmailGenerator();
         }

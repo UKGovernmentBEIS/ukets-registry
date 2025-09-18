@@ -1,26 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { clearGoBackRoute } from '@registry-web/shared/shared.action';
-import {
-  clearNoteState,
-  navigateToAccountNotes,
-} from '../../store/notes.actions';
+import { RouterModule } from '@angular/router';
 
 @Component({
+  standalone: true,
+  imports: [RouterModule],
   selector: 'app-add-note-success',
   templateUrl: './add-note-success.component.html',
 })
 export class AddNoteSuccessComponent {
-  constructor(private store: Store) {
-    this.store.dispatch(clearGoBackRoute());
-    this.clearState();
-  }
+  @Output()
+  handleBackToNotes = new EventEmitter<void>();
 
-  private clearState() {
-    this.store.dispatch(clearNoteState());
-  }
+  constructor(private store: Store) {}
 
   onBackToNotes() {
-    this.store.dispatch(navigateToAccountNotes());
+    this.handleBackToNotes.emit();
   }
 }

@@ -3,7 +3,7 @@ import {
   ElementRef,
   Inject,
   OnInit,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
@@ -18,12 +18,12 @@ import { DOCUMENT } from '@angular/common';
         [routerLink]="[]"
         fragment="main-content"
         skipLocationChange
-        (click)="focusMainContent()"
+        data-module="govuk-skip-link"
         class="govuk-skip-link"
         >Skip to main content</a
       >
     </div>
-  `
+  `,
 })
 export class SkipLinkComponent implements OnInit {
   @ViewChild('skipLink') skipLink: ElementRef;
@@ -35,7 +35,7 @@ export class SkipLinkComponent implements OnInit {
 
   ngOnInit() {
     this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
+      .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe((e: NavigationEnd) => {
         if (e.url.includes('#main-content')) {
           this.focusMainContent();
@@ -46,9 +46,8 @@ export class SkipLinkComponent implements OnInit {
   }
 
   focusMainContent(): void {
-    const mainContainer: HTMLElement = this.document.querySelector(
-      '#main-content'
-    );
+    const mainContainer: HTMLElement =
+      this.document.querySelector('#main-content');
     mainContainer.focus();
   }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_3_1_ALTER_UPLOADED_FILE_ID_TYPE_IN_NOTIFICATION_TABLE" author="piliotid" context="migrate">
+        <comment>Alter column uploaded_file_id type to bigint in notification table</comment>
+        <sql>
+            ALTER TABLE "notification" ALTER COLUMN "uploaded_file_id" TYPE BIGINT;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

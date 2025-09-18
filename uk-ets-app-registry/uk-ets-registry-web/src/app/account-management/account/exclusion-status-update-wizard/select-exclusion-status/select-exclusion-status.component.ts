@@ -38,22 +38,24 @@ export class SelectExclusionStatusComponent
   }
 
   ngOnInit() {
+    const alreadyExcluded = this.checkPreviousStatus();
     super.ngOnInit();
     this.formRadioGroupInfo = {
-      radioGroupHeading:
-        'Do you want to exclude the operator for the selected year?',
+      radioGroupHeading: alreadyExcluded
+        ? 'Do you want to reverse the exclusion for the selected year?'
+        : 'Do you want to exclude the operator for the selected year?',
       radioGroupHeadingCaption: 'Update exclusion status',
       radioGroupSubHeading: 'Year ' + this.year,
       key: 'selectExclusionStatus',
       options: [
         {
           label: 'Yes',
-          value: true,
+          value: !alreadyExcluded,
           enabled: true,
         },
         {
           label: 'No',
-          value: false,
+          value: alreadyExcluded,
           enabled: true,
         },
       ],

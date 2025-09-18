@@ -15,6 +15,7 @@ import gov.uk.ets.registry.api.auditevent.DomainEvent;
 import gov.uk.ets.registry.api.auditevent.DomainObject;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.security.TokenVerifier;
+import gov.uk.ets.registry.api.common.security.UsedTokenService;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
@@ -25,7 +26,7 @@ import gov.uk.ets.registry.api.user.domain.UserRoleMapping;
 import gov.uk.ets.registry.api.user.profile.domain.EmailChange;
 import gov.uk.ets.registry.api.common.security.GenerateTokenCommand;
 import gov.uk.ets.registry.api.user.service.UserService;
-import java.util.Set;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +57,8 @@ class EmailChangeServiceTest {
     @Mock
     private EmailChangeChecker emailChangeChecker;
     @Mock
+    private UsedTokenService usedTokenService;
+    @Mock
     private Mapper mapper;
 
     @BeforeEach
@@ -67,6 +70,7 @@ class EmailChangeServiceTest {
             taskRepository,
             eventService,
             emailChangeChecker,
+            usedTokenService,
             applicationUrl,
             verificationPath,
             expiration,
@@ -168,9 +172,6 @@ class EmailChangeServiceTest {
         IamUserRole iamUserRole = mock(IamUserRole.class);
 
         given(currentUser.getUrid()).willReturn(currentUserUrid);
-        given(currentUser.getUserRoles()).willReturn(Set.of(userRoleMapping));
-        given(userRoleMapping.getRole()).willReturn(iamUserRole);
-        given(iamUserRole.getRoleName()).willReturn("senior-registry-administrator");
 
         User otherUser = mock(User.class);
         given(otherUser.getIamIdentifier()).willReturn(otherUserIamIdentifier);
@@ -184,6 +185,7 @@ class EmailChangeServiceTest {
         UserRepresentation otherKeycloakUser = mock(UserRepresentation.class);
 
         given(userService.getCurrentUser()).willReturn(currentUser);
+        given(userService.isSeniorOrJuniorAdminUser(currentUser)).willReturn(true);
         given(userService.getUserByUrid(otherUserUrid)).willReturn(otherUser);
         given(otherKeycloakUser.getEmail()).willReturn(oldEmail);
         given(userAdministrationService.findByIamId(otherUserIamIdentifier)).willReturn(otherKeycloakUser);
@@ -209,7 +211,7 @@ class EmailChangeServiceTest {
     }
 
     @Test
-    void requestEmailChangeByNonSeniorAdmin() {
+    void requestEmailChangeByNonSeniorOrJuniorAdmin() {
         // given
         String currentUserUrid = "urid";
         String otherUserUrid = "otherUserUrid";
@@ -220,9 +222,6 @@ class EmailChangeServiceTest {
         IamUserRole iamUserRole = mock(IamUserRole.class);
 
         given(currentUser.getUrid()).willReturn(currentUserUrid);
-        given(currentUser.getUserRoles()).willReturn(Set.of(userRoleMapping));
-        given(userRoleMapping.getRole()).willReturn(iamUserRole);
-        given(iamUserRole.getRoleName()).willReturn("junior-registry-administrator");
 
         EmailChangeDTO emailChangeDTO = EmailChangeDTO.builder()
             .newEmail(newEmail)
@@ -230,13 +229,14 @@ class EmailChangeServiceTest {
             .build();
 
         given(userService.getCurrentUser()).willReturn(currentUser);
+        given(userService.isSeniorOrJuniorAdminUser(currentUser)).willReturn(false);
 
         // when
         IllegalArgumentException exception =
             assertThrows(IllegalArgumentException.class, () -> changeEmailService.requestEmailChange(emailChangeDTO));
 
         // then
-        assertEquals("Only a Senior Admin can request email update for someone else.", exception.getMessage());
+        assertEquals("Only a Senior or Junior Admin can request email update for someone else.", exception.getMessage());
 
     }
     
@@ -248,6 +248,7 @@ class EmailChangeServiceTest {
         String otherUserUrid = "otherUserUrid";
         String oldEmail = "test@test.old";
         String newEmail = "test@test.new";
+        Date expiredAt = new Date();
 
         User currentUser = mock(User.class);
         given(currentUser.getUrid()).willReturn(currentUserUrid);
@@ -255,23 +256,30 @@ class EmailChangeServiceTest {
         
         User otherUser = mock(User.class);
 
+        String token = "token";
         EmailChangeDTO emailChangeDTO = EmailChangeDTO.builder()
             .oldEmail(oldEmail)
             .newEmail(newEmail)
             .urid(otherUserUrid)
             .requesterUrid(currentUserUrid)
             .build();
-        
+
+        given(usedTokenService.isTokenAlreadyUsed(token)).willReturn(false);
+        given(tokenVerifier.getPayload(token)).willReturn("payload");
+        given(mapper.convertToPojo("payload", EmailChangeDTO.class)).willReturn(emailChangeDTO);
         given(userService.getUserByUrid(otherUserUrid)).willReturn(otherUser);
         given(mapper.convertToJson(emailChangeDTO)).willReturn("{\"urid\":\"otherUserUrid\",\\\"newEmail\\\":\\\"test@test.new\\\",\\\"oldEmail\\\":\\\"test@test.old\\\",\"requesterUrid\":\"urid\"}");
+        given(tokenVerifier.getExpiredAt(token)).willReturn(expiredAt);
+
 
         // when
-        Long requestId = changeEmailService.openEmailChangeTask(emailChangeDTO);
+        Long requestId = changeEmailService.openEmailChangeTask(token);
 
         //then
         assertNotNull(requestId);
         ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
         then(taskRepository).should(times(1)).save(taskCaptor.capture());
+        then(usedTokenService).should(times(1)).saveToken(token, expiredAt);
         //Task initiator
         assertEquals(currentUserUrid, taskCaptor.getValue().getInitiatedBy().getUrid());
         assertEquals(otherUser, taskCaptor.getValue().getUser());

@@ -20,8 +20,8 @@ import gov.uk.ets.registry.api.user.domain.QUserRoleMapping;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserRole;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 
 public class DomainEventEntityRepositoryImpl implements AuditEventDTORepository {

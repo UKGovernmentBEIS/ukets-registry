@@ -19,14 +19,14 @@
               </p>
             </h1>
           </legend>
-          <span
+          <p
             *ngIf="showAccountTransferTypeError()"
             class="govuk-error-message"
             [attr.id]="'accountTranferGroupInfo-error-label'"
           >
             <span class="govuk-visually-hidden">Error:</span
             >{{ validationErrorMessage.accountTransferType }}
-          </span>
+          </p>
           <div
             class="govuk-radios govuk-radios--conditional"
             data-module="govuk-radios"

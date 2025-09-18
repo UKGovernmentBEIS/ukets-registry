@@ -69,6 +69,6 @@ fi
 ##################
 
 /opt/keycloak/bin/kc.sh $STARTUP_COMMAND &
-sleep 45
+sleep 90
 /opt/keycloak/tools/default-setup.sh
 sleep infinity

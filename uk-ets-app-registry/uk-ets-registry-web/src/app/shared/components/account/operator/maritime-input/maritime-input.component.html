@@ -1,0 +1,73 @@
+<div appScreenReaderPageAnnounce [pageTitle]="headerTitle"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="maritime"
+    >
+      <div class="govuk-form-group">
+        <div class="govuk-fieldset">
+          <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-xl">{{ headerTitle }}</span>
+              {{ title }}
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div class="govuk-fieldset" role="group">
+        <app-form-control-text
+          *ngIf="isSeniorOrJuniorAdmin"
+          [label]="'Emitter ID'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.emitterId"
+          controlName="emitter.emitterId"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Monitoring plan ID'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.id"
+          controlName="monitoringPlan.id"
+        ></app-form-control-text>
+        <app-form-control-text
+          [label]="'Company IMO number'"
+          [maxlength]="256"
+          [validationErrorMessage]="validationErrorMessage.imo"
+          controlName="imo"
+        ></app-form-control-text>
+        <app-form-control-select
+          controlName="regulator"
+          [placeHolder]="'Please select'"
+          [label]="'Regulator'"
+          [validationErrorMessage]="validationErrorMessage.regulator"
+          [options]="regulatorOptions"
+        ></app-form-control-select>
+        <app-form-control-text
+          [class]="'govuk-input--width-4'"
+          [label]="'First year of verified emission submission'"
+          [hint]="'This must be 2026 or later'"
+          [maxlength]="4"
+          [validationErrorMessage]="validationErrorMessage.firstYear"
+          controlName="yearsOfVerifiedEmission.firstYear"
+        ></app-form-control-text>
+        <app-form-control-text
+          [class]="'govuk-input--width-4'"
+          [label]="'Last year of verified emission submission'"
+          [maxlength]="4"
+          [validationErrorMessage]="validationErrorMessage.lastYear"
+          controlName="yearsOfVerifiedEmission.lastYear"
+          hint="This must be 2026 or later"
+        ></app-form-control-text>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

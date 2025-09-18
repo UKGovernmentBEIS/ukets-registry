@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.AllocationsReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,13 +21,15 @@ public class AllocationsReportJdbcMapper implements ReportDataMapper<Allocations
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final String PERMIT_OR_MONITORING_PLAN_ID_COLUMN =
-        "case\n" +
-        "    when a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT'\n" +
-        "        then (select permit_identifier from installation i where i.compliant_entity_id = ce.id)\n" +
-        "    else (select monitoring_plan_identifier\n" +
-        "          from aircraft_operator ao\n" +
-        "          where ao.compliant_entity_id = ce.id)";
+    private static final String PERMIT_OR_MONITORING_PLAN_ID_COLUMN = """
+                    CASE
+                        WHEN a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT permit_identifier FROM installation i WHERE i.compliant_entity_id = ce.id)
+                        WHEN a.registry_account_type = 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT monitoring_plan_identifier FROM aircraft_operator ao WHERE ao.compliant_entity_id = ce.id)
+                        WHEN a.registry_account_type = 'MARITIME_OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT maritime_monitoring_plan_identifier FROM maritime_operator mo WHERE mo.compliant_entity_id = ce.id) 
+            """;
 
     private static final String INSTALLATION_NAME_COLUMN =
         "case\n" +
@@ -134,12 +135,7 @@ public class AllocationsReportJdbcMapper implements ReportDataMapper<Allocations
         "         activity_type,\n" +
         "         regulator,\n" +
         "         type\n" +
-        "order by ah_name desc";
-
-    @Override
-    public List<AllocationsReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
+        "order by ah_name asc, permit_or_monitoring_plan_id asc";
 
     @Override
     public List<AllocationsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

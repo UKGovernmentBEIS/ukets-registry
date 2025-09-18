@@ -91,12 +91,40 @@ export const selectTransactionApprovalRole = createSelector(
   }
 );
 
+export const selectShowReadOnly = createSelector(
+  selectAccountState,
+  (state) => {
+    return (
+      AccountType.OPERATOR_HOLDING_ACCOUNT === state.account.accountType ||
+      AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ===
+        state.account.accountType ||
+      AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT ===
+        state.account.accountType ||
+      AccountType.TRADING_ACCOUNT === state.account.accountType ||
+      AccountType.PERSON_HOLDING_ACCOUNT === state.account.accountType
+    );
+  }
+);
+
 export const selectIsOHAOrAOHA = createSelector(selectAccountState, (state) => {
   return (
     AccountType.OPERATOR_HOLDING_ACCOUNT === state.account.accountType ||
     AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT === state.account.accountType
   );
 });
+
+export const selectIsOHAOrAOHAorMOHA = createSelector(
+  selectAccountState,
+  (state) => {
+    return (
+      AccountType.OPERATOR_HOLDING_ACCOUNT === state.account.accountType ||
+      AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ===
+        state.account.accountType ||
+      AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT ===
+        state.account.accountType
+    );
+  }
+);
 export const selectIsUKAllocationorSurrenderAccount = createSelector(
   selectAccount,
   (account) => {
@@ -181,4 +209,28 @@ export const selectLastYear = createSelector(selectAccountState, (state) =>
   state?.account?.operator?.lastYear
     ? Number(state.account.operator.lastYear)
     : null
+);
+
+export const selectTransferringAccountInfoFromAccount = createSelector(
+  selectAccountState,
+  (state) => ({
+    identifier: state.account?.identifier,
+    accountHolderName: state.account?.accountDetails?.accountHolderName,
+    fullIdentifier: state.account?.accountDetails?.accountNumber,
+    accountName: state.account?.accountDetails?.name,
+    operator: state.account?.operator,
+  })
+);
+
+export const selectIsAOHAorMOHAorOHAO = createSelector(
+  selectAccountState,
+  (state) => {
+    return (
+      state.account?.accountType ==
+        AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ||
+      state.account?.accountType ==
+        AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT ||
+      state.account?.accountType == AccountType.OPERATOR_HOLDING_ACCOUNT
+    );
+  }
 );

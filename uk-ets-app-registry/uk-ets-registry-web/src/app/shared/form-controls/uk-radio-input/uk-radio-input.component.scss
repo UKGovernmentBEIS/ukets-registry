@@ -22,3 +22,13 @@
 .opacity-40 {
   opacity: 40%;
 }
+
+.govuk-radios__item {
+  padding-bottom: 1px;
+}
+
+@include govuk-media-query($from: tablet) {
+  .govuk-fieldset__legend + .govuk-hint {
+    margin-top: govuk-spacing(-3);
+  }
+}

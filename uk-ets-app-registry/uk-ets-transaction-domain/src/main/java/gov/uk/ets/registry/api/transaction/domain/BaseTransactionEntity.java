@@ -1,40 +1,35 @@
 package gov.uk.ets.registry.api.transaction.domain;
 
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import gov.uk.ets.registry.api.transaction.domain.type.TransactionStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.TransactionType;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"identifier"})
-@TypeDefs({
-    @TypeDef(name = "json", typeClass = JsonType.class)
-})
 @MappedSuperclass
 public class BaseTransactionEntity {
     /**
@@ -176,7 +171,7 @@ public class BaseTransactionEntity {
     /**
      * The signed data object. Contains a JSON representation of the transaction summary.
      */
-    @Type(type = "json")
+    @Type(JsonType.class)
     @Column(name = "signed_data", columnDefinition = "json")
     private String signedData;
 

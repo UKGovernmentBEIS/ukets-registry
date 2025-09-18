@@ -14,26 +14,24 @@ describe('IdentificationDocumentationComponent', () => {
   let component: IdentificationDocumentationComponent;
   let fixture: ComponentFixture<IdentificationDocumentationComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          StoreModule.forRoot({
-            auth: fromAuth.reducer,
-          }),
-          RouterTestingModule,
-        ],
-        declarations: [
-          IdentificationDocumentationComponent,
-          IdentificationDocumentationListComponent,
-          ProtectPipe,
-          GdsDateTimeShortPipe,
-          RequestDocPipe,
-        ],
-        providers: [{ provide: AuthApiService, useValue: MockAuthApiService }],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        StoreModule.forRoot({
+          auth: fromAuth.reducer,
+        }),
+        RouterTestingModule,
+      ],
+      declarations: [
+        IdentificationDocumentationComponent,
+        IdentificationDocumentationListComponent,
+        ProtectPipe,
+        GdsDateTimeShortPipe,
+        RequestDocPipe,
+      ],
+      providers: [{ provide: AuthApiService, useValue: MockAuthApiService }],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(IdentificationDocumentationComponent);
@@ -62,10 +60,11 @@ describe('IdentificationDocumentationComponent', () => {
         workBuildingAndStreetOptional: [''],
         workBuildingAndStreetOptional2: [''],
         workCountry: ['GR'],
-        workCountryCode: [''],
-        workEmailAddress: ['ukets_user_work@gov.uk'],
-        workEmailAddressConfirmation: [''],
-        workPhoneNumber: ['2222422'],
+        workMobileCountryCode: ['GR (30)'],
+        workMobilePhoneNumber: ['22224222'],
+        workAlternativeCountryCode: [''],
+        workAlternativePhoneNumber: [''],
+        noMobilePhoneNumberReason: [''],
         workPostCode: [''],
         workTownOrCity: ['Athens'],
         workStateOrProvince: ['Attica'],

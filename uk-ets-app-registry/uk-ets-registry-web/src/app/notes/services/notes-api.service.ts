@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
-import { CreateNoteDTO } from '@registry-web/shared/model/note';
+import { CreateNoteDTO, NoteType } from '@registry-web/shared/model/note';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -18,9 +18,11 @@ export class NotesApiService {
   notesAddUrl = `${this.ukEtsRegistryApiBaseUrl}/notes.add`;
   notesDeleteUrl = `${this.ukEtsRegistryApiBaseUrl}/notes.delete`;
 
-  fetchAccountNotes(accountIdentifier: string): Observable<any> {
+  fetchNotes(domainId: string, domainType: NoteType): Observable<any> {
     const params = {
-      params: new HttpParams().set('accountIdentifier', accountIdentifier),
+      params: new HttpParams()
+        .set('domainId', domainId)
+        .set('domainType', NoteType[domainType]),
     };
     return this.http.get<any>(this.notesGetUrl, params);
   }

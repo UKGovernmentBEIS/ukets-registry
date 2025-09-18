@@ -256,11 +256,32 @@ export class UkRegistryValidators {
    * Verifies that the field does not have value equal to notPermittedValue
    * @param notPermittedValue The value that the field is not permitted to have
    */
-  static shouldNotBeEqual(notPermittedValue: string): ValidatorFn {
+  static notPermittedValue(
+    notPermittedValue: string | { [key: string]: string }
+  ): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      return control.value === notPermittedValue
-        ? { notPermittedValue: true }
-        : null;
+      const value = control.value;
+      const isString = typeof value === 'string' || value instanceof String;
+
+      const _sortObject = (value: {
+        [key: string]: string;
+      }): {
+        [key: string]: string;
+      } => {
+        return value
+          ? Object.keys(value)
+              ?.sort()
+              .reduce((obj, key) => ({ ...obj, [key]: value[key] }), {})
+          : value;
+      };
+
+      const isEqual = isString
+        ? value === notPermittedValue
+        : JSON.stringify(_sortObject(value)) ===
+          JSON.stringify(
+            _sortObject(notPermittedValue as { [key: string]: string })
+          );
+      return isEqual ? { notPermittedValue: true } : null;
     };
   }
 
@@ -396,10 +417,10 @@ export class UkRegistryValidators {
       return isIncludedInOther
         ? { isInOtherTrustedAccounts: true }
         : isIncludedInSameHolder
-        ? { isInSameAccountHolderTrustedAccounts: true }
-        : isIncludedInPending
-        ? { isInPendingTrustedAccounts: true }
-        : null;
+          ? { isInSameAccountHolderTrustedAccounts: true }
+          : isIncludedInPending
+            ? { isInPendingTrustedAccounts: true }
+            : null;
     };
   }
 
@@ -580,4 +601,17 @@ export class UkRegistryValidators {
       }
     };
   }
+
+  static isValidDate(): ValidatorFn {
+    return (control: AbstractControl) => {
+      // empty filter should not be validated
+      if (!control.value || control.value === '') {
+        return null;
+      }
+
+      const invalidDate = dayjs(control.value,"YYYY-MM-DD",true).isValid();
+      return invalidDate ? null : {invalidDate: invalidDate};
+    };
+  }
+
 }

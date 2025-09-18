@@ -65,6 +65,7 @@ public class SectionService {
     private final PublicationScheduleRepository publicationScheduleRepository;
     private final ReportFilesRepository reportFilesRepository;
     private final PublicReportsHtmlGenerator htmlGenerator;
+    private final SectionUtil sectionUtil;
 
     /**
      * Retrieve all sections of the specified type.
@@ -95,9 +96,16 @@ public class SectionService {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() -> new IllegalArgumentException(
                 String.format("Section not found for id: %s", request.getId())));
+
+        if (!sectionUtil.isValid(ObjectUtils.firstNonNull(request.getReportType(),section.getReportType()),
+            ObjectUtils.firstNonNull(request.getDisplayType(),section.getDisplayType()))) {
+            throw new UkEtsPublicationApiException("Incompatible combination of Report Type and Display Type (Report Type is not defined per Year)");
+        }
+
         LocalDateTime startDate = request.getPublicationStart() != null &&  request.getPublicationTime() != null
                 ? LocalDateTime.of(request.getPublicationStart(), request.getPublicationTime())
                 : null;
+
         if (section.getPublicationSchedule() != null) {
             PublicationSchedule schedule = section.getPublicationSchedule();
             schedule.setPublicationFrequency(request.getPublicationFrequency());
@@ -119,7 +127,7 @@ public class SectionService {
             }
             publicationScheduleRepository.save(schedule);
         }
-        
+
         toSection(request, section);
         section.setLastUpdated(LocalDateTime.now());
         sectionRepository.save(section);

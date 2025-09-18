@@ -14,6 +14,8 @@ import { canGoBack, errors } from '@shared/shared.action';
 import { take } from 'rxjs/operators';
 import { AccountOpeningOperatorActions } from '@account-opening/operator/actions';
 import { ErrorDetail } from '@shared/error-summary/error-detail';
+import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
+
 /*
 TODO: app-aircraft-container should be merged to  app-installation-container and renamed to app-operator-container
 There only one thing missing  for this code merge is to listen to the setAccountType action and  setOperator so it is known when opening the form
@@ -27,6 +29,7 @@ if( acccountType=OHA)-> if not junior/senior admin -> setOperator(installation)
   template: `
     <app-aircraft-input
       [aircraft]="aircraftOperator$ | async"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
       [title]="'Add the Aircraft Operator details'"
       [headerTitle]="'Add the Aircraft Operator'"
       (aircraftOutput)="onContinue($event)"
@@ -36,6 +39,7 @@ if( acccountType=OHA)-> if not junior/senior admin -> setOperator(installation)
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AircraftOperatorContainerComponent implements OnInit {
+  isSeniorOrJuniorAdmin$: Observable<boolean>  = this.store.select(isSeniorOrJuniorAdmin);
   aircraftOperator$: Observable<AircraftOperator> = this.store.select(
     selectOperator
   ) as Observable<AircraftOperator>;
@@ -64,7 +68,7 @@ export class AircraftOperatorContainerComponent implements OnInit {
   onContinue(value: AircraftOperator) {
     this.store.dispatch(
       AccountOpeningOperatorActions.fetchExistsMonitoringPlan({
-        aircraftOperator: value,
+        operator: value,
       })
     );
   }

@@ -2,29 +2,26 @@ package gov.uk.ets.registry.api.authz;
 
 import com.google.common.collect.Lists;
 import gov.uk.ets.commons.logging.MDCWrapper;
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.user.admin.repository.KeycloakClientRepresentationRepository;
 import gov.uk.ets.registry.api.user.admin.repository.KeycloakUserRepresentationRepository;
-import gov.uk.ets.registry.api.user.domain.UserAttributes;
 import gov.uk.ets.registry.api.user.domain.UserRole;
-import java.util.Collection;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.AuthorizationContext;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.ClientAuthorizationContext;
 import org.keycloak.authorization.client.Configuration;
-
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.authorization.Permission;
 import org.keycloak.representations.idm.authorization.PolicyEvaluationRequest;
 import org.keycloak.representations.idm.authorization.PolicyEvaluationResponse.EvaluationResultRepresentation;
 import org.slf4j.MDC;
@@ -35,6 +32,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,7 +42,6 @@ import org.springframework.web.client.RestTemplate;
 public class AuthorizationServiceImpl implements AuthorizationService {
 
     private static final int FIRST_ELEMENT = 0;
-    private static final String CLAIM_URID = "urid";
     @Value("${keycloak.auth-server-url}")
     private String keycloakAuthServerUrl;
     @Value("${keycloak.realm}")
@@ -54,40 +52,41 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private String keycloakCredentialsSecret;
     private final KeycloakUserRepresentationRepository keycloakUserRepresentationRepository;
     private final KeycloakClientRepresentationRepository keycloakClientRepresentationRepository;
+    private final HttpServletRequest request;
 
     public AuthorizationServiceImpl(KeycloakUserRepresentationRepository keycloakUserRepresentationRepository,
-                                    KeycloakClientRepresentationRepository keycloakClientRepresentationRepository) {
+                                    KeycloakClientRepresentationRepository keycloakClientRepresentationRepository,
+                                    HttpServletRequest request) {
         this.keycloakUserRepresentationRepository = keycloakUserRepresentationRepository;
         this.keycloakClientRepresentationRepository = keycloakClientRepresentationRepository;
+        this.request = request;
     }
 
     /**
      * @param role
      * @return true if the current logged-in user has the provided role false
-     * otherwise
+     *     otherwise
      */
     @Override
     public boolean hasClientRole(UserRole role) {
-        AccessToken currentUserToken = getToken();
-        // Get the client roles for the loggedIn user
-        AccessToken.Access access = currentUserToken.getResourceAccess(keycloakClientId);
-        if (access == null) {
-            return false;
-        }
-        Set<String> roles = access.getRoles();
-        return roles != null && roles.contains(role.getKeycloakLiteral());
+            
+        return getPrincipal()
+        .getAuthorities()
+        .stream()
+        .filter(a -> a.getAuthority().startsWith("ROLE_"))
+        .anyMatch(a -> a.getAuthority().contains(role.getKeycloakLiteral()));
     }
 
     /**
      * @return the state of the currently logged in user
      */
-    public String getUserState() {
-        AccessToken currentUserToken = getToken();
+    public String getUserState() {       
         // Get the state for the loggedIn user
-        if (currentUserToken.getOtherClaims() != null
-            && currentUserToken.getOtherClaims().containsKey(UserAttributes.STATE.getAttributeName())) {
-            return (String) currentUserToken.getOtherClaims().get(UserAttributes.STATE.getAttributeName());
+        String state = getClaim(OAuth2ClaimNames.STATE);
+        if (Objects.nonNull(state)) {
+            return state;
         }
+        
         return "";
     }
 
@@ -145,20 +144,18 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     /**
      * {@inheritDoc}
      */
-    public AccessToken getToken() {
-        return getKeycloakSecurityContext().getToken();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public String getTokenString() {
-        return getKeycloakSecurityContext().getTokenString();
+        return getAuthentication().getToken().getTokenValue();
     }
 
     @Override
     public String getUrid() {
-        return String.valueOf(getToken().getOtherClaims().get(CLAIM_URID));
+        return getClaim(OAuth2ClaimNames.URID);
+    }
+    
+    @Override
+    public String getClaim(OAuth2ClaimNames oauth2claim) {
+        return getPrincipal().getAttribute(oauth2claim.getClaimName());
     }
 
     /**
@@ -166,12 +163,12 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      */
     public Set<String> getScopes() {
 
-        Set<String> scopes = new HashSet<>();
-        Collection<Permission> permissions = getToken().getAuthorization().getPermissions();
-        for (Permission p : permissions) {
-            scopes.addAll(p.getScopes());
-        }
-        return scopes;
+        return new HashSet<>(getPrincipal()
+        .getAuthorities()
+        .stream()
+        .filter(a -> a.getAuthority().startsWith("SCOPE_"))
+        .map(a -> a.getAuthority().replace("SCOPE_", ""))
+        .toList());
     }
 
     public boolean hasScopePermission(Scope scope) {
@@ -200,16 +197,17 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     public ClientAuthorizationContext getAuthorizationContext() {
-        return ClientAuthorizationContext.class.cast(getKeycloakSecurityContext().getAuthorizationContext());
+        AuthorizationContext authzContext = (AuthorizationContext) request.getAttribute(AuthorizationContext.class.getName());
+        return ClientAuthorizationContext.class.cast(authzContext);
     }
 
-    private KeycloakSecurityContext getKeycloakSecurityContext() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        KeycloakPrincipal<KeycloakSecurityContext> principal =
-            (KeycloakPrincipal<KeycloakSecurityContext>) authentication
-                .getPrincipal();
-        return principal.getKeycloakSecurityContext();
+    private BearerTokenAuthentication getAuthentication() {
+        return BearerTokenAuthentication.class.cast(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    private DefaultOAuth2AuthenticatedPrincipal getPrincipal() {
+        Authentication authentication = getAuthentication();
+        return DefaultOAuth2AuthenticatedPrincipal.class.cast(authentication.getPrincipal());
     }
 
     @Override

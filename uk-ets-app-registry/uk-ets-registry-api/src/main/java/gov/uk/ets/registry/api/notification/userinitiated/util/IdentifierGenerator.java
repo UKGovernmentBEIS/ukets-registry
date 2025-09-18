@@ -13,6 +13,6 @@ public class IdentifierGenerator {
     public String generate(Notification notification) {
         return notification.getDefinition().getTypeId() + "-" +
             notification.getId() + "-" +
-            (notification.getTimesFired() == null ? "1" : notification.getTimesFired() + 1);
+            (notification.getTimesFired() == null ? "1" : notification.getTimesFired());
     }
 }

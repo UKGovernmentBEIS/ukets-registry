@@ -8,6 +8,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import gov.uk.ets.registry.api.common.exception.BusinessRuleErrorException;
+import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.Notification;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.NotificationDefinition;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.NotificationSchedule;
@@ -23,6 +24,7 @@ import gov.uk.ets.registry.api.notification.userinitiated.web.model.ComplianceAc
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.ContentDetails;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationDTO;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationMapper;
+import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.service.UserService;
@@ -30,6 +32,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.apache.sis.internal.util.StandardDateFormat;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,9 +60,13 @@ class UserInitiatedNotificationServiceTest {
     @Mock
     private NotificationDefinitionRepository notificationDefinitionRepository;
     @Mock
+    private UploadedFilesRepository uploadedFilesRepository;
+    @Mock
     private NotificationSchedulingRepository schedulingRepository;
     @Mock
     private UserService userService;
+    @Mock
+    private UserAdministrationService userAdministrationService;
 
     NotificationMapper mapper;
 
@@ -78,7 +86,7 @@ class UserInitiatedNotificationServiceTest {
         mapper = spy(new NotificationMapper(userService));
 
         cut = new UserInitiatedNotificationService(
-            notificationRepository, notificationDefinitionRepository, schedulingRepository, userService, mapper
+            notificationRepository, notificationDefinitionRepository, schedulingRepository, userService, mapper, uploadedFilesRepository, userAdministrationService
         );
 
         User user = new User();
@@ -386,5 +394,123 @@ class UserInitiatedNotificationServiceTest {
         assertThat(activationDetails.getScheduledDateTime()).isEqualTo(now.plusMinutes(60));
         assertThat(activationDetails.getRecurrenceDays()).isEqualTo(2);
         assertThat(activationDetails.isHasRecurrence()).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldUpdateAdHocNotificationStatusToCancelled() {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime updatedStart = now.plusDays(1);
+        LocalDateTime updatedEnd = now.plusDays(2);
+
+        Notification notification = Notification.builder()
+                .id(1L)
+                .schedule(NotificationSchedule.builder()
+                        .startDateTime(now.plusMinutes(60))
+                        .endDateTime(now.plusDays(1))
+                        .build())
+                .definition(adHocDefinition)
+                .status(NotificationStatus.PENDING)
+                .build();
+
+
+        when(notificationRepository.getByIdWithDefinition(TEST_NOTIFICATION_ID)).thenReturn(Optional.of(notification));
+
+        NotificationDTO request = NotificationDTO.builder()
+                .type(NotificationType.AD_HOC)
+                .activationDetails(AdHocActivationDetails.builder()
+                        .scheduledDate(updatedStart.toLocalDate())
+                        .scheduledTime(updatedStart.toLocalTime())
+                        .scheduledTimeNow(Boolean.FALSE)
+                        .expirationDate(updatedEnd.toLocalDate())
+                        .expirationTime(updatedEnd.toLocalTime())
+                        .hasExpirationDateSection(true)
+                        .build())
+                .contentDetails(ContentDetails.builder()
+                        .subject("new subject")
+                        .content("new content")
+                        .build())
+                .build();
+
+        Notification updatedNotification = cut.updateNotification(TEST_NOTIFICATION_ID, request);
+
+        cut.cancelNotification(updatedNotification.getId());
+        assertThat(notification.getStatus()).isEqualTo(NotificationStatus.CANCELLED);
+    }
+
+    @Test
+    public void shouldNotUpdateAdHocNotificationIfStatusIsCancelled(){
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime updatedStart = now.plusDays(1);
+        LocalDateTime updatedEnd = now.plusDays(2);
+
+        Notification notification = Notification.builder()
+                .id(1L)
+                .schedule(NotificationSchedule.builder()
+                        .startDateTime(now.plusMinutes(60))
+                        .endDateTime(now.plusDays(1))
+                        .build())
+                .definition(adHocDefinition)
+                .status(NotificationStatus.CANCELLED)
+                .build();
+
+
+        when(notificationRepository.getByIdWithDefinition(TEST_NOTIFICATION_ID)).thenReturn(Optional.of(notification));
+
+        NotificationDTO request = NotificationDTO.builder()
+                .type(NotificationType.AD_HOC)
+                .activationDetails(AdHocActivationDetails.builder()
+                        .scheduledDate(updatedStart.toLocalDate())
+                        .scheduledTime(updatedStart.toLocalTime())
+                        .scheduledTimeNow(Boolean.FALSE)
+                        .expirationDate(updatedEnd.toLocalDate())
+                        .expirationTime(updatedEnd.toLocalTime())
+                        .hasExpirationDateSection(true)
+                        .build())
+                .contentDetails(ContentDetails.builder()
+                        .subject("new subject")
+                        .content("new content")
+                        .build())
+                .build();
+        assertThat(notification.getStatus()).isEqualTo(NotificationStatus.CANCELLED);
+
+        assertThrows(BusinessRuleErrorException.class, () -> cut.updateNotification(TEST_NOTIFICATION_ID,request));
+    }
+
+    @Test
+    public void shouldNotCancelAdHocNotificationIfStatusIsCancelled(){
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+
+        Notification notification = Notification.builder()
+                .id(1L)
+                .schedule(NotificationSchedule.builder()
+                        .startDateTime(now.plusMinutes(60))
+                        .endDateTime(now.plusDays(1))
+                        .build())
+                .definition(adHocDefinition)
+                .status(NotificationStatus.CANCELLED)
+                .build();
+
+        when(notificationRepository.getByIdWithDefinition(TEST_NOTIFICATION_ID)).thenReturn(Optional.of(notification));
+        assertThat(notification.getStatus()).isEqualTo(NotificationStatus.CANCELLED);
+        assertThrows(BusinessRuleErrorException.class, () -> cut.cancelNotification(TEST_NOTIFICATION_ID));
+    }
+
+    @Test
+    public void shouldNotCancelAdHocNotificationIfStatusIsExpired(){
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+
+        Notification notification = Notification.builder()
+                .id(1L)
+                .schedule(NotificationSchedule.builder()
+                        .startDateTime(now.plusMinutes(60))
+                        .endDateTime(now.plusDays(1))
+                        .build())
+                .definition(adHocDefinition)
+                .status(NotificationStatus.EXPIRED)
+                .build();
+
+        when(notificationRepository.getByIdWithDefinition(TEST_NOTIFICATION_ID)).thenReturn(Optional.of(notification));
+        assertThat(notification.getStatus()).isEqualTo(NotificationStatus.EXPIRED);
+        assertThrows(BusinessRuleErrorException.class, () -> cut.cancelNotification(TEST_NOTIFICATION_ID));
     }
 }

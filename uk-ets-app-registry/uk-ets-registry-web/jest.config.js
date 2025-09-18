@@ -16,9 +16,9 @@ module.exports = {
     '^uuid$': require.resolve('uuid'),
   }, //See https://stackoverflow.com/questions/73203367/jest-syntaxerror-unexpected-token-export-with-uuid-library
   cacheDirectory: 'tmp/jest/cache',
-  // transformIgnorePatterns: [
-  //   'node_modules/(?!@angular|@ngx-translate|keycloak-angular|@ngrx|@ng-bootstrap|ngx-quill)',
-  // ],
+  transformIgnorePatterns: [
+    'node_modules/(?!@angular|@ngx-translate|ngx-page-scroll-core|keycloak-js|keycloak-angular|@ngrx|@ng-bootstrap|ngx-quill)',
+  ],
   coveragePathIgnorePatterns: [
     '/dist/',
     '/node_modules/',

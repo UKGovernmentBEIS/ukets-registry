@@ -75,15 +75,53 @@ public interface AccountRepository
     /**
      * Returns a count of AircraftOperators found for the specific monitoringPlanIdentifier and the account is not closed
      *
-     * @param monitoringPlanId The monitoring plan Identifier
+     * @param monitoringPlanId The aircraft monitoring plan Identifier
      * @return A Count of monitoringPlanIdentifiers found
      */
     @Query(value =
-        "select count(aircraftOperator) from Account account left join treat(account.compliantEntity as AircraftOperator ) aircraftOperator" +
+        "select count(aircraftOperator) from Account account left join treat(account.compliantEntity as AircraftOperator) aircraftOperator" +
             " where upper(aircraftOperator.monitoringPlanIdentifier) = ?1" +
             " and account.accountStatus <> 'CLOSED'")
-    Long getMonitoringPlanIdsForNonClosedAccounts(String monitoringPlanId);
+    Long getAircraftMonitoringPlanIdsForNonClosedAccounts(String monitoringPlanId);
 
+    /**
+     * Returns a count of MaritimeOperators found for the specific maritimeMonitoringPlanIdentifier and the account is not closed
+     *
+     * @param maritimeMonitoringPlanId The maritime monitoring plan Identifier
+     * @return A Count of maritimeMonitoringPlanIdentifiers found
+     */
+    @Query(value =
+        "select count(maritimeOperator) from Account account left join treat(account.compliantEntity as MaritimeOperator) maritimeOperator" +
+            " where upper(maritimeOperator.maritimeMonitoringPlanIdentifier) = ?1" +
+            " and account.accountStatus <> 'CLOSED'")
+    Long getMaritimeMonitoringPlanIdsForNonClosedAccounts(String maritimeMonitoringPlanId);
+
+    /**
+     * Returns a count of Maritime Operators found for the specific IMO and the account is not closed
+     *
+     * @param imo Company IMO number
+     * @return A Count of imos found
+     */
+    @Query(value =
+        "SELECT COUNT(*) " +
+            "FROM Account account " +
+            "LEFT JOIN TREAT(account.compliantEntity AS MaritimeOperator) maritimeOperator " +
+            "WHERE maritimeOperator.imo = ?1 " +
+            "AND account.accountStatus <> 'CLOSED'")
+    Long countMaritimeIMOsForNonClosedAccounts(String imo);
+
+    boolean existsByCompliantEntity_EmitterIdAndAccountStatusNot(String emitterId, AccountStatus status);
+
+    @Query(value =
+            "SELECT COUNT(a) > 0 " +
+                    "FROM Account a " +
+                    "LEFT JOIN TREAT(a.compliantEntity AS CompliantEntity) operator " +
+                    "WHERE operator.identifier <> :operatorIdentifier " +
+                    "AND operator.emitterId = :emitterId " +
+                    "AND a.accountStatus <> :status")
+    boolean isExistingEmitterId(@Param("operatorIdentifier") Long operatorIdentifier,
+                                @Param("emitterId") String emitterId,
+                                @Param("status") AccountStatus status);
     /**
      * Returns a list of Installations found for the specific Identifier and the account is not closed or rejected.
      *
@@ -91,7 +129,7 @@ public interface AccountRepository
      * @return A list of installations found
      */
     @Query(value =
-            "select new gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO ( installation.identifier, installation.permitIdentifier, installation.installationName ) from Account account inner join " +
+            "select new gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO ( installation.identifier, installation.permitIdentifier, installation.installationName, installation.emitterId ) from Account account inner join " +
                     "treat(account.compliantEntity as Installation ) installation " +
                     "where cast(installation.identifier as string) like ?1% "+
                     "and account.accountStatus not in ( " +
@@ -231,4 +269,7 @@ public interface AccountRepository
     @Query("update Account set excludedFromBilling = ?2, excludedFromBillingRemarks = ?3 where identifier = ?1")
     void updateExcludedFromBilling(Long identifier, boolean excludedFromBilling, String exclusionRemarks);
 
+    boolean existsByPublicIdentifier(String ukPid);
+
+    List<Account> findByPublicIdentifierIsNull();
 }

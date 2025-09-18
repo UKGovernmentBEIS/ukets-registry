@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_7_0_ADD_PUBLIC_IDENTIFIER_TO_ACCOUNT" author="archakisn" context="migrate">
+        <comment>Add UK-PID column with unique constraint to account table</comment>
+        <sql>
+            ALTER TABLE "account" ADD COLUMN "public_identifier" VARCHAR(12) DEFAULT NULL;
+            ALTER TABLE "account" ADD CONSTRAINT "public_identifier_unique" UNIQUE ("public_identifier");
+            COMMENT ON COLUMN "account"."public_identifier" IS 'A unique public account ID to be used only in public reports for the sole purpose of discriminating transactions originating from the same account holder without revealing the account identifier.';
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "account" DROP CONSTRAINT "public_identifier_unique";
+                ALTER TABLE "account" DROP COLUMN "public_identifier";
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5_7_0_TABLE_COMPLIANCE_RECORDS_SUMMARY" author="ashiruf" context="migrate">
+        <comment>Defines the compliance_records_summary table</comment>
+        <sql>
+            --------------------------------------------------------
+            --  Table Compliance Records Summary
+            --------------------------------------------------------
+
+            CREATE TABLE IF NOT EXISTS compliance_records_summary
+            (
+                "date" timestamp NOT NULL,
+                "oha_dss_error" bigint,
+                "oha_dss_not_applicable" bigint,
+                "oha_dss_exempt" bigint,
+                "oha_dss_c" bigint,
+                "oha_dss_b" bigint,
+                "oha_dss_a" bigint,
+                "total_oha" bigint,
+                "aoha_dss_error" bigint,
+                "aoha_dss_not_applicable" bigint,
+                "aoha_dss_exempt" bigint,
+                "aoha_dss_c" bigint,
+                "aoha_dss_b" bigint,
+                "aoha_dss_a" bigint,
+                "total_aoha" bigint,
+                "moha_dss_error" bigint,
+                "moha_dss_not_applicable" bigint,
+                "moha_dss_exempt" bigint,
+                "moha_dss_c" bigint,
+                "moha_dss_b" bigint,
+                "moha_dss_a" bigint,
+                "total_moha" bigint,
+                "oha_cumulative_emissions" numeric,
+                "oha_cumulative_surrenders" numeric,
+                "oha_cumulative_reversals" numeric,
+                "aoha_cumulative_emissions" numeric,
+                "aoha_cumulative_surrenders" numeric,
+                "aoha_cumulative_reversals" numeric,
+                "moha_cumulative_emissions" numeric,
+                "moha_cumulative_surrenders" numeric,
+                "moha_cumulative_reversals" numeric,
+                "total_cumulative_emissions" numeric,
+                "total_cumulative_surrenders" numeric,
+                "total_cumulative_reversals" numeric,
+                "oha_exempt_most_recent_applicable" bigint,
+                "aoha_exempt_most_recent_applicable" bigint,
+                "moha_exempt_most_recent_applicable" bigint,
+                "oha_live_most_recent_applicable" bigint,
+                "aoha_live_most_recent_applicable" bigint,
+                "moha_live_most_recent_applicable" bigint
+            );
+
+            ALTER TABLE "compliance_records_summary" ADD CONSTRAINT "pk_compliance_records_summary" PRIMARY KEY ("date");
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "compliance_records_summary" CASCADE;
+            </sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

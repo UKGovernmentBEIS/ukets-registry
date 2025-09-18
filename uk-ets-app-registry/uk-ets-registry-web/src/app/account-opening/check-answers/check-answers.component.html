@@ -544,7 +544,7 @@
             >
               <span class="govuk-!-display-inline-block govuk-!-padding-right-4"
                 >3</span
-              >{{ installationOrAircraftOperatorText }}
+              >{{ operatorText }}
             </span>
           </h2>
         </div>
@@ -559,17 +559,26 @@
               *ngSwitchCase="type.INSTALLATION"
               [installation]="operator"
               [operatorCompleted]="false"
+              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"              
             ></app-overview-installation>
             <app-overview-aircraft-operator
               *ngSwitchCase="type.AIRCRAFT_OPERATOR"
               [aircraftOperator]="operator"
               [operatorCompleted]="false"
-            ></app-overview-aircraft-operator>
+              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
+              ></app-overview-aircraft-operator>
+            <app-overview-maritime-operator
+              *ngSwitchCase="type.MARITIME_OPERATOR"
+              [maritimeOperator]="operator"
+              [operatorCompleted]="false"
+              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"                 
+            ></app-overview-maritime-operator>
             <app-overview-installation-transfer
               *ngSwitchCase="type.INSTALLATION_TRANSFER"
               [installationToBeTransferred]="
                 installationToBeTransferred$ | async
               "
+              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
               [installationTransfer]="operator"
               [operatorCompleted]="false"
             ></app-overview-installation-transfer>
@@ -650,12 +659,7 @@
 
     <div>
       <span
-        class="
-          govuk-!-display-inline-block
-          govuk-!-padding-right-4
-          govuk-align-v-top
-          govuk-heading-m
-        "
+        class="govuk-!-display-inline-block govuk-!-padding-right-4 govuk-align-v-top govuk-heading-m"
         >{{
           (operator$ | async) && (authorisedRepresentatives$ | async).length > 0
             ? '5'

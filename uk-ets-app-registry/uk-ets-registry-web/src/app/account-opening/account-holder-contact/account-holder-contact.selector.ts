@@ -3,10 +3,14 @@ import { State } from 'src/app/reducers';
 import { accountOpeningFeatureKey } from '../account-opening.reducer';
 import { IUkOfficialCountry } from '@shared/countries/country.interface';
 import { selectAllCountries } from '@shared/shared.selector';
-import { AccountHolderContact } from '@shared/model/account/account-holder-contact';
+import {
+  AccountHolderContact,
+  AccountHolderContactInfo,
+} from '@shared/model/account/account-holder-contact';
 import { AccountOpeningState } from '../account-opening.model';
 import { ContactType } from '@shared/model/account-holder-contact-type';
 import { selectAccountHolder } from '@account-opening/account-holder/account-holder.selector';
+import { AccountType } from '@shared/model/account';
 
 const selectAccountOpening = createFeatureSelector<State, AccountOpeningState>(
   accountOpeningFeatureKey

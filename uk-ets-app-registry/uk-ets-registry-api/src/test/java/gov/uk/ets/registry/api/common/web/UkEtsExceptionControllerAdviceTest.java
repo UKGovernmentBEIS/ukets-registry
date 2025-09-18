@@ -42,7 +42,7 @@ class UkEtsExceptionControllerAdviceTest {
     public void shouldGetABadRequestResponseWhenNoHandlerFound() throws Exception {
         mockMvc.perform(get("/api-registry/invalid"))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errorDetails[0].message", is("No handler found for GET /api-registry/invalid")));
+            .andExpect(jsonPath("$.errorDetails[0].message", is("No endpoint GET /api-registry/invalid.")));
     }
 
     @Test

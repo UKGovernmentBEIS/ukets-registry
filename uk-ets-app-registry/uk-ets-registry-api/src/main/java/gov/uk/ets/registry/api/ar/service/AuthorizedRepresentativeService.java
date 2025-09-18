@@ -15,6 +15,7 @@ import gov.uk.ets.registry.api.ar.domain.ARAccountAccessRepository;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionRepository;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionType;
+import gov.uk.ets.registry.api.ar.exception.UserNotFoundException;
 import gov.uk.ets.registry.api.ar.service.dto.ARUpdateActionDTO;
 import gov.uk.ets.registry.api.ar.service.dto.AuthorizedRepresentativeDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
@@ -262,7 +263,7 @@ public class AuthorizedRepresentativeService {
         List<UserWorkContact> userWorkContacts = userService.getUserWorkContacts(Set.of(urid));
         User candidate = userService.getUserByUrid(urid);
         if (CollectionUtils.isEmpty(userWorkContacts) || candidate == null) {
-            throw new IllegalArgumentException("No user with urid " + urid + " exists.");
+            throw new UserNotFoundException("No user with urid " + urid + " exists.", "userIdInput");
         }
         return dtoFactory.createAuthorizedRepresentativeDTO(userWorkContacts.get(0), candidate);
     }
@@ -283,6 +284,9 @@ public class AuthorizedRepresentativeService {
             reportRequestAddRemoveRoleService.requestReportsApiRemoveRole(keycloakId);
             publicationRequestAddRemoveRoleService.requestPublicationApiRemoveRole(keycloakId);
         }
+    }
+    public boolean hasSuspendedAR(Long identifier) {
+        return !arAccountAccessRepository.fetchARs(identifier, AccountAccessState.SUSPENDED).isEmpty();
     }
 
     private List<UserWorkContact> getUserWorkContacts(List<AccountAccess> accountAccesses) {

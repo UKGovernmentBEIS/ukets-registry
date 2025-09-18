@@ -17,7 +17,7 @@
       {{ getTransactionRuleValue(trustedAccountListRules.rule2) }}
     </dd>
   </div>
-  <div *ngIf="isOHAOrAOHA" class="govuk-summary-list__row">
+  <div *ngIf="isOHAOrAOHAorMOHA" class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key" style="width: 90%">
       Is the approval of a second AR necessary to execute a surrender
       transaction or a return of excess allocation?
@@ -38,9 +38,7 @@
   </button>
 </div>
 <hr
-  class="
-    govuk-section-break govuk-section-break--m govuk-section-break--visible
-  "
+  class="govuk-section-break govuk-section-break--m govuk-section-break--visible"
 />
 
 <ng-container *ngIf="(transactions$ | async).length > 0">

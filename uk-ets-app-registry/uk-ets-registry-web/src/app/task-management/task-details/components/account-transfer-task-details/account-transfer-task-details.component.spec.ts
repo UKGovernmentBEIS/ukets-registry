@@ -61,6 +61,18 @@ describe('AccountTransferTaskDetailsComponent', () => {
         complianceStatus: 'NOT_APPLICABLE',
         accountStatus: 'OPEN',
         address: null,
+        openingDate: '',
+        closingDate: '',
+        closureReason: '',
+        billingEmail1: '',
+        billingEmail2: '',
+        billingContactDetails: {
+          contactName: '',
+          phoneNumberCountryCode: '',
+          phoneNumber: '',
+          email: '',
+          sopCustomerId: ''
+        }
       },
     };
     fixture.detectChanges();

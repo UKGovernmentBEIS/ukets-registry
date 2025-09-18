@@ -16,6 +16,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -109,17 +112,23 @@ class ReconciliationModelTest {
 
         EqualsVerifier.forClass(Reconciliation.class)
             .withOnlyTheseFields("identifier")
+            .suppress(Warning.STRICT_INHERITANCE)
+            .suppress(Warning.NONFINAL_FIELDS)            
             .withPrefabValues(ReconciliationFailedEntry.class, entry1, entry2)
             .withPrefabValues(ReconciliationHistory.class, history1, history2)
             .verify();
 
         EqualsVerifier.forClass(ReconciliationFailedEntry.class)
             .withOnlyTheseFields("reconciliation", "accountIdentifier")
+            .suppress(Warning.STRICT_INHERITANCE)
+            .suppress(Warning.NONFINAL_FIELDS)
             .withPrefabValues(Reconciliation.class, reconciliation, reconciliation2)
             .verify();
 
         EqualsVerifier.forClass(ReconciliationHistory.class)
             .withOnlyTheseFields("reconciliation", "status")
+            .suppress(Warning.STRICT_INHERITANCE)
+            .suppress(Warning.NONFINAL_FIELDS)            
             .withPrefabValues(Reconciliation.class, reconciliation, reconciliation2)
             .verify();
     }

@@ -53,8 +53,16 @@ public class KafkaEventListenerProvider implements EventListenerProvider {
         "workCountry",
         "workCountryCode",
         "workPhoneNumber",
+        "workMobileCountryCode",
+        "workMobilePhoneNumber",
+        "workAlternativeCountryCode",
+        "workAlternativePhoneNumber",
+        "noMobilePhoneNumberReason",
         "workEmailAddress",
-        "workEmailAddressConfirmation"
+        "workEmailAddressConfirmation",
+        "recoveryCountryCode",
+        "recoveryPhoneNumber",
+        "recoveryEmailAddress"
     );
 
     private final String bootstrapServers;
@@ -175,7 +183,6 @@ public class KafkaEventListenerProvider implements EventListenerProvider {
 
                 userRepresentation.setUsername(SENSITIVE_DATA_TEXT);
                 userRepresentation.setFirstName(SENSITIVE_DATA_TEXT);
-                userRepresentation.setLastName(SENSITIVE_DATA_TEXT);
                 userRepresentation.setLastName(SENSITIVE_DATA_TEXT);
                 userRepresentation.setEmail(SENSITIVE_DATA_TEXT);
                 userRepresentation.setCredentials(new ArrayList<>()); // remove plain-text password

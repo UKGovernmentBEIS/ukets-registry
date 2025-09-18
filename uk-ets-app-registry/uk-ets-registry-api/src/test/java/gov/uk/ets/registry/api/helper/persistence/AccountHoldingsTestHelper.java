@@ -12,7 +12,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.CommitmentPeriod;
 import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.boot.test.context.TestComponent;

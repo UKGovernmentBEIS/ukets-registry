@@ -43,6 +43,7 @@ import { BannerComponent } from '@registry-web/shared/banner/banner.component';
 import { KeycloakUserDisplayNamePipe } from '@shared/pipes';
 import { SharedModule } from '@registry-web/shared/shared.module';
 import { selectAllCountries } from '@registry-web/shared/shared.selector';
+import { RecoveryMethodsComponent } from '../recovery-methods/recovery-methods.component';
 
 class DateFormatPipeMock {
   transform(): UkDate {
@@ -64,6 +65,7 @@ describe('UserDetailsComponent', () => {
         SideMenuComponent,
         RegistrationDetailsComponent,
         PersonalDetailsComponent,
+        RecoveryMethodsComponent,
         WorkContactDetailsComponent,
         IdentificationDocumentationListComponent,
         IdentificationDocumentationComponent,
@@ -131,7 +133,6 @@ describe('UserDetailsComponent', () => {
       userRoles: [],
       lastName: 'Bond',
       eligibleForSpecificActions: false,
-      userRoles: [],
       attributes: {
         urid: ['UK230169410292'],
         alsoKnownAs: ['also known as Value'],
@@ -149,19 +150,34 @@ describe('UserDetailsComponent', () => {
         workBuildingAndStreetOptional: [''],
         workBuildingAndStreetOptional2: [''],
         workCountry: ['GR'],
-        workCountryCode: [''],
-        workEmailAddress: ['ukets_user_work@gov.uk'],
-        workEmailAddressConfirmation: [''],
-        workPhoneNumber: ['2222422'],
+        workMobileCountryCode: ['GR (30)'],
+        workMobilePhoneNumber: ['22224222'],
+        workAlternativeCountryCode: [''],
+        workAlternativePhoneNumber: [''],
+        noMobilePhoneNumberReason: [''],
         workPostCode: [''],
         workTownOrCity: ['Athens'],
         workStateOrProvince: ['Attica'],
         lastLoginDate: [new Date().toISOString()],
+        recoveryCountryCode: ['GR (30)'],
+        recoveryPhoneNumber: ['6912345678'],
+        recoveryEmailAddress: ['ukets_user_recovery@gov.uk'],
+        hideRecoveryMethodsNotification: ['true'],
+        // differentCountryLastFiveYears: [false],
       },
     };
+    fixture.componentInstance.scrollToRecoverySection = false;
+    fixture.componentInstance.initiatorUrid = 'UK230169410292';
     fixture.componentInstance.currentViewMode = ViewMode.USER_DETAILS;
     store = TestBed.inject(Store) as MockStore<any>;
     router = TestBed.inject(Router);
+    Object.defineProperty(window, 'history', {
+      value: {
+        state: { scrollToRecoverySection: false },
+      },
+      writable: true,
+    });
+
     fixture.detectChanges();
   });
 
@@ -218,23 +234,23 @@ describe('UserDetailsComponent', () => {
     expect(testComponent).toBeDefined();
   });
 
-  test('should render User details title with govuk-heading-xl', () => {
+  it('should render User details title with govuk-heading-xl', () => {
     fixture.detectChanges();
+    fixture.componentInstance.scrollToRecoverySection = false;
     const key = fixture.debugElement.queryAll(By.css('.govuk-heading-xl'))[0];
     expect(key.nativeElement.textContent).toContain('User details');
   });
 
-  test('should render Registration details', () => {
+  it('should render Registration details', () => {
     fixture.detectChanges();
-    // const rows = fixture.debugElement.queryAll(
-    //   By.css('.govuk-summary-list__row')
-    // );
+    fixture.componentInstance.scrollToRecoverySection = false;
+    const rows = fixture.debugElement.queryAll(
+      By.css('app-registration-details .govuk-summary-list__row')
+    );
     // rows.forEach((r, index) =>
     //   console.log(r.nativeElement.textContent + '    index: ' + index)
     // );
-    const emailAddress = fixture.debugElement.queryAll(
-      By.css('.govuk-summary-list__row')
-    )[4];
+    const emailAddress = rows[2];
     const emailAddressKey = emailAddress.children[0];
     expect(emailAddressKey.nativeElement.textContent.trim()).toEqual(
       'Email address'
@@ -244,9 +260,7 @@ describe('UserDetailsComponent', () => {
       'ukets_user@gov.uk'
     );
 
-    const userID = fixture.debugElement.queryAll(
-      By.css('.govuk-summary-list__row')
-    )[2];
+    const userID = rows[0];
     const userIDKey = userID.children[0];
     expect(userIDKey.nativeElement.textContent.trim()).toEqual('User ID');
     const userIDValue = userID.children[1];
@@ -255,12 +269,13 @@ describe('UserDetailsComponent', () => {
     );
   });
 
-  test('should render Personal details', () => {
+  it('should render Personal details', () => {
     fixture.detectChanges();
+    fixture.componentInstance.scrollToRecoverySection = false;
     const rows = fixture.debugElement.queryAll(
-      By.css('.govuk-summary-list__row')
+      By.css('app-personal-details .govuk-summary-list__row')
     );
-    const firstName = rows[8];
+    const firstName = rows[0];
     const firstNameKey = firstName.children[0];
     expect(firstNameKey.nativeElement.textContent.trim()).toEqual(
       'First and middle names'
@@ -268,17 +283,13 @@ describe('UserDetailsComponent', () => {
     const firstNameValue = firstName.children[1];
     expect(firstNameValue.nativeElement.textContent.trim()).toEqual('James');
 
-    const lastName = fixture.debugElement.queryAll(
-      By.css('.govuk-summary-list__row')
-    )[9];
+    const lastName = rows[1];
     const lastNameKey = lastName.children[0];
     expect(lastNameKey.nativeElement.textContent.trim()).toEqual('Last name');
     const lastNameValue = lastName.children[1];
     expect(lastNameValue.nativeElement.textContent.trim()).toEqual('Bond');
 
-    const alsoKnownAs = fixture.debugElement.queryAll(
-      By.css('.govuk-summary-list__row')
-    )[10];
+    const alsoKnownAs = rows[2];
     const alsoKnownAsKey = alsoKnownAs.children[0];
     expect(alsoKnownAsKey.nativeElement.textContent.trim()).toEqual('Known as');
     const alsoKnownAsValue = alsoKnownAs.children[1];
@@ -286,9 +297,7 @@ describe('UserDetailsComponent', () => {
       'also known as Value'
     );
 
-    const countryOfBirth = fixture.debugElement.queryAll(
-      By.css('.govuk-summary-list__row')
-    )[17];
+    const countryOfBirth = rows[10];
     const countryOfBirthKey = countryOfBirth.children[0];
     expect(countryOfBirthKey.nativeElement.textContent.trim()).toEqual(
       'Country of birth'
@@ -296,6 +305,62 @@ describe('UserDetailsComponent', () => {
     const countryOfBirthValue = countryOfBirth.children[1];
     expect(countryOfBirthValue.nativeElement.textContent.trim()).toEqual(
       'Greece'
+    );
+  });
+
+  it('should render Recovery methods with edit controls', () => {
+    const rows = fixture.debugElement.queryAll(
+      By.css('app-recovery-methods .govuk-summary-list__row')
+    );
+    fixture.componentInstance.scrollToRecoverySection = false;
+
+    const phoneRow = rows[0];
+    const phoneKey = phoneRow.children[0];
+    expect(phoneKey.nativeElement.textContent.trim()).toEqual(
+      'Recovery phone number'
+    );
+    const phoneValue = phoneRow.children[1];
+    expect(phoneValue.nativeElement.textContent.trim()).toEqual(
+      'GR (30) 6912345678 Update your recovery phone number  Remove your recovery phone number'
+    );
+
+    const emailRow = rows[1];
+    const emailKey = emailRow.children[0];
+    expect(emailKey.nativeElement.textContent.trim()).toEqual(
+      'Recovery email address'
+    );
+    const emailValue = emailRow.children[1];
+    expect(emailValue.nativeElement.textContent.trim()).toEqual(
+      'ukets_user_recovery@gov.uk  Update your recovery email address  Remove your recovery email address'
+    );
+  });
+
+  it('should render Recovery methods without edit controls', () => {
+    fixture.componentInstance.initiatorUrid = '';
+    fixture.componentInstance.scrollToRecoverySection = false;
+    fixture.detectChanges();
+    const rows = fixture.debugElement.queryAll(
+      By.css('app-recovery-methods .govuk-summary-list__row')
+    );
+
+    const phoneRow = rows[0];
+    const phoneKey = phoneRow.children[0];
+    expect(phoneKey.nativeElement.textContent.trim()).toEqual(
+      'Recovery phone number'
+    );
+    const phoneValue = phoneRow.children[1];
+    expect(phoneValue.nativeElement.textContent.trim()).toEqual(
+      'GR (30) 6912345678'
+    );
+
+    const emailRow = rows[1];
+    const emailKey = emailRow.children[0];
+    expect(emailKey.nativeElement.textContent.trim()).toEqual(
+      'Recovery email address'
+    );
+    const emailValue = emailRow.children[1];
+    expect(emailValue.nativeElement.textContent.trim()).toEqual(
+      'ukets_user_recovery@gov.uk'
     );
   });
 });

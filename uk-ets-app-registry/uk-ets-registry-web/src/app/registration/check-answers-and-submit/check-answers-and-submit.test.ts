@@ -5,6 +5,7 @@ import * as registrationTestHelper from 'src/app/registration/registration.test.
 import * as fixtureTestHelper from 'src/testing/helpers/from-fixture.test.helper';
 import { CheckAnswersAndSubmitComponent } from './check-answers-and-submit.component';
 import { ScreenReaderPageAnnounceDirective } from '@shared/directives/screen-reader-page-announce.directive';
+import { PhoneNumberComponent } from '@registry-web/shared/components/phone-number/phone-number.component';
 
 describe('CheckAnswersAndSubmitComponent', () => {
   let fixture: ComponentFixture<CheckAnswersAndSubmitComponent>;
@@ -29,20 +30,19 @@ describe('CheckAnswersAndSubmitComponent', () => {
     });
   }
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        declarations: [
-          CheckAnswersAndSubmitComponent,
-          ScreenReaderPageAnnounceDirective,
-        ],
-        imports: [StoreModule.forRoot(initialState)],
-      }).compileComponents();
-      fixture = TestBed.createComponent(CheckAnswersAndSubmitComponent);
-      component = fixture.debugElement.componentInstance;
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      declarations: [
+        CheckAnswersAndSubmitComponent,
+        ScreenReaderPageAnnounceDirective,
+        PhoneNumberComponent,
+      ],
+      imports: [StoreModule.forRoot(initialState)],
+    }).compileComponents();
+    fixture = TestBed.createComponent(CheckAnswersAndSubmitComponent);
+    component = fixture.debugElement.componentInstance;
+  }));
 
   test('the component is created', () => {
     expect(component).toBeTruthy();
@@ -107,10 +107,10 @@ describe('CheckAnswersAndSubmitComponent', () => {
     );
   });
 
-  it('should display the phone number', () => {
+  it('should display the mobile phone number', () => {
     fixture.detectChanges();
-    expect(fixtureTestHelper.getText(fixture, '#phone-number')).toEqual(
-      registrationTestHelper.phoneNumber()
+    expect(fixtureTestHelper.getText(fixture, '#mobile-phone-number')).toEqual(
+      registrationTestHelper.workMobileNumber()
     );
   });
 

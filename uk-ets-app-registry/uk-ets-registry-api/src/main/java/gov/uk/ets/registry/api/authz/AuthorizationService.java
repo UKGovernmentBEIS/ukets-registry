@@ -1,9 +1,9 @@
 package gov.uk.ets.registry.api.authz;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.user.domain.UserRole;
 import java.util.List;
 import java.util.Set;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.authorization.PolicyEvaluationRequest;
 import org.keycloak.representations.idm.authorization.PolicyEvaluationResponse.EvaluationResultRepresentation;
@@ -49,14 +49,6 @@ public interface AuthorizationService extends AccessTokenRetriever {
     EvaluationResultRepresentation evaluate(PolicyEvaluationRequest policyEvaluationRequest);
 
     /**
-     * Return the Access token of the currently logged in user.
-     *
-     * @return the Access token of the currently logged in user
-     * @since v0.3.0
-     */
-    AccessToken getToken();
-
-    /**
      * Access token as a string.
      *
      * @return the access token as a String
@@ -65,8 +57,15 @@ public interface AuthorizationService extends AccessTokenRetriever {
     String getTokenString();
 
     /**
-     *  Get user Urid
+     *  Get user Urid.
      *  @return the urid as a String
      */
     String getUrid();
+
+    /**
+     * Gets the value of the claim from the token.
+     * @param name
+     * @return
+     */
+    String getClaim(OAuth2ClaimNames name);
 }

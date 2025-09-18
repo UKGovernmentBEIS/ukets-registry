@@ -1,10 +1,9 @@
 package gov.uk.ets.publication.api.authz;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.publication.api.common.keycloak.KeycloakRepository;
 import gov.uk.ets.publication.api.error.UkEtsPublicationApiClientException;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
@@ -13,6 +12,8 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -27,11 +28,6 @@ public class AuthorizationService {
     private String keycloakClientId;
     private final KeycloakRepository keycloakRepository;
 
-    public AccessToken getToken() {
-        return getKeycloakSecurityContext().getToken();
-
-    }
-
     /**
      * User should be admin and request should include token created for service account.
      */
@@ -41,15 +37,6 @@ public class AuthorizationService {
         } else {
             return true;
         }
-    }
-
-    private KeycloakSecurityContext getKeycloakSecurityContext() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        @SuppressWarnings("unchecked")
-        KeycloakPrincipal<KeycloakSecurityContext> principal =
-            (KeycloakPrincipal<KeycloakSecurityContext>) authentication
-                .getPrincipal();
-        return principal.getKeycloakSecurityContext();
     }
 
     private boolean tokenContains(String tokenString, String arg) {
@@ -85,5 +72,18 @@ public class AuthorizationService {
 
     private List<ClientRepresentation> getClientsByClientId(String token) {
         return keycloakRepository.fetchClientDataByClientId(token, keycloakClientId);
+    }
+    
+    public String getClaim(OAuth2ClaimNames oauth2claim) {
+        return getPrincipal().getAttribute(oauth2claim.getClaimName());
+    }
+    
+    private DefaultOAuth2AuthenticatedPrincipal getPrincipal() {
+        Authentication authentication = getAuthentication();
+        return DefaultOAuth2AuthenticatedPrincipal.class.cast(authentication.getPrincipal());
+    }
+    
+    private BearerTokenAuthentication getAuthentication() {
+        return BearerTokenAuthentication.class.cast(SecurityContextHolder.getContext().getAuthentication());
     }
 }

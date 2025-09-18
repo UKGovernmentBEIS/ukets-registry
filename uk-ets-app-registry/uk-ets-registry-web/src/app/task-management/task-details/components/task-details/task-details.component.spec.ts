@@ -3,26 +3,36 @@ import { TaskDetailsComponent } from '@task-details/components';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RequestType, TaskOutcome } from '@task-management/model';
+import {
+  RequestType,
+  RequestedDocumentUploadTaskDetails,
+  TaskOutcome,
+} from '@task-management/model';
 import { RouterTestingModule } from '@angular/router/testing';
 import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
 import { By } from '@angular/platform-browser';
-import { GdsDateTimePipe } from '@registry-web/shared/pipes';
+import { GdsDateTimePipe, IsPastDatePipe } from '@registry-web/shared/pipes';
+import { SharedModule } from '@registry-web/shared/shared.module';
+import { TaskDetailsTabsNavigationComponent } from '../task-details-tabs-navigation/task-details-tabs-navigation.component';
 
 describe('TaskDetailsComponent', () => {
   let component: TaskDetailsComponent;
   let fixture: ComponentFixture<TaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, CommonModule, RouterTestingModule],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        providers: [GdsDateTimePipe],
-        declarations: [TaskDetailsComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        ReactiveFormsModule,
+        CommonModule,
+        RouterTestingModule,
+        SharedModule,
+        TaskDetailsTabsNavigationComponent,
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [GdsDateTimePipe, IsPastDatePipe],
+      declarations: [TaskDetailsComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TaskDetailsComponent);
@@ -45,6 +55,7 @@ describe('TaskDetailsComponent', () => {
       //TODO add map if needed
       comment: null,
       completedDate: new Date(),
+      deadline: new Date(),
     };
     fixture.detectChanges();
   });
@@ -85,39 +96,32 @@ describe('TaskDetailsComponent', () => {
       parentTask: undefined,
       reasonForAssignment: '',
       completedDate: new Date(),
+      deadline: new Date(),
     };
 
     fixture.componentInstance.taskDetails = taskDetails;
 
-    let warning = fixture.debugElement.query(
-      By.css('.govuk-warning-text__assistive')
-    );
+    let warning = fixture.debugElement.query(By.css('.govuk-visually-hidden'));
     expect(warning).toBeDefined();
 
     taskDetails.taskStatus = 'COMPLETED';
     fixture.componentInstance.taskDetails = taskDetails;
     fixture.detectChanges();
-    warning = fixture.debugElement.query(
-      By.css('.govuk-warning-text__assistive')
-    );
+    warning = fixture.debugElement.query(By.css('.govuk-visually-hidden'));
     expect(warning).toBeNull();
 
     (taskDetails as any).taskType = RequestType.ACCOUNT_TRANSFER;
     taskDetails.taskStatus = 'OPEN';
     fixture.componentInstance.taskDetails = taskDetails;
     fixture.detectChanges();
-    warning = fixture.debugElement.query(
-      By.css('.govuk-warning-text__assistive')
-    );
+    warning = fixture.debugElement.query(By.css('.govuk-visually-hidden'));
     expect(warning).toBeNull();
 
     taskDetails.uploadedFiles = [];
     (taskDetails as any).taskType = RequestType.AH_REQUESTED_DOCUMENT_UPLOAD;
     fixture.componentInstance.taskDetails = taskDetails;
     fixture.detectChanges();
-    warning = fixture.debugElement.query(
-      By.css('.govuk-warning-text__assistive')
-    );
+    warning = fixture.debugElement.query(By.css('.govuk-visually-hidden'));
     expect(warning).toBeNull();
   });
 });

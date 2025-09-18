@@ -7,7 +7,6 @@ import gov.uk.ets.reports.generator.domain.AccountHolder;
 import gov.uk.ets.reports.generator.domain.User;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -50,12 +49,6 @@ public class ARPerAccountJdbcMapper
             "  and aa.access_right <> 'ROLE_BASED'\n" +
             "  and a.request_status != 'REQUESTED'\n" +
             "order by holder_name, a.full_identifier;";
-
-    @Override
-    public List<ARPerAccountReportData> mapData(ReportCriteria criteria) {
-        return
-            jdbcTemplate.query(REPORT_QUERY, this);
-    }
 
     @Override
     public List<ARPerAccountReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

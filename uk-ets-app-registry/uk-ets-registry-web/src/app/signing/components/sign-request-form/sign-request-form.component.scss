@@ -1,6 +1,6 @@
-@import 'node_modules/govuk-frontend/govuk/settings/all';
-@import 'node_modules/govuk-frontend/govuk/tools/all';
-@import 'node_modules/govuk-frontend/govuk/helpers/all';
+@import 'node_modules/govuk-frontend/dist/govuk/settings/index';
+@import 'node_modules/govuk-frontend/dist/govuk/tools/index';
+@import 'node_modules/govuk-frontend/dist/govuk/helpers/index';
 
 .sign-request {
   background-color: govuk-colour('light-grey');

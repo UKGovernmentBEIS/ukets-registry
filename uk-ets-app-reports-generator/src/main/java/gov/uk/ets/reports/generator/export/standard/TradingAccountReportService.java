@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,11 +44,6 @@ public class TradingAccountReportService implements ReportTypeService<TradingAcc
     public List<String> getReportHeaders(Long year) {
         return List.of("Account Holder", "Sales Contact Email", "Sales Contact Phone", "Registration Number", "Address", "Town or City", "State or Province", "Postal Code or ZIP",
                 "Country", "Account status", "Open", "Closed");
-    }
-
-    @Override
-    public List<TradingAccountReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

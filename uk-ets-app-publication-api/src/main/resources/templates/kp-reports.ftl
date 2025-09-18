@@ -47,31 +47,27 @@
       href="/assets/images/govuk-apple-touch-icon.png"
     />
 
-    <link href="/assets/css/govuk-frontend-3.9.1.min.css" rel="stylesheet" />
+    <link href="/assets/css/govuk-frontend-5.9.0.min.css" rel="stylesheet" />
 
     <link href="/assets/css/styles.css" rel="stylesheet" />
 
-    <script
-      src="/assets/js/gov.uk-frontend-3.9.1.min.js"
-      type="text/javascript"
-    ></script>
+    <script type="module">
+      import { initAll } from '/assets/js/govuk-frontend-5.9.0.min.js';
+      initAll();
+    </script>
     <script src="/assets/js/sections.js" type="text/javascript"></script>
     <script>
       insertKpSections();
     </script>
   </head>
 
-  <body class="govuk-template__body js-enabled">
+  <body class="govuk-template__body govuk-frontend-supported js-enabled">
     <header class="govuk-header" role="banner" data-module="govuk-header">
       <div class="govuk-header__container govuk-width-container">
         <div class="govuk-header__logo">
           <a
             href="https://www.gov.uk/"
-            class="
-              govuk-header__link
-              govuk-header__link--homepage
-              govuk-header__link--home-custom
-            "
+            class="govuk-header__link govuk-header__link--homepage"
           >
             <span class="govuk-header__logotype">
               <svg
@@ -104,7 +100,7 @@
           <a
             class="
               govuk-header__link
-              govuk-header__link--service-name
+              govuk-header__service-name
               govuk-header__link--service-custom
             "
             href="${(applicationUrl)!}"

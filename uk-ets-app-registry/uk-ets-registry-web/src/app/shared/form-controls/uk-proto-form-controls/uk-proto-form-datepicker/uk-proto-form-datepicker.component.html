@@ -25,19 +25,14 @@
   </span>
   <span
     *ngIf="dateFormatHint"
-    class="
-      govuk-!-padding-left-1
-      govuk-!-display-inline-block
-      govuk-hint
-      govuk-text-grey
-    "
+    class="govuk-!-padding-left-1 govuk-!-display-inline-block govuk-hint govuk-text-grey"
     [attr.id]="id + '-dateFormatHint'"
     [ngClass]="hintStyleClass"
   >
     (e.g. 31/03/2021)
   </span>
   <ng-container *ngIf="validationErrorMessage">
-    <span
+    <p
       *ngIf="showError() && formControl.errors"
       id="event-name-error"
       class="govuk-error-message"
@@ -46,7 +41,7 @@
     >
       <span class="govuk-visually-hidden">Error:</span>
       {{ validationErrorMessage }}
-    </span>
+    </p>
   </ng-container>
 
   <div class="input-group relative">
@@ -59,6 +54,7 @@
       [attr.name]="id"
       [placeholder]="'DD/MM/YYYY'"
       [formControl]="formControl"
+      [minDate]="minDate"
       [attr.aria-invalid]="formControl.dirty && formControl.invalid"
       ngbDatepicker
       #d="ngbDatepicker"
@@ -97,13 +93,15 @@
   let-date="date"
   let-selected="selected"
   let-today="today"
+  let-disabled="disabled"
 >
   <div
     role="gridcell"
     class="ngb-dp-day"
     [ngClass]="{
       'today-date': today,
-      'selected-date': selected
+      'selected-date': selected,
+      disabled: disabled,
     }"
     tabindex="-1"
     [attr.aria-label]="

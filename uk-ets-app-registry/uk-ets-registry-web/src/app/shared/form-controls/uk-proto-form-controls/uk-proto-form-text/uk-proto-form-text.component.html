@@ -11,11 +11,11 @@
   >
     {{ label }}
   </label>
-  <span *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
+  <div *ngIf="hint" [attr.id]="hintId" class="govuk-hint">
     {{ hint }}
-  </span>
+  </div>
   <ng-container *ngIf="showError()">
-    <span
+    <p
       *ngIf="showError()"
       id="event-name-error"
       class="govuk-error-message"
@@ -24,28 +24,41 @@
     >
       <span class="govuk-visually-hidden">Error:</span>
       {{ validationErrorMessage }}
-    </span>
+    </p>
   </ng-container>
 
-  <input
-    class="govuk-input"
-    [class.govuk-input--error]="showError()"
-    [ngClass]="class"
-    [ngStyle]="style"
-    [formControl]="formControl"
-    [attr.id]="id"
-    [attr.name]="id"
-    type="text"
-    [maxlength]="maxlength"
-    [autocomplete]="autocomplete"
-    [required]="hasRequiredField(formControl)"
-    [readonly]="readonly"
-    [attr.aria-invalid]="showError()"
-    [appDisableControl]="disabled"
-    (keydown)="keyDown($event)"
-    (blur)="onBlur($event)"
-  />
-  <span class="govuk-body" *ngIf="showTextAfterInputElement"
-    ><strong>&nbsp;&nbsp;{{ showTextAfterInputElement }}</strong></span
-  >
+  <div *ngIf="prefix; else inputFragment" class="govuk-input__wrapper">
+    <div
+      [attr.id]="'prefix' + id"
+      class="govuk-input__prefix"
+      aria-hidden="true"
+    >
+      {{ prefix }}
+    </div>
+    <ng-container *ngTemplateOutlet="inputFragment"> </ng-container>
+  </div>
+
+  <ng-template #inputFragment>
+    <input
+      class="govuk-input"
+      [class.govuk-input--error]="showError()"
+      [ngClass]="class"
+      [ngStyle]="style"
+      [formControl]="formControl"
+      [attr.id]="id"
+      [attr.name]="id"
+      type="text"
+      [maxlength]="maxlength"
+      [autocomplete]="autocomplete"
+      [required]="hasRequiredField(formControl)"
+      [readonly]="readonly"
+      [attr.aria-invalid]="showError()"
+      [appDisableControl]="disabled"
+      (keydown)="keyDown($event)"
+      (blur)="onBlur($event)"
+    />
+    <span class="govuk-body" *ngIf="showTextAfterInputElement"
+      ><strong>&nbsp;&nbsp;{{ showTextAfterInputElement }}</strong></span
+    >
+  </ng-template>
 </div>

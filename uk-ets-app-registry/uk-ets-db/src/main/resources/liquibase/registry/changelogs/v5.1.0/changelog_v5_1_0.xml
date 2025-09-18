@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_1_0_ADD_UPLOADED_FILE_ID_TO_NOTIFICATION" author="archakisn" context="migrate">
+        <comment>Add uploaded_file_id column to notification table and set foreign key constraint</comment>
+        <sql>
+            ALTER TABLE "notification"
+            ADD COLUMN "uploaded_file_id" INT DEFAULT NULL;
+
+            ALTER TABLE "notification"
+            ADD CONSTRAINT "fk_uploaded_file"
+            FOREIGN KEY ("uploaded_file_id")
+            REFERENCES "files"("id");
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "notification"
+                DROP CONSTRAINT "fk_uploaded_file";
+
+                ALTER TABLE "notification"
+                DROP COLUMN "uploaded_file_id";
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5_1_1_ADD_AD_HOC_EMAIL_TO_NOTIFICATION" author="archakisn" context="migrate">
+        <comment>Add AD_HOC_EMAIL type to notification table</comment>
+        <sql>
+            INSERT INTO "notification_definition" ("id", "type", "short_text", "long_text", "channel_type", "supported_parameters", "selection_criteria", "type_id")
+            VALUES (nextval('notification_definition_seq'), 'AD_HOC_EMAIL', 'Ad hoc email notification', 'This is an ad hoc email notification.', 'EMAIL', NULL, NULL, 7);
+        </sql>
+        <rollback>
+            <sql>
+                DELETE FROM "notification_definition" WHERE "type" = 'AD_HOC_EMAIL';
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

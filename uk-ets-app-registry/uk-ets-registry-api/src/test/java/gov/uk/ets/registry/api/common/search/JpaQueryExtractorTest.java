@@ -42,26 +42,26 @@ import org.springframework.data.domain.PageRequest;
 class JpaQueryExtractorTest {
 
     private static final CharSequence[] TASK_SEARCH_ADMINS_SELECT_CLAUSE_TOKENS =
-        {"request_identifier", "type", "known_as)<>0", "known_as", "first_name", "known_as)<>0", "last_name",
-        	"initiated_by", "urid", "known_as)<>0", "known_as","first_name", "known_as)<>0", "last_name", "identifier", 
-        	"full_identifier", "kyoto_account_type", "registry_account_type", "metadata_name='ACCOUNT_TYPE'", 
-        	"metadata_value", "account_status", "metadata_name='AH_NAME'", "metadata_value", "name", "type",
+        {"request_identifier", "type", "known_as)<>0)", "known_as", "first_name", "known_as)<>0)", "last_name",
+        	"id", "urid", "known_as)<>0)", "known_as","first_name", "known_as)<>0)", "last_name", "identifier",
+        	"full_identifier", "kyoto_account_type", "registry_account_type", "metadata_name='ACCOUNT_TYPE')",
+        	"metadata_value", "account_status", "metadata_name='AH_NAME')", "metadata_value", "name", "type",
         	"disclosed_name", "disclosed_name='Registry", "urid","transaction_identifier", "initiated_date", "status",
             "recipient_account_number", "difference", "urid", "completed_date", "identifier", "type_label",
-            "metadata_name='ALLOCATION_CATEGORY'", "metadata_value", "metadata_name='ALLOCATION_YEAR'", "metadata_value"};
+            "metadata_name='ALLOCATION_CATEGORY')", "metadata_value", "metadata_name='ALLOCATION_YEAR')", "metadata_value"};
     
     private static final CharSequence[] TASK_SEARCH_USERS_SELECT_CLAUSE_TOKENS =
-        {"request_identifier", "type", "disclosed_name", "initiated_by", "urid",
+        {"request_identifier", "type", "disclosed_name", "id", "urid",
             "disclosed_name", "identifier", "full_identifier", "kyoto_account_type",
-            "registry_account_type", "metadata_name='ACCOUNT_TYPE'", "metadata_value", "account_status",
-            "metadata_name='AH_NAME'", "metadata_value", "name", "type", "disclosed_name",
+            "registry_account_type", "metadata_name='ACCOUNT_TYPE')", "metadata_value", "account_status",
+            "metadata_name='AH_NAME')", "metadata_value", "name", "type", "disclosed_name",
             "disclosed_name='Registry", "urid","transaction_identifier", "initiated_date", "status",
             "id", "type", "account_name"};
 
     private static final CharSequence[] ACCOUNT_SEARCH_SELECT_CLAUSE_TOKENS =
         {"id", "id", "account_name", "account_status", "type_label", "approval_second_ar_required",
             "balance", "billing_address_same_as_account_holder_address", "check_digits", "commitment_period_code",
-            "compliance_status", "compliant_entity_id", "contact_id", "full_identifier", "identifier",
+            "compliance_status", "id", "contact_id", "full_identifier", "identifier",
             "kyoto_account_type", "opening_date", "registry_account_type", "registry_code", "request_status",
             "transfers_outside_tal", "unit_type", "birth_country", "birth_date", "contact_id",
             "first_name", "identifier", "last_name", "name", "no_reg_justification",
@@ -194,7 +194,7 @@ class JpaQueryExtractorTest {
             Collectors.toList());
         assertThat(tokenizeClause(extractSelectClause(nativeSqlQuery))).containsSubsequence(expected);
         assertThat(nativeSqlQuery).contains(
-            "account_status in ('OPEN' , 'ALL_TRANSACTIONS_RESTRICTED' , 'SOME_TRANSACTIONS_RESTRICTED' , 'SUSPENDED_PARTIALLY' , 'SUSPENDED' , 'TRANSFER_PENDING'");
+            "account_status in ('OPEN','ALL_TRANSACTIONS_RESTRICTED','SOME_TRANSACTIONS_RESTRICTED','SUSPENDED_PARTIALLY','SUSPENDED','TRANSFER_PENDING'");
     }
 
     @Test
@@ -228,7 +228,7 @@ class JpaQueryExtractorTest {
         criteria.setAuthorizedRepresentativeUrid("UK405681794859");
         criteria.setRegulatorType("EA");
         criteria.setAllocationStatus(AllocationClassification.NOT_YET_ALLOCATED);
-        criteria.setInstallationOrAircraftOperatorId("1000045");
+        criteria.setOperatorId("1000045");
 
         AccountFilter filter = new AccountFilterMapper().map(criteria);
         filter.addExcludedAccountStatus(AccountStatus.REJECTED);
@@ -241,7 +241,7 @@ class JpaQueryExtractorTest {
             Arrays.stream(ACCOUNT_SEARCH_SELECT_CLAUSE_TOKENS_FULL_FILTER).map(CharSequence::toString).collect(
                 Collectors.toList());
         assertThat(tokenizeClause(extractSelectClause(nativeSqlQuery))).containsExactlyElementsOf(expected);
-        assertThat(nativeSqlQuery).contains("account0_.account_status='OPEN' and account0_.account_status<>'REJECTED'");
+        assertThat(nativeSqlQuery).contains("a1_0.account_status='OPEN' and a1_0.account_status<>'REJECTED'");
         assertThat(nativeSqlQuery).contains("like '%1000045%'");
     }
 

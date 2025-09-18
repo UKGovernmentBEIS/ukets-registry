@@ -2,7 +2,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <span class="govuk-caption-xl">Add note</span>
-    <fieldset class="govuk-fieldset">
+    <fieldset class="govuk-fieldset" *ngIf="storedTypeLabel">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">
           Check your answers
@@ -37,6 +37,41 @@
         </div>
       </dl>
     </fieldset>
+
+    <fieldset class="govuk-fieldset" *ngIf="!storedTypeLabel">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">
+          Check your answers
+        </h1>
+      </legend>
+
+      <!-- <div class="govuk-summary-list govuk-!-margin-top-30">
+        <div class="govuk-summary-list__row">
+          <div class="govuk-summary-list__key">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Note</h2>
+          </div>
+          <div class="govuk-summary-list__actions">
+            <a class="govuk-link" (click)="onChange()">Change</a>
+          </div>
+        </div>
+      </div> -->
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key note-key">Note</dt>
+          <dd class="govuk-summary-list__value govuk-!-width-two-thirds">
+            {{ storedNote }}
+          </dd>
+          <dd class="govuk-summary-list__value change">
+            <a
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="onChange()"
+              >Change</a
+            >
+          </dd>
+        </div>
+      </dl>
+    </fieldset>
+
     <button
       id="submit"
       class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-5"

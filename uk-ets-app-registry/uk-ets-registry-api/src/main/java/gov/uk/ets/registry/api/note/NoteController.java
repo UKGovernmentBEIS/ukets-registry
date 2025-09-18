@@ -1,8 +1,13 @@
 package gov.uk.ets.registry.api.note;
 
+import static gov.uk.ets.registry.api.authz.ruleengine.RuleInputType.NOTE;
+
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
+import gov.uk.ets.registry.api.authz.ruleengine.RuleInput;
 import gov.uk.ets.registry.api.authz.ruleengine.features.AnyAdminRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.SeniorAdminRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.SeniorOrJuniorAdministratorRule;
+import gov.uk.ets.registry.api.note.domain.NoteDomainType;
 import gov.uk.ets.registry.api.note.service.NoteService;
 import gov.uk.ets.registry.api.note.web.model.NoteDto;
 import java.util.List;
@@ -25,17 +30,18 @@ public class NoteController {
     private final NoteService noteService;
 
     /**
-     * Retrieve all notes related to Account and the AccountHorder of the account sorted by the creation date (latest first).
+     * Retrieve notes for a specific DomainId and DomainType.
      *
-     * @param accountIdentifier the account identifier
+     * @param domainId domain id
+     * @param domainType domain type
      * @return a list of notes
      */
     @Protected({
         AnyAdminRule.class
     })
     @GetMapping(path = "/notes.get", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<NoteDto> getNotesForAccount(@RequestParam String accountIdentifier) {
-        return noteService.findNotesForAccount(Long.parseLong(accountIdentifier));
+    public List<NoteDto> getNotes(@RequestParam String domainId, @RequestParam NoteDomainType domainType) {
+        return noteService.findNotes(domainId, domainType);
     }
 
     /**
@@ -45,10 +51,10 @@ public class NoteController {
      * @return the persisted note
      */
     @Protected({
-        SeniorAdminRule.class
+        SeniorOrJuniorAdministratorRule.class
     })
     @PostMapping(path = "/notes.add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public NoteDto addNote(@RequestBody NoteDto noteDto) {
+    public NoteDto addNote(@RuleInput(NOTE) @RequestBody NoteDto noteDto) {
         return noteService.addNote(noteDto);
     }
 

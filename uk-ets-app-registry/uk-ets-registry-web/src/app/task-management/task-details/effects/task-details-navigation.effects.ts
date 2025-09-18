@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IssueKpUnitsService } from '@issue-kp-units/services';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { ActivatedRoute, Router, RouterStateSnapshot } from '@angular/router';
 import { filter, map, pairwise, tap, withLatestFrom } from 'rxjs/operators';
 import {
@@ -40,7 +40,8 @@ export class TaskDetailsNavigationEffects {
     this.actions$.pipe(
       ofType(
         TaskDetailsApiActions.completeTaskWithRejectionSuccess,
-        TaskDetailsActions.loadTaskFromListSuccess
+        TaskDetailsActions.loadTaskFromListSuccess,
+        TaskDetailsActions.bacsPaymentCancelledSuccess
       ),
       map(() =>
         TaskDetailsNavigationActions.navigateToTaskDetails({
@@ -105,6 +106,200 @@ export class TaskDetailsNavigationEffects {
       ),
     { dispatch: false }
   );
+
+  navigateToChangeTaskDeadline$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToChangeTaskDeadline),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/change-task-deadline`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToSelectPaymentMethod$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToSelectPaymentMethod),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/payment-select-method`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToBACSDetailsPaymentMethod$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToBACSDetailsPaymentMethod),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/payment-bacs-details`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToBACSConfirmPaymentMethod$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToBACSConfirmPaymentMethod),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/payment-bacs-confirm`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToBACSCancelPaymentMethod$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToBACSCancelPaymentMethod),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/payment-bacs-cancel`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToGovUKPayService$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToGovUKPayService),
+        tap(() => window.removeAllListeners('beforeunload')),
+        tap((action) => (window.location.href = action.nextUrl))
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToPaymentConfirmation$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsActions.bacsPaymentCompleteSuccess),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/payment-confirmation`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToCheckChangeTaskDeadline$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToCheckChangeTaskDeadline),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/check-change-task-deadline`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToChangeTaskDeadlineSuccess$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(
+          TaskDetailsNavigationActions.navigateToChangeTaskDeadlineSuccess
+        ),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/change-task-deadline-success`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  navigateToCancelChangeTaskDeadline$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TaskDetailsNavigationActions.navigateToCancelChangeTaskDeadline),
+        concatLatestFrom(() => this.store.select(selectTask)),
+        tap(([action, task]) =>
+          this._router.navigate(
+            [`/task-details/${task.requestId}/cancel-change-task-deadline`],
+            {
+              relativeTo: this.activatedRoute,
+              skipLocationChange: true,
+              queryParams: {
+                goBackRoute: action.currentRoute,
+              },
+            }
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
+
+  cancelChangeTaskDeadline$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.cancelChangeTaskDeadline),
+      map(() => TaskDetailsNavigationActions.navigateToTaskDetails({}))
+    );
+  });
 
   navigateToTaskCompletionPending$ = createEffect(
     () => {

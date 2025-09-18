@@ -2,25 +2,27 @@ package gov.uk.ets.registry.api.authz.ruleengine.features.task;
 
 import static gov.uk.ets.registry.api.authz.ruleengine.BusinessRuleAppliance.YOU_ARE_REQUESTING_TO_READ_OR_WRITE_A_NON_EXISTENT_ACCOUNT;
 
-import gov.uk.ets.registry.api.account.domain.AccountAccess;
-import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
+import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.ruleengine.BusinessSecurityStore;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInputStore;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInputType;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.exception.NotFoundException;
+import gov.uk.ets.registry.api.tal.domain.types.TrustedAccountStatus;
+import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.task.domain.types.TaskUpdateAction;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskActionError;
 import gov.uk.ets.registry.api.task.service.TaskActionException;
-import gov.uk.ets.registry.api.task.service.TaskService;
-import gov.uk.ets.registry.api.task.web.model.AccountOpeningTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskFileDownloadInfoDTO;
+import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserRole;
@@ -28,8 +30,9 @@ import gov.uk.ets.registry.api.user.service.UserService;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +44,7 @@ public class TaskBusinessSecurityStoreSliceLoader {
     private final AuthorizationService authorizationService;
     private final TaskRepository taskRepository;
     private final AccountRepository accountRepository;
+    private final TrustedAccountRepository trustedAccountRepository;
     private BusinessSecurityStore businessSecurityStore;
     private RuleInputStore ruleInputStore;
     private final Mapper mapper;
@@ -106,6 +110,24 @@ public class TaskBusinessSecurityStoreSliceLoader {
             }
             taskBusinessSecurityStoreSlice.setTaskOutcome((TaskOutcome) ruleInputStore.get(RuleInputType.TASK_OUTCOME));
         }
+        if (ruleInputStore.containsKey(RuleInputType.TASK_UPDATE_ACTION) &&
+            taskBusinessSecurityStoreSlice.getTaskUpdateAction() == null) {
+            TaskUpdateAction action = (TaskUpdateAction) ruleInputStore.get(RuleInputType.TASK_UPDATE_ACTION);
+            taskBusinessSecurityStoreSlice.setTaskUpdateAction(action);
+        }
+
+        if (ruleInputStore.containsKey(RuleInputType.TASK_REQUEST_ID)) {
+            Task currentTask = taskRepository.findByRequestId((Long) ruleInputStore.get(RuleInputType.TASK_REQUEST_ID));
+            var taskAccountIdentifier = Optional.ofNullable(currentTask.getAccount())
+                    .map(Account::getFullIdentifier)
+                    .orElse(null);
+            if(taskAccountIdentifier != null){
+                var trustedAccounts = trustedAccountRepository.
+                        findTrustedAccountsForAccountIdAndStatuses(taskAccountIdentifier,
+                                List.of(TrustedAccountStatus.PENDING_ADDITION_APPROVAL,TrustedAccountStatus.PENDING_REMOVAL_APPROVAL));
+                taskBusinessSecurityStoreSlice.setLinkedPendingTrustedAccounts(trustedAccounts);
+            }
+        }
         businessSecurityStore.setTaskBusinessSecurityStoreSlice(taskBusinessSecurityStoreSlice);
     }
 
@@ -135,6 +157,23 @@ public class TaskBusinessSecurityStoreSliceLoader {
 					                      .map(userService::getUserByUrid)        
 					                      .toList();
             taskBusinessSecurityStoreSlice.setCandidateAccountARs(arList);
+
+            Optional.of(accountDto)
+                .map(AccountDTO::getOperator)
+                .map(OperatorDTO::getEmitterId)
+                .map(emitterId -> accountRepository.existsByCompliantEntity_EmitterIdAndAccountStatusNot(emitterId, AccountStatus.CLOSED))
+                .ifPresent(exists -> businessSecurityStore.setEmitterIdExists(exists));
+        }
+
+        if (EnumSet.of(RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST,
+            RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST,
+            RequestType.MARITIME_OPERATOR_UPDATE_REQUEST).contains(byRequestId.getType())) {
+
+            OperatorDTO operatorDTO = mapper.convertToPojo(byRequestId.getDifference(), OperatorDTO.class);
+            Optional.of(operatorDTO)
+                .map(OperatorDTO::getEmitterId)
+                .map(emitterId -> accountRepository.existsByCompliantEntity_EmitterIdAndAccountStatusNot(emitterId, AccountStatus.CLOSED))
+                .ifPresent(exists -> businessSecurityStore.setEmitterIdExists(exists));
         }
 
         if (byRequestId.getUser() != null) {
@@ -146,7 +185,7 @@ public class TaskBusinessSecurityStoreSliceLoader {
                                 .stream()
                                 .map(clientRole -> UserRole.fromKeycloakLiteral(clientRole.getName()))
                                 .collect(Collectors.toList()));
-            } catch (javax.ws.rs.NotFoundException e) {
+            } catch (jakarta.ws.rs.NotFoundException e) {
                 throw TaskActionException.create(TaskActionError.builder()
                         .code(TaskActionError.USER_NOT_FOUND_IN_KEYCLOAK_DB)
                         .urid(urid)
@@ -196,7 +235,7 @@ public class TaskBusinessSecurityStoreSliceLoader {
                 .map(clientRole -> UserRole.fromKeycloakLiteral(clientRole.getName()))
                 .collect(Collectors.toList());
 
-        } catch (javax.ws.rs.NotFoundException e) {
+        } catch (jakarta.ws.rs.NotFoundException e) {
             throw TaskActionException.create(TaskActionError.builder()
                 .code(TaskActionError.USER_NOT_FOUND_IN_KEYCLOAK_DB)
                 .urid(user.getUrid())

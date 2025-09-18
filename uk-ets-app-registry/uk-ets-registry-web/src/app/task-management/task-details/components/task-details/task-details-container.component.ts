@@ -1,7 +1,7 @@
+/* eslint-disable @angular-eslint/component-max-inline-declarations */
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import {
   selectIsETSTransaction,
   selectIsTransactionReversal,
@@ -10,16 +10,11 @@ import {
 } from '@task-details/reducers/task-details.selector';
 import {
   REQUEST_TYPE_VALUES,
-  TaskDetails,
   TaskFileDownloadInfo,
   TaskOutcome,
-  TaskType,
-  TaskUpdateDetails,
 } from '@task-management/model';
-import { AuthModel } from '@registry-web/auth/auth.model';
 import { TaskDetailsActions } from '@task-details/actions';
 import { FileDetails } from '@shared/model/file/file-details.model';
-import { Configuration } from '@shared/configuration/configuration.interface';
 import { taskTypeOptions } from '@task-management/task-list/task-list.selector';
 import {
   selectConfigurationRegistry,
@@ -27,9 +22,13 @@ import {
   selectGoBackToListRoute,
 } from '@shared/shared.selector';
 import { enterRequestDocumentsWizard } from '@request-documents/wizard/actions';
-import { isAdmin } from '@registry-web/auth/auth.selector';
-import { GoBackNavigationExtras } from '@shared/back-button';
+import {
+  isAdmin,
+  isSeniorOrJuniorAdmin,
+} from '@registry-web/auth/auth.selector';
 import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actions';
+import { enterRequestPaymentWizard } from '@request-payment/store/actions';
+import { navigateToSelectPaymentMethod } from '../../actions/task-details-navigation.actions';
 
 @Component({
   selector: 'app-task-details-container',
@@ -44,10 +43,15 @@ import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actio
         [isAdmin]="isAdmin$ | async"
         (userDecision)="onUserDecisionForTask($event)"
         (handleExportPDF)="onExportPDF($event)"
+        (makePayment)="onMakePayment($event)"
         [goBackToListRoute]="goBackToListRoute$ | async"
         [goBackToListNavigationExtras]="goBackToListNavigationExtras$ | async"
       ></app-task-header>
     </app-feature-header-wrapper>
+    <app-task-details-tabs-navigation
+      [requestId]="requestId"
+      [isAdmin]="isAdmin$ | async"
+    ></app-task-details-tabs-navigation>
     <app-task-details
       [isAdmin]="isAdmin$ | async"
       [configuration]="configuration$ | async"
@@ -58,7 +62,9 @@ import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actio
       (downloadFileTemplateEmitter)="downloadTemplate($event)"
       (downloadRequestDocumentFile)="downloadRequestDocumentFile($event)"
       (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
+      (requestPaymentEmitter)="onRequestPayment($event)"
       [taskTypeOptions]="taskTypeOptions$ | async"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
       (openDetail)="onOpenTaskDetail($event)"
       (userDecision)="onUserDecisionForTask($event)"
     ></app-task-details>
@@ -66,16 +72,19 @@ import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actio
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskDetailsContainerComponent implements OnInit {
-  task$: Observable<TaskDetails>;
-  loggedInUser$: Observable<AuthModel>;
-  isAdmin$: Observable<boolean>;
-  isEtsTransaction$: Observable<boolean>;
-  isTransactionReversal$: Observable<boolean>;
+  task$ = this.store.select(selectTask);
+  loggedInUser$ = this.store.select(selectLoggedUser);
+  isAdmin$ = this.store.select(isAdmin);
+  isEtsTransaction$ = this.store.select(selectIsETSTransaction);
+  isTransactionReversal$ = this.store.select(selectIsTransactionReversal);
   requestId: string;
-  configuration$: Observable<Configuration[]>;
-  taskTypeOptions$: Observable<TaskType[]>;
-  goBackToListRoute$: Observable<string>;
-  goBackToListNavigationExtras$: Observable<GoBackNavigationExtras>;
+  configuration$ = this.store.select(selectConfigurationRegistry);
+  taskTypeOptions$ = this.store.select(taskTypeOptions);
+  goBackToListRoute$ = this.store.select(selectGoBackToListRoute);
+  goBackToListNavigationExtras$ = this.store.select(
+    selectGoBackToListNavigationExtras
+  );
+  isSeniorOrJuniorAdmin$ = this.store.select(isSeniorOrJuniorAdmin);
 
   constructor(
     private route: ActivatedRoute,
@@ -84,25 +93,12 @@ export class TaskDetailsContainerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.task$ = this.store.select(selectTask);
-    this.configuration$ = this.store.select(selectConfigurationRegistry);
-    this.loggedInUser$ = this.store.select(selectLoggedUser);
-    this.isAdmin$ = this.store.select(isAdmin);
-    this.isEtsTransaction$ = this.store.select(selectIsETSTransaction);
-    this.isTransactionReversal$ = this.store.select(
-      selectIsTransactionReversal
-    );
+    this.store.dispatch(TaskDetailsActions.resetSubmittedApproveTask());
+
     // TODO: remove this
     this.route.paramMap.subscribe((paramMap) => {
       this.requestId = paramMap.get('requestId');
     });
-    this.taskTypeOptions$ = this.store.select(taskTypeOptions);
-
-    this.goBackToListRoute$ = this.store.select(selectGoBackToListRoute);
-
-    this.goBackToListNavigationExtras$ = this.store.select(
-      selectGoBackToListNavigationExtras
-    );
   }
 
   downloadTemplate(fileDetails: FileDetails) {
@@ -149,7 +145,6 @@ export class TaskDetailsContainerComponent implements OnInit {
   }
 
   onExportPDF(taskFileDownloadInfo: TaskFileDownloadInfo) {
-    console.log(taskFileDownloadInfo);
     this.store.dispatch(
       fetchAccountOpeningSummaryFile({ taskFileDownloadInfo })
     );
@@ -168,5 +163,18 @@ export class TaskDetailsContainerComponent implements OnInit {
         ...requestDocumentDetails,
       })
     );
+  }
+
+  onRequestPayment(requestPaymentWizardDetails) {
+    this.store.dispatch(
+      enterRequestPaymentWizard({
+        originatingPath: this.router.url,
+        ...requestPaymentWizardDetails,
+      })
+    );
+  }
+
+  onMakePayment(requestPaymentWizardDetails) {
+    this.store.dispatch(navigateToSelectPaymentMethod());
   }
 }

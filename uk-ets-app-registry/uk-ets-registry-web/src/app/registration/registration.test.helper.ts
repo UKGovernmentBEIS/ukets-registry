@@ -24,10 +24,11 @@ export function aTestUser(): User {
   user.country = 'US';
   user.birthDate = { day: '1', month: '2', year: '1980' };
   user.countryOfBirth = 'US';
-  user.workCountryCode = 'US';
-  user.workPhoneNumber = '132323232323';
-  user.workEmailAddress = 'spidy@avengers.com';
-  user.workEmailAddressConfirmation = 'spidy@avengers.com';
+  user.workMobileCountryCode = 'US';
+  user.workMobilePhoneNumber = '132323232323';
+  user.workAlternativeCountryCode = 'US';
+  user.workAlternativePhoneNumber = '132323232324';
+  user.noMobilePhoneNumberReason = '';
   user.workBuildingAndStreet = 'Somewhere in new york';
   user.workBuildingAndStreetOptional = 'Where?';
   user.workBuildingAndStreetOptional2 = 'Here!';
@@ -129,16 +130,14 @@ export function addressRegExp(address: {
 //   );
 // }
 
-export function phoneNumber(): string {
-  return '+' + aTestUser().workCountryCode + aTestUser().workPhoneNumber;
+export function workMobileNumber(): string {
+  return (
+    aTestUser().workMobileCountryCode + ' ' + aTestUser().workMobilePhoneNumber
+  );
 }
 
 export function emailAddress(): string {
   return aTestUser().emailAddress;
-}
-
-export function workEmailAddress(): string {
-  return aTestUser().workEmailAddress;
 }
 
 export function workAddressRegExp(): string {

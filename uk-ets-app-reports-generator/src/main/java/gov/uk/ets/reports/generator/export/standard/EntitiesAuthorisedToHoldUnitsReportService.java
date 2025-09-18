@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +33,6 @@ public class EntitiesAuthorisedToHoldUnitsReportService implements ReportTypeSer
     @Override
     public List<String> getReportHeaders(Long year) {
         return List.of("Authorised Legal Entity", "Contact Information");
-    }
-
-    @Override
-    public List<EntitiesAuthorisedToHoldUnitsReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
     }
 
     @Override

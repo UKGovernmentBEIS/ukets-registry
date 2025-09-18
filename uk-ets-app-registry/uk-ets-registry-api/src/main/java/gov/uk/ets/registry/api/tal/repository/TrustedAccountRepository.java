@@ -78,4 +78,9 @@ public interface TrustedAccountRepository extends JpaRepository<TrustedAccount, 
         "on a.id = ta.account.id " +
         "where ta.id = ?1 and ta.trustedAccountFullIdentifier = ?2")
     Long findByIdAndAccountFullIdentifier(Long id, String trustedAccountFullIdentifier);
+
+    @Query("select ta " +
+            "from TrustedAccount ta " +
+            "where ta.trustedAccountFullIdentifier = :trustedAccountFullIdentifier AND status IN (:statuses)")
+    List<TrustedAccount> findTrustedAccountsForAccountIdAndStatuses(String trustedAccountFullIdentifier,List<TrustedAccountStatus> statuses);
 }

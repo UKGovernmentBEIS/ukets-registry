@@ -1,10 +1,10 @@
 package gov.uk.ets.registry.api.file.upload.services;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.auditevent.repository.DomainEventEntityRepository;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.file.reference.domain.ReferenceFile;
@@ -13,12 +13,19 @@ import gov.uk.ets.registry.api.file.reference.service.ReferenceFileService;
 import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.domain.RequestDocumentsTaskDifference;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsService;
+import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.task.domain.types.TaskUpdateAction;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.web.model.RequestDocumentUploadTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
+
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +46,8 @@ class RequestDocumentUploadTaskServiceTest {
     @Mock
     private UploadedFilesRepository uploadedFilesRepository;
     @Mock
+    private TaskRepository taskRepository;
+    @Mock
     private Mapper mapper;
     @Mock
     private DomainEventEntityRepository domainEventEntityRepository;
@@ -52,7 +61,7 @@ class RequestDocumentUploadTaskServiceTest {
         MockitoAnnotations.openMocks(this);
         requestDocumentUploadTaskService =
             new RequestDocumentUploadTaskService(userService, requestedDocsService, referenceFileService,
-                uploadedFilesRepository, mapper, domainEventEntityRepository);
+                uploadedFilesRepository, taskRepository, mapper, domainEventEntityRepository);
     }
 
     @DisplayName("Retrieve requested documents update values for Account Holder successfully.")
@@ -108,5 +117,31 @@ class RequestDocumentUploadTaskServiceTest {
         Assertions.assertEquals("name3", result.getDocumentNames().get(2));
         Assertions.assertEquals(83L, result.getDocumentIds().iterator().next());
         Assertions.assertEquals("test comment", result.getComment());
+    }
+
+    @DisplayName("Update deadline.")
+    @Test
+    void updateTask() {
+        // given
+        OffsetDateTime deadline = OffsetDateTime.now().plusMinutes(5);
+        final String updateInfo = deadline.format(DateTimeFormatter.ISO_INSTANT);
+        TaskDetailsDTO taskDetails = new TaskDetailsDTO();
+        taskDetails.setRequestId(1L);
+        TaskUpdateAction action = TaskUpdateAction.UPDATE_DEADLINE;
+
+        Task task = new Task();
+        Task parentTask = new Task();
+        parentTask.setDeadline(new Date());
+        task.setParentTask(task);
+
+        when(taskRepository.findByRequestId(1L)).thenReturn(task);
+        when(mapper.convertToPojo(any(), any())).thenReturn(new RequestDocumentsTaskDifference());
+
+        // when
+        requestDocumentUploadTaskService.updateTask(updateInfo, taskDetails, action);
+
+        // then
+        Assertions.assertEquals(Date.from(deadline.toInstant()), task.getDeadline());
+        Assertions.assertEquals(Date.from(deadline.toInstant()), task.getParentTask().getDeadline());
     }
 }

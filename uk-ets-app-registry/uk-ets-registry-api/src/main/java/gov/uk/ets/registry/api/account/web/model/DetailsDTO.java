@@ -1,9 +1,9 @@
 package gov.uk.ets.registry.api.account.web.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.Valid;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 

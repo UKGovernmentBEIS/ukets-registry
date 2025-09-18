@@ -8,12 +8,14 @@ import { DocumentsRequestSubmittedContainerComponent } from '@request-documents/
 import { CheckDocumentsRequestResolver } from '@request-documents/wizard/resolvers/check-documents-request.resolver';
 import { CheckDocumentsRequestContainerComponent } from '@request-documents/wizard/components/check-documents-request';
 import { UserDocumentAssigningCommentContainerComponent } from '@request-documents/wizard/components/user-document-assigning-comment';
+import { SetDocumentRequestDeadlineContainerComponent } from './wizard/components/set-document-request-deadline-container/set-document-request-deadline-container.component';
 
 const routes: Routes = [
   {
     path: '',
     canActivate: [LoginGuard],
     component: SelectDocumentsContainerComponent,
+    title: 'Documents',
   },
   {
     path: 'select-documents',
@@ -35,6 +37,16 @@ const routes: Routes = [
     path: 'select-recipient',
     canActivate: [LoginGuard],
     component: SelectRecipientContainerComponent,
+  },
+  {
+    path: 'set-deadline-ah',
+    canActivate: [LoginGuard],
+    component: SetDocumentRequestDeadlineContainerComponent,
+  },
+  {
+    path: 'set-deadline-user',
+    canActivate: [LoginGuard],
+    component: SetDocumentRequestDeadlineContainerComponent,
   },
   {
     path: 'assigning-user-comment',

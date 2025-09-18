@@ -25,8 +25,6 @@ export class KeycloakUser {
     workBuildingAndStreetOptional2: string[];
     workCountry: string[];
     workCountryCode: string[];
-    workEmailAddress: string[];
-    workEmailAddressConfirmation: string[];
     workPhoneNumber: string[];
     workPostCode: string[];
     workTownOrCity: string[];
@@ -39,7 +37,7 @@ export class KeycloakUser {
       secretData: string;
       temporary: boolean;
       credentialData: string;
-    }
+    },
   ];
 
   realmRoles: string[];

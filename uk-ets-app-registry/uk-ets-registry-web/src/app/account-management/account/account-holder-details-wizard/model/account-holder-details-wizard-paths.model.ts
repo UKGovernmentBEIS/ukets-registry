@@ -1,6 +1,7 @@
 export enum AccountHolderDetailsWizardPathsModel {
   BASE_PATH = 'account-holder-details-update',
   SELECT_UPDATE_TYPE = 'select-update-type',
+  CHANGE_ACCOUNT_HOLDER = 'change-account-holder',
   UPDATE_ACCOUNT_HOLDER = 'update-account-holder',
   UPDATE_AH_ADDRESS = 'update-account-holder-address',
   UPDATE_PRIMARY_CONTACT = 'update-primary-contact',
@@ -27,6 +28,10 @@ export const AccountHolderDetailsWizardPathsMap = new Map<
   [
     'update-account-holder',
     AccountHolderDetailsWizardPathsModel.UPDATE_ACCOUNT_HOLDER,
+  ],
+  [
+    'change-account-holder',
+    AccountHolderDetailsWizardPathsModel.CHANGE_ACCOUNT_HOLDER,
   ],
   [
     'update-account-holder-address',

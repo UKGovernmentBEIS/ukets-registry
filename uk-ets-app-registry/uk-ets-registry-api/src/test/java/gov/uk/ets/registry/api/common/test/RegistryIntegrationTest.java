@@ -31,13 +31,20 @@ import org.springframework.test.context.TestPropertySource;
     "registry.originating.transaction.question.topic",
     "itl.originating.reconciliation.in.topic",
     "itl.originating.reconciliation.out.topic",
-    "compliance.events.in.topic"},
+    "compliance.events.in.topic",
+    "installation-account-emissions-updated-response-topic",
+    "installation-account-emissions-updated-request-topic-dlt",
+    "installation-account-created-response-topic",
+    "maritime-account-created-request-topic-dlt",
+    "maritime-account-created-response-topic",
+    "maritime-set-operator-request-topic",
+    "maritime-set-operator-response-topic-dlt"},
     brokerPropertiesLocation = "classpath:integration-test-application.properties",
     brokerProperties = "auto.create.topics.enable=true",
     count = 3,
     ports = {0, 0, 0}
 )
-@TestPropertySource(locations = "/integration-test-application.properties", properties = {
+@TestPropertySource(locations = "classpath:integration-test-application.properties", properties = {
     "mail.fromAddress=test@test.gr",
     "spring.application.name=registry-api",
     "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",

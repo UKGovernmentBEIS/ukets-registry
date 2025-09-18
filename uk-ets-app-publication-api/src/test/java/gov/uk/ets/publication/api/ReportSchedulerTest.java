@@ -17,6 +17,7 @@ import gov.uk.ets.publication.api.repository.PublicationScheduleRepository;
 import gov.uk.ets.publication.api.repository.SectionRepository;
 import gov.uk.ets.publication.api.scheduler.ReportScheduler;
 import gov.uk.ets.publication.api.service.ReportGenerationService;
+import gov.uk.ets.publication.api.service.SectionUtil;
 import gov.uk.ets.reports.model.ReportQueryInfo;
 import gov.uk.ets.reports.model.ReportType;
 import java.time.LocalDateTime;
@@ -48,6 +49,9 @@ public class ReportSchedulerTest {
     @Mock
     private ReportGenerationService reportGenerationService;
 
+    @Mock
+    private SectionUtil sectionUtil;
+
     private ReportScheduler reportScheduler;
     
     @BeforeEach
@@ -59,7 +63,7 @@ public class ReportSchedulerTest {
     @Test
     void noReportsEligibleForGeneration_startDateIsLater() {
         reportScheduler = new ReportScheduler(
-                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository);
+                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository, sectionUtil);
         when(sectionRepository.findAll()).thenReturn(createSections(LocalDateTime.now().plusYears(1), false));
         reportScheduler.execute();
         verify(reportGenerationService, times(0)).requestReport(any(), any(), any(), any());
@@ -69,7 +73,7 @@ public class ReportSchedulerTest {
     @Test
     void noReportsEligibleForGeneration_timeToTakeNextReportIsLater() {
         reportScheduler = new ReportScheduler(
-                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository);
+                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository, sectionUtil);
         when(sectionRepository.findAll()).thenReturn(createSections(LocalDateTime.now().minusHours(10), false));
         reportScheduler.execute();
         verify(reportGenerationService, times(0)).requestReport(any(), any(), any(), any());
@@ -81,10 +85,12 @@ public class ReportSchedulerTest {
         ReportFile file = new ReportFile();
         file.setId(10L);
         reportScheduler = new ReportScheduler(
-                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository);
+                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository, sectionUtil);
         when(sectionRepository.findAll()).thenReturn(createSections(LocalDateTime.now(), false));
         when(reportFilesRepository.save(any())).thenReturn(file);
         when(scheduleRepository.findById(any())).thenReturn(Optional.of(new PublicationSchedule()));
+        when(sectionUtil.isYearlyReport(ReportType.R0013)).thenReturn(true);
+
         reportScheduler.execute();
         
         ArgumentCaptor<ReportType> argument1 = ArgumentCaptor.forClass(ReportType.class);
@@ -106,10 +112,12 @@ public class ReportSchedulerTest {
         ReportFile file = new ReportFile();
         file.setId(10L);
         reportScheduler = new ReportScheduler(
-                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository);
+                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository, sectionUtil);
         when(sectionRepository.findAll()).thenReturn(createSections(now.minusDays(1), false));
         when(reportFilesRepository.save(any())).thenReturn(file);
         when(scheduleRepository.findById(any())).thenReturn(Optional.of(new PublicationSchedule()));
+        when(sectionUtil.isYearlyReport(ReportType.R0013)).thenReturn(true);
+
         reportScheduler.execute();
         
         ArgumentCaptor<ReportType> argument1 = ArgumentCaptor.forClass(ReportType.class);
@@ -133,7 +141,7 @@ public class ReportSchedulerTest {
         ReportFile file = new ReportFile();
         file.setId(10L);
         reportScheduler = new ReportScheduler(
-                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository);
+                reportGenerationService, sectionRepository, reportFilesRepository, scheduleRepository, sectionUtil);
         when(sectionRepository.findAll()).thenReturn(createSections(now.minusYears(1), true));
         when(reportFilesRepository.save(any())).thenReturn(file);
         when(scheduleRepository.findById(any())).thenReturn(Optional.of(new PublicationSchedule()));

@@ -1,6 +1,6 @@
 package gov.uk.ets.registry.api.user.forgot.passwd.service;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.api.notification.ResetPasswordSuccessNotification;

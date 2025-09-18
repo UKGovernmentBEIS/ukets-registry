@@ -46,7 +46,8 @@ export class CanRequestUpdatePipe implements PipeTransform {
       displayButtonForAccountInStatusClosurePending
     );
   }
-  combineRights(
+
+  private combineRights(
     isAdmin: boolean,
     isReadOnlyAdmin: boolean,
     accountIsGovernment: boolean,

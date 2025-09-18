@@ -8,6 +8,7 @@ import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
       [installation]="operatorInfo"
       [title]="'Update the installation and permit details'"
       [headerTitle]="'Request to update the installation information'"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
       (installationOutput)="onContinue($event)"
       (errorDetails)="onErrors($event)"
     ></app-installation-input
@@ -18,6 +19,9 @@ import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 export class InstallationUpdateComponent {
   @Input()
   operatorInfo: Installation;
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+  
   @Output() readonly cancelEmitter = new EventEmitter();
   @Output() readonly errorEmitter = new EventEmitter<ErrorSummary>();
   @Output() readonly continueEmitter = new EventEmitter<Installation>();

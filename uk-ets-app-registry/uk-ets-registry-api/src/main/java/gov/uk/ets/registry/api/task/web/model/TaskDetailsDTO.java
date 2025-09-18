@@ -2,7 +2,6 @@ package gov.uk.ets.registry.api.task.web.model;
 
 import com.querydsl.core.annotations.QueryProjection;
 import gov.uk.ets.registry.api.common.ConversionServiceImpl;
-import gov.uk.ets.registry.api.common.Utils;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.domain.types.TaskStatus;
@@ -151,6 +150,8 @@ public class TaskDetailsDTO {
 
     private Date completedDate;
 
+    private Date deadline;
+
     /**
      * Constructor.
      */
@@ -162,7 +163,7 @@ public class TaskDetailsDTO {
                           String accountName, String referredUserFirstName,
                           String referredUserLastName, String referredUserURID, byte[] file,
                           String transactionIdentifiers, String difference, String before, Long parentRequestId,
-                          RequestType parentType, Date completedDate) {
+                          RequestType parentType, Date completedDate, Date deadline) {
         
         this( requestId,  type,  status,  initiatorFirstName,
              initiatorLastName,  initiatorId,  initiatorUrid, initiatorKnownAs,  initiatedDate,
@@ -171,7 +172,7 @@ public class TaskDetailsDTO {
              accountName,  referredUserFirstName,
              referredUserLastName,  referredUserURID, file,
              Objects.nonNull(transactionIdentifiers) ?  Stream.of(transactionIdentifiers.split(",", -1)).collect(Collectors.toList()) : null,  
-             difference,  before,  parentRequestId, parentType,  completedDate);
+             difference,  before,  parentRequestId, parentType,  completedDate, deadline);
     }
 
 
@@ -197,7 +198,7 @@ public class TaskDetailsDTO {
                           String accountName, String referredUserFirstName,
                           String referredUserLastName, String referredUserURID, byte[] file,
                           List<String> transactionIdentifiers, String difference, String before, Long parentRequestId,
-                          RequestType parentType, Date completedDate) {
+                          RequestType parentType, Date completedDate, Date deadline) {
         this.requestId = requestId;
         this.taskType = type;
         this.initiatorName = this.getDisplayName(initiatorFirstName, initiatorLastName, initiatorKnownAs);
@@ -238,58 +239,7 @@ public class TaskDetailsDTO {
         dto.setTaskType(parentType);
         this.parentTask = dto;
         this.completedDate = completedDate;
-    }
-
-    @QueryProjection
-    public TaskDetailsDTO(Long requestId, RequestType type, RequestStateEnum status, String initiatorFirstName,
-                          String initiatorLastName, Long initiatorId, String initiatorUrid, Date initiatedDate,
-                          String claimantDisclosedName,
-                          String claimantURID, Date claimedDate, Long accountIdentifier, String accountFullIdentifier,
-                          String accountName, String referredUserFirstName,
-                          String referredUserLastName, String referredUserURID, byte[] file,
-                          List<String> transactionIdentifiers, String difference, String before, Long parentRequestId,
-                          RequestType parentType, Date completedDate) {
-        this.requestId = requestId;
-        this.taskType = type;
-        this.initiatorName = initiatorLastName != null ? Utils.concat(" ", initiatorFirstName, initiatorLastName)
-                : initiatorFirstName;
-        this.initiatorId = initiatorId;
-        this.initiatorUrid = initiatorUrid;
-        this.claimantName = claimantDisclosedName;
-        this.accountNumber = Objects.toString(accountIdentifier, null);
-        this.accountFullIdentifier = accountFullIdentifier;
-        this.accountName = Objects.toString(accountName, null);
-        TaskStatus taskStatus = TaskStatus.UNCLAIMED;
-        if (RequestStateEnum.APPROVED.equals(status) || RequestStateEnum.REJECTED.equals(status)) {
-            taskStatus = TaskStatus.COMPLETED;
-
-        } else if (StringUtils.hasText(claimantName)) {
-            taskStatus = TaskStatus.CLAIMED;
-
-        }
-        this.taskStatus = taskStatus;
-        this.requestStatus = status;
-
-        this.initiatedDate = initiatedDate;
-        this.claimedDate = claimedDate;
-        this.claimantURID = claimantURID;
-
-        this.referredUserFirstName = referredUserFirstName;
-        this.referredUserLastName = referredUserLastName;
-        this.referredUserURID = referredUserURID;
-
-        if (file != null) {
-            this.fileName = "registry_activation_code_" + initiatedDate.getTime() + ".pdf";
-            this.fileSize = new ConversionServiceImpl().convertByteAmountToHumanReadable(file.length);
-        }
-        this.transactionIdentifiers = transactionIdentifiers;
-        this.difference = difference;
-        this.before = before;
-        TaskDetailsDTO dto = new TaskDetailsDTO();
-        dto.setRequestId(parentRequestId);
-        dto.setTaskType(parentType);
-        this.parentTask = dto;
-        this.completedDate = completedDate;
+        this.deadline = deadline;
     }
 
     /**
@@ -324,5 +274,6 @@ public class TaskDetailsDTO {
         this.setSubTasks(taskDetailsDTO.getSubTasks());
         this.setParentTask(taskDetailsDTO.getParentTask());
         this.setCompletedDate(taskDetailsDTO.getCompletedDate());
+        this.setDeadline(taskDetailsDTO.getDeadline());
     }
 }

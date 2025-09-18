@@ -2,8 +2,8 @@ package gov.uk.ets.registry.api.account.web.model;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import lombok.Getter;

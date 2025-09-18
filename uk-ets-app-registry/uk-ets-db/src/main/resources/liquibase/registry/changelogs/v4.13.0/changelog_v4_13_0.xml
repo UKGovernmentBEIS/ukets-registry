@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="4_13_0_CREATE_REGISTRY_LOCK_TABLE" author="piliotid" context="migrate">
+        <comment>Create registry_lock table.</comment>
+        <sql>
+
+            CREATE TABLE "registry_task_lock"
+            (
+                "id" bigint,
+                "active" boolean default false,
+                "acquired_at" timestamp,
+                "acquired_by" varchar(256),
+                constraint "pk_registry_task_lock" primary key("id")
+            );
+
+            COMMENT ON TABLE  "registry_task_lock" is 'Holds the registry locks';
+            COMMENT ON COLUMN "registry_task_lock"."id" is 'The primary key';
+            COMMENT ON COLUMN "registry_task_lock"."active" is 'If the lock is active';
+            COMMENT ON COLUMN "registry_task_lock"."acquired_at" is 'The time that lock was acquired';
+            COMMENT ON COLUMN "registry_task_lock"."acquired_by" is 'The owner of the lock';
+        </sql>
+    </changeSet>
+
+    <changeSet id="4_13_0_REGISTRY_LOCK_DEFAULT_VALUE" author="piliotid" context="migrate">
+        <comment>Default value of registry_lock table.</comment>
+        <sql>
+            insert into registry_task_lock (id, active) values (1, false);
+        </sql>
+    </changeSet>
+
+    <changeSet id="4_13_0_CREATE_REGISTRY_LOG_TABLE" author="piliotid" context="migrate">
+        <comment>Create registry_lock table.</comment>
+        <sql>
+
+            CREATE TABLE "registry_task_log"
+            (
+                "id" varchar(256),
+                "executed_date" timestamp,
+                constraint "pk_registry_task_log" primary key("id")
+            );
+
+            COMMENT ON TABLE  "registry_task_log" is 'Holds the registry locks';
+            COMMENT ON COLUMN "registry_task_log"."id" is 'The identifier of the process';
+            COMMENT ON COLUMN "registry_task_log"."executed_date" is 'The time of the execution';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

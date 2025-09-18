@@ -1,6 +1,8 @@
 package gov.uk.ets.registry.api.notification;
 
-import javax.validation.Valid;
+import gov.uk.ets.registry.api.notification.integration.AccountOpeningSuccessOutcomeNotificationProperties;
+import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotificationProperties;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -109,4 +111,24 @@ public class NotificationProperties {
     @NestedConfigurationProperty
     @Valid
     private UploadAllocationTableNotificationsProperties uploadAllocationTable;
+
+    @NestedConfigurationProperty
+    @Valid
+    private RequestDeadlineNotificationProperties requestDeadline;
+
+    @NestedConfigurationProperty
+    @Valid
+    private RecoveryEmailChangeNotificationProperties recoveryEmailChange;
+
+    @NestedConfigurationProperty
+    @Valid
+    private IntegrationErrorOutcomeNotificationProperties integrationErrorOutcome;
+
+    @NestedConfigurationProperty
+    @Valid
+    private AccountOpeningSuccessOutcomeNotificationProperties integrationAccountOpening;
+    
+    @NestedConfigurationProperty
+    @Valid
+    private PaymentRequestGroupNotificationProperties requestPayment;
 }

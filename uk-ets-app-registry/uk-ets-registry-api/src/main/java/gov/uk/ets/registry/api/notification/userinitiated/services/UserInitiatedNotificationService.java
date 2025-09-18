@@ -1,9 +1,11 @@
 package gov.uk.ets.registry.api.notification.userinitiated.services;
 
-import static java.util.Optional.ofNullable;
-
 import gov.uk.ets.registry.api.common.error.ErrorBody;
 import gov.uk.ets.registry.api.common.exception.BusinessRuleErrorException;
+import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
+import gov.uk.ets.registry.api.file.upload.error.FileUploadException;
+import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
+import gov.uk.ets.registry.api.file.upload.types.FileStatus;
 import gov.uk.ets.registry.api.notification.userinitiated.NotificationDefinitionDTO;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.Notification;
 import gov.uk.ets.registry.api.notification.userinitiated.domain.NotificationDefinition;
@@ -19,31 +21,43 @@ import gov.uk.ets.registry.api.notification.userinitiated.web.model.Notification
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationMapper;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchCriteria;
 import gov.uk.ets.registry.api.notification.userinitiated.web.model.NotificationSearchResult;
+import gov.uk.ets.registry.api.user.admin.shared.KeycloakUserSearchCriteria;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.service.UserService;
+import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 
-import java.text.SimpleDateFormat;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.dhatim.fastexcel.reader.ReadableWorkbook;
+import org.dhatim.fastexcel.reader.Sheet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gov.uk.ets.registry.api.file.upload.services.FileUploadService.ERROR_WHILE_PROCESSING_THE_FILE;
+import gov.uk.ets.registry.api.user.admin.shared.KeycloakUserProjection;
+import static java.util.Optional.ofNullable;
+
+
 @Service
 @RequiredArgsConstructor
-public class UserInitiatedNotificationService {
-    private final static String NOW = "NOW";
+public class UserInitiatedNotificationService {    
     private static final List<UserStatus> excludedUserStatuses =
         List.of(UserStatus.SUSPENDED, UserStatus.DEACTIVATED, UserStatus.DEACTIVATION_PENDING);
     /**
@@ -65,12 +79,26 @@ public class UserInitiatedNotificationService {
     private final NotificationSchedulingRepository schedulingRepository;
     private final UserService userService;
     private final NotificationMapper mapper;
+    private final UploadedFilesRepository uploadedFilesRepository;
+    private final UserAdministrationService userAdministrationService;
 
+    @Value("${notification.inactive-users.days}")
+    private Long INACTIVE_USER_DAYS;
+    
     /**
-     * Creates a new notification.
+     * Creates a new notification.c
      */
     @Transactional
     public Notification createNotification(NotificationDTO request) {
+
+        UploadedFile uploadedFile = null;
+        if (request.getUploadedFileId() != null) {
+            uploadedFile = uploadedFilesRepository.findById(request.getUploadedFileId()).orElseThrow(
+                () -> new FileUploadException(ERROR_WHILE_PROCESSING_THE_FILE));
+            uploadedFile.setFileStatus(FileStatus.SUBMITTED);
+            uploadedFilesRepository.save(uploadedFile);
+        }
+
         LocalDateTime now = LocalDateTime.now().minusSeconds(5);
         if(request.getActivationDetails() != null && request.getActivationDetails().getIsScheduledTimeNow()){
             request.getActivationDetails().setScheduledTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
@@ -84,11 +112,11 @@ public class UserInitiatedNotificationService {
             );
         // for non-adhoc notifications only one should be active at any time:
         if (sanitizedRequest.getType() != NotificationType.AD_HOC &&
+            sanitizedRequest.getType() != NotificationType.AD_HOC_EMAIL &&
             notificationRepository.findActiveNotificationByType(sanitizedRequest.getType()).isPresent()) {
             throw new BusinessRuleErrorException(
                 ErrorBody
-                    .from("Only one active notification for the compliance notifications might exist at the same time.")
-            );
+                    .from(String.format("Only one active notification for type %s might exist at the same time.", sanitizedRequest.getType())));
         }
         // scheduled date-time cannot be in the past:
         if (sanitizedRequest.getActivationDetails().getScheduledDateTime()
@@ -101,7 +129,7 @@ public class UserInitiatedNotificationService {
 
         User currentUser = userService.getCurrentUser();
 
-        Notification notification = mapper.toEntity(sanitizedRequest, definition, currentUser.getUrid());
+        Notification notification = mapper.toEntity(sanitizedRequest, definition, currentUser.getUrid(), uploadedFile);
 
         Notification savedNotification = notificationRepository.save(notification);
 
@@ -128,6 +156,14 @@ public class UserInitiatedNotificationService {
             throw new BusinessRuleErrorException(
                 ErrorBody
                     .from("You cannot update an expired notification.")
+            );
+        }
+
+        // Pre-requisite: Cancelled notifications cannot be updated.
+        if (notification.getStatus().equals(NotificationStatus.CANCELLED)) {
+            throw new BusinessRuleErrorException(
+                    ErrorBody
+                            .from("You cannot update a cancelled notification.")
             );
         }
 
@@ -159,6 +195,32 @@ public class UserInitiatedNotificationService {
         return notification;
     }
 
+    @Transactional
+    public void cancelNotification(Long id) {
+        Notification notification = notificationRepository.getByIdWithDefinition(id).orElseThrow(
+                () -> new IllegalArgumentException(
+                        String.format("Notification  not found for id: %s", id))
+        );
+
+        // Pre-requisite: Expired notifications cannot be cancelled
+        if (notification.getStatus().equals(NotificationStatus.EXPIRED)) {
+            throw new BusinessRuleErrorException(
+                    ErrorBody
+                            .from("You cannot cancel an expired notification.")
+            );
+        }
+
+        // Pre-requisite: Cancelled notifications cannot be re-canclled.
+        if (notification.getStatus().equals(NotificationStatus.CANCELLED)) {
+            throw new BusinessRuleErrorException(
+                    ErrorBody
+                            .from("You cannot cancel a cancelled notification.")
+            );
+        }
+        notification.setStatus(NotificationStatus.CANCELLED);
+        notificationRepository.save(notification);
+    }
+
     public NotificationDTO retrieveNotificationById(Long id) {
         Notification notification =
             notificationRepository.getByIdWithDefinition(id).orElseThrow(() -> new IllegalArgumentException(
@@ -166,16 +228,16 @@ public class UserInitiatedNotificationService {
             );
         // when updating an existing notification the notification definition is not retrieved (like when creating
         // a new one) so we need to fetch the tentative recipients here too.
-        Integer recipients = calculateNumberOfRecipients(notification.getDefinition().getType());
+        Integer recipients = Optional.ofNullable(notification.getUploadedFile())
+            .map(this::calculateNumberOfRecipients)
+            .orElseGet(() -> calculateNumberOfRecipients(notification.getDefinition().getType()));
         return sanitizeContent(mapper.toDto(notification, recipients));
     }
 
     public NotificationDefinitionDTO retrieveDefinitionByType(NotificationType type) {
-        NotificationDefinitionDTO definition =
-            notificationDefinitionRepository.findDtoByType(type).orElseThrow(
-                () -> new IllegalArgumentException(
-                    String.format("Notification definition not found for type: %s", type))
-            );
+        NotificationDefinitionDTO definition = notificationDefinitionRepository.findDtoByType(type)
+            .orElseThrow(() -> new IllegalArgumentException(
+                String.format("Notification definition not found for type: %s", type)));
         definition.setTentativeRecipients(calculateNumberOfRecipients(type));
         return sanitizeContent(definition);
     }
@@ -200,7 +262,7 @@ public class UserInitiatedNotificationService {
     }
 
     public Integer calculateNumberOfRecipients(NotificationType type) {
-        if (type.equals(NotificationType.AD_HOC)) {
+        if (type.equals(NotificationType.AD_HOC) || type.equals(NotificationType.AD_HOC_EMAIL)) {
             return 0;
         }
         NotificationDefinition definition = notificationDefinitionRepository.findByType(type)
@@ -209,22 +271,69 @@ public class UserInitiatedNotificationService {
             ));
         SelectionCriteria selectionCriteria = definition.getSelectionCriteria();
 
-        List<BaseNotificationParameters> basicNotificationParameters =
-            schedulingRepository.getBasicNotificationParameters(
-                selectionCriteria.getAccountTypes(),
-                selectionCriteria.getAccountStatuses(),
-                selectionCriteria.getUserStatuses(),
-                selectionCriteria.getAccountAccessStates(),
-                selectionCriteria.getComplianceStatuses()
-            );
-        return basicNotificationParameters.size();
+        if(type.equals(NotificationType.USER_INACTIVITY)){
+            List<String> userIdList = this.getInactiveUsers();  
+            List<BaseNotificationParameters> basicNotificationParameters =
+                schedulingRepository.getUserInactivityNotificationParameters(
+                        userIdList, 
+                        selectionCriteria.getAccountStatuses(), 
+                        selectionCriteria.getUserStatuses(), 
+                        selectionCriteria.getAccountAccessStates());       
+                      
+            return basicNotificationParameters.size();            
+        } else {
+            List<BaseNotificationParameters> basicNotificationParameters =
+                schedulingRepository.getBasicNotificationParameters(
+                    selectionCriteria.getAccountTypes(),
+                    selectionCriteria.getAccountStatuses(),
+                    selectionCriteria.getUserStatuses(),
+                    selectionCriteria.getAccountAccessStates(),
+                    selectionCriteria.getComplianceStatuses()
+                );
+            return basicNotificationParameters.size();
+        }
     }
 
+    public Integer calculateNumberOfRecipients(UploadedFile uploadedFile) {
+
+        try (InputStream multiPartInputStream = new ByteArrayInputStream(uploadedFile.getFileData())) {
+            ReadableWorkbook wb = new ReadableWorkbook(multiPartInputStream);
+            Sheet sheet = wb.getFirstSheet();
+            return sheet.read().size() - 1; // Ignore headers
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to process file.");
+        }
+    }
+	
+    public List<String> getInactiveUsers(){
+        KeycloakUserSearchCriteria criteria = new KeycloakUserSearchCriteria();
+        criteria.setLastSignInTo(LocalDateTime.now().minusDays(INACTIVE_USER_DAYS).format(DateTimeFormatter.ISO_DATE));
+        criteria.setPageSize(100L);
+        criteria.setSortDirection("DESC");
+        
+        List<String> allUsers = new ArrayList<>();
+        List<String> pageUsers;
+        int page = 0;
+        do {
+            criteria.setPage(page);
+            pageUsers = userAdministrationService.search(criteria, true)
+                .getItems()
+                .stream()
+                .map(KeycloakUserProjection::getUserId)
+                .toList();
+            allUsers.addAll(pageUsers);
+            page++;
+        } while (!pageUsers.isEmpty());        
+        
+        return allUsers;
+    }    
+    
     /**
      * Updates notification definition, only for compliance notifications.
      */
     private void updateNotificationDefinition(Notification notification, NotificationDefinition definition) {
-        if (definition.getType() != NotificationType.AD_HOC) {
+        if (definition.getType() != NotificationType.AD_HOC && definition.getType() != NotificationType.USER_INACTIVITY &&
+            definition.getType() != NotificationType.AD_HOC_EMAIL) {
             definition.setShortText(notification.getShortText());
             definition.setLongText(notification.getLongText());
         }
@@ -258,5 +367,4 @@ public class UserInitiatedNotificationService {
         }
         return definition;
     }
-
 }

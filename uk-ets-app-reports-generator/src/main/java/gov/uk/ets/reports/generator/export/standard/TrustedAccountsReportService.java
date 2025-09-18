@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +15,6 @@ import org.springframework.stereotype.Service;
 public class TrustedAccountsReportService implements ReportTypeService<TrustedAccountsReportData> {
 
     private final ReportDataMapper<TrustedAccountsReportData> mapper;
-
-    @Override
-    public List<TrustedAccountsReportData> generateReportData(ReportCriteria reportCriteria) {
-        return mapper.mapData(reportCriteria);
-    }
 
     @Override
     public List<TrustedAccountsReportData> generateReportData(ReportQueryInfoWithMetadata reportQueryInfo) {

@@ -7,6 +7,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
+import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionType;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
@@ -266,7 +267,7 @@ public class AuthorisedRepresentativeUpdateTaskService
         optionalTaskARStatus.ifPresent(taskARStatus -> user.setStatus(taskARStatus.getState()));
         newAr.setUser(user);
         newAr.setUrid(user.getUrid());
-        Contact workContact = userAdministrationService.findWorkContactDetailsByIamId(user.getKeycloakId());
+        ContactDTO workContact = userAdministrationService.findWorkContactDetailsByIamId(user.getKeycloakId());
         newAr.setContact(workContact);
         if (ARUpdateActionType.ADD.equals(arUpdateAction.getType()) ||
             ARUpdateActionType.REPLACE.equals(arUpdateAction.getType())

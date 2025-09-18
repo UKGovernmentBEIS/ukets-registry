@@ -15,8 +15,8 @@ import gov.uk.ets.registry.api.transaction.repository.AccountHoldingRepository;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

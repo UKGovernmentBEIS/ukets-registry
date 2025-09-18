@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +18,6 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
     private final ReportDataMapper<AccountDetailsReportData> mapper;
 
     @Override
-    public List<AccountDetailsReportData> generateReportData(ReportCriteria reportCriteria) {
-        return mapper.mapData(reportCriteria);
-    }
-
-    @Override
     public List<AccountDetailsReportData> generateReportData(ReportQueryInfoWithMetadata reportQueryInfo) {
         return mapper.mapData(reportQueryInfo);
     }
@@ -32,8 +26,11 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
     public List<Object> getReportDataRow(AccountDetailsReportData reportData) {
         List<Object> data = new ArrayList<>();
         data.add(reportData.getCompliantEntity().getRegulator());
+        data.add(reportData.getAccountHolder().getId());
+        data.add(reportData.getAccountHolder().getName());
 
         data.add(reportData.getAccount().getNumber());
+        data.add(reportData.getAccount().getPublicIdentifier());
         data.add(reportData.getAccount().getName());
         data.add(reportData.getAccount().getType());
         data.add(reportData.getAccount().getStatus());
@@ -48,8 +45,6 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
         data.add(reportData.getAccount().getSinglePersonApprovalRequired());
         data.add(reportData.getAccount().getTransfersOutsideTal());
 
-        data.add(reportData.getAccountHolder().getId());
-        data.add(reportData.getAccountHolder().getName());
         data.add(reportData.getAccountHolder().getCompanyRegistrationNumber());
         data.add(reportData.getAccountHolder().getReasonForNoRegistrationNumber());
 
@@ -106,10 +101,14 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
         data.add(reportData.getCompliantEntity().getInstallationActivity());
         data.add(reportData.getCompliantEntity().getInstallationPermitId());
         data.add(reportData.getCompliantEntity().getAircraftOperatorId());
-        data.add(reportData.getCompliantEntity().getMonitoringPlanId());
+        data.add(reportData.getCompliantEntity().getAircraftMonitoringPlanId());
+
+        data.add(reportData.getCompliantEntity().getMaritimeOperatorId());
+        data.add(reportData.getCompliantEntity().getImo());
+        data.add(reportData.getCompliantEntity().getMaritimeMonitoringPlanId());
+
         data.add(reportData.getCompliantEntity().getFirstYearOfVerifiedEmissionSubmission());
         data.add(reportData.getCompliantEntity().getLastYearOfVerifiedEmissionSubmission());
-
         return data;
     }
 
@@ -119,8 +118,12 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
             .of(
 
                 "Regulator",
+                "AH ID",
+                "AH name",
 
                 "Account number",
+                "PID",
+
                 "Account name",
                 "Account type",
                 "Account status",
@@ -135,8 +138,6 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
                 "Rule – second AR approval required for surrenders",
                 "Rule - allow transfers outside TAL",
 
-                "AH ID",
-                "AH name",
                 "AH Company registration number",
                 "AH reason for no registration number",
 
@@ -192,7 +193,10 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
                 "Installation activity",
                 "Installation permit ID",
                 "Aircraft operator ID",
-                "Monitoring plan ID",
+                "Aviation EMP ID",
+                "Maritime operator ID",
+                "Company IMO number",
+                "Maritime EMP ID",
                 "First year of verified emission submission",
                 "Last year of verified emission submission"
             );

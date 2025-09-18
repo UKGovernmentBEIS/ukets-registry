@@ -5,7 +5,14 @@
       Explain why you are assigning this task to the user
     </h1>
     <form [formGroup]="formGroup" (submit)="onSubmit()">
-      <dl class="govuk-summary-list">
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-body-l">
+            Recipient details
+          </dt>
+          <dd class="govuk-summary-list__value"></dd>
+          <dd class="govuk-summary-list__key"></dd>
+        </div>
         <div class="govuk-summary-list__row govuk-summary-list__row--no-border">
           <dt class="govuk-summary-list__key">Recipient</dt>
           <dd class="govuk-summary-list__value">

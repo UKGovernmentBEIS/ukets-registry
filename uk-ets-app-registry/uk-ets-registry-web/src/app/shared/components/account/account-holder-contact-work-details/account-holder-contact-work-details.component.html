@@ -5,7 +5,7 @@
         [contactType]="contactType"
         [isAHUpdateWizard]="isAHUpdateWizard"
         [subTitle]="getSubtitle()"
-      ></app-sub-wizard-title>
+      />
       <p class="govuk-body">We'll use this information to contact them</p>
     </div>
   </div>
@@ -17,10 +17,10 @@
         [validationErrorMessage]="validationErrorMessage.positionInCompany"
         controlName="positionInCompany"
         [autocomplete]="'organization-title'"
-      ></app-form-control-text>
+      />
       <fieldset class="govuk-fieldset" role="group">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <span class="govuk-fieldset__heading"> Work contact address </span>
+          <span class="govuk-fieldset__heading">Work contact address</span>
         </legend>
 
         <div class="govuk-form-group" id="work-address-form-checkbox">
@@ -52,46 +52,51 @@
           [validationErrorMessage]="validationErrorMessage.buildingAndStreet"
           controlName="address.buildingAndStreet"
           [autocomplete]="'address-line1'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
           [readonly]="!!sameAddress"
           [label]="'Address line 2 (optional)'"
           [maxlength]="256"
           controlName="address.buildingAndStreet2"
           [autocomplete]="'address-line2'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
+          [readonly]="!!sameAddress"
           [label]="'Address line 3 (optional)'"
           [maxlength]="256"
           controlName="address.buildingAndStreet3"
           [autocomplete]="'address-line3'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
+          [readonly]="!!sameAddress"
           [label]="'Town or city'"
           [validationErrorMessage]="validationErrorMessage.townOrCity"
           [maxlength]="256"
           controlName="address.townOrCity"
           [autocomplete]="'address-level2'"
-        ></app-form-control-text>
+        />
         <app-form-control-text
+          [readonly]="!!sameAddress"
           [label]="'State or Province (optional)'"
           [maxlength]="256"
           controlName="address.stateOrProvince"
           [autocomplete]="'state-or-province'"
-        ></app-form-control-text>
+        />
         <app-form-control-select
+          [readonly]="!!sameAddress"
           controlName="address.country"
           [options]="_countryOptions"
           [label]="'Country'"
-        ></app-form-control-select>
+        />
         <app-form-control-text
+          [readonly]="!!sameAddress"
           [label]="'Postal Code or ZIP (optional, if outside UK)'"
           [class]="'govuk-input--width-10'"
           [maxlength]="256"
           [validationErrorMessage]="validationErrorMessage.postCode"
           controlName="address.postCode"
           [autocomplete]="'postal-code'"
-        ></app-form-control-text>
+        />
       </fieldset>
       <fieldset
         aria-describedby="wrong-number-error"
@@ -99,7 +104,7 @@
         role="group"
       >
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <span class="govuk-fieldset__heading"> Phone number </span>
+          <span class="govuk-fieldset__heading">Phone number</span>
         </legend>
         <app-uk-phone-select
           [phoneInfo]="_phoneInfo1"
@@ -108,14 +113,14 @@
           [phoneNumberLabel]="'Phone number 1'"
           [validationErrorMessages]="validationMessages.phone1"
           formControlName="phone1"
-        ></app-uk-phone-select>
+        />
         <app-uk-phone-select
           [phoneInfo]="_phoneInfo2"
           [phoneNumberLabel]="'Phone number 2 (Optional)'"
           [showErrors]="showErrors"
           [countryCodes]="countryCodes"
           formControlName="phone2"
-        ></app-uk-phone-select>
+        />
       </fieldset>
 
       <fieldset
@@ -124,7 +129,7 @@
         role="group"
       >
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <span class="govuk-fieldset__heading"> Work email address </span>
+          <span class="govuk-fieldset__heading">Work email address</span>
         </legend>
         <app-form-control-email
           [label]="'Email address'"
@@ -132,7 +137,7 @@
           [validationErrorMessage]="validationErrorMessage.emailAddress"
           controlName="emailAddress.emailAddress"
           [disableCopy]="true"
-        ></app-form-control-email>
+        />
         <app-form-control-email
           [label]="'Confirm their email address'"
           [maxlength]="256"
@@ -141,7 +146,7 @@
           "
           controlName="emailAddress.emailAddressConfirmation"
           [disableCopy]="true"
-        ></app-form-control-email>
+        />
       </fieldset>
       <button
         class="govuk-button"

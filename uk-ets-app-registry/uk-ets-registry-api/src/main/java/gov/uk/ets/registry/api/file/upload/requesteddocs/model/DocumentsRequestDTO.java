@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.file.upload.requesteddocs.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,4 +17,5 @@ public class DocumentsRequestDTO {
     private String comment;
     private Long parentRequestId;
     private String accountFullIdentifier;
+    private Date deadline;
 }

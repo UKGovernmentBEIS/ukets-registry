@@ -1,6 +1,8 @@
 package gov.uk.ets.registry.api.authz.ruleengine.features.task;
 
 
+import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
+import gov.uk.ets.registry.api.task.domain.types.TaskUpdateAction;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserRole;
@@ -23,4 +25,6 @@ public class TaskBusinessSecurityStoreSlice {
     private String completeComment;
     private List<UserRole> candidateUserRoles;
     private List<User> candidateAccountARs;
+    private TaskUpdateAction taskUpdateAction;
+    protected List<TrustedAccount> linkedPendingTrustedAccounts;
 }

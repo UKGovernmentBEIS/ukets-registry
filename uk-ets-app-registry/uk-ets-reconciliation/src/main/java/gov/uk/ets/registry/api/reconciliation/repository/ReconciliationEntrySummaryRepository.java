@@ -7,7 +7,7 @@ import gov.uk.ets.registry.api.reconciliation.transfer.ReconciliationEntrySummar
 import gov.uk.ets.registry.api.transaction.domain.QUnitBlock;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 

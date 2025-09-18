@@ -8,7 +8,7 @@ a.govuk-header__link.govuk-header__link--homepage.govuk-header__link--home-custo
   border-bottom: 4px solid;
 }
 
-a.govuk-header__link.govuk-header__link--service-name.govuk-header__link--service-custom:focus {
+a.govuk-header__link.govuk-header__service-name.govuk-header__link--service-custom:focus {
   text-decoration: underline;
   text-decoration-color: white;
   border-bottom: 4px solid;
@@ -262,4 +262,8 @@ Public reports styles start
 .public-reports-details {
   border-left: none;
   padding: unset;
+}
+
+.govuk-header__link--homepage {
+  font-weight: 700;
 }

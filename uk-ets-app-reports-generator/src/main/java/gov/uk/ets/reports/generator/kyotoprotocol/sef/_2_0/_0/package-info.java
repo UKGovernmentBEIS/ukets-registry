@@ -5,5 +5,5 @@
 // Generated on: 2014.07.23 at 01:00:45 PM EEST
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:KyotoProtocol:RegistrySystem:SEF:2.0:0.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "urn:KyotoProtocol:RegistrySystem:SEF:2.0:0.0", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package gov.uk.ets.reports.generator.kyotoprotocol.sef._2_0._0;

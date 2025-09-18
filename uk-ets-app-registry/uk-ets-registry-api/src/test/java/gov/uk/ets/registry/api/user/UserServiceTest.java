@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.user;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
@@ -33,7 +34,9 @@ import gov.uk.ets.registry.api.user.admin.shared.UserDetailsUpdateType;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserStatusChangeResultDTO;
+import gov.uk.ets.registry.api.user.domain.IamUserRole;
 import gov.uk.ets.registry.api.user.domain.User;
+import gov.uk.ets.registry.api.user.domain.UserRoleMapping;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.domain.UserWorkContactRepository;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
@@ -45,7 +48,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -60,7 +62,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -150,9 +151,10 @@ public class UserServiceTest {
         User user = new User();
         user.setUrid("");
         given(userRepository.findByIamIdentifier(anyString())).willReturn(user);
-        AccessToken accessToken = new AccessToken();
-        accessToken.setSubject("");
-        given(authorizationService.getToken()).willReturn(accessToken);
+//        AccessToken accessToken = new AccessToken();
+//        accessToken.setSubject("");
+//        given(authorizationService.getToken()).willReturn(accessToken);
+        given(authorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).willReturn("");        
         Task task = new Task();
         given(printEnrolmentLetterTaskService.create(user, user, null)).willReturn(task);
     }
@@ -429,6 +431,7 @@ public class UserServiceTest {
     void test_submitMinorUserDetailsUpdateRequest() {
         User user = new User();
         user.setUrid(TEST_URID);
+        user.setIamIdentifier("Iam");
         
         Mockito.when(userRepository.findByUrid(user.getUrid())).thenReturn(user);
         Mockito.when(taskRepository.findPendingTasksByTypeAndUser(any(RequestType.class), eq(user.getUrid())))
@@ -459,11 +462,11 @@ public class UserServiceTest {
 	    current.setFirstName("firstName");
 	    current.setLastName("SurName");
 	    current.setCountryOfBirth("UK");
+        current.setUrid(TEST_URID);
 	    dto.setCurrent(current);
-	    
-	    
-        Mockito.when(userAdministrationService.findByEmail(dto.getCurrent().getUsername())).thenReturn(Optional.of(userRepresentation));
-        Mockito.when(userRepository.findByIamIdentifier(any(String.class))).thenReturn(user);
+
+        Mockito.when(userRepository.findByUrid(TEST_URID)).thenReturn(user);
+        Mockito.when(userAdministrationService.findByIamId("Iam")).thenReturn(userRepresentation);
 
         Long taskIdentifier = userService.submitMinorUserDetailsUpdateRequest(user.getUrid(), dto);
         assertNull(taskIdentifier);
@@ -484,9 +487,12 @@ public class UserServiceTest {
         UserDetailsUpdateTaskDetailsDTO dto = new UserDetailsUpdateTaskDetailsDTO(taskdetailsDto);
         UserDetailsDTO current = new UserDetailsDTO();
         current.setUsername(TEST_EMAIL);
+        current.setUrid(TEST_URID);
         dto.setCurrent(current);
-        Optional<UserRepresentation> emptyUserRep = Optional.empty();
-        Mockito.when(userAdministrationService.findByEmail(any(String.class))).thenReturn(emptyUserRep);
+        User storedUser = new User();
+        storedUser.setIamIdentifier("Iam");
+        Mockito.when(userRepository.findByUrid(TEST_URID)).thenReturn(storedUser);
+        Mockito.when(userAdministrationService.findByIamId("Iam")).thenReturn(null);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -497,8 +503,8 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Update user details with invalid phone code and phone number.")
-    void test_InvalidPhoneCodeAndPhoneNumber() {
+    @DisplayName("Update user details with invalid mobile phone code and phone number.")
+    void test_InvalidMobilePhoneCodeAndPhoneNumber() {
 
         Mockito.when(userRepository.findByUrid("urid")).thenReturn(new User());
         Mockito.when(taskRepository.findPendingTasksByTypeAndUser(any(RequestType.class), eq("urid")))
@@ -506,8 +512,8 @@ public class UserServiceTest {
 
         UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
         userDetailsDTO.setUsername(TEST_EMAIL);
-        userDetailsDTO.setWorkCountryCode("Agargarg");
-        userDetailsDTO.setWorkPhoneNumber("ager345t6wrg");
+        userDetailsDTO.setWorkMobileCountryCode("Agargarg");
+        userDetailsDTO.setWorkMobilePhoneNumber("ager345t6wrg");
 
         UserDetailsUpdateDTO userDetailsUpdateDTO = new UserDetailsUpdateDTO();
         userDetailsUpdateDTO.setDiff(userDetailsDTO);
@@ -530,10 +536,10 @@ public class UserServiceTest {
 
         UserDetailsDTO changedDTO = new UserDetailsDTO();
         changedDTO.setUsername(TEST_EMAIL);
-        changedDTO.setWorkCountryCode("Agargarg");
+        changedDTO.setWorkMobileCountryCode("Agargarg");
 
         UserDetailsDTO currentDto = new UserDetailsDTO();
-        currentDto.setWorkPhoneNumber("6971234567");
+        currentDto.setWorkMobilePhoneNumber("6971234567");
 
         UserDetailsUpdateDTO userDetailsUpdateDTO = new UserDetailsUpdateDTO();
         userDetailsUpdateDTO.setDiff(changedDTO);
@@ -556,10 +562,10 @@ public class UserServiceTest {
 
         UserDetailsDTO changedDTO = new UserDetailsDTO();
         changedDTO.setUsername(TEST_EMAIL);
-        changedDTO.setWorkPhoneNumber("697123456789");
+        changedDTO.setWorkAlternativePhoneNumber("697123456789");
 
         UserDetailsDTO currentDto = new UserDetailsDTO();
-        currentDto.setWorkCountryCode("30");
+        currentDto.setWorkAlternativeCountryCode("30");
 
         UserDetailsUpdateDTO userDetailsUpdateDTO = new UserDetailsUpdateDTO();
         userDetailsUpdateDTO.setDiff(changedDTO);
@@ -643,10 +649,10 @@ public class UserServiceTest {
         UserDetailsUpdateTaskDetailsDTO dto = new UserDetailsUpdateTaskDetailsDTO(taskdetailsDto);
         UserDetailsDTO current = new UserDetailsDTO();
         current.setUsername(TEST_EMAIL);
+        current.setUrid(TEST_URID);
         dto.setCurrent(current);
-        UserRepresentation userRep = createUserRepresentation();
-        Mockito.when(userAdministrationService.findByEmail(any(String.class))).thenReturn(Optional.of(userRep));
-        Mockito.when(userRepository.findByIamIdentifier(any(String.class))).thenReturn(null);
+
+        Mockito.when(userRepository.findByUrid(TEST_URID)).thenReturn(null);
         UkEtsException exception = assertThrows(
                 UkEtsException.class,
                 () -> userService.updateUserDetails(dto));
@@ -662,6 +668,7 @@ public class UserServiceTest {
         UserDetailsUpdateTaskDetailsDTO dto = new UserDetailsUpdateTaskDetailsDTO(taskdetailsDto);
         UserDetailsDTO current = new UserDetailsDTO();
         current.setUsername(TEST_EMAIL);
+        current.setUrid(TEST_URID);
         dto.setCurrent(current);
         UserDetailsDTO changed = new UserDetailsDTO();
         changed.setFirstName("changedName");
@@ -678,8 +685,9 @@ public class UserServiceTest {
         User user = new User();
         user.setFirstName("testName");
         user.setLastName("testLastName");
-        Mockito.when(userAdministrationService.findByEmail(any(String.class))).thenReturn(Optional.of(userRep));
-        Mockito.when(userRepository.findByIamIdentifier(any(String.class))).thenReturn(user);
+        user.setIamIdentifier("Iam");
+        Mockito.when(userRepository.findByUrid(TEST_URID)).thenReturn(user);
+        Mockito.when(userAdministrationService.findByIamId("Iam")).thenReturn(userRep);
 
         userService.updateUserDetails(dto);
         
@@ -703,6 +711,7 @@ public class UserServiceTest {
         UserDetailsUpdateTaskDetailsDTO dto = new UserDetailsUpdateTaskDetailsDTO(taskdetailsDto);
         UserDetailsDTO current = new UserDetailsDTO();
         current.setUsername(TEST_EMAIL);
+        current.setUrid(TEST_URID);
         dto.setCurrent(current);
         UserDetailsDTO changed = new UserDetailsDTO();
         changed.setAlsoKnownAs(TEST_KNOWN_AS);
@@ -712,8 +721,9 @@ public class UserServiceTest {
         User user = new User();
         user.setFirstName("testName");
         user.setLastName("testLastName");
-        Mockito.when(userAdministrationService.findByEmail(any(String.class))).thenReturn(Optional.of(userRep));
-        Mockito.when(userRepository.findByIamIdentifier(any(String.class))).thenReturn(user);
+        user.setIamIdentifier("Iam");
+        Mockito.when(userRepository.findByUrid(TEST_URID)).thenReturn(user);
+        Mockito.when(userAdministrationService.findByIamId("Iam")).thenReturn(userRep);
 
         userService.updateUserDetails(dto);
         
@@ -1041,4 +1051,58 @@ public class UserServiceTest {
 		
 		userService.validateUserUpdateRequest(user.getUrid(), UserDetailsUpdateType.DEACTIVATE_USER);
 	}
+
+    @Test
+    @DisplayName("Check if a user has admin role, expected to pass.")
+    void test_isAdminUser() {
+        User user = new User();
+
+        IamUserRole iamUserRole = new IamUserRole();
+        iamUserRole.setRoleName("readonly-administrator");
+
+        UserRoleMapping userRoleMapping = new UserRoleMapping();
+        userRoleMapping.setRole(iamUserRole);
+
+        user.setUserRoles(Set.of(userRoleMapping));
+
+        boolean result = userService.isAdminUser(user);
+
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("Check if a user has Senior or Junior admin role, expected to pass.")
+    void test_isSeniorOrJuniorAdminUser() {
+        User user = new User();
+
+        IamUserRole iamUserRole = new IamUserRole();
+        iamUserRole.setRoleName("junior-registry-administrator");
+
+        UserRoleMapping userRoleMapping = new UserRoleMapping();
+        userRoleMapping.setRole(iamUserRole);
+
+        user.setUserRoles(Set.of(userRoleMapping));
+
+        boolean result = userService.isSeniorOrJuniorAdminUser(user);
+
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("Check if a user has Senior or Junior admin role, expected to fail due to AR user.")
+    void test_isSeniorOrJuniorAdminUserAR() {
+        User user = new User();
+
+        IamUserRole iamUserRole = new IamUserRole();
+        iamUserRole.setRoleName("authorized-representative");
+
+        UserRoleMapping userRoleMapping = new UserRoleMapping();
+        userRoleMapping.setRole(iamUserRole);
+
+        user.setUserRoles(Set.of(userRoleMapping));
+
+        boolean result = userService.isSeniorOrJuniorAdminUser(user);
+
+        assertFalse(result);
+    }
 }

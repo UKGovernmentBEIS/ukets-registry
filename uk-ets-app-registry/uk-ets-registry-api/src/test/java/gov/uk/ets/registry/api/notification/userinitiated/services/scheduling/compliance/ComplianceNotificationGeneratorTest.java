@@ -99,7 +99,7 @@ class ComplianceNotificationGeneratorTest {
     void shouldParseTemplateParams() {
 
 
-        IdentifiableEmailNotification email = cut.generate(parameterHolder, definition);
+        IdentifiableEmailNotification email = cut.generate(parameterHolder, definition.getShortText(), definition.getLongText());
 
         assertThat(email).isNotNull();
         assertThat(email.getRecipients()).containsExactly(TEST_EMAIL);
@@ -112,7 +112,7 @@ class ComplianceNotificationGeneratorTest {
 
         parameterHolder.setBalance(null);
 
-        IdentifiableEmailNotification email = cut.generate(parameterHolder, definition);
+        IdentifiableEmailNotification email = cut.generate(parameterHolder, definition.getShortText(), definition.getLongText());
 
         assertThat(email.getBodyHtml()).doesNotContain("enter ${balance}");
         assertThat(email.getBodyHtml()).contains("enter ");
@@ -123,7 +123,12 @@ class ComplianceNotificationGeneratorTest {
 
         parameterHolder.setInstallationParameters(null);
 
-        assertThrows(EmailException.class, () -> cut.generate(parameterHolder, definition));
+        assertThrows(EmailException.class, () -> cut.generate(parameterHolder, definition.getShortText(), definition.getLongText()));
 
+    }
+
+    @Test
+    void shouldFailForUnknownParams() {
+        assertThrows(Exception.class, () -> cut.generate(parameterHolder, definition.getShortText(), "hello ${unknown}"));
     }
 }

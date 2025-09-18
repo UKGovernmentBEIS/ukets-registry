@@ -4,9 +4,9 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, mergeMap } from 'rxjs/operators';
 import { AuthApiService } from 'src/app/auth/auth-api.service';
 
@@ -27,19 +27,23 @@ export class AuthInterceptor implements HttpInterceptor {
             // When using uma, a WWW-authenticate header should be returned by the resource server
             if (!wwwAuthenticateHeader) {
               throwError(
-                'When using uma, a WWW-authenticate header should be returned by the resource server'
+                () =>
+                  new Error(
+                    'When using uma, a WWW-authenticate header should be returned by the resource server'
+                  )
               );
             }
             // When using uma, a WWW-authenticate header should contain uma data
             if (wwwAuthenticateHeader.indexOf('UMA') === -1) {
               throwError(
-                'When using uma, a WWW-authenticate header should contain uma data'
+                () =>
+                  new Error(
+                    'When using uma, a WWW-authenticate header should contain uma data'
+                  )
               );
             }
-
             const params = wwwAuthenticateHeader.split(',');
             let ticket: string;
-
             // try to extract the permission ticket from the WWW-Authenticate header
             for (const nameValuePair of params) {
               const param = nameValuePair.split('=');
@@ -49,36 +53,37 @@ export class AuthInterceptor implements HttpInterceptor {
                 break;
               }
             }
-
             // a permission ticket must exist in order to send an authorization request
             if (!ticket) {
               throwError(
-                'a permission ticket must exist in order to send an authorization request'
+                () =>
+                  new Error(
+                    'A permission ticket must exist in order to send an authorization request'
+                  )
               );
             }
-
             // Retry the request with the new token
             return this.authApiService
               .keycloakAuthorize({
                 ticket,
-                incrementalAuthorization: false
+                incrementalAuthorization: false,
               })
               .pipe(
                 mergeMap((rpt: string) => {
                   const modifiedRequest = req.clone({
                     setHeaders: {
-                      Authorization: 'Bearer ' + rpt
-                    }
+                      Authorization: 'Bearer ' + rpt,
+                    },
                   });
                   return next.handle(modifiedRequest);
                 }),
-                catchError(rptError => {
-                  return throwError(rptError);
+                catchError((rptError) => {
+                  return throwError(() => rptError);
                 })
               );
           } // end if (err.url.indexOf('/token') === -1)
         } // End err.status === 403 || err.status === 401
-        return throwError(err);
+        return throwError(() => err);
       }) // End catchError
     );
   }

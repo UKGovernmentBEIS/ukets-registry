@@ -42,16 +42,14 @@ import {
   clearDeleteFileName,
   enterDeleteFileWizard,
 } from '@registry-web/delete-file/wizard/actions/delete-file.actions';
-import {
-  selectFile,
-  selectFileName,
-} from '@registry-web/delete-file/wizard/reducers';
+import { selectFileName } from '@registry-web/delete-file/wizard/reducers';
 import { navigateToUserProfile } from '@shared/shared.action';
 import { GoBackNavigationExtras } from '@shared/back-button';
 import {
   selectGoBackToListNavigationExtras,
   selectGoBackToListRoute,
 } from '@shared/shared.selector';
+import { recoveryMethodsActions } from '@registry-web/user-management/recovery-methods-change/store/recovery-methods-change.actions';
 
 @Component({
   selector: 'app-user-details-container',
@@ -169,6 +167,57 @@ export class UserDetailsContainerComponent implements OnInit {
     this.store.dispatch(
       navigateToPasswordChangeWizard({
         email,
+      })
+    );
+  }
+
+  startUpdateRecoveryPhoneWizard({
+    recoveryCountryCode,
+    recoveryPhoneNumber,
+    workMobileCountryCode,
+    workMobilePhoneNumber,
+  }: {
+    recoveryCountryCode: string;
+    recoveryPhoneNumber: string;
+    workMobileCountryCode: string;
+    workMobilePhoneNumber: string;
+  }): void {
+    this.store.dispatch(
+      recoveryMethodsActions.NAVIGATE_TO_UPDATE_RECOVERY_PHONE_WIZARD({
+        caller: { route: this.router.url },
+        recoveryCountryCode,
+        recoveryPhoneNumber,
+        workMobileCountryCode,
+        workMobilePhoneNumber,
+      })
+    );
+  }
+
+  startRemoveRecoveryPhoneWizard(): void {
+    this.store.dispatch(
+      recoveryMethodsActions.NAVIGATE_TO_REMOVE_RECOVERY_PHONE_WIZARD({
+        caller: { route: this.router.url },
+      })
+    );
+  }
+
+  startUpdateRecoveryEmailWizard({
+    recoveryEmailAddress,
+  }: {
+    recoveryEmailAddress: string;
+  }): void {
+    this.store.dispatch(
+      recoveryMethodsActions.NAVIGATE_TO_UPDATE_RECOVERY_EMAIL_WIZARD({
+        caller: { route: this.router.url },
+        recoveryEmailAddress,
+      })
+    );
+  }
+
+  startRemoveRecoveryEmailWizard(): void {
+    this.store.dispatch(
+      recoveryMethodsActions.NAVIGATE_TO_REMOVE_RECOVERY_EMAIL_WIZARD({
+        caller: { route: this.router.url },
       })
     );
   }

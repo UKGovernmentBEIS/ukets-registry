@@ -5,6 +5,7 @@ import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.user.domain.User;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,15 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
      */
     @Query(value = "select task from Task task where task.parentTask.requestId = ?1")
     List<Task> findSubTasksParentRequestId(Long parentTaskRequestId);
+
+    /**
+     * Retrieves the latest sub task deadline
+     *
+     * @param parentTaskId The parent task  id
+     * @return The latest deadline
+     */
+    @Query(value = "select max(task.deadline) from Task task where task.parentTask.id = ?1")
+    Optional<Date> findLatestSubTaskDeadline(Long parentTaskId);
 
     /**
      * Retrieves the task identifier based on the transaction identifier.
@@ -223,6 +233,25 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
         "t.user.urid, t.status ) " +
         "from Task t where t.type=?1")
     List<BulkArTaskDTO> retrieveTasksByRequestType(RequestType type);
+
+    /**
+     * Retrieves non completed tasks that are mid-way or two days before deadline.
+     */
+    @Query(value = "select * from task " +
+        " where status = 'SUBMITTED_NOT_YET_APPROVED' " +
+        " and type in ?2 " +
+        " and (cast((claimed_date + (deadline - claimed_date) / 2) as DATE) = ?1 " +
+        " or cast(deadline as DATE) - 2 = ?1)", nativeQuery = true)
+    List<Task> findMidWayOrTwoDaysBeforeDeadline(LocalDate date, List<String> types);
+
+    /**
+     * Retrieves change email tasks by the new email.
+     */
+    @Query(value = "select * from task " +
+        " where status = 'SUBMITTED_NOT_YET_APPROVED' " +
+        " and type = 'REQUESTED_EMAIL_CHANGE' " +
+        " and cast(difference as json) ->> 'newEmail' = ?1", nativeQuery = true)
+    List<Task> findChangeEmailTasksByNewEmail(String newEmail);
 
     Optional<Task> findByAccount_IdentifierAndTypeAndStatus(Long identifier, RequestType type,
                                                             RequestStateEnum requestStateEnum);

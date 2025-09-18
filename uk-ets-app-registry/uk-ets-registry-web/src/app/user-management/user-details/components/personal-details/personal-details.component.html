@@ -1,12 +1,7 @@
 <div class="govuk-grid-row" *ngIf="user">
-  <div class="govuk-summary-list__row">
-    <h2 class="govuk-summary-list__key govuk-heading-m">Personal details</h2>
-  </div>
+  <h2 class="govuk-heading-m govuk-summary-list__title">Personal details</h2>
   <dl
-    class="
-      govuk-summary-list govuk-summary-list--no-border
-      govuk-!-margin-top-5
-    "
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-top-5"
   >
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">First and middle names</dt>
@@ -80,6 +75,26 @@
       <dd class="govuk-summary-list__value">
         <ng-container *ngIf="user.attributes.country">
           {{ user.attributes.country[0] | countryNameAsync | async }}
+        </ng-container>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row" *ngIf="!hideHomeAddress">
+      <dt class="govuk-summary-list__key">
+        Have you lived in another country the last five years?
+      </dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container
+          *ngIf="
+            user.attributes.differentCountryLastFiveYears !== null &&
+            user.attributes.differentCountryLastFiveYears !== undefined &&
+            user.attributes.differentCountryLastFiveYears?.length > 0
+          "
+        >
+          {{
+            user.attributes.differentCountryLastFiveYears[0] === 'true'
+              ? 'Yes'
+              : 'No'
+          }}
         </ng-container>
       </dd>
     </div>

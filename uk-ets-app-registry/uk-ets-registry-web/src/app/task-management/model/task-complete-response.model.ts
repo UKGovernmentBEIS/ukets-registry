@@ -1,4 +1,5 @@
-import { TaskDetails } from '@task-management/model';
+import { PaymentMethod, PaymentStatus } from '@request-payment/model';
+import { RequestPaymentTaskDetails, TaskDetails } from '@task-management/model';
 
 // TODO: This will be much simplified if we just return the taskDetailsDTO instead of the response.
 export interface TaskCompleteResponseBase {
@@ -19,7 +20,15 @@ export interface RequestAllocationProposalCompleteResponse
   executionDate: string;
 }
 
+export interface PaymentCompleteResponse extends TaskCompleteResponseBase {
+  referenceNumber: string;
+  paidOn: Date;
+  paidBy: string;
+  taskDetailsDTO: RequestPaymentTaskDetails;
+}
+
 export type TaskCompleteResponse =
   | TaskCompleteResponseBase
   | TransactionProposalCompleteResponse
-  | RequestAllocationProposalCompleteResponse;
+  | RequestAllocationProposalCompleteResponse
+  | PaymentCompleteResponse;

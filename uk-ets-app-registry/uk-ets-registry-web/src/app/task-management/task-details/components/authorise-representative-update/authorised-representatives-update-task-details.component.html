@@ -7,7 +7,7 @@
       header="Account info"
       [accountInfo]="authoriseRepresentativeTaskDetails?.accountInfo"
       [hasAccountAccess]="true"
-      [selectedSideMenu]="MenuItemEnum.ACCOUNT_DETAILS"
+      [selectedSideMenu]="MenuItemEnum.OVERVIEW"
     ></app-account-summary>
   </div>
   <div
@@ -32,6 +32,7 @@
       (requestDocumentEmitter)="onUserRequestDocuments($event)"
       [displayedChangeLink]="false"
       [addAndRemoveTextDisplayed]="false"
+      (requestPaymentEmitter)="onRequestPayment($event)"
     ></app-ar-update-user>
     <app-ar-update-access-rights
       *ngIf="
@@ -42,6 +43,8 @@
       [updateType]="authoriseRepresentativeTaskDetails.arUpdateType"
       [accessRights]="authoriseRepresentativeTaskDetails.arUpdateAccessRight"
       [displayedChangeLink]="false"
+      [showRequestPaymentButton]="showRequestPaymentButton()"
+      (clickRequestPayment)="onRequestPayment($event)"
     ></app-ar-update-access-rights>
   </div>
 </div>

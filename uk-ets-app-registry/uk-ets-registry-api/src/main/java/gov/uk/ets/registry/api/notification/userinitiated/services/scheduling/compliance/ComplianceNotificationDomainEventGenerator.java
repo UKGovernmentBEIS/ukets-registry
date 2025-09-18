@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class ComplianceNotificationDomainEventGenerator {
     private final EventService eventService;
 
-    void generateAccountEvent(NotificationParameterHolder ph, IdentifiableEmailNotification notification) {
+    public void generateAccountEvent(NotificationParameterHolder ph, IdentifiableEmailNotification notification) {
         BaseNotificationParameters baseParameters = ph.getBaseNotificationParameters();
         String eventDescription = generateEventDescription(
             baseParameters.getDisclosedName(),

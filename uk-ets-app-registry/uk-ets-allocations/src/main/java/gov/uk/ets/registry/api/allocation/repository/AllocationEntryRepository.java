@@ -17,11 +17,12 @@ public interface AllocationEntryRepository extends JpaRepository<AllocationEntry
 
     @Query(
         "select new gov.uk.ets.registry.api.allocation.data.AllocationSummary(" +
-        "           yr.year,                     " +
-        "           coalesce(en.entitlement, 0), " +
-        "           coalesce(en.allocated, 0) - coalesce(en.returned, 0) - coalesce(en.reversed, 0), " +
-        "           st.status,                " +
-        "           eee.excluded)                    " +
+        "           en.compliantEntityId as compliantEntityId," +
+        "           yr.year as year,                     " +
+        "           coalesce(en.entitlement, 0) as entitlement, " +
+        "           coalesce(en.allocated, 0) - coalesce(en.returned, 0) - coalesce(en.reversed, 0) as allocated, " +
+        "           st.status as status,                " +
+        "           eee.excluded as excluded)                    " +
         "      from AllocationEntry en           " +
         "      join en.allocationYear yr         " +
         "      join yr.allocationStatuses st     " +
@@ -61,7 +62,8 @@ public interface AllocationEntryRepository extends JpaRepository<AllocationEntry
         "           coalesce(en.entitlement, 0), " +
         "           coalesce(en.allocated, 0) - coalesce(en.returned, 0) - coalesce(en.reversed, 0), " +
         "           st.status,                   " +
-        "           eee.excluded)                   " +
+        "           eee.excluded,                " +
+        "           en.type)                     " +
         "      from AllocationEntry en           " +
         "      join en.allocationYear yr         " +
         "      join yr.allocationStatuses st     " +
@@ -97,11 +99,12 @@ public interface AllocationEntryRepository extends JpaRepository<AllocationEntry
 
     @Query(
         "select new gov.uk.ets.registry.api.allocation.data.AllocationSummary(" +
-        "           en.compliantEntityId,          " +
-        "           coalesce(en.entitlement, 0),   " +
-        "           coalesce(en.allocated, 0) - coalesce(en.returned, 0) - coalesce(en.reversed, 0), " +
-        "           st.status,                     " +
-        "           eee.excluded)                  " +
+        "           en.compliantEntityId as compliantEntityId,          " +
+        "           yr.year as year,                                              " +        
+        "           coalesce(en.entitlement, 0) as entitlement,   " +
+        "           coalesce(en.allocated, 0) - coalesce(en.returned, 0) - coalesce(en.reversed, 0) as allocated, " +
+        "           st.status as status,                     " +
+        "           eee.excluded as excluded)                  " +
         "      from AllocationEntry en          " +
         "      join en.allocationYear yr           " +
         "      join yr.allocationStatuses st       " +

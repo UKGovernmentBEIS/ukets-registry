@@ -3,7 +3,6 @@ package gov.uk.ets.reports.generator.mappers.jdbc;
 import gov.uk.ets.reports.generator.domain.VolumeOfAllowancesReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -35,6 +34,7 @@ public class VolumesOfAllowancesJdbcMapper
             "                when acc.type_label = 'ETS - UK Auction delivery account' then 'Auction Delivery Account'\n" +
             "                when acc.type_label = 'ETS - Operator holding account' then 'Operator Holding Accounts'\n" +
             "                when acc.type_label = 'ETS - Aircraft operator holding account' then 'Aircraft Operator Holding Accounts'\n" +
+            "                when acc.type_label = 'ETS - Maritime operator holding account' then 'Maritime Operator Holding Accounts'\n" +
             "                when acc.type_label = 'ETS - Trading account' then 'Trading Accounts'\n" +
             "                when acc.type_label in (\n" +
             "                                        'ETS - UK Total Quantity Account',\n" +
@@ -56,6 +56,7 @@ public class VolumesOfAllowancesJdbcMapper
             "                                 'ETS - UK Auction delivery account',\n" +
             "                                 'ETS - Operator holding account',\n" +
             "                                 'ETS - Aircraft operator holding account',\n" +
+            "                                 'ETS - Maritime operator holding account',\n" +
             "                                 'ETS - Trading account',\n" +
             "                                 'ETS - UK Total Quantity Account',\n" +
             "                                 'ETS - UK Auction Account',\n" +
@@ -73,11 +74,6 @@ public class VolumesOfAllowancesJdbcMapper
             "    number_of_units desc";
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Override
-    public List<VolumeOfAllowancesReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<VolumeOfAllowancesReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

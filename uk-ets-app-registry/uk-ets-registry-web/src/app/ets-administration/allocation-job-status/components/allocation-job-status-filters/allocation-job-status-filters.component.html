@@ -1,0 +1,92 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">View allocation job status</h1>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <app-show-hide-toggle-button
+          [displayable]="true"
+          [condition]="hideCriteria"
+          [trueStateLabel]="'Show filters'"
+          [falseStateLabel]="'Hide filters'"
+          (toggle)="toggleCriteriaClick()"
+        ></app-show-hide-toggle-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="formGroup" [hidden]="hideCriteria">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <app-form-control-text
+        controlName="requestIdentifier"
+        [label]="'Task ID'"
+        [hint]="'Enter text'"
+      ></app-form-control-text>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <app-form-control-text
+        controlName="id"
+        [label]="'Job ID'"
+        [hint]="'Enter text'"
+      ></app-form-control-text>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <app-form-control-select
+        controlName="status"
+        [options]="allocationJobStatusOptions"
+        [class]="'govuk-!-width-full'"
+        [hint]="'Select from list'"
+        [label]="'Status'"
+      ></app-form-control-select>
+    </div>
+  </div>
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend">Execution date</legend>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-datepicker
+          controlName="executionDateFrom"
+          [label]="'From'"
+        ></app-form-control-datepicker>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-datepicker
+          controlName="executionDateTo"
+          [label]="'To'"
+        ></app-form-control-datepicker>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button submit-form"
+        data-module="govuk-button"
+        type="submit"
+        id="submit"
+      >
+        Search
+      </button>
+      <button
+        type="button"
+        (click)="onClear()"
+        class="
+          govuk-button govuk-button--secondary
+          govuk-!-margin-left-3
+          clear-form
+        "
+        data-module="govuk-button"
+      >
+        Clear
+      </button>
+    </div>
+  </div>
+</form>

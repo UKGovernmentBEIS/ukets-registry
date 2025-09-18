@@ -67,6 +67,35 @@ export class NotificationContentComponent
 </details>
 `;
 
+  userInactivityInfoText = `<details class="govuk-details" data-module="govuk-details">
+<summary class="govuk-details__summary">
+  <span class="govuk-details__summary-text">
+    Help with parameters and links
+  </span>
+</summary>
+<div class="govuk-details__text">
+  You can enter the parameters by coping the following codes in the text:
+  <ul>
+    <li>For first name, enter $&#123;user.firstName&#125;</li>
+    <li>For last name, enter $&#123;user.lastName&#125;</li>
+    <li>For user ID, enter $&#123;user.Id&#125;</li>
+  </ul>
+</div>`;
+
+  infoText2 = `<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Help with parameters and links
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    You can to the parameters of the uploaded file by using the following syntax:
+    <ul>
+      <li>$&#123;headerName&#125;</li>
+    </ul>
+  </div>
+</details>`;
+
   constructor(protected formBuilder: UntypedFormBuilder) {
     super();
   }

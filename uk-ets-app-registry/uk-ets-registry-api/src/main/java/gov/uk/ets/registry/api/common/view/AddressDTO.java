@@ -1,7 +1,7 @@
 package gov.uk.ets.registry.api.common.view;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 

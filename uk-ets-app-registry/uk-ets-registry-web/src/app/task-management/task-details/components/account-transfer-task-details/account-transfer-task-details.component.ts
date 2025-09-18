@@ -12,6 +12,7 @@ import { regulatorMap } from '@registry-web/account-management/account-list/acco
 })
 export class AccountTransferTaskDetailsComponent implements OnInit {
   @Input() taskDetails: AccountTransferTaskDetails;
+  @Input() isSeniorOrJuniorAdmin: boolean;    
   @Output() readonly requestDocumentEmitter = new EventEmitter();
 
   activityTypes = InstallationActivityType;
@@ -37,7 +38,7 @@ export class AccountTransferTaskDetailsComponent implements OnInit {
   }
 
   getInstallationSummaryListItems(): SummaryListItem[] {
-    return [
+    const summary = [
       {
         key: {
           label: 'Installation details',
@@ -70,6 +71,12 @@ export class AccountTransferTaskDetailsComponent implements OnInit {
         },
       },
       {
+        key: { label: 'Emitter ID' },
+        value: {
+          label: this.taskDetails.action.installationDetails?.emitterId,
+        },
+      },
+      {
         key: { label: 'Permit ID' },
         value: {
           label: this.taskDetails.action.installationDetails?.permit.id,
@@ -96,5 +103,10 @@ export class AccountTransferTaskDetailsComponent implements OnInit {
         value: { label: this.taskDetails.action.installationDetails?.lastYear },
       },
     ];
+
+
+    return !this.isSeniorOrJuniorAdmin ?
+      summary.filter( next => next.key.label != 'Emitter ID') :
+        summary;     
   }
 }

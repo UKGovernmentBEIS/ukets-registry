@@ -7,9 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -17,24 +16,17 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @Configuration
 @EnableWebSecurity
-@ConditionalOnProperty(name="keycloak.enabled",havingValue="false")
-public class DisableKeycloakConfig extends WebSecurityConfigurerAdapter {
+@ConditionalOnProperty(name = "keycloak.enabled", havingValue = "false")
+public class DisableKeycloakConfig {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/**").permitAll();
-        http.headers().frameOptions().disable();
-    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests((authorize) -> authorize
+              .anyRequest()
+              .permitAll())              
+              .csrf(csrf -> csrf.disable());
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void configure(WebSecurity security) {
-        security.ignoring().antMatchers("/**");
+        return http.build();
     }
 
     /**
@@ -47,6 +39,5 @@ public class DisableKeycloakConfig extends WebSecurityConfigurerAdapter {
         token.setSubject("uk");
         token.setName("Tom Sawyer");
         return token;
-    }	
-	
+    }
 }

@@ -24,3 +24,8 @@ export const selectNotificationDetails = createSelector(
     );
   }
 );
+
+export const selectExistingRecipientsEmailsFile = createSelector(
+  selectNotificationDetailsState,
+  (state) => state?.notificationDetails?.uploadedFileId
+);

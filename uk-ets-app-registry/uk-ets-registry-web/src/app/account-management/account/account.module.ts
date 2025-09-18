@@ -67,22 +67,10 @@ import { EditBillingDetailsContainerComponent } from './account-details/details/
 import { ExcludeBillingContainerComponent } from './account-details/details/exclude-billing-container.component';
 import { CancelExcludeBillingContainerComponent } from './account-details/details/cancel-exclude-billing-container.component';
 import { ExcludeBillingSucessContainerComponent } from './account-details/details/exclude-billing-success-container.component';
-import { NotesEffect } from '@registry-web/notes/store/notes.effects';
-import * as fromNotes from '@registry-web/notes/store/notes.reducer';
-import { AddNoteFormContainerComponent } from '@registry-web/notes/components/add-note-form/add-note-form-container.component';
-import { AddNoteSuccessContainerComponent } from '@registry-web/notes/components/add-note-success/add-note-success-container.component';
-import { CancelAddNoteContainerComponent } from '@registry-web/notes/components/cancel-add-note-container/cancel-add-note-container.component';
-import { CheckAndConfirmAddNoteContainerComponent } from '@registry-web/notes/components/check-and-confirm-add-note/check-and-confirm-add-note-container.component';
-import { DeleteNoteSuccessContainerComponent } from '@registry-web/notes/components/delete-note-success/delete-note-success-container.component';
-import { DeleteNoteContainerComponent } from '@registry-web/notes/components/delete-note/delete-note-container.component';
-import { SelectEntityFormContainerComponent } from '@registry-web/notes/components/select-entity-form/select-entity-form-container.component';
-import { AddNoteFormComponent } from '@registry-web/notes/components/add-note-form/add-note-form.component';
-import { AddNoteSuccessComponent } from '@registry-web/notes/components/add-note-success/add-note-success.component';
-import { CheckAndConfirmAddNoteComponent } from '@registry-web/notes/components/check-and-confirm-add-note/check-and-confirm-add-note.component';
-import { DeleteNoteSuccessComponent } from '@registry-web/notes/components/delete-note-success/delete-note-success.component';
-import { DeleteNoteComponent } from '@registry-web/notes/components/delete-note/delete-note.component';
-import { SelectEntityFormComponent } from '@registry-web/notes/components/select-entity-form/select-entity-form.component';
+import { NotesEffect } from '@registry-web/account-management/account/account-details/notes/store/account-notes.effects';
+import * as fromAccountNotes from '@registry-web/account-management/account/account-details/notes/store/account-notes.reducer';
 import { AccountNotesComponent } from './account-details/notes/account-notes.component';
+import { MaritimeOperatorComponent } from './account-details/operator/maritime-operator/maritime-operator.component';
 
 @NgModule({
   declarations: [
@@ -101,6 +89,7 @@ import { AccountNotesComponent } from './account-details/notes/account-notes.com
     ExcludeBillingSucessContainerComponent,
     AccountHolderComponent,
     AircraftOperatorComponent,
+    MaritimeOperatorComponent,
     InstallationComponent,
     AuthorisedRepresentativesComponent,
     HistoryAndCommentsContainerComponent,
@@ -126,19 +115,6 @@ import { AccountNotesComponent } from './account-details/notes/account-notes.com
     CanRequestUpdatePipe,
     ZeroAmountToDashPipe,
     NullAmountToDashPipe,
-    SelectEntityFormContainerComponent,
-    AddNoteFormContainerComponent,
-    CheckAndConfirmAddNoteContainerComponent,
-    AddNoteSuccessContainerComponent,
-    CancelAddNoteContainerComponent,
-    DeleteNoteContainerComponent,
-    DeleteNoteSuccessContainerComponent,
-    SelectEntityFormComponent,
-    AddNoteFormComponent,
-    CheckAndConfirmAddNoteComponent,
-    AddNoteSuccessComponent,
-    DeleteNoteComponent,
-    DeleteNoteSuccessComponent,
   ],
   imports: [
     AccountRoutingModule,
@@ -156,7 +132,10 @@ import { AccountNotesComponent } from './account-details/notes/account-notes.com
       fromTrustedAccountList.trustedAccountListFeatureKey,
       fromTrustedAccountList.reducer
     ),
-    StoreModule.forFeature(fromNotes.notesFeatureKey, fromNotes.reducer),
+    StoreModule.forFeature(
+      fromAccountNotes.accountNotesFeatureKey,
+      fromAccountNotes.reducer
+    ),
     EffectsModule.forFeature([NotesEffect]),
     EffectsModule.forFeature([AccountEffect]),
     EffectsModule.forFeature([AccountStatusEffects, TrustedAccountsEffect]),

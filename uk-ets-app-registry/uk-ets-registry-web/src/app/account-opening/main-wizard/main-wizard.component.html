@@ -16,7 +16,7 @@
             </h1>
           </div>
           <div
-            *ngIf="(isOHAorAOHA$ | async) === false"
+            *ngIf="(isOHAorAOHAorMOHA$ | async) === false"
             class="govuk-body govuk-details__text"
           >
             <div class="govuk-!-margin-bottom-3">
@@ -39,8 +39,9 @@
               These rules can be changed after account opening.
             </div>
             <div>
+              <!-- We must change it?? -->
               <app-about-trusted-account-list
-                [isOHAOrAOHA]="isOHAorAOHA$ | async"
+                [isOHAOrAOHAorMOHA]="isOHAorAOHAorMOHA$ | async"
               ></app-about-trusted-account-list>
             </div>
           </div>
@@ -77,15 +78,15 @@
                       (accountHolder$ | async),
                     route: {
                       truthy: accountHolderWizardRoutes.OVERVIEW,
-                      falsy: accountHolderWizardRoutes.ACCOUNT_HOLDER_TYPE
+                      falsy: accountHolderWizardRoutes.ACCOUNT_HOLDER_TYPE,
                     },
                     label: {
                       truthy: !(accountHolder$ | async | individual)
                         ? (accountHolder$ | async)?.details?.name
                         : ((accountHolder$ | async | individual)?.details
                           | individualFullName),
-                      falsy: 'Account Holder details'
-                    }
+                      falsy: 'Account Holder details',
+                    },
                   }"
                 >
                 </ng-container>
@@ -203,12 +204,12 @@
                       condition: accountDetailsCompleted$ | async,
                       route: {
                         truthy: accountDetailsWizardRoutes.OVERVIEW,
-                        falsy: accountDetailsWizardRoutes.ACCOUNT_DETAILS
+                        falsy: accountDetailsWizardRoutes.ACCOUNT_DETAILS,
                       },
                       label: {
                         truthy: (accountDetails$ | async)?.name,
-                        falsy: 'Account details'
-                      }
+                        falsy: 'Account details',
+                      },
                     }"
                   >
                   </ng-container>
@@ -217,7 +218,9 @@
             </div>
           </dl>
 
-          <ng-container *ngIf="(isOha$ | async) || (isAOHA$ | async)">
+          <ng-container
+            *ngIf="(isOha$ | async) || (isAOHA$ | async) || (isMOHA$ | async)"
+          >
             <dl class="govuk-summary-list">
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk-heading-m">
@@ -225,7 +228,9 @@
                     '3. Add the ' +
                       ((isOha$ | async)
                         ? 'installation information'
-                        : 'aircraft operator')
+                        : (isAOHA$ | async)
+                          ? 'aircraft operator'
+                          : 'maritime operator')
                   }}
                 </dt>
                 <dd class="govuk-summary-list__value">
@@ -242,7 +247,7 @@
                   <div
                     class="govuk-caption-m"
                     *ngIf="
-                      (trustedAccountListCompleted$ | async) === false &&
+                      (accountDetailsCompleted$ | async) === false &&
                         (operatorCompleted$ | async) === false;
                       else installationOrAircraftTemplate
                     "

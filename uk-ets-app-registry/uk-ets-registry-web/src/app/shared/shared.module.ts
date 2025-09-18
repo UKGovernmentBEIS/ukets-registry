@@ -72,6 +72,9 @@ import {
   TransactionAtrributesPipe,
   TrustedAccountPipe,
   UnitTypeSopRenderPipe,
+  NativeDateToUkDate,
+  IsPastDatePipe,
+  MaritimeOperatorPipe,
 } from '@shared/pipes';
 import { PaginatorComponent } from '@shared/search/paginator';
 import { ToggleButtonComponent } from '@shared/search/toggle-button/toggle-button.component';
@@ -194,6 +197,10 @@ import { ExcludeBillingFormComponent } from './components/account/billing-detail
 import { ReadMoreComponent } from './components/read-more/read-more.component';
 import { NotesListComponent } from './components/notes-list/notes-list.component';
 import { NotesApiService } from '@registry-web/notes/services/notes-api.service';
+import { SetDeadlineComponent } from './components/set-deadline/set-deadline.component';
+import { TaskTypeLabelPipe } from './pipes/task-type-label.pipe';
+import { MaritimeInputComponent } from '@shared/components/account/operator/maritime-input';
+import { MaritimeOperatorComponent } from './components/account/operator/maritime-operator/maritime-operator.component';
 
 @NgModule({
   declarations: [
@@ -228,8 +235,10 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     UkDateControlComponent,
     FormatUkDatePipe,
     DateOfBirthPipe,
+    NativeDateToUkDate,
     InstallationPipe,
     AircraftOperatorPipe,
+    MaritimeOperatorPipe,
     IndividualPipe,
     GovernmentPipe,
     IndividualFullNamePipe,
@@ -243,6 +252,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     EnvironmentalActivityPipe,
     EventTypePipe,
     AccessRightsPipe,
+    TaskTypeLabelPipe,
     AccountHolderContactComponent,
     AccountDetailsViewComponent,
     BillingDetailsViewComponent,
@@ -251,6 +261,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     ExcludeBillingFormComponent,
     InstallationComponent,
     AircraftOperatorComponent,
+    MaritimeOperatorComponent,
     AuthRepTableComponent,
     AuthRepContactComponent,
     ThreeLineAddressComponent,
@@ -318,6 +329,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     CookiesPopUpComponent,
     CookiesPopUpContainerComponent,
     GovukTimePipe,
+    IsPastDatePipe,
     ConcatDateTimePipe,
     GovukTagComponent,
     NavMenuComponent,
@@ -332,6 +344,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     ReportSuccessBannerComponent,
     InstallationInputComponent,
     AircraftInputComponent,
+    MaritimeInputComponent,
     OperatorSummaryChangesComponent,
     SpinnerComponent,
     PersonalDetailsComponent,
@@ -356,6 +369,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     EmptySearchResultsComponent,
     ReadMoreComponent,
     NotesListComponent,
+    SetDeadlineComponent,
   ],
   imports: [
     FormsModule,
@@ -368,6 +382,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     QuillModule,
   ],
   exports: [
+    CommonModule,
     ToggleButtonComponent,
     ErrorSummaryComponent,
     BackButtonComponent,
@@ -398,12 +413,15 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     UkDateControlComponent,
     FormatUkDatePipe,
     DateOfBirthPipe,
+    NativeDateToUkDate,
     InstallationPipe,
     TaskTypeBeforeApprovalLabelPipe,
     AircraftOperatorPipe,
+    MaritimeOperatorPipe,
     IndividualPipe,
     GovernmentPipe,
     OrganisationPipe,
+    TaskTypeLabelPipe,
     EmptyPageComponent,
     SharedAccountHolderComponent,
     IsBillablePipe,
@@ -414,6 +432,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     BillingDetailsFormComponent,
     ExcludeBillingFormComponent,
     AircraftOperatorComponent,
+    MaritimeOperatorComponent,
     InstallationComponent,
     AuthRepTableComponent,
     PhoneNumberComponent,
@@ -422,6 +441,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     EnvironmentalActivityPipe,
     EventTypePipe,
     AccessRightsPipe,
+    SubMenuComponent,
     IssuanceTransactionSummaryTableComponent,
     ItlNotificationSummaryComponent,
     UkRadioInputComponent,
@@ -480,6 +500,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     CookiesPopUpComponent,
     CookiesPopUpContainerComponent,
     GovukTimePipe,
+    IsPastDatePipe,
     ConcatDateTimePipe,
     GovukTagComponent,
     NavMenuComponent,
@@ -495,6 +516,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     ReportSuccessBannerComponent,
     InstallationInputComponent,
     AircraftInputComponent,
+    MaritimeInputComponent,
     OperatorSummaryChangesComponent,
     SpinnerComponent,
     PersonalDetailsComponent,
@@ -525,6 +547,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     EmptySearchResultsComponent,
     ReadMoreComponent,
     NotesListComponent,
+    SetDeadlineComponent,
   ],
   providers: [
     TypeAheadService,
@@ -539,6 +562,7 @@ import { NotesApiService } from '@registry-web/notes/services/notes-api.service'
     CountryNameAsyncPipe,
     DatePipe,
     DateOfBirthPipe,
+    NativeDateToUkDate,
     NotificationApiService,
     NotesApiService,
   ],

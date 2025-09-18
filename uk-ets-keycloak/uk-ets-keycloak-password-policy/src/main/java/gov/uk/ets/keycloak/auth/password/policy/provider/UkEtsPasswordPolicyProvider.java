@@ -1,24 +1,24 @@
 package gov.uk.ets.keycloak.auth.password.policy.provider;
 
-import gov.uk.ets.keycloak.auth.password.policy.factory.UkEtsPasswordPolicyProviderFactory;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import org.keycloak.models.KeycloakContext;
+import java.io.IOException;
+
+import org.keycloak.broker.provider.util.SimpleHttp;
+import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.policy.PasswordPolicyNotMetException;
 import org.keycloak.policy.PasswordPolicyProvider;
 import org.keycloak.policy.PolicyError;
 
+import gov.uk.ets.keycloak.auth.password.policy.factory.UkEtsPasswordPolicyProviderFactory;
+import jakarta.ws.rs.ProcessingException;
+
 public class UkEtsPasswordPolicyProvider implements PasswordPolicyProvider {
 
-	private Client client = ClientBuilder.newClient();
-	private final KeycloakContext context;
+	private final KeycloakSession session;
 
-	public UkEtsPasswordPolicyProvider(KeycloakContext context) {
-		this.context = context;
+	public UkEtsPasswordPolicyProvider(KeycloakSession session) {
+		this.session = session;
 	}
 	
 	public void close() {
@@ -29,18 +29,19 @@ public class UkEtsPasswordPolicyProvider implements PasswordPolicyProvider {
 	}
 
 	public PolicyError validate(String user, String password) {
-		String passwdValidateAPIServiceUrl = context.getRealm().getPasswordPolicy().getPolicyConfig(UkEtsPasswordPolicyProviderFactory.ID);
+		String passwdValidateAPIServiceUrl = session.getContext().getRealm().getPasswordPolicy().getPolicyConfig(UkEtsPasswordPolicyProviderFactory.ID);
 		try {	
-			
-			ValidatePasswordResponse response = client
-			          .target(passwdValidateAPIServiceUrl)
-			          .request(MediaType.APPLICATION_JSON)
-			          .post(Entity.entity(password, MediaType.TEXT_PLAIN),ValidatePasswordResponse.class);
+			ValidatePasswordResponse response = SimpleHttp
+					.doPost(passwdValidateAPIServiceUrl, session)
+					.json(password)
+					.asJson(ValidatePasswordResponse.class);
 			
 			if(!response.isValid()) {
-				return new PolicyError(response.getErrorCode(), response.getMessage());
+				throw new PasswordPolicyNotMetException(user, response.getMessage());
 			}
 		} catch (ProcessingException e) {
+			return new PolicyError(e.getMessage());
+		} catch (IOException e) {
 			return new PolicyError(e.getMessage());
 		}
 		

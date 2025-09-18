@@ -2,7 +2,7 @@ package uk.gov.ets.registration.user.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,7 +19,7 @@ public class RegistrationResponseEntityExceptionHandler extends ResponseEntityEx
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
-        HttpMessageNotReadableException exception, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        HttpMessageNotReadableException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         InvalidFormatException originalException = (InvalidFormatException) exception.getCause();
         String customMessage =
             originalException.getOriginalMessage() + " -- location: " + originalException.getLocation();

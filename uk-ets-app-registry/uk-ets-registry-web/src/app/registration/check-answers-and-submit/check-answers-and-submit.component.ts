@@ -3,27 +3,31 @@ import { Store } from '@ngrx/store';
 import { canGoBack, clearErrors } from 'src/app/shared/shared.action';
 import { User } from '@shared/user';
 import { submitRegistration } from '../registration.actions';
-import { selectUser } from '../registration.selector';
+import {
+  selectDeclarationConfirmed,
+  selectUser,
+} from '../registration.selector';
 import {
   selectBirthCountry,
-  selectPhoneNumberFull,
   selectResidenceCountry,
-  selectWorkCountry
+  selectShowMobileNumberWarning,
+  selectWorkCountry,
 } from './check-answers-and-submit.selectors';
 
 @Component({
   selector: 'app-check-answers-and-submit',
-  templateUrl: './check-answers-and-submit.component.html'
+  templateUrl: './check-answers-and-submit.component.html',
 })
 export class CheckAnswersAndSubmitComponent implements OnInit {
   user$ = this.store.select(selectUser);
-  phoneNumberFull$ = this.store.select(selectPhoneNumberFull);
   residenceCountry$ = this.store.select(selectResidenceCountry);
   workCountry$ = this.store.select(selectWorkCountry);
   birthCountry$ = this.store.select(selectBirthCountry);
+  declarationConfirmated$ = this.store.select(selectDeclarationConfirmed);
+  showMobileNumberWarning$ = this.store.select(selectShowMobileNumberWarning);
 
   readonly nextRoute = '/registration/registered';
-  readonly previousRoute = '/registration/choose-password';
+  readonly previousRoute = '/registration/declaration';
 
   constructor(private store: Store) {}
 

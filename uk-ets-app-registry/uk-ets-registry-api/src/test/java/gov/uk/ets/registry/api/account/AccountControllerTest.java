@@ -1,5 +1,19 @@
 package gov.uk.ets.registry.api.account;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.commons.logging.Config;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
@@ -23,7 +37,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountStatusAction;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.PermitDTO;
 import gov.uk.ets.registry.api.account.web.model.search.AccountTypeOption;
@@ -42,6 +56,14 @@ import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import gov.uk.ets.registry.api.transaction.web.mapper.TransactionSearchResultMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Builder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +71,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -58,31 +81,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = AccountController.class)
+@WebMvcTest(controllers = AccountController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 class AccountControllerTest {
 
     private static final String SEARCH_URL = "/api-registry/accounts.list";
@@ -178,7 +178,7 @@ class AccountControllerTest {
     @DisplayName("Get Account Operator information, expect to succeed")
     void getAccountOperator() throws Exception {
         String template = "/api-registry/accounts.get.operator";
-        InstallationOrAircraftOperatorDTO dto = new InstallationOrAircraftOperatorDTO();
+        OperatorDTO dto = new OperatorDTO();
         dto.setIdentifier(10001L);
         dto.setFirstYear(2022);
         dto.setActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS);
@@ -256,14 +256,14 @@ class AccountControllerTest {
     void updateAccountOperatorDetails() throws Exception {
 
         AccountOperatorDetailsUpdateDTO dto = new AccountOperatorDetailsUpdateDTO();
-        InstallationOrAircraftOperatorDTO diff = new InstallationOrAircraftOperatorDTO();
+        OperatorDTO diff = new OperatorDTO();
         diff.setActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS);
         diff.setIdentifier(10001L);
         diff.setFirstYear(2022);
         diff.setType("INSTALLATION");
         diff.setRegulator(RegulatorType.EA);
         dto.setDiff(diff);
-        InstallationOrAircraftOperatorDTO current = new InstallationOrAircraftOperatorDTO();
+        OperatorDTO current = new OperatorDTO();
         current.setActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS);
         current.setFirstYear(2024);
         current.setType("INSTALLATION");
@@ -331,6 +331,7 @@ class AccountControllerTest {
         authorizationTestHelper.mockAuthAsAdmin();
         List<AccountTypeOption> accountTypeOptions = Stream
             .of(AccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
                 AccountType.TRADING_ACCOUNT, AccountType.UK_AUCTION_DELIVERY_ACCOUNT,
                 AccountType.PERSON_HOLDING_ACCOUNT, AccountType.FORMER_OPERATOR_HOLDING_ACCOUNT)
             .sorted(Comparator.comparing(AccountType::getKyoto).thenComparing(AccountType::getLabel))
@@ -595,7 +596,7 @@ class AccountControllerTest {
         PermitDTO permitDTO = new PermitDTO();
         permitDTO.setId("12345678");
 
-        InstallationOrAircraftOperatorDTO operator = new InstallationOrAircraftOperatorDTO();
+        OperatorDTO operator = new OperatorDTO();
         operator.setName("installation");
         operator.setActivityType(InstallationActivityType.MANUFACTURE_OF_MINERAL_WOOL);
         operator.setRegulator(RegulatorType.DAERA);

@@ -1,0 +1,44 @@
+<app-account-holder-heading-overview
+  [headingCaption]="'Change account holder'"
+  [accountHolderType]="acquiringAccountHolderType$ | async"
+  [accountHolderExisting]="accountHolderExisting$ | async"
+  [accountHolderCompleted]="accountHolderCompleted$ | async"
+>
+</app-account-holder-heading-overview>
+<app-account-holder-short-overview
+  [heading]="'Transferring account holder'"
+  [accountHolder]="transferringAccountHolder$ | async"
+>
+</app-account-holder-short-overview>
+<app-account-holder-overview
+  [headingCaption]="'Change account holder'"
+  [accountHolder]="acquiringAccountHolder$ | async"
+  [accountHolderExisting]="accountHolderExisting$ | async"
+  [accountHolderCompleted]="accountHolderCompleted$ | async"
+  (goToAccountHolderDetailsScreen)="navigateToAccountHolderDetails()"
+>
+</app-account-holder-overview>
+<app-account-holder-contact-overview
+  [accountHolderContact]="acquiringAccountHolderContact$ | async"
+  [contactType]="primaryType"
+  [contactCountry]="acquiringAccountHolderContactAddressCountry$ | async"
+  [accountHolderExisting]="accountHolderExisting$ | async"
+  [contactDetailsRoute]="contactDetailsRoute"
+  [headingPrefix]="'New'"
+  [showAccountHolderContactFullNameHeading]="false"
+  (goToContactDetailsScreen)="navigateToContactDetails()"
+>
+</app-account-holder-contact-overview>
+<div class="govuk-form-group">
+  <button
+    id="submit"
+    class="govuk-button"
+    data-module="govuk-button"
+    appDebounceClick
+    (debounceClick)="onSubmit()"
+  >
+    Submit
+  </button>
+</div>
+<app-cancel-request-link (goToCancelScreen)="onCancel()">
+</app-cancel-request-link>

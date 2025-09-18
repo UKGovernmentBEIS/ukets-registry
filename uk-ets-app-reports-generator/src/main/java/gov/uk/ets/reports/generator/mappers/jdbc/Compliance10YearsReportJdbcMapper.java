@@ -5,7 +5,6 @@ import gov.uk.ets.reports.generator.export.util.ComplianceReportUtil;
 import gov.uk.ets.reports.generator.export.util.DateRangeUtil;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -48,11 +47,16 @@ public class Compliance10YearsReportJdbcMapper
             "   else ''\n" +
             "end";
 
-    private static final String PERMIT_OR_MONITORING_PLAN_ID_COLUMN =
-        "case\n" +
-            "   when a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' then (select permit_identifier from installation i where i.compliant_entity_id = ce.id)\n" +
-            "   else (select monitoring_plan_identifier from aircraft_operator ao where ao.compliant_entity_id = ce.id)\n" +
-            "end";
+    private static final String PERMIT_OR_MONITORING_PLAN_ID_COLUMN = """
+                    CASE
+                        WHEN a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT permit_identifier FROM installation i WHERE i.compliant_entity_id = ce.id)
+                        WHEN a.registry_account_type = 'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT monitoring_plan_identifier FROM aircraft_operator ao WHERE ao.compliant_entity_id = ce.id)
+                        WHEN a.registry_account_type = 'MARITIME_OPERATOR_HOLDING_ACCOUNT'
+                            THEN (SELECT maritime_monitoring_plan_identifier FROM maritime_operator mo WHERE mo.compliant_entity_id = ce.id)
+                    END
+            """;
 
     private static final String VERIFIED_EMISSIONS_COLUMN =
         "case\n" +
@@ -333,11 +337,6 @@ public class Compliance10YearsReportJdbcMapper
             ") t2";
 
     @Override
-    public List<Compliance10YearsReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
-
-    @Override
     public List<Compliance10YearsReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {
         LocalDateTime cutOffDateTime = DateRangeUtil.getCutOffDateTime(reportQueryInfo);
         referenceYear = calculateReferenceYear(cutOffDateTime);
@@ -446,8 +445,8 @@ public class Compliance10YearsReportJdbcMapper
                 "         cross join years\n" +
                 "where t.type = '" + type + "'\n" +
                 "  and t.status = 'COMPLETED'\n" +
-                "  and execution_date >= TO_TIMESTAMP(concat(years.year - 1, '-05-01'), 'YYYY-MM-DD')\n" +
-                "  and execution_date < TO_TIMESTAMP(concat(years.year, '-05-01'), 'YYYY-MM-DD')\n" +
+                "  and execution_date >= TO_TIMESTAMP(concat(years.year, '-05-01'), 'YYYY-MM-DD')\n" +
+                "  and execution_date < TO_TIMESTAMP(concat(years.year + 1, '-05-01'), 'YYYY-MM-DD')\n" +
                 " and execution_date <= ? " +
                 "group by io2.installation_id, aa.id, years.year";
 

@@ -25,14 +25,13 @@ import gov.uk.ets.reports.api.web.model.ReportDto;
 import gov.uk.ets.reports.model.ReportRequestingRole;
 import gov.uk.ets.reports.model.ReportStatus;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.AccountSearchCriteria;
+import jakarta.servlet.annotation.WebFilter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.annotation.WebFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,6 @@ class ReportControllerTest {
     private static final Long TEST_REPORT_ID = 1212L;
     private static final String TEST_URID = "UK1234567890";
     private static final long TEST_REPORT_ID_1 = 1L;
-    private static final String TEST_NAME = "test_name";
 
     @Autowired
     private MockMvc mockMvc;
@@ -84,14 +82,10 @@ class ReportControllerTest {
 
     @Test
     public void shouldCreateReportRequest() throws Exception {
-
-        AccountSearchCriteria dummyCriteriaDto = new AccountSearchCriteria();
-        dummyCriteriaDto.setAccountHolderName(TEST_NAME);
         ReportCreationRequest reportCreationRequest =
             ReportCreationRequest.builder()
                 .type(ReportType.R0001)
                 .requestingRole(ReportRequestingRole.administrator)
-                .criteria(dummyCriteriaDto)
                 .build();
         when(service.requestReport(reportCreationRequest, TEST_URID))
             .thenReturn(ReportCreationResponse.builder().reportId(TEST_REPORT_ID).build());
@@ -182,7 +176,7 @@ class ReportControllerTest {
     @Test
     public void shouldThrowWhenWrongReportType() throws Exception {
         String content =
-            "{\"type\": \"WRONG\", \"criteria\": {\"accountHolderName\": \"test\"}}";
+            "{\"type\": \"WRONG\"}";
 
         MvcResult result = this.mockMvc.perform(
             post("/api-reports/reports.request")
@@ -200,32 +194,8 @@ class ReportControllerTest {
         assertThat(error).isNotNull();
         assertThat(error.getErrorDetails()).hasSize(1);
         assertThat(error.getErrorDetails().get(0).getMessage()).contains(
-            "Could not resolve type id 'WRONG' as a subtype of `gov.uk.ets.reports.model.criteria.ReportCriteria`: known type ids"
+            "Cannot deserialize value of type `gov.uk.ets.reports.model.ReportType` from String \"WRONG\": not one of the values accepted for Enum class:"
         );
-    }
-
-    @Test
-    public void shouldThrowWhenWrongCriteriaType() throws Exception {
-        String content =
-            "{ \"type\": \"R0001\", \"criteria\": {\"accountHolderNameWrong\": \"test\"}}";
-
-        MvcResult result = this.mockMvc.perform(
-            post("/api-reports/reports.request")
-                .contentType("application/json")
-                .content(content)
-        )
-            .andExpect(status().isBadRequest())
-            .andExpect(
-                r -> assertThat(r.getResolvedException()).isInstanceOf(HttpMessageNotReadableException.class)
-            )
-            .andReturn();
-
-        ErrorBody error = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorBody.class);
-
-        assertThat(error).isNotNull();
-        assertThat(error.getErrorDetails()).hasSize(1);
-        assertThat(error.getErrorDetails().get(0).getMessage()).contains(
-            "Unrecognized field \"accountHolderNameWrong\" (class gov.uk.ets.reports.model.criteria.AccountSearchCriteria), not marked as ignorable");
     }
     
     @Test

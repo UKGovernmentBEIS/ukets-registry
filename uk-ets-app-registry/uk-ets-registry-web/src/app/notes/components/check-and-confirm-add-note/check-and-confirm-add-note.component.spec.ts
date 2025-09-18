@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CheckAndConfirmAddNoteComponent } from './check-and-confirm-add-note.component';
-import { SharedModule } from '@registry-web/shared/shared.module';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CheckAndConfirmAddNoteComponent', () => {
   let component: CheckAndConfirmAddNoteComponent;
@@ -8,8 +8,8 @@ describe('CheckAndConfirmAddNoteComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SharedModule],
-      declarations: [CheckAndConfirmAddNoteComponent],
+      imports: [],
+      declarations: [],
     }).compileComponents();
   });
 
@@ -28,8 +28,11 @@ describe('CheckAndConfirmAddNoteComponent', () => {
     const cancelButton = fixture.nativeElement.querySelector(
       '.govuk-link--no-visited-state'
     );
-    cancelButton.click();
-    expect(component.handleCancel.emit).toHaveBeenCalled();
+
+    fixture.whenStable().then(() => {
+      cancelButton.click();
+      expect(component.handleCancel.emit).toHaveBeenCalled();
+    });
   });
 
   it(
@@ -50,7 +53,10 @@ describe('CheckAndConfirmAddNoteComponent', () => {
     const changeLink = fixture.nativeElement.querySelector(
       '.govuk-summary-list__actions a'
     );
-    changeLink.click();
-    expect(component.handleChange.emit).toHaveBeenCalled();
+
+    fixture.whenStable().then(() => {
+      changeLink.click();
+      expect(component.handleChange.emit).toHaveBeenCalled();
+    });
   });
 });

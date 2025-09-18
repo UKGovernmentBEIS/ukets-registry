@@ -2,7 +2,7 @@ package gov.uk.ets.registry.api.authz.ruleengine;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;

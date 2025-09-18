@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionRepository;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
@@ -120,7 +121,7 @@ class UserStatusServiceTest {
         MockitoAnnotations.openMocks(this);
         AccessToken token = new AccessToken();
         token.setSubject("admin_subject");
-        when(authorizationService.getToken()).thenReturn(token);
+        when(authorizationService.getClaim(OAuth2ClaimNames.SUBJECT)).thenReturn("admin_subject");
         admin = new User();
         when(userRepository.findByIamIdentifier(token.getSubject())).thenReturn(admin);
         userService =

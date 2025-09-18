@@ -5,7 +5,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.BusinessSecurityStore;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInputStore;
 import gov.uk.ets.registry.api.authz.ruleengine.RuleInputType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

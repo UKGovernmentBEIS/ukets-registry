@@ -1,7 +1,7 @@
 package uk.gov.ets.transaction.log.domain;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 

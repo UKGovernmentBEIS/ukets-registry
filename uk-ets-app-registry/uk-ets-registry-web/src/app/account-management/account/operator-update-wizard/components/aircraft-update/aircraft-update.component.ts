@@ -8,6 +8,7 @@ import { AircraftOperator } from '@shared/model/account';
       [aircraft]="operatorInfo"
       [title]="'Update the Aircraft Operator details'"
       [headerTitle]="'Request to update the Aircraft Operator information'"
+      [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
       (aircraftOutput)="onContinue($event)"
       (errorDetails)="onErrors($event)"
     ></app-aircraft-input
@@ -18,6 +19,9 @@ import { AircraftOperator } from '@shared/model/account';
 export class AircraftUpdateComponent {
   @Input()
   operatorInfo: AircraftOperator;
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
+
   @Output() readonly cancelEmitter = new EventEmitter();
   @Output() readonly errorEmitter = new EventEmitter<ErrorSummary>();
   @Output() readonly continueEmitter = new EventEmitter<AircraftOperator>();

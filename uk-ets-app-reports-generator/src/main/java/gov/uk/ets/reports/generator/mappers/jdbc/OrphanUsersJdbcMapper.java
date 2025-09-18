@@ -6,7 +6,6 @@ import gov.uk.ets.reports.generator.domain.UserRole;
 import gov.uk.ets.reports.generator.keycloak.KeycloakDbService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -57,22 +56,6 @@ public class OrphanUsersJdbcMapper implements ReportDataMapper<OrphanUserData>, 
                   UserRole.SYSTEM_ADMINISTRATOR)
                           .map(UserRole::getKeycloakLiteral)
                           .collect(Collectors.toSet());
-
-    @Override
-    public List<OrphanUserData> mapData(ReportCriteria criteria) {
-        List<OrphanUserData> query = jdbcTemplate.query(REPORT_QUERY, this);
-        // get all users from keycloak with all of their roles and filter out excluded roles
-        Set<String> keycloakUsersIdsAfterExcludingRoles =
-            keycloakDbService.getKeycloakUsersRolesMap().entrySet().stream()
-                             .filter(u -> Collections.disjoint(u.getValue(), rolesToBeExcluded))
-                             .map(Map.Entry::getKey)
-                             .collect(Collectors.toSet());
-
-        // return a list that exist in both collections.
-        return
-            query.stream().filter(u -> keycloakUsersIdsAfterExcludingRoles.contains(u.getUser().getIamIdentifier()))
-                 .collect(Collectors.toList());
-    }
 
     @Override
     public List<OrphanUserData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

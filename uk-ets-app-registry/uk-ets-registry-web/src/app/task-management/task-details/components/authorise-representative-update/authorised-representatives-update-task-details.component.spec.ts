@@ -25,27 +25,25 @@ describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {
   let component: AuthorisedRepresentativesUpdateTaskDetailsComponent;
   let fixture: ComponentFixture<AuthorisedRepresentativesUpdateTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CommonModule, RouterTestingModule],
-        declarations: [
-          AuthorisedRepresentativesUpdateTaskDetailsComponent,
-          AuthRepContactComponent,
-          ArUpdateUserComponent,
-          PhoneNumberComponent,
-          ThreeLineAddressComponent,
-          AuthRepTableComponent,
-          ArUpdateAccessRightsComponent,
-          AccountSummaryComponent,
-          GovukTagComponent,
-          AccessRightsPipe,
-          MockProtectPipe,
-          ArDisplayNamePipe,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [CommonModule, RouterTestingModule],
+      declarations: [
+        AuthorisedRepresentativesUpdateTaskDetailsComponent,
+        AuthRepContactComponent,
+        ArUpdateUserComponent,
+        PhoneNumberComponent,
+        ThreeLineAddressComponent,
+        AuthRepTableComponent,
+        ArUpdateAccessRightsComponent,
+        AccountSummaryComponent,
+        GovukTagComponent,
+        AccessRightsPipe,
+        MockProtectPipe,
+        ArDisplayNamePipe,
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(
@@ -76,11 +74,12 @@ describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {
           line1: '',
           line2: '',
           line3: '',
-          phoneNumber1: '',
-          countryCode1: '',
-          phoneNumber2: '',
-          countryCode2: '',
           postCode: '',
+          mobileCountryCode: '',
+          mobilePhoneNumber: '',
+          alternativeCountryCode: '',
+          alternativePhoneNumber: '',
+          noMobilePhoneNumberReason: '',
         },
       },
       currentUser: {
@@ -97,11 +96,12 @@ describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {
           line1: '',
           line2: '',
           line3: '',
-          phoneNumber1: '',
-          countryCode1: '',
-          phoneNumber2: '',
-          countryCode2: '',
           postCode: '',
+          mobileCountryCode: '',
+          mobilePhoneNumber: '',
+          alternativeCountryCode: '',
+          alternativePhoneNumber: '',
+          noMobilePhoneNumberReason: '',
         },
       },
       arUpdateType: AuthorisedRepresentativesUpdateType.ADD,

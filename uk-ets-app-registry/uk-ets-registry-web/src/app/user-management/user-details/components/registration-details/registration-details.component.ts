@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { KeycloakUser } from '@shared/user/keycloak-user';
 import { EnrolmentKey } from '@user-management/user-details/model';
-import * as MenuProperties from '@shared/model/navigation-menu';
+
 import { ViewMode } from '@user-management/user-details/model/user-details.model';
 import { userStatusMap } from '@shared/user';
 
@@ -17,8 +17,6 @@ export class RegistrationDetailsComponent {
   @Output() readonly emailChange = new EventEmitter<string>();
   @Output() readonly tokenChange = new EventEmitter();
   @Output() readonly passwordChange = new EventEmitter();
-
-  readonly menuProperties = MenuProperties;
 
   readonly viewMode = ViewMode;
 

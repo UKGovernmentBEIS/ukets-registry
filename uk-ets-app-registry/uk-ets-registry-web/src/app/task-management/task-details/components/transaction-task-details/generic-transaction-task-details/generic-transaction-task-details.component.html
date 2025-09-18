@@ -4,6 +4,7 @@
       header="Transferring account"
       [accountInfo]="transactionTaskDetails.transferringAccount"
       [isTransactionReversal]="isTransactionReversal"
+      [operator]="transactionTaskDetails.transferringAccount?.operator"
     >
     </app-account-summary>
     <dl class="govuk-summary-list govuk-summary-list--no-border">

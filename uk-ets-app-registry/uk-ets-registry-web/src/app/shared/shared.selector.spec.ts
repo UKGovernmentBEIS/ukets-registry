@@ -55,7 +55,7 @@ describe('Shared Selectors', () => {
       expect(
         actual.menuItems.find((i) => i.label === 'ETS Administration')?.subMenus
           .length
-      ).toEqual(4);
+      ).toEqual(5);
     });
 
     it('should hide submenus which have hideOnScopes property & submenus which the user does not have required scope', () => {
@@ -73,7 +73,7 @@ describe('Shared Selectors', () => {
         (i) => i.label === 'Request allocation of UK allowances'
       );
 
-      expect(etsAdminSubMenus.length).toEqual(6);
+      expect(etsAdminSubMenus.length).toEqual(7);
       expect(requestAllocationSubMenu).toBeUndefined();
     });
   });

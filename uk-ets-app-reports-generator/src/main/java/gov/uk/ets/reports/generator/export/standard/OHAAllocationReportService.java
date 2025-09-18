@@ -5,11 +5,9 @@ import gov.uk.ets.reports.generator.export.ReportTypeService;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +34,7 @@ public class OHAAllocationReportService implements ReportTypeService<OHAAllocati
         data.add(reportData.getActivityType());
         data.add(reportData.getFirstYear());
         data.add(reportData.getRegulator());
+        data.add(reportData.getEntitled());
         data.add(reportData.getAllocated());
         return data;
     }
@@ -43,12 +42,7 @@ public class OHAAllocationReportService implements ReportTypeService<OHAAllocati
     @Override
     public List<String> getReportHeaders(Long year) {
         return List.of("Account Holder Name", "Sales Contact Email", "Sales Contact Phone", "Installation ID", "Installation Name", "Permit ID", "Activity Type",
-                "First Year of Operation", "Regulator", "Allocation_"+ year);
-    }
-
-    @Override
-    public List<OHAAllocationReportData> generateReportData(ReportCriteria criteria) {
-        return mapper.mapData(criteria);
+                "First Year of Operation", "Regulator", "Allocation Entitlement_"+ year, "Allocation Delivered_"+ year);
     }
 
     @Override

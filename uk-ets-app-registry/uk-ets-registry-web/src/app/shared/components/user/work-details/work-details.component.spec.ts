@@ -11,6 +11,7 @@ import { ConnectFormDirective } from '@shared/connect-form.directive';
 import { WorkDetailsComponent } from './work-details.component';
 import { User } from '@registry-web/shared/user';
 import { SharedModule } from '@registry-web/shared/shared.module';
+import { UkRegistryValidators } from '@registry-web/shared/validation';
 
 const formBuilder = new FormBuilder();
 
@@ -18,27 +19,25 @@ describe('WorkDetailsComponent', () => {
   let component: WorkDetailsComponent;
   let fixture: ComponentFixture<WorkDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        imports: [ReactiveFormsModule, SharedModule],
-        declarations: [
-          WorkDetailsComponent,
-          FormGroupDirective,
-          ScreenReaderPageAnnounceDirective,
-          ConnectFormDirective,
-        ],
-        providers: [{ provide: FormBuilder, useValue: formBuilder }],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [ReactiveFormsModule, SharedModule],
+      declarations: [
+        WorkDetailsComponent,
+        FormGroupDirective,
+        ScreenReaderPageAnnounceDirective,
+        ConnectFormDirective,
+      ],
+      providers: [{ provide: FormBuilder, useValue: formBuilder }],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(WorkDetailsComponent);
     component = fixture.componentInstance;
     component.countries = [];
-    component._user = new User();
+    component.user = new User();
     component.ngOnInit();
   });
 
@@ -46,14 +45,50 @@ describe('WorkDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should update workCountryCode and workPhoneNumber when user input is set', () => {
+  it('should require hasWorkMobilePhone', () => {
+    const hasWorkMobilePhoneFC = component.formGroup.get('hasWorkMobilePhone');
+    expect(hasWorkMobilePhoneFC.validator).toBe(Validators.required);
+  });
+  it('should make workMobilePhone required when hasWorkMobilePhone is true', () => {
+    component.hasWorkMobilePhone = true;
+    component.ngOnInit();
+
+    expect(component.formGroup.get('workMobilePhone').validator).toBe(
+      UkRegistryValidators.allFieldsRequired
+    );
+    expect(
+      component.formGroup.get('workAlternativePhone').validator
+    ).toBeNull();
+    expect(
+      component.formGroup.get('noMobilePhoneNumberReason').validator
+    ).toBeNull();
+  });
+
+  it('should make workAlternativePhone and noMobilePhoneNumberReason required when hasWorkMobilePhone is false', () => {
+    component.hasWorkMobilePhone = false;
+    component.ngOnInit();
+
+    expect(component.formGroup.get('workMobilePhone').validator).toBeNull();
+    expect(component.formGroup.get('workAlternativePhone').validator).toBe(
+      UkRegistryValidators.allFieldsRequired
+    );
+    expect(
+      component.formGroup.get('noMobilePhoneNumberReason').validator
+    ).toEqual(Validators.required);
+  });
+
+  it('should fill workMobilePhone with values from user input', () => {
+    const countryCode = 'UK (44)';
+    const phoneNumber = '1234567890';
     const user = new User();
-    user.workCountryCode = 'UK';
-    user.workPhoneNumber = '1234567890';
+    user.workMobileCountryCode = countryCode;
+    user.workMobilePhoneNumber = phoneNumber;
     component.user = user;
-    expect(component._phoneInfo).toEqual({
-      countryCode: 'UK',
-      phoneNumber: '1234567890',
+    component.ngOnInit();
+
+    expect(component.formGroup.get('workMobilePhone').value).toEqual({
+      countryCode,
+      phoneNumber,
     });
   });
 
@@ -63,42 +98,5 @@ describe('WorkDetailsComponent', () => {
     expect(workPostCodeControl.validator).toBeNull();
     component.formGroup.patchValue({ workCountry: 'UK' });
     expect(workPostCodeControl.validator).toBe(Validators.required);
-  });
-
-  it('should update workEmailAddress and workEmailAddressConfirmation when sameEmail is checked', () => {
-    const user = new User();
-    user.emailAddress = 'test@email.com';
-    component._user = user;
-    component.sameEmail = true;
-    component.ngAfterViewInit();
-
-    expect(component.formGroup.get('workEmailAddress').value).toBe(
-      'test@email.com'
-    );
-    expect(component.formGroup.get('workEmailAddressConfirmation').value).toBe(
-      'test@email.com'
-    );
-  });
-
-  it('should update work address when sameAddress is checked', () => {
-    const user = new User();
-    user.buildingAndStreet = '123 Street';
-    user.buildingAndStreetOptional = 'Apt 4';
-    user.townOrCity = 'City';
-    user.postCode = '12345';
-    user.country = 'UK';
-    component._user = user;
-    component.sameAddress = true;
-    component.ngAfterViewInit();
-
-    expect(component.formGroup.get('workBuildingAndStreet').value).toBe(
-      '123 Street'
-    );
-    expect(component.formGroup.get('workBuildingAndStreetOptional').value).toBe(
-      'Apt 4'
-    );
-    expect(component.formGroup.get('workTownOrCity').value).toBe('City');
-    expect(component.formGroup.get('workPostCode').value).toBe('12345');
-    expect(component.formGroup.get('workCountry').value).toBe('UK');
   });
 });

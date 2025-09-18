@@ -16,7 +16,7 @@ import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.compliance.repository.StaticComplianceStatusRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -125,8 +125,8 @@ class ComplianceEventServiceTest {
     public void shouldNotSkipIfLyveHasPassedAndPreviousStatusWasB() {
         StaticComplianceStatus status = new StaticComplianceStatus();
         status.setComplianceStatus(ComplianceStatus.B);
-        when(staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYear(TEST_COMPLIANT_ENTITY_ID,
-            2019L)).thenReturn(Optional.of(status));
+        when(staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYearGreaterThanEqual(TEST_COMPLIANT_ENTITY_ID,
+            2019L)).thenReturn(List.of(status));
 
         Installation compliantEntity = new Installation();
         compliantEntity.setEndYear(2019);
@@ -137,15 +137,15 @@ class ComplianceEventServiceTest {
 
         assertThat(shouldSkip).isFalse();
         // make sure it is not skipped because of LYVE but because of previous compliance status
-        verify(staticComplianceStatusRepository, times(1)).findByCompliantEntityIdentifierAndYear(
+        verify(staticComplianceStatusRepository, times(1)).findByCompliantEntityIdentifierAndYearGreaterThanEqual(
             TEST_COMPLIANT_ENTITY_ID, 2019L);
     }
 
     @Test
     @DisplayName("should not skip static compliance calculation If LYVE has passed and previous status was null")
     public void shouldNotSkipIfLyveHasPassedAndPreviousStatusWasNull() {
-        when(staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYear(TEST_COMPLIANT_ENTITY_ID,
-            2019L)).thenReturn(Optional.ofNullable(null));
+        when(staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYearGreaterThanEqual(TEST_COMPLIANT_ENTITY_ID,
+            2019L)).thenReturn(List.of());
 
         Installation compliantEntity = new Installation();
         compliantEntity.setEndYear(2019);
@@ -156,7 +156,7 @@ class ComplianceEventServiceTest {
 
         assertThat(shouldSkip).isFalse();
         // make sure it is not skipped because of LYVE but because of previous compliance status
-        verify(staticComplianceStatusRepository, times(1)).findByCompliantEntityIdentifierAndYear(
+        verify(staticComplianceStatusRepository, times(1)).findByCompliantEntityIdentifierAndYearGreaterThanEqual(
             TEST_COMPLIANT_ENTITY_ID, 2019L);
     }
 
@@ -165,8 +165,8 @@ class ComplianceEventServiceTest {
     public void shouldSkipIfLyveHasPassedAndPreviousStatusWasA() {
         StaticComplianceStatus status = new StaticComplianceStatus();
         status.setComplianceStatus(ComplianceStatus.A);
-        when(staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYear(TEST_COMPLIANT_ENTITY_ID,
-            2019L)).thenReturn(Optional.of(status));
+        when(staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYearGreaterThanEqual(TEST_COMPLIANT_ENTITY_ID,
+            2019L)).thenReturn(List.of(status));
 
         Installation compliantEntity = new Installation();
         compliantEntity.setEndYear(2019);
@@ -177,7 +177,32 @@ class ComplianceEventServiceTest {
 
         assertThat(shouldSkip).isTrue();
         // make sure it is not skipped because of LYVE but because of previous compliance status
-        verify(staticComplianceStatusRepository, times(1)).findByCompliantEntityIdentifierAndYear(
+        verify(staticComplianceStatusRepository, times(1)).findByCompliantEntityIdentifierAndYearGreaterThanEqual(
             TEST_COMPLIANT_ENTITY_ID, 2019L);
+    }
+
+    @Test
+    @DisplayName("should skip static compliance calculation If LYVE has passed, previous year status does not exist and last status was A")
+    public void shouldSkipIfLyveHasPassedPreviousYearStatusWasNullAndLastStatusWasA() {
+        StaticComplianceStatus status2021 = new StaticComplianceStatus();
+        status2021.setYear(2021L);
+        status2021.setComplianceStatus(ComplianceStatus.C);
+        StaticComplianceStatus status2022 = new StaticComplianceStatus();
+        status2022.setYear(2022L);
+        status2022.setComplianceStatus(ComplianceStatus.A);
+        when(staticComplianceStatusRepository.findByCompliantEntityIdentifierAndYearGreaterThanEqual(TEST_COMPLIANT_ENTITY_ID,
+            2021L)).thenReturn(List.of(status2022, status2021));
+
+        Installation compliantEntity = new Installation();
+        compliantEntity.setEndYear(2021);
+        compliantEntity.setIdentifier(TEST_COMPLIANT_ENTITY_ID);
+
+        boolean shouldSkip = cut.skipStaticComplianceStatusRequestForEntity(compliantEntity, 2025);
+
+
+        assertThat(shouldSkip).isTrue();
+        // make sure it is not skipped because of LYVE but because of previous compliance status
+        verify(staticComplianceStatusRepository, times(1)).findByCompliantEntityIdentifierAndYearGreaterThanEqual(
+            TEST_COMPLIANT_ENTITY_ID, 2021L);
     }
 }

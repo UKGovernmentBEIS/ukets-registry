@@ -27,7 +27,7 @@
 
 .focused-text {
   background-color: $yellow-highlight-bg-colour;
-  border-color: $yellow-highlight-border-colour;
+  border-left-color: $yellow-highlight-border-colour;
   border-left-width: 5px;
   margin-right: 90px;
   padding: 7px;
@@ -35,6 +35,27 @@
 
 .summary-list-change-header-font-weight {
   font-weight: 700 !important;
+}
+
+.font-weight-normal {
+  font-weight: 400 !important;
+}
+
+.no-border {
+  border-bottom: 0px !important;
+}
+
+.no-width {
+  width: 0 !important;
+}
+
+.width-100 {
+  width: 100% !important;
+  min-width: 50vw;
+}
+
+.display-block {
+  display: block !important;
 }
 
 @media (min-width: 40.0625em) {
@@ -119,4 +140,13 @@
 }
 .forcibly-hide {
   display: none !important;
+}
+.summary-list-link {
+  float: left;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+.summary-list-link * {
+  float: left;
 }

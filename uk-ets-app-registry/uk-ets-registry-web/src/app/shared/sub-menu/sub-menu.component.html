@@ -13,6 +13,7 @@
                 subMenuActive === item.routerLink ? 'page' : 'false'
               "
               [routerLink]="item.routerLink"
+              [queryParams]="item.queryParams"
             >
               {{ item.label }}
             </a>

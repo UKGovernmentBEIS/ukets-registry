@@ -8,7 +8,7 @@ import gov.uk.ets.registry.api.reconciliation.transfer.ReconciliationEntrySummar
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

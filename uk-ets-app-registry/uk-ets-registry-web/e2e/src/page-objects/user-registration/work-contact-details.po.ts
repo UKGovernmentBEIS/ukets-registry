@@ -24,7 +24,6 @@ export class KnowsTheWorkContactDetailsPage extends KnowsThePage {
       .set('workPhone-country-code', 'UK')
       .set('workPhone-phone-number', '(020) 1234 1234')
       .set('workEmailAddress', 'test@test.gov.uk')
-      .set('workEmailAddressConfirmation', 'test@test.gov.uk')
       .set('workBuildingAndStreet', 'Down street, 42')
       .set('workBuildingAndStreetOptional', '')
       .set('workBuildingAndStreetOptional2', '')
@@ -38,11 +37,6 @@ export class KnowsTheWorkContactDetailsPage extends KnowsThePage {
     return new Map<string, Promise<string>>()
       .set('workPhone-country-code', this.getValue('workPhone-country-code'))
       .set('workPhone-phone-number', this.getValue('workPhone-phone-number'))
-      .set('workEmailAddress', this.getValue('workEmailAddress'))
-      .set(
-        'workEmailAddressConfirmation',
-        this.getValue('workEmailAddressConfirmation')
-      )
       .set('workBuildingAndStreet', this.getValue('workBuildingAndStreet'))
       .set(
         'workBuildingAndStreetOptional',

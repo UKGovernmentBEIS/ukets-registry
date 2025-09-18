@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.task.service;
 
 import com.querydsl.jpa.impl.JPAQuery;
+import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.allocation.service.RequestAllocationExcelFileGenerator;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.Scope;
@@ -60,7 +61,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.persistence.LockModeType;
+import jakarta.persistence.LockModeType;
 import lombok.extern.log4j.Log4j2;
 
 import org.apache.commons.lang3.StringUtils;
@@ -243,7 +244,7 @@ public class TaskService {
 		final boolean isCurrentUserAdmin = authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN);
 		EndUserSearch endUserSearch = new EndUserSearch();
 		endUserSearch.setAdminSearch(isCurrentUserAdmin);
-		endUserSearch.setIamIdentifier(authorizationService.getToken().getSubject());
+		endUserSearch.setIamIdentifier(authorizationService.getClaim(OAuth2ClaimNames.SUBJECT));
 		criteria.setEndUserSearch(endUserSearch);
 
 		return isReport ? searchAndGenerateReport(criteria, bearerToken, isCurrentUserAdmin) : search(criteria, pageable, isCurrentUserAdmin);
@@ -292,7 +293,7 @@ public class TaskService {
      * @param requestId The unique task business identifier.
      * @return a task.
      * TODO: this is called to get the header, could we call {@link #getTaskDetails}
-     * instead and set there the userClaimaint
+     * instead and set there the userClaimant
      */
     public TaskDetailsDTO getTaskDetailsDTO(Long requestId) {
         TaskDetailsDTO taskDetailsDTO = taskRepository.getTaskDetails(requestId);

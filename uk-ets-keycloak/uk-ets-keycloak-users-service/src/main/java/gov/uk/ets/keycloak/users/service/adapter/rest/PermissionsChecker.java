@@ -1,7 +1,7 @@
 package gov.uk.ets.keycloak.users.service.adapter.rest;
 
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotAuthorizedException;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.AccessToken.Access;
 import org.keycloak.services.managers.AppAuthManager;

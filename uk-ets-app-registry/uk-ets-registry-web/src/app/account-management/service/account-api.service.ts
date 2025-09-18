@@ -210,6 +210,8 @@ export class AccountApiService {
     let requestType = null;
     if (account.operator?.type == OperatorType.AIRCRAFT_OPERATOR) {
       requestType = RequestType.AIRCRAFT_OPERATOR_UPDATE_REQUEST;
+    } else if (account.operator?.type == OperatorType.MARITIME_OPERATOR) {
+      requestType = RequestType.MARITIME_OPERATOR_UPDATE_REQUEST;
     } else if (account.operator?.type == OperatorType.INSTALLATION) {
       requestType = RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST;
     }

@@ -3,12 +3,13 @@ package gov.uk.ets.registry.api.authz.ruleengine;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.AccountSecurityStoreSlice;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.AccountHolderSecurityStoreSlice;
 import gov.uk.ets.registry.api.authz.ruleengine.features.allocation.AllocationSecurityStoreSlice;
 import gov.uk.ets.registry.api.authz.ruleengine.features.ar.ARBusinessSecurityStoreSlice;
+import gov.uk.ets.registry.api.authz.ruleengine.features.payment.PaymentSecurityStoreSlice;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.TaskBusinessSecurityStoreSlice;
 import gov.uk.ets.registry.api.authz.ruleengine.features.transaction.TransactionBusinessSecurityStoreSlice;
 import gov.uk.ets.registry.api.authz.ruleengine.features.user.profile.EmailChangeSecurityStoreSlice;
@@ -52,7 +53,9 @@ public class BusinessSecurityStore {
     private int maxNumOfARs;
     private int minNumOfARs;
     private List<AllocationSummary> allocationEntries;
-    private InstallationOrAircraftOperatorDTO requestedOperatorUpdate;
+    private OperatorDTO requestedOperatorUpdate;
+    private Boolean emitterIdExists;
     private StatusChangeSecurityStoreSlice statusChangeSecurityStoreSlice;
     private AllocationSecurityStoreSlice allocationSecurityStoreSlice;
+    private PaymentSecurityStoreSlice paymentSecurityStoreSlice;
 }

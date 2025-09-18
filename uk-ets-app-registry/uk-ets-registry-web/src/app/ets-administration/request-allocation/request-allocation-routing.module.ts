@@ -6,7 +6,6 @@ import {
   CancelAllocationRequestContainerComponent,
   CheckAllocationRequestContainerComponent,
   RequestAllocationContainerComponent,
-  CancelPendingAllocationsComponent,
 } from '@request-allocation/components';
 
 const routes: Routes = [
@@ -14,6 +13,7 @@ const routes: Routes = [
     path: '',
     canActivate: [LoginGuard],
     component: RequestAllocationContainerComponent,
+    title: 'ETS Administration',
   },
   {
     path: 'check-allocation-request',
@@ -29,11 +29,6 @@ const routes: Routes = [
     path: 'request-submitted',
     canActivate: [LoginGuard],
     component: AllocationRequestSubmittedContainerComponent,
-  },
-  {
-    path: 'cancel-pending-allocations',
-    canActivate: [LoginGuard],
-    component: CancelPendingAllocationsComponent,
   },
 ];
 

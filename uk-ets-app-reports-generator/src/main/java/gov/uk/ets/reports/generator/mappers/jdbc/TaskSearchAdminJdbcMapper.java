@@ -7,7 +7,6 @@ import gov.uk.ets.reports.generator.domain.Task;
 import gov.uk.ets.reports.generator.domain.TaskSearchAdminReportData;
 import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
-import gov.uk.ets.reports.model.criteria.ReportCriteria;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -26,11 +25,6 @@ public class TaskSearchAdminJdbcMapper
     implements ReportDataMapper<TaskSearchAdminReportData>, RowMapper<TaskSearchAdminReportData> {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Override
-    public List<TaskSearchAdminReportData> mapData(ReportCriteria criteria) {
-        return List.of();
-    }
 
     @Override
     public List<TaskSearchAdminReportData> mapData(ReportQueryInfoWithMetadata reportQueryInfo) {

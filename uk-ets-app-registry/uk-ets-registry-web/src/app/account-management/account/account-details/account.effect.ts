@@ -1,5 +1,7 @@
+/* eslint-disable ngrx/no-multiple-actions-in-effects */
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import * as AccountDetailsActions from './account.actions';
 import {
   cancelUpdateAccountDetails,
@@ -59,8 +61,7 @@ import { isAdmin } from '@registry-web/auth/auth.selector';
 import { createReportRequestSuccess } from '@registry-web/reports/actions';
 import * as SharedActions from '@shared/shared.action';
 import { BusinessRules } from '@shared/business-rules';
-import * as NotesActions from '@registry-web/notes/store/notes.actions';
-import { NoteType } from '@registry-web/shared/model';
+import * as AccountNotesActions from '@registry-web/account-management/account/account-details/notes/store/account-notes.actions';
 
 @Injectable()
 export class AccountEffect {
@@ -87,8 +88,8 @@ export class AccountEffect {
     );
   });
 
-  fetchAccountDetails$ = createEffect(() =>
-    this.actions$.pipe(
+  fetchAccountDetails$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(AccountDetailsActions.fetchAccount),
       switchMap((action: { accountId: string }) =>
         this.accountService.fetchAccount(action.accountId).pipe(
@@ -125,15 +126,18 @@ export class AccountEffect {
               account: result,
             }),
             TrustedAccountActions.fetchTAL(),
-            NotesActions.fetchNotes({
-              domainId: action.accountId,
+            AccountNotesActions.fetchAccountNotes({
+              accountId: action.accountId,
             }),
+            // AccountNotesActions.fetchAccountHolderNotes({
+            //   accountId: action.accountId,
+            // }),
           ]),
           catchError((httpError) => this.handleHttpError(httpError))
         )
       )
-    )
-  );
+    );
+  });
 
   fetchOperatorUpdatePendingApproval$ = createEffect(() =>
     this.actions$.pipe(

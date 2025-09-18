@@ -1,0 +1,24 @@
+<h1 class="govuk-heading-l">Notes</h1>
+<dl
+  class="
+    govuk-summary-list govuk-summary-list--no-border
+    govuk-!-margin-bottom-9
+  "
+>
+  <app-notes-list
+    [notes]="notes"
+    [isSeniorAdmin]="isSeniorAdmin"
+    (deleteNote)="deleteNote($event)"
+  ></app-notes-list>
+</dl>
+
+<div class="govuk-button-group">
+  <button
+    (click)="addNote()"
+    *ngIf="isAdmin"
+    class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+    data-module="govuk-button"
+  >
+    Add Note
+  </button>
+</div>

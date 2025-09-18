@@ -3,7 +3,6 @@ package gov.uk.ets.registry.api.account.web.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
-import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.user.UserDTO;
 import java.io.Serializable;
 import lombok.Getter;
@@ -57,7 +56,7 @@ public class AuthorisedRepresentativeDTO implements Serializable {
     /**
      * The contact details.
      */
-    private Contact contact;
+    private ContactDTO contact;
 
     /**
      * The state of the account access.

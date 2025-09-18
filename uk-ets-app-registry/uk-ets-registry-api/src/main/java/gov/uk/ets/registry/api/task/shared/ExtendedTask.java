@@ -25,7 +25,8 @@ public class ExtendedTask extends Task {
                 task.getAccount(), task.getTransactionIdentifiers(),
                 task.getStatus(), task.getBefore(), task.getAfter(),
                 task.getDifference(), task.getParentTask(), task.getUser(),
-                task.getFile(), task.getTaskSearchMetadata(), task.getTaskAssignments());
+                task.getFile(), task.getTaskSearchMetadata(), task.getTaskAssignments(),
+                task.getDeadline());
         this.accountDTO = accountDTO;
     }
 

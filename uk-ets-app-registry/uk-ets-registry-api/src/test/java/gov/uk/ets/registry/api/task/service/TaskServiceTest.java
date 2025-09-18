@@ -491,7 +491,6 @@ public class TaskServiceTest {
             .thenReturn(Set.of(Scope.SCOPE_TASK_ACCOUNT_OPEN_COMPLETE.getScopeName()));
         RoleRepresentation role = new RoleRepresentation("a-role", null, false);
         Mockito.when(authService.getClientLevelRoles(any())).thenReturn(List.of(role));
-        Mockito.when(authService.getToken()).thenReturn(mock(AccessToken.class));
         Mockito.when(taskRepository.findAllByRequestIdIn(requestIds)).thenReturn(tasks);
 
         tasks.forEach(task -> {
@@ -522,7 +521,6 @@ public class TaskServiceTest {
             .thenReturn(Set.of(Scope.SCOPE_TASK_ACCOUNT_OPEN_WRITE.getScopeName()));
         RoleRepresentation role = new RoleRepresentation("a-role", null, false);
         Mockito.when(authService.getClientLevelRoles(any())).thenReturn(List.of(role));
-        Mockito.when(authService.getToken()).thenReturn(mock(AccessToken.class));
         PolicyEvaluationResponse.EvaluationResultRepresentation
             result = new PolicyEvaluationResponse.EvaluationResultRepresentation();
         result.setStatus(DecisionEffect.DENY);
@@ -557,7 +555,6 @@ public class TaskServiceTest {
             .thenReturn(Set.of(Scope.SCOPE_TASK_ACCOUNT_OPEN_WRITE.getScopeName()));
         RoleRepresentation role = new RoleRepresentation("a-role", null, false);
         Mockito.when(authService.getClientLevelRoles(any())).thenReturn(List.of(role));
-        Mockito.when(authService.getToken()).thenReturn(mock(AccessToken.class));
         PolicyEvaluationResponse.EvaluationResultRepresentation
             result = new PolicyEvaluationResponse.EvaluationResultRepresentation();
         result.setStatus(DecisionEffect.DENY);
@@ -591,7 +588,6 @@ public class TaskServiceTest {
             .thenReturn(Set.of(Scope.SCOPE_TASK_ACCOUNT_OPEN_COMPLETE.getScopeName()));
         RoleRepresentation role = new RoleRepresentation("a-role", null, false);
         Mockito.when(authService.getClientLevelRoles(any())).thenReturn(List.of(role));
-        Mockito.when(authService.getToken()).thenReturn(mock(AccessToken.class));
         PolicyEvaluationResponse.EvaluationResultRepresentation
             result = new PolicyEvaluationResponse.EvaluationResultRepresentation();
         result.setStatus(DecisionEffect.DENY);

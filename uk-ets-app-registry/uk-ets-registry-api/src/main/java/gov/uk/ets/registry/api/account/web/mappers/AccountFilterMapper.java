@@ -38,8 +38,9 @@ public class AccountFilterMapper {
             .authorizedRepresentativeUrid(criteria.getAuthorizedRepresentativeUrid())
             .allocationClassification(criteria.getAllocationStatus())
             .allocationWithholdStatus(criteria.getAllocationWithholdStatus())
-            .installationOrAircraftOperatorId(criteria.getInstallationOrAircraftOperatorId())
+            .operatorId(criteria.getOperatorId())
             .excludedForYear(criteria.getExcludedForYear())
+                .imo(criteria.getImo())
             .build();
     }
 

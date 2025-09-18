@@ -74,6 +74,8 @@ export const selectUpdatedDetailsForCheckAndSubmit = (needsConversion) =>
             id: updatedState.id,
             title: updatedState.title,
             summary: updatedState.summary,
+            displayType: updatedState.displayType,
+            reportType: updatedState.reportType,
             publicationFrequency:
               PublicationFrequency[updatedState.reportPublicationFrequency],
             everyXDays: updatedState.everyXDays,
@@ -89,6 +91,8 @@ export const selectUpdatedDetailsForCheckAndSubmit = (needsConversion) =>
         id: currentState.id,
         title: updatedState.title,
         summary: updatedState.summary,
+        displayType: updatedState.displayType,
+        reportType: updatedState.reportType,
         publicationFrequency:
           PublicationFrequency[updatedState.reportPublicationFrequency],
         everyXDays: updatedState.everyXDays,

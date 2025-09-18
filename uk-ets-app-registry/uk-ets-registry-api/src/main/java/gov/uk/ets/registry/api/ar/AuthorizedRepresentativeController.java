@@ -38,7 +38,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.ar.rules.UserCannotAdde
 import gov.uk.ets.registry.api.authz.ruleengine.features.ar.rules.AccountARsLimitShouldNotBeExceededIncludingPendingTasksRule;
 import java.util.List;
 import java.util.Optional;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

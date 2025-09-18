@@ -12,6 +12,7 @@ export enum MenuItemEnum {
   ALLOCATION = 'Allocation status for UK allowances',
   EMISSIONS_SURRENDERS = 'Emissions and Surrenders',
   NOTES = 'Notes',
+  MARITIME_OPERATOR_DETAILS = 'Maritime operator details',
 }
 
 export const NO_OPERATOR_ITEMS = [
@@ -47,6 +48,20 @@ export const AOHA_ITEMS = [
   MenuItemEnum.ACCOUNT_HOLDER,
   MenuItemEnum.AIRCRAFT_OPERATOR_DETAILS,
   MenuItemEnum.ALLOCATION,
+  MenuItemEnum.ARS,
+  MenuItemEnum.EMISSIONS_SURRENDERS,
+  MenuItemEnum.HISTORY_AND_COMMENTS,
+  MenuItemEnum.HOLDINGS,
+  MenuItemEnum.TRANSACTIONS,
+  MenuItemEnum.TRUSTED_ACCOUNTS,
+  MenuItemEnum.NOTES,
+];
+
+export const MOHA_ITEMS = [
+  MenuItemEnum.OVERVIEW,
+  MenuItemEnum.ACCOUNT_DETAILS,
+  MenuItemEnum.ACCOUNT_HOLDER,
+  MenuItemEnum.MARITIME_OPERATOR_DETAILS,
   MenuItemEnum.ARS,
   MenuItemEnum.EMISSIONS_SURRENDERS,
   MenuItemEnum.HISTORY_AND_COMMENTS,

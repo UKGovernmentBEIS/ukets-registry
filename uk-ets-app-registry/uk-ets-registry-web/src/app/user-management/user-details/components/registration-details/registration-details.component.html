@@ -1,15 +1,10 @@
 <div class="govuk-grid-row" *ngIf="user">
-  <div class="govuk-summary-list__row">
-    <h2 class="govuk-summary-list__key govuk-heading-m">
-      Registration details
-    </h2>
-  </div>
+  <h2 class="govuk-heading-m govuk-summary-list__title">
+    Registration details
+  </h2>
 
   <dl
-    class="
-      govuk-summary-list govuk-summary-list--no-border
-      govuk-!-margin-top-5
-    "
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-top-5"
   >
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">User ID</dt>
@@ -85,21 +80,22 @@
         >
       </dd>
     </div>
-    <div
-      class="govuk-summary-list__row"
-      *ngIf="currentViewMode === viewMode.MY_PROFILE"
-    >
-      <dt class="govuk-summary-list__key">Two factor authentication</dt>
-      <dd class="govuk-summary-list__value">
-        <a
-          [routerLink]="[]"
-          class="govuk-link govuk-link--no-visited-state"
-          (click)="onClickChangeToken()"
-          (keyup)="(onClickChangeToken)"
-          >Change two factor authentication</a
-        >
-      </dd>
-    </div>
+    <!-- TODO remove permanently in next ticket-->
+    <!--    <div-->
+    <!--      class="govuk-summary-list__row"-->
+    <!--      *ngIf="currentViewMode === viewMode.MY_PROFILE"-->
+    <!--    >-->
+    <!--      <dt class="govuk-summary-list__key">Two factor authentication</dt>-->
+    <!--      <dd class="govuk-summary-list__value">-->
+    <!--        <a-->
+    <!--          [routerLink]="[]"-->
+    <!--          class="govuk-link govuk-link&#45;&#45;no-visited-state"-->
+    <!--          (click)="onClickChangeToken()"-->
+    <!--          (keyup)="(onClickChangeToken)"-->
+    <!--          >Change two factor authentication</a-->
+    <!--        >-->
+    <!--      </dd>-->
+    <!--    </div>-->
 
     <div
       class="govuk-summary-list__row"

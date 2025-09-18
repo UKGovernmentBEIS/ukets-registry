@@ -6,6 +6,8 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Optional;
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,11 +41,19 @@ public class UserRegistrationValidator {
     /**
      * Added to bypass sonar checks.
      */
+    private static String NO_MOBILE_PHONE_NUMBER_REASON = "noMobilePhoneNumberReason";
+    private static String WORK_MOBILE_COUNTRY_CODE = "workMobileCountryCode";
+    private static String WORK_MOBILE_PHONE_NUMBER = "workMobilePhoneNumber";
+    private static String WORK_ALTERNATIVE_COUNTRY_CODE = "workAlternativeCountryCode";
+    private static String WORK_ALTERNATIVE_PHONE_NUMBER = "workAlternativePhoneNumber";
     private static String POSTCODE_ATTR = "postCode";
     private static String WORKPOSTCODE_ATTR = "workPostCode";
     private static String COUNTRY_ATTR = "country";
     private static String MANDATORY_MSG = "The %s is mandatory";
     private static String EMPTY_FIELD = "user.%s.empty";
+
+    private static List<String> NON_MANDATORY_FIELDS = List.of(NO_MOBILE_PHONE_NUMBER_REASON, WORK_MOBILE_COUNTRY_CODE,
+        WORK_MOBILE_PHONE_NUMBER, WORK_ALTERNATIVE_COUNTRY_CODE, WORK_ALTERNATIVE_PHONE_NUMBER, POSTCODE_ATTR, WORKPOSTCODE_ATTR);
 
     public UserRegistrationValidator(GeneratorService generatorService, RestProxy restProxy,
                                      @Value("${user.registration.password.validator.serverUrl}") String passwordValidatorURL) {
@@ -70,12 +80,8 @@ public class UserRegistrationValidator {
             errors.add(new Violation("user.attributes.empty", "The user attributes are mandatory (i.e. personal details etc.)"));
 
         } else {
-            checkMapAttribute(errors, attributes, "workEmailAddress", "work email address");
             checkMapAttribute(errors, attributes, "workCountry", "work country");
             checkMapAttribute(errors, attributes, WORKPOSTCODE_ATTR, "work postal code or zip");
-            checkMapAttribute(errors, attributes, "workCountryCode", "work country code");
-            checkMapAttribute(errors, attributes, "workPhoneNumber", "work phone number");
-            checkMapAttribute(errors, attributes, "workEmailAddressConfirmation", "work email address confirmation");
             checkMapAttribute(errors, attributes, "workBuildingAndStreet", "work building and street");
             checkMapAttribute(errors, attributes, "workTownOrCity", "work town or city");
             checkMapAttribute(errors, attributes, COUNTRY_ATTR, COUNTRY_ATTR);
@@ -86,6 +92,10 @@ public class UserRegistrationValidator {
             checkMapAttribute(errors, attributes, "countryOfBirth", "country of birth");
             checkMapAttribute(errors, attributes, "state", "state");
             checkMapAttribute(errors, attributes, "birthDate", "date of birth");
+            checkMapAttribute(errors, attributes, WORK_MOBILE_COUNTRY_CODE, "work mobile country code");
+            checkMapAttribute(errors, attributes, WORK_MOBILE_PHONE_NUMBER, "work mobile phone number");
+            checkMapAttribute(errors, attributes, WORK_ALTERNATIVE_COUNTRY_CODE, "work alternative country code");
+            checkMapAttribute(errors, attributes, WORK_ALTERNATIVE_PHONE_NUMBER, "work alternative phone number");
         }
 
         if (!errors.isEmpty()) {
@@ -123,21 +133,13 @@ public class UserRegistrationValidator {
      */
     private void checkMapAttribute(List<Violation> errors, Map<String, List<String>> map, String attributeName, String attributeDescription) {
         List<String> valueList = map.get(attributeName);
-        if (valueList == null || valueList.isEmpty() || StringUtils.isEmpty(valueList.get(0))) {
-            if(!attributeName.equals(POSTCODE_ATTR) && !attributeName.equals(WORKPOSTCODE_ATTR)){
+        if (!fieldHasValue(valueList)) {
+            if(!NON_MANDATORY_FIELDS.contains(attributeName)){
                 errors.add(new Violation(String.format(EMPTY_FIELD, attributeName), String.format(MANDATORY_MSG, attributeDescription)));
             }
         } else {
             checkLength(errors, attributeName, valueList.get(0), attributeDescription);
             checkFieldValidity(errors, attributeName, valueList.get(0), attributeDescription);
-        }
-
-        if(valueList != null && attributeName.equals("workPhoneNumber")){
-            if(errors.stream().noneMatch(v -> v.getFieldName().equals("user.workCountryCode.empty")) &&
-               errors.stream().noneMatch(v -> v.getFieldName().equals("user.country.empty"))) {
-
-                checkPhoneValidity(errors, attributeName, valueList.get(0), map.get("workCountryCode").get(0), attributeDescription);
-            }
         }
 
         if(valueList != null && attributeName.equals(POSTCODE_ATTR) && errors.stream().noneMatch(v -> v.getFieldName().equals("user.country.empty"))){
@@ -147,6 +149,41 @@ public class UserRegistrationValidator {
         if(valueList != null && attributeName.equals(WORKPOSTCODE_ATTR) && errors.stream().noneMatch(v -> v.getFieldName().equals("user.workCountry.empty"))){
             checkPostcodeValidity(errors, attributeName, valueList.get(0), map.get("workCountry").get(0), attributeDescription);
         }
+
+        if (attributeName.equals(WORK_MOBILE_PHONE_NUMBER)) {
+            checkPhone(errors, attributeName, WORK_MOBILE_COUNTRY_CODE, map, attributeDescription, true);
+            checkMobilePhoneCombinations(errors, map, attributeName, attributeDescription);
+        }
+
+        if (attributeName.equals(WORK_ALTERNATIVE_PHONE_NUMBER)) {
+            checkPhone(errors, attributeName, WORK_ALTERNATIVE_COUNTRY_CODE, map, attributeDescription, false);
+            checkMobilePhoneCombinations(errors, map, attributeName, attributeDescription);
+        }
+    }
+
+    /*
+     * User should provide a mobile number or a reason for not providing one along with an alternative phone.
+     */
+    private void checkMobilePhoneCombinations(List<Violation> errors,
+                                              Map<String, List<String>> map,
+                                              String attributeName,
+                                              String attributeDescription) {
+
+        if (fieldHasValue(NO_MOBILE_PHONE_NUMBER_REASON, map)) {
+            if (!fieldHasValue(WORK_ALTERNATIVE_PHONE_NUMBER, map) && WORK_ALTERNATIVE_PHONE_NUMBER.equals(attributeName)) {
+                errors.add(new Violation(String.format(EMPTY_FIELD, attributeName), String.format(MANDATORY_MSG, attributeDescription)));
+            }
+        } else if (!fieldHasValue(WORK_MOBILE_PHONE_NUMBER, map) && WORK_MOBILE_PHONE_NUMBER.equals(attributeName)) {
+            errors.add(new Violation(String.format(EMPTY_FIELD, attributeName), String.format(MANDATORY_MSG, attributeDescription)));
+        }
+    }
+
+    private boolean fieldHasValue(String attributeName, Map<String, List<String>> map) {
+        return fieldHasValue(map.get(attributeName));
+    }
+
+    private boolean fieldHasValue(List<String> valueList) {
+        return Optional.ofNullable(valueList).stream().flatMap(Collection::stream).anyMatch(s -> !s.isBlank());
     }
 
 
@@ -188,12 +225,6 @@ public class UserRegistrationValidator {
         if ("urid".equals(fieldName) && !generatorService.validateURID(fieldValue)) {
             errors.add(new Violation(String.format("user.%s.invalid", fieldName), String.format("The %s is invalid", fieldDescription)));
         }
-        if("workEmailAddress".equals(fieldName) && !(new EmailValidator().isValid(fieldValue, null))){
-            errors.add(new Violation(String.format("user.%s.invalid", fieldName), String.format("The %s is invalid", fieldDescription)));
-        }
-        if("workEmailAddressConfirmation".equals(fieldName) && !(new EmailValidator().isValid(fieldValue, null))){
-            errors.add(new Violation(String.format("user.%s.invalid", fieldName), String.format("The %s is invalid", fieldDescription)));
-        }
         if("birthDate".equals(fieldName)) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "dd/MM/yyyy" );
             if ((Year.now().getValue() - LocalDate.parse(fieldValue , formatter).getYear() < 18) ||
@@ -219,6 +250,21 @@ public class UserRegistrationValidator {
         }
     }
 
+    private void checkPhone(List<Violation> errors,
+                            String phoneFieldName,
+                            String codeFieldName,
+                            Map<String, List<String>> map,
+                            String attributeDescription,
+                            boolean fixedLineNotAllowed) {
+
+        List<String> valueList = map.get(phoneFieldName);
+        if (!fieldHasValue(valueList)) {
+            return;
+        }
+
+        checkPhoneValidity(errors, phoneFieldName, valueList.get(0), map.get(codeFieldName).get(0), attributeDescription, fixedLineNotAllowed);
+    }
+
     /**
      * This method checks validity of postcode if
      * @param errors The error list.
@@ -231,7 +277,8 @@ public class UserRegistrationValidator {
                                     String fieldName,
                                     String phoneFieldValue,
                                     String codeFieldValue,
-                                    String fieldDescription) {
+                                    String fieldDescription,
+                                    boolean fixedLineNotAllowed) {
         /**
          * Phone number validation utility class.
          */
@@ -243,6 +290,9 @@ public class UserRegistrationValidator {
             Phonenumber.PhoneNumber number = phoneUtil.parse("+"+countryCode+phoneFieldValue, "");
             if(!phoneUtil.isValidNumber(number)){
                 errors.add(new Violation(String.format("user.%s.invalid", fieldName), String.format("The %s is invalid", fieldDescription)));
+            }
+            if(fixedLineNotAllowed && phoneUtil.getNumberType(number) == PhoneNumberUtil.PhoneNumberType.FIXED_LINE){
+                errors.add(new Violation(String.format("user.%s.invalid", fieldName), String.format("The %s is not a valid mobile number", fieldDescription)));
             }
         } catch (NumberParseException e) {
             errors.add(new Violation(String.format("user.%s.error", fieldName), String.format("Parse error while parsing %s", fieldDescription)));

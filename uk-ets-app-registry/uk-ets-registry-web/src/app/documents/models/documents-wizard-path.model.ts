@@ -1,0 +1,15 @@
+export enum DocumentsWizardPath {
+  BASE_PATH = '/documents/wizard',
+  ADD_DOCUMENT = 'add-document-select-category',
+  ADD_DOCUMENT_CATEGORY = 'add-document-category',
+  UPDATE_DOCUMENT = 'update-document',
+  UPDATE_DOCUMENT_CATEGORY = 'update-document-category',
+  DELETE_DOCUMENT = 'delete-document',
+  DELETE_DOCUMENT_CATEGORY = 'delete-document-category',
+  UPLOAD_DOCUMENT = 'upload-document',
+  CHOOSE_DISPLAY_ORDER = 'choose-display-order',
+  CANCEL_DOCUMENT_UPDATE = 'cancel',
+  CHECK_UPDATE_AND_SUBMIT = 'check-update-and-submit',
+  UPDATE_DOCUMENT_CATEGORY_DETAILS = 'update-document-category-details',
+  SUCCESS = 'success',
+}

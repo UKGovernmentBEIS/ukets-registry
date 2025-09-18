@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +19,6 @@ import org.apache.http.Header;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.jetbrains.annotations.NotNull;
-import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -32,6 +31,7 @@ import org.keycloak.representations.idm.OAuth2ErrorRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -51,7 +51,16 @@ import lombok.RequiredArgsConstructor;
 @ConditionalOnProperty(name = "keycloak.enabled", havingValue = "true")
 public class ServiceAccountAuthorizationService implements AccessTokenRetriever {
 
-    private final KeycloakSpringBootProperties keycloakSpringBootProperties;
+
+    @Value("${keycloak.auth-server-url}")
+    private String authServerUrl;
+    @Value("${keycloak.credentials.secret}")
+    private String secret;
+    @Value("${keycloak.resource}")
+    private String resource; 
+    @Value("${keycloak.realm}")
+    private String realm; 
+    
     private final KeycloakUserRepresentationRepository keycloakUserRepresentationRepository;
     private final KeycloakClientRepresentationRepository keycloakClientRepresentationRepository;
 
@@ -80,10 +89,10 @@ public class ServiceAccountAuthorizationService implements AccessTokenRetriever 
                 MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase()));
         final List<Header> headers = Lists.newArrayList(header);
         return new Configuration(
-            keycloakSpringBootProperties.getAuthServerUrl(),
-            keycloakSpringBootProperties.getRealm(),
-            keycloakSpringBootProperties.getResource(),
-            keycloakSpringBootProperties.getCredentials(),
+            authServerUrl,
+            realm,
+            resource,
+            Map.of("secret",secret),
             HttpClientBuilder.create().setDefaultHeaders(headers).build());
     }
 
@@ -193,7 +202,7 @@ public class ServiceAccountAuthorizationService implements AccessTokenRetriever 
         RealmResource client = getClient();
         if (!CollectionUtils.isEmpty(client.users().get(userId).getUserSessions())) {
             client.users().get(userId).getUserSessions()
-                    .forEach(userSession -> client.deleteSession(userSession.getId()));
+                    .forEach(userSession -> client.deleteSession(userSession.getId(), false));
         }
     }
 
@@ -226,7 +235,7 @@ public class ServiceAccountAuthorizationService implements AccessTokenRetriever 
     private static final String CREDENTIAL_OTP = "otp";
 
     private ClientRepresentation getRealmClient() {
-        return getClient().clients().findByClientId(keycloakSpringBootProperties.getResource()).get(0);
+        return getClient().clients().findByClientId(resource).get(0);
     }
     
     public void removeUserRole(String userId, String role) {

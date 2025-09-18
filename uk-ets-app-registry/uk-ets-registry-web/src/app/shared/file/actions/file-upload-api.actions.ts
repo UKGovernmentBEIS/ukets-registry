@@ -42,6 +42,13 @@ export const uploadSelectedFileForDocumentRequest = createAction(
   }>()
 );
 
+export const uploadSelectedRecipientsEmailFile = createAction(
+  '[File Upload API] Recipients email file upload started',
+  props<{
+    file: File;
+  }>()
+);
+
 export const uploadSelectedFileInProgress = createAction(
   '[File Upload API] Progress',
   props<{ progress: number }>()
@@ -64,6 +71,11 @@ export const uploadEmissionsTableFileSuccess = createAction(
 
 export const uploadReportPublicationFileSuccess = createAction(
   '[File Upload API] Report publication upload success',
+  props<{ fileHeader: FileBase }>()
+);
+
+export const uploadRecipientsEmailFileSuccess = createAction(
+  '[File Upload API] Recipients email file upload success',
   props<{ fileHeader: FileBase }>()
 );
 

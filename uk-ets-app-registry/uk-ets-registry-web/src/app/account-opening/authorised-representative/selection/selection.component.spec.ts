@@ -46,6 +46,7 @@ describe('ARsSelectionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SelectionComponent);
     component = fixture.componentInstance;
+    component.errorSummary = { errors: [] };
     component.fetchedAuthorisedRepresentatives = [
       {
         urid: 'UK1234567',
@@ -103,7 +104,9 @@ describe('ARsSelectionComponent', () => {
   });
 
   it('should instantiate', () => {
-    component = new SelectionComponent(formBuilder);
+    TestBed.runInInjectionContext(() => {
+      component = new SelectionComponent();
+    });
     expect(component).toBeDefined();
   });
 

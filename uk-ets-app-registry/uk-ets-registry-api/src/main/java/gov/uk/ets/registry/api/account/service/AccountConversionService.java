@@ -4,6 +4,7 @@ import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.SalesContact;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.domain.types.RegistrationNumberType;
@@ -12,7 +13,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.DateInfo;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.InstallationOrAircraftOperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.MonitoringPlanDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
@@ -171,13 +172,13 @@ public class AccountConversionService {
     }
 
     /**
-     * Converts an {@link InstallationOrAircraftOperatorDTO}.
+     * Converts an {@link OperatorDTO}.
      *
      * @param input an installation.
      * @return a transfer object.
      */
-    InstallationOrAircraftOperatorDTO convert(Installation input) {
-        InstallationOrAircraftOperatorDTO result = new InstallationOrAircraftOperatorDTO();
+    OperatorDTO convert(Installation input) {
+        OperatorDTO result = new OperatorDTO();
         result.setIdentifier(input.getIdentifier());
         result.setType(OperatorType.INSTALLATION.name());
         result.setActivityType(InstallationActivityType.valueOf(input.getActivityType()));
@@ -189,18 +190,18 @@ public class AccountConversionService {
         result.setPermit(permitDTO);
         result.setRegulator(input.getRegulator());
         result.setChangedRegulator(input.getChangedRegulator());
-
+        result.setEmitterId(input.getEmitterId());
         return result;
     }
 
     /**
-     * Converts an {@link InstallationOrAircraftOperatorDTO}.
+     * Converts an {@link OperatorDTO}.
      *
      * @param input an aircraft operator.
      * @return a transfer object.
      */
-    InstallationOrAircraftOperatorDTO convert(AircraftOperator input) {
-        InstallationOrAircraftOperatorDTO result = new InstallationOrAircraftOperatorDTO();
+    OperatorDTO convert(AircraftOperator input) {
+        OperatorDTO result = new OperatorDTO();
         result.setIdentifier(input.getIdentifier());
         result.setType(OperatorType.AIRCRAFT_OPERATOR.name());
         result.setFirstYear(input.getStartYear());
@@ -210,6 +211,29 @@ public class AccountConversionService {
         result.setMonitoringPlan(monitoringPlanDTO);
         result.setRegulator(input.getRegulator());
         result.setChangedRegulator(input.getChangedRegulator());
+        result.setEmitterId(input.getEmitterId());
+        return result;
+    }
+
+    /**
+     * Converts an {@link OperatorDTO}.
+     *
+     * @param input a maritime operator.
+     * @return a transfer object.
+     */
+    OperatorDTO convert(MaritimeOperator input) {
+        OperatorDTO result = new OperatorDTO();
+        result.setIdentifier(input.getIdentifier());
+        result.setType(OperatorType.MARITIME_OPERATOR.name());
+        result.setFirstYear(input.getStartYear());
+        result.setLastYear(input.getEndYear());
+        MonitoringPlanDTO monitoringPlanDTO = new MonitoringPlanDTO();
+        monitoringPlanDTO.setId(input.getMaritimeMonitoringPlanIdentifier());
+        result.setMonitoringPlan(monitoringPlanDTO);
+        result.setRegulator(input.getRegulator());
+        result.setChangedRegulator(input.getChangedRegulator());
+        result.setImo(input.getImo());
+        result.setEmitterId(input.getEmitterId());
         return result;
     }
 

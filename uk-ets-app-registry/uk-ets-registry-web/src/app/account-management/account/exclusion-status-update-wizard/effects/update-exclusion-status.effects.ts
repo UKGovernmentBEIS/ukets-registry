@@ -87,6 +87,21 @@ export class UpdateExclusionStatusEffects {
       withLatestFrom(this.store.pipe(select(selectAccountId))),
       map(([action, accountIdentifier]) => {
         return UpdateExclusionStatusActions.navigateTo({
+          route: `/account/${accountIdentifier}/${UpdateExclusionStatusPathsModel.BASE_PATH}/${UpdateExclusionStatusPathsModel.EXCLUSION_REASON}`,
+          extras: {
+            skipLocationChange: true,
+          },
+        });
+      })
+    );
+  });
+
+  setExclusionReason$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(UpdateExclusionStatusActions.setExclusionReason),
+      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      map(([action, accountIdentifier]) => {
+        return UpdateExclusionStatusActions.navigateTo({
           route: `/account/${accountIdentifier}/${UpdateExclusionStatusPathsModel.BASE_PATH}/${UpdateExclusionStatusPathsModel.CHECK_UPDATE_STATUS}`,
           extras: {
             skipLocationChange: true,

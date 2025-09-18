@@ -8,6 +8,8 @@ import gov.uk.ets.registry.api.common.error.ErrorBody;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.user.domain.UserRole;
+
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -36,7 +38,7 @@ public class ARsCanViewTasksForTheirAccounts extends AbstractTaskBusinessRule {
             return Outcome.PERMITTED_OUTCOME;
         }
         Task task = getSlice().getTaskBusinessRuleInfoList().get(0).getTask();
-        if (RequestType.AH_REQUESTED_DOCUMENT_UPLOAD.equals(task.getType())) {
+        if (EnumSet.of(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD,RequestType.PAYMENT_REQUEST).contains(task.getType())) {
             return Outcome.NOT_APPLICABLE_OUTCOME;
         }
         Account accountOnTask = task.getAccount();

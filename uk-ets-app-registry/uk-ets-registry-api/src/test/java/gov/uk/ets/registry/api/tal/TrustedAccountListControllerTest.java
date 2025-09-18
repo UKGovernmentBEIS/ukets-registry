@@ -1,20 +1,24 @@
 package gov.uk.ets.registry.api.tal;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.commons.logging.Config;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.validation.AccountValidator;
 import gov.uk.ets.registry.api.authz.AuthorizationServiceImpl;
-import gov.uk.ets.registry.api.helper.AuthorizationTestHelper;
 import gov.uk.ets.registry.api.tal.service.TrustedAccountListService;
 import gov.uk.ets.registry.api.tal.web.model.TrustedAccountDTO;
 import gov.uk.ets.registry.api.transaction.web.mapper.TransactionSearchResultMapper;
+import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,13 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.UUID;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = TrustedAccountListController.class)
+@WebMvcTest(controllers = TrustedAccountListController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 class TrustedAccountListControllerTest {
 
     @MockBean
@@ -57,12 +56,9 @@ class TrustedAccountListControllerTest {
     @MockBean
     private TransactionSearchResultMapper transactionSearchResultMapper;
 
-    private AuthorizationTestHelper authorizationTestHelper;
-
     @BeforeEach
     public void setup() {
         controller = new TrustedAccountListController(accountService);
-        authorizationTestHelper = new AuthorizationTestHelper(authorizationService);
     }
 
     @Test

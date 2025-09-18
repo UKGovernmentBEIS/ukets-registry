@@ -1,7 +1,7 @@
 <div class="hmcts-identity-bar" *ngIf="transactionDetails">
   <div class="hmcts-identity-bar__container">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
+      <div class="govuk-grid-column-full" aria-live="polite">
         <app-report-success-banner
           [isVisible]="isReportSuccess"
         ></app-report-success-banner>
@@ -37,10 +37,7 @@
               transactionDetails.status === 'COMPLETED'
             "
             style="margin-bottom: 0"
-            class="
-              govuk-button govuk-button--secondary
-              govuk-!-font-weight-bold
-            "
+            class="govuk-button govuk-button--secondary govuk-!-font-weight-bold"
             (click)="
               generateTransactionDetailsReport(transactionDetails.identifier)
             "
@@ -50,10 +47,7 @@
           <button
             *ngIf="transactionDetails.status === 'DELAYED' && !hideCancelButton"
             style="margin-bottom: 0"
-            class="
-              govuk-button govuk-button--secondary
-              govuk-!-margin-left-3 govuk-!-font-weight-bold
-            "
+            class="govuk-button govuk-button--secondary govuk-!-margin-left-3 govuk-!-font-weight-bold"
             (click)="cancelTransaction.emit(transactionDetails.identifier)"
           >
             Cancel transaction
@@ -61,10 +55,7 @@
           <button
             *ngIf="transactionDetails.canBeReversed"
             style="margin-bottom: 0"
-            class="
-              govuk-button govuk-button--secondary
-              govuk-!-margin-left-3 govuk-!-font-weight-bold
-            "
+            class="govuk-button govuk-button--secondary govuk-!-margin-left-3 govuk-!-font-weight-bold"
             (click)="reverseTransaction()"
           >
             Reverse transaction

@@ -15,6 +15,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.account.AccountSecurity
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.AccountHolderSecurityStoreSliceLoader;
 import gov.uk.ets.registry.api.authz.ruleengine.features.allocation.AllocationSecurityStoreSliceLoader;
 import gov.uk.ets.registry.api.authz.ruleengine.features.ar.ArBusinessSecurityStoreSliceLoader;
+import gov.uk.ets.registry.api.authz.ruleengine.features.payment.PaymentSecurityStoreSliceLoader;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.TaskBusinessSecurityStoreSliceLoader;
 import gov.uk.ets.registry.api.authz.ruleengine.features.transaction.TransactionBusinessSecurityStoreSliceLoader;
 import gov.uk.ets.registry.api.authz.ruleengine.features.user.profile.EmailChangeSecurityStoreSliceLoader;
@@ -33,6 +34,7 @@ import gov.uk.ets.registry.api.transaction.domain.data.TransactionSummary;
 import gov.uk.ets.registry.api.transaction.service.TransactionPersistenceService;
 import gov.uk.ets.registry.api.user.domain.UserRole;
 import gov.uk.ets.registry.api.user.service.UserService;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -88,6 +90,7 @@ public class BusinessRuleAppliance {
     private final AllocationStatusService allocationStatusService;
     private final StatusChangeSecurityStoreSliceLoader statusChangeSecurityStoreSliceLoader;
     private final AllocationSecurityStoreSliceLoader allocationSecurityStoreSliceLoader;
+    private final PaymentSecurityStoreSliceLoader paymentSecurityStoreSliceLoader;
 
     /**
      * Persistence service for transactions.
@@ -99,6 +102,17 @@ public class BusinessRuleAppliance {
 
     @Resource(name = "requestScopedRuleInputStore")
     private RuleInputStore ruleInputStore;
+
+    private Map<String, String> applicationProperties;
+
+    @PostConstruct
+    public void init() {
+        try {
+            applicationProperties = businessConfigurationService.getApplicationProperties();
+        } catch (IOException e) {
+            log.error("Error while getting application properties", e);
+        }
+    }
 
     /**
      * Applies the rules before proceeding with the join point.
@@ -255,24 +269,19 @@ public class BusinessRuleAppliance {
         accountHolderSecurityStoreSliceLoader.load();
         accountActionsSecurityStoreSliceLoader.load();
         allocationSecurityStoreSliceLoader.load();
+        paymentSecurityStoreSliceLoader.load();
 
         if (ruleInputStore.containsKey(RuleInputType.OTP) && businessSecurityStore.getOtpValid() == null) {
             String otp = (String) ruleInputStore.get(RuleInputType.OTP);
             businessSecurityStore.setOtpValid(otpValidator.validate(otp));
         }
 
-        try {
-            Map<String, String> applicationProperties = businessConfigurationService.getApplicationProperties();
-            String maxARsProperty =
-                applicationProperties.get("business.property.account.max.number.of.authorised.representatives");
-            businessSecurityStore.setMaxNumOfARs(Integer.parseInt(maxARsProperty));
-            String minARsProperty =
-                applicationProperties.get("business.property.account.min.number.of.authorised.representatives");
-            businessSecurityStore.setMinNumOfARs(Integer.parseInt(minARsProperty));
-        } catch (IOException e) {
-            log.error("Error while getting application properties", e);
-        }
-
+        String maxARsProperty =
+            applicationProperties.get("business.property.account.max.number.of.authorised.representatives");
+        businessSecurityStore.setMaxNumOfARs(Integer.parseInt(maxARsProperty));
+        String minARsProperty =
+            applicationProperties.get("business.property.account.min.number.of.authorised.representatives");
+        businessSecurityStore.setMinNumOfARs(Integer.parseInt(minARsProperty));
     }
 
     private List<UserRole> getUserRoles(String iamIdentifier) {

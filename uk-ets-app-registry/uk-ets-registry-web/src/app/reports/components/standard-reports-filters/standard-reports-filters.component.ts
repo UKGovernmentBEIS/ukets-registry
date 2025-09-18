@@ -8,7 +8,7 @@ import {
 import { UntypedFormBuilder, ValidatorFn } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 
@@ -20,10 +20,12 @@ import {
   DatePeriodOptions,
   ReportType,
   Filters,
+  generate050YearOptions,
 } from '@reports/model';
 
 import { selectReportType } from '@registry-web/reports/selectors';
 import { updateSelectedReport } from '@registry-web/reports/actions';
+import { selectRegistryConfigurationProperty } from '@shared/shared.selector';
 
 @Component({
   selector: 'app-standard-reports-filters',
@@ -46,7 +48,10 @@ export class StandardReportsFiltersComponent
   reportType: ReportType;
   errorMessage: any;
 
-  constructor(protected formBuilder: UntypedFormBuilder, private store: Store) {
+  constructor(
+    protected formBuilder: UntypedFormBuilder,
+    private store: Store
+  ) {
     super();
   }
 
@@ -81,6 +86,15 @@ export class StandardReportsFiltersComponent
         }
       })
     );
+
+    this.store
+      .select(selectRegistryConfigurationProperty, {
+        property: 'transactions.public.report.startingDay',
+      })
+      .pipe(take(1))
+      .subscribe((startingDay: string) => {
+        generate050YearOptions(startingDay);
+      });
   }
 
   generateFormGroup(report: StandardReport) {
@@ -115,7 +129,9 @@ export class StandardReportsFiltersComponent
         isHorizontal: filter['isHorizontal'],
         optionsValues: filter['optionsValues'],
       });
-      this.hasPeriod = this.params[this.reportType][index].period;
+      if (this.hasPeriod !== true) {
+        this.hasPeriod = this.params[this.reportType][index].period;
+      }
 
       if (this.params[this.reportType][index].inputType === 'select') {
         this.params[this.reportType][index].options =

@@ -27,6 +27,14 @@ const routes: Routes = [
       );
     },
   },
+  {
+    path: NotificationsWizardPathsModel.CANCEL_NOTIFICATION,
+    loadChildren() {
+      return import('../notifications-wizard/notifications-wizard.module').then(
+        (m) => m.NotificationsWizardModule
+      );
+    },
+  },
 ];
 
 @NgModule({

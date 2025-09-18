@@ -3,7 +3,7 @@ package gov.uk.ets.registry.api.notification;
 import com.google.common.collect.ImmutableMap;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import java.util.Map;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 

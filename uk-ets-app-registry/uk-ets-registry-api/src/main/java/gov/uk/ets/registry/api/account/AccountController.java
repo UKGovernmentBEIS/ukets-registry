@@ -7,6 +7,8 @@ import gov.uk.ets.registry.api.account.domain.AccountFilter;
 import gov.uk.ets.registry.api.account.domain.UnitBlockFilter;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.account.shared.AccountActionError;
+import gov.uk.ets.registry.api.account.shared.AccountActionException;
 import gov.uk.ets.registry.api.account.shared.AccountProjection;
 import gov.uk.ets.registry.api.account.validation.AccountValidator;
 import gov.uk.ets.registry.api.account.web.mappers.AccountFilterMapper;
@@ -53,8 +55,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -147,7 +149,8 @@ public class AccountController {
         AccountWithOutstandingExceptDelayedTransactionsRule.class,
         LastYearOfVerifiedEmissionsRule.class,
         TransferPendingWithLinkedInstallation.class,
-        MissingEmissionsBetweenFyveAndLyveRule.class
+        MissingEmissionsBetweenFyveAndLyveRule.class,
+        PendingTALRequestsRule.class
     })
     @PostMapping(path = "accounts.close", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> closeAccount(
@@ -255,7 +258,7 @@ public class AccountController {
         AuthoritiesWithAccountAccessRule.class
     })
     @GetMapping(path = "accounts.get.operator")
-    public InstallationOrAircraftOperatorDTO getAccountOperator(
+    public OperatorDTO getAccountOperator(
         @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(ACCOUNT_ID) Long accountId) {
         return accountService.getInstallationOrAircraftOperatorDTO(accountId);
     }
@@ -343,19 +346,76 @@ public class AccountController {
 
 
     /**
-     * Returns true/false if monitoringPlanId exists and account is not closed.
+     * Returns true/false if aircraft monitoringPlanId exists and account is not closed.
      *
-     * @param monitoringPlanId The monitoring plan Identifier
+     * @param monitoringPlanId The aircraft monitoring plan Identifier
      * @deprecated used only for validating installations during account opening. move all validations about operators
      * to a single endpoint accounts.validate.operator.
      */
 
     @Deprecated(forRemoval = true)
-    @GetMapping(path = "accounts.get.monitoring-plan", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean monitoringPlanIdExists(@RequestParam String monitoringPlanId) {
-        return accountService.monitoringPlanIdExists(monitoringPlanId);
+    @GetMapping(path = "accounts.get.aircraft-monitoring-plan", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean aircraftMonitoringPlanIdExists(@RequestParam String monitoringPlanId) {
+
+        if (accountService.aircraftMonitoringPlanIdExists(monitoringPlanId)) {
+            String error = "An account with the same aircraft monitoring plan ID already exists. " +
+                "A second account is not permitted.";
+            throw AccountActionException.create(AccountActionError.builder()
+                .code(AccountActionError.MULTIPLE_MONITORING_PLAN_IDS_NOT_ALLOWED)
+                .message(error)
+                .build());
+        }
+
+        return false;
     }
 
+    /**
+     * Returns true/false if maritime monitoringPlanId exists and account is not closed.
+     *
+     * @param monitoringPlanId The maritiem monitoring plan Identifier
+     * @deprecated used only for validating installations during account opening. move all validations about operators
+     * to a single endpoint accounts.validate.operator.
+     */
+
+    @Deprecated(forRemoval = true)
+    @GetMapping(path = "accounts.get.maritime-monitoring-plan", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean maritimeMonitoringPlanIdExists(@RequestParam String monitoringPlanId) {
+
+        if (accountService.maritimeMonitoringPlanIdExists(monitoringPlanId)) {
+            String error = "An account with the same maritime monitoring plan ID already exists. " +
+                "A second account is not permitted.";
+            throw AccountActionException.create(AccountActionError.builder()
+                .code(AccountActionError.MULTIPLE_MONITORING_PLAN_IDS_NOT_ALLOWED)
+                .message(error)
+                .build());
+        }
+
+        return false;
+    }
+
+    @GetMapping(path = "accounts.get.maritime-imo", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean maritimeImoExists(@RequestParam String imo) {
+
+        if (accountService.maritimeImoExists(imo)) {
+            String error = "An account with the same IMO (Company IMO number) already exists. " +
+                " A second account is not permitted.";
+            throw AccountActionException.create(AccountActionError.builder()
+                .code(AccountActionError.MULTIPLE_MARITIME_IMOS_NOT_ALLOWED)
+                .message(error)
+                .build());
+        }
+
+        return false;
+    }
+
+    @GetMapping(path = "accounts.get.emitter-id", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean emitterIdExists(@RequestParam String emitterId,@RequestParam(required = false) Long operatorIdentifier) {
+        if(operatorIdentifier == null){
+            return accountService.emitterIdExists(emitterId);
+        } else{
+            return accountService.isExistingEmitterId(emitterId,operatorIdentifier);
+        }
+    }
 
     /**
      * Returns true/false if installationPermitId exists and account is not closed.
@@ -397,7 +457,7 @@ public class AccountController {
      * @param operator the
      */
     @PostMapping(path = "account.validate.installation-transfer", produces = MediaType.APPLICATION_JSON_VALUE)
-    public InstallationOrAircraftOperatorDTO validateOperator(@RequestBody @MDCParam(DTO) InstallationOrAircraftOperatorDTO operator) {
+    public OperatorDTO validateOperator(@RequestBody @MDCParam(DTO) OperatorDTO operator) {
         accountService.validateOperator(operator);
         return accountService.getInstallationByIdentifier(operator.getIdentifier());
     }

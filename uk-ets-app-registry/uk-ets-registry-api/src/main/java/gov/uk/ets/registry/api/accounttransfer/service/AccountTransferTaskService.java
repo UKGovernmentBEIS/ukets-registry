@@ -10,6 +10,7 @@ import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.service.TransferValidationService;
+import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferAction;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferTaskDetailsDTO;
@@ -17,6 +18,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.assign.OnlySeniorOrJuniorRegistryAdminCanBeAssignedTaskRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.OnlySeniorOrJuniorCanClaimTaskRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.SeniorAdminCanClaimTaskInitiatedByAdminRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.CannotCompletePendingTALRequestsRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.FourEyesPrincipleRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlySeniorRegistryAdminCanApproveTask;
 import gov.uk.ets.registry.api.common.Mapper;
@@ -70,12 +72,17 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
         accountTransferAction =
             mapper.convertToPojo(taskDetails.getDifference(), AccountTransferAction.class);
 
-        AccountHolder currentAccountHolder =
-            accountHolderRepository.getAccountHolderOfAccount(Long.parseLong(taskDetails.getAccountNumber()));
+        AccountHolderDTO originalAH = Optional.ofNullable(taskDetails.getBefore())
+            .map(before -> mapper.convertToPojo(before, AccountHolderDTO.class))
+            .orElseGet(() -> { // fallback to the original logic
+                AccountHolder accountHolder =
+                    accountHolderRepository.getAccountHolderOfAccount(Long.parseLong(taskDetails.getAccountNumber()));
+                return accountConversionService.convert(accountHolder);
+            });
         AccountDTO accountDTO = accountService.getAccountDTO(Long.valueOf(taskDetails.getAccountNumber()));
 
         response.setAction(accountTransferAction);
-        response.setCurrentAccountHolder(accountConversionService.convert(currentAccountHolder));
+        response.setCurrentAccountHolder(originalAH);
         response.setAccount(accountDTO.getAccountDetails());
         return response;
     }
@@ -83,6 +90,7 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
     @Protected({
             FourEyesPrincipleRule.class,
             OnlySeniorRegistryAdminCanApproveTask.class,
+            CannotCompletePendingTALRequestsRule.class
     })
     @Transactional
     @Override

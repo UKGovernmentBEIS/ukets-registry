@@ -12,9 +12,10 @@ import {
 import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
 import { getOptionsFromMap } from '@shared/shared.util';
 import { regulatorMap } from '@account-management/account-list/account-list.model';
-import { UkRegistryValidators } from '@shared/validation';
+import { ExistingEmitterIdAsyncValidator, UkRegistryValidators } from '@shared/validation';
 import { AccountOpeningOperatorActions } from '@account-opening/operator/actions';
 import { AccountHolder } from '@shared/model/account/account-holder';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-installation-transfer-input',
@@ -28,6 +29,8 @@ export class InstallationTransferInputComponent
   @Input() title: string;
   @Input() headerTitle: string;
   @Input() accountHolder: AccountHolder;
+  @Input() isSeniorOrJuniorAdmin: boolean;
+
   @Output()
   readonly installationTransferEmitter = new EventEmitter<{
     installationTransfer: InstallationTransfer;
@@ -50,6 +53,13 @@ export class InstallationTransferInputComponent
         },
       ],
       name: ['', Validators.required],
+      emitter: this.formBuilder.group({
+        emitterId: [
+          this.installation?.emitterId,
+          [Validators.required,Validators.pattern('^[a-zA-Z0-9-_]*$')],
+          (control) => this.existingEmitterIdAsyncValidator.validateEmitterId(this.installation?.identifier)(control)
+        ],
+      }),
       permit: this.formBuilder.group({
         id: ['', Validators.required],
       }),
@@ -68,21 +78,28 @@ export class InstallationTransferInputComponent
       name: {
         required: 'Enter the installation name',
       },
+      emitterId: {
+        required: 'Enter the Emitter ID',
+        exists: 'This emitter ID is used by another account',
+        pattern: 'The Emitter ID cannot contain any special characters'        
+      },
       id: {
         required: 'Enter the permit ID',
       },
     };
   }
+
   protected doSubmit() {
-    const updateObject = this.formGroup.getRawValue() as InstallationTransfer;
-    updateObject.type = OperatorType.INSTALLATION_TRANSFER;
+    const updateObject:InstallationTransfer = {...this.formGroup.getRawValue(),
+                                               type:OperatorType.INSTALLATION_TRANSFER,
+                                               emitterId:this.formGroup.get('emitter.emitterId').value};
     this.installationTransferEmitter.emit({
       installationTransfer: updateObject,
       acquiringAccountHolderIdentifier: this.accountHolder.id,
     });
   }
 
-  constructor(protected formBuilder: UntypedFormBuilder, private store: Store) {
+  constructor(protected formBuilder: UntypedFormBuilder, private existingEmitterIdAsyncValidator:ExistingEmitterIdAsyncValidator,private store: Store) {
     super();
     this.searchByIdRequestUrl = '/accounts.get.candidate-installation-transfer';
   }
@@ -111,6 +128,7 @@ export class InstallationTransferInputComponent
     operator.identifier = result.identifier;
     operator.name = result.installationName;
     operator.permit = { id: result.permitIdentifier };
+    operator.emitterId = result.emitterId;
     this.installation = operator;
     this.store.dispatch(
       AccountOpeningOperatorActions.initialPermitId({
@@ -124,7 +142,19 @@ export class InstallationTransferInputComponent
   }
 
   onContinue() {
-    // this.logAllErrors();
     this.onSubmit();
+  }
+
+  onSubmit() {
+    // this.logAllErrors();
+    if (this.formGroup.pending) {
+      this.formGroup.statusChanges.
+       pipe(take(1)).
+       subscribe(() => {
+        super.onSubmit();
+      });
+    } else {
+      super.onSubmit();
+    }
   }
 }

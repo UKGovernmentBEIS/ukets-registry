@@ -12,11 +12,16 @@ import {
 import { BannerType } from '@shared/banner/banner-type.enum';
 import { TaskListRoutes } from '@task-management/task-list/task-list.properties';
 import { GoBackNavigationExtras } from '@shared/back-button';
-import { NavigationExtras } from '@angular/router';
+import { NavigationExtras, RouterModule } from '@angular/router';
 import { navigateTo } from '@registry-web/shared/shared.action';
 import { Store } from '@ngrx/store';
+import { navigateToChangeTaskDeadline } from '../../actions/task-details-navigation.actions';
+import { CommonModule } from '@angular/common';
+import { SharedModule } from '@registry-web/shared/shared.module';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, RouterModule, SharedModule],
   selector: 'app-task-header',
   templateUrl: './task-header.component.html',
   styleUrls: [
@@ -58,6 +63,10 @@ export class TaskHeaderComponent {
 
   @Output() readonly handleExportPDF = new EventEmitter<TaskFileDownloadInfo>();
 
+  @Output() readonly makePayment = new EventEmitter<{
+    taskRequestId: string;
+  }>();
+
   bannerTypes = BannerType;
 
   moreInfo = false;
@@ -86,25 +95,45 @@ export class TaskHeaderComponent {
   }
 
   getTaskTypeLabel(): string {
-    return REQUEST_TYPE_VALUES[this.taskDetails.taskType].label;
+    return REQUEST_TYPE_VALUES[this.taskDetails.taskType]?.label;
   }
 
   // to be removed
   checkIfCanApprove(type: RequestType) {
-    return !this.checkIfCanOnlyComplete(type);
+    return (
+      !this.checkIfCanOnlyComplete(type) &&
+      this.checkIfCanApproveRejectPaymentRequest()
+    );
   }
 
   // to be removed
   checkIfCanReject(type: RequestType) {
-    return !this.checkIfCanOnlyComplete(type);
+    return (
+      !this.checkIfCanOnlyComplete(type) &&
+      this.checkIfCanApproveRejectPaymentRequest()
+    );
   }
 
   checkIfCanOnlyComplete(type: RequestType) {
-    return REQUEST_TYPE_VALUES[this.taskDetails.taskType].completeOnly;
+    return REQUEST_TYPE_VALUES[this.taskDetails.taskType]?.completeOnly;
   }
 
   completeOnly() {
-    return REQUEST_TYPE_VALUES[this.taskDetails.taskType].completeOnly;
+    return REQUEST_TYPE_VALUES[this.taskDetails.taskType]?.completeOnly;
+  }
+
+  checkIfCanApproveRejectPaymentRequest() {
+    if ('PAYMENT_REQUEST' === this.taskDetails.taskType) {
+      return this.isAdmin;
+    }
+    return true;
+  }
+
+  checkIfCanMakePayment() {
+    if ('PAYMENT_REQUEST' === this.taskDetails.taskType) {
+      return !this.isAdmin;
+    }
+    return false;
   }
 
   proceedWith(taskOutcome: TaskOutcome) {
@@ -119,5 +148,15 @@ export class TaskHeaderComponent {
       taskType: this.taskDetails.taskType,
       taskRequestId: this.taskDetails.requestId,
     });
+  }
+
+  proceedWithPayment() {
+    this.makePayment.emit({
+      taskRequestId: this.taskDetails.requestId,
+    });
+  }
+
+  changeDeadline() {
+    this.store.dispatch(navigateToChangeTaskDeadline());
   }
 }

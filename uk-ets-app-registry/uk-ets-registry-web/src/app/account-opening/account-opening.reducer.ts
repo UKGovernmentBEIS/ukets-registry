@@ -91,6 +91,7 @@ const accountOpeningReducer = createReducer(
     state.accountType = accountType;
     state.minNumberOfARs = minNumberOfARs;
     state.maxNumberOfARs = maxNumberOfARs;
+    setDefaultTransactionRules(state);
   }),
   mutableOn(
     AccountHolderWizardActions.setAccountHolderType,

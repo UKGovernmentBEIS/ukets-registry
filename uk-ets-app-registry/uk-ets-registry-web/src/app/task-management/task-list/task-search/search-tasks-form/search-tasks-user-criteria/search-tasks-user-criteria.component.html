@@ -165,6 +165,26 @@
                 </div>
               </div>
             </fieldset>
+
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend">Deadline</legend>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-third">
+                  <app-form-control-datepicker
+                    controlName="deadlineFrom"
+                    [label]="'From'"
+                  >
+                  </app-form-control-datepicker>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                  <app-form-control-datepicker
+                    controlName="deadlineTo"
+                    [label]="'To'"
+                  >
+                  </app-form-control-datepicker>
+                </div>
+              </div>
+            </fieldset>
           </div>
         </details>
       </div>

@@ -3,8 +3,8 @@ package gov.uk.ets.registry.api.account.web.model;
 import gov.uk.ets.registry.api.common.view.AddressDTO;
 import gov.uk.ets.registry.api.common.view.EmailAddressDTO;
 import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
