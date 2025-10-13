@@ -4,10 +4,9 @@ import com.lowagie.text.Chunk;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import gov.uk.ets.registry.api.payment.service.pdf.PdfFormatter;
+import java.awt.Color;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.awt.*;
 
 @Component
 @RequiredArgsConstructor
@@ -26,7 +25,6 @@ public class HelpInfoUtils {
             "please contact the Registry Team by emailing etregistryhelp@environment-agency.gov.uk. " +
             "Please include the Request ID of your application in the subject line of your e-mail.";
 
-    private static final String LABEL = "Environment Agency Greenhouse Gas Charges";
     private static final String LINK_LABEL = "Environment Agency (greenhouse gas emissions) charging scheme - GOV.UK";
     private static final String LINK = "https://www.gov.uk/government/publications/environment-agency-greenhouse-gas-emissions-charging-scheme-2021";
 

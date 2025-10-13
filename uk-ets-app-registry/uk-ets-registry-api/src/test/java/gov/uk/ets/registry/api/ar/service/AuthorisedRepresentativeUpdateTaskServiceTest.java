@@ -21,11 +21,10 @@ import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.Mapper;
-import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.common.publication.PublicationRequestAddRemoveRoleService;
 import gov.uk.ets.registry.api.common.reports.ReportRequestAddRemoveRoleService;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTaskService;
-import gov.uk.ets.registry.api.task.domain.TaskARStatus;
+import gov.uk.ets.registry.api.payment.service.PaymentTaskAutoCompletionService;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.printenrolmentletter.PrintEnrolmentLetterTaskService;
 import gov.uk.ets.registry.api.task.repository.TaskARStatusRepository;
@@ -110,6 +109,8 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
     private Mapper mapper;
     @Mock
     private TaskARStatusRepository taskARStatusRepository;
+    @Mock
+    private PaymentTaskAutoCompletionService paymentTaskAutoCompletionService;
 
     ObjectMapper jacksonMapper = new ObjectMapper();
 
@@ -126,7 +127,7 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
     public void setup() {
         authorisedRepresentativeUpdateTaskService = new AuthorisedRepresentativeUpdateTaskService(accountService,
             userConversionService, userAdministrationService, accountAccessRepository, userService, taskRepository,
-            authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper, taskARStatusRepository);
+            authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper, taskARStatusRepository,paymentTaskAutoCompletionService);
     }
 
     @DisplayName("Retrieve authorise representative update values successfully.")

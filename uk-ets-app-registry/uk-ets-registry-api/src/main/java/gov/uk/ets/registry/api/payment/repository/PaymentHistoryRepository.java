@@ -5,10 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, Long> {
+public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, Long>,PaymentHistorySearchRepository {
 
-    Page<PaymentHistory> findByReferenceNumberTextContaining(
-            String part,
-            Pageable pageable
-    );
+    Page<PaymentHistory> findByReferenceNumberTextContaining(String part,Pageable pageable);
 }

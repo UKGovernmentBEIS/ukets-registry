@@ -38,13 +38,9 @@ public class JpaQueryExtractor {
     }
 
     private static String buildNativeSql(Query query) {
-        if(query instanceof QuerySqmImpl querySqm) {
+        if (query instanceof QuerySqmImpl querySqm) {
 
-            ConcreteSqmSelectQueryPlan selectQueryPlan = ReflectionUtils.invokeMethod(querySqm, "resolveSelectQueryPlan");
-
-            Object cacheableSqmInterpretation = ReflectionUtils.getFieldValueOrNull(selectQueryPlan, "cacheableSqmInterpretation");
-            if(cacheableSqmInterpretation == null) {
-                cacheableSqmInterpretation = ReflectionUtils.invokeStaticMethod(
+            Object cacheableSqmInterpretation = ReflectionUtils.invokeStaticMethod(
                     ReflectionUtils.getMethod(
                         ConcreteSqmSelectQueryPlan.class,
                         "buildCacheableSqmInterpretation",
@@ -56,7 +52,7 @@ public class JpaQueryExtractor {
                     ReflectionUtils.getFieldValueOrNull(querySqm, "domainParameterXref"),
                     querySqm
                 );
-            }
+            
             if (cacheableSqmInterpretation != null) {
                 JdbcOperationQuerySelect
                     jdbcSelect = ReflectionUtils.getFieldValueOrNull(cacheableSqmInterpretation, "jdbcSelect");

@@ -20,8 +20,8 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.Onl
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.RegistryAdminCanApproveTaskWhenAccountNotClosedOrPendingClosureRule;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
-import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTaskService;
+import gov.uk.ets.registry.api.payment.service.PaymentTaskAutoCompletionService;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.TaskARStatus;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
@@ -64,6 +64,8 @@ public class AuthorisedRepresentativeUpdateTaskService
     private final RequestedDocsTaskService requestedDocsTaskService;
     private final Mapper mapper;
     private final TaskARStatusRepository taskARStatusRepository;
+    private final PaymentTaskAutoCompletionService paymentTaskAutoCompletionService;
+    
     @Override
     public Set<RequestType> appliesFor() {
         return Set.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
@@ -113,6 +115,9 @@ public class AuthorisedRepresentativeUpdateTaskService
 
         //UKETS-6528 Also complete child document subtasks
         requestedDocsTaskService.completeChildRequestedDocumentTasks(taskDTO.getRequestId(),taskOutcome);
+        
+        //Also complete any pending payment sub-tasks
+        paymentTaskAutoCompletionService.completeChildRequestedPaymentTasks(taskDTO.getRequestId(), taskOutcome);
         
         return defaultResponseBuilder(taskDTO).build();
     }

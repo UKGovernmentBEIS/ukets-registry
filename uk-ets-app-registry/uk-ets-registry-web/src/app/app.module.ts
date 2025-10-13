@@ -70,6 +70,7 @@ import { DebounceClickService } from '@shared/debounce-click.service';
 import { TitleStrategy } from '@angular/router';
 import { ExtendedTitleStrategyService } from '@shared/services/extended-title-strategy.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { PaymentListModule } from './payment-management/payment-list/payment-list.module';
 
 const keycloakService = new KeycloakService();
 
@@ -118,6 +119,7 @@ const keycloakService = new KeycloakService();
     QuillModule.forRoot(),
     GenerateLogsModule,
     ReactiveFormsModule,
+    PaymentListModule,
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: '/' },

@@ -86,15 +86,38 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
             filter.getAllocationWithholdStatus() != null ||
             filter.getOperatorId() != null ||
             filter.getImo() != null) {
-            query = query.innerJoin(account.compliantEntity, compliantEntity)
-                .on(new OptionalBooleanBuilder(account.isNotNull())
+            QCompliantEntity compliantEntity = new QCompliantEntity("compliantEntity");
+
+
+            query = query.innerJoin(account.compliantEntity, compliantEntity);
+
+            OptionalBooleanBuilder builder = new OptionalBooleanBuilder(account.isNotNull())
                     .notNullAnd(compliantEntity.regulator::eq, filter.getRegulatorType())
-                    .notNullAnd(this::getPermitOrMonitoringPlanIdCondition, filter.getPermitOrMonitoringPlanIdentifier())
                     .notNullAnd(this::getAllocationClassificationCondition, filter.getAllocationClassification())
                     .notNullAnd(compliantEntity.allocationWithholdStatus::eq, filter.getAllocationWithholdStatus())
                     .notNullAnd(compliantEntity.identifier.stringValue()::contains, filter.getOperatorId())
-                        .notNullAnd(this::getMaritimeImoCondition, filter.getImo())
-                    .build());
+                    .notNullAnd(this::getMaritimeImoCondition, filter.getImo());
+
+            // 👉 conditionally add subclass joins & condition
+            if (filter.getPermitOrMonitoringPlanIdentifier() != null) {
+                QInstallation installation = new QInstallation("installation");
+                QAircraftOperator aircraft = new QAircraftOperator("aircraft");
+                QMaritimeOperator maritime = new QMaritimeOperator("maritime");
+
+                query.leftJoin(installation).on(installation.id.eq(compliantEntity.id));
+                query.leftJoin(aircraft).on(aircraft.id.eq(compliantEntity.id));
+                query.leftJoin(maritime).on(maritime.id.eq(compliantEntity.id));
+
+                builder.notNullAnd(
+                        id -> getPermitOrMonitoringPlanIdCondition(id, installation, aircraft, maritime),
+                        filter.getPermitOrMonitoringPlanIdentifier()
+                );
+            }
+
+            query = query.on(builder.build());
+
+
+
         } else {
             query = query.leftJoin(account.compliantEntity, compliantEntity);
         }
@@ -192,10 +215,20 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
         ).reduce(account.isNull(), (e1, e2) -> e1.or(e2));
     }
 
-    private BooleanExpression getPermitOrMonitoringPlanIdCondition(String identifier) {
-        return compliantEntity.as(QInstallation.class).permitIdentifier.containsIgnoreCase(identifier)
-            .or(compliantEntity.as(QAircraftOperator.class).monitoringPlanIdentifier.containsIgnoreCase(identifier)
-                    .or(compliantEntity.as(QMaritimeOperator.class).maritimeMonitoringPlanIdentifier.contains(identifier)));
+    private BooleanExpression getPermitOrMonitoringPlanIdCondition(String identifier,
+                                                                   QInstallation installation,
+                                                                   QAircraftOperator aircraft,
+                                                                   QMaritimeOperator maritime) {
+        BooleanExpression installationPermitCondition =
+                installation.permitIdentifier.containsIgnoreCase(identifier);
+
+        BooleanExpression aircraftMonitoringPlanCondition =
+                aircraft.monitoringPlanIdentifier.containsIgnoreCase(identifier);
+
+        BooleanExpression maritimePlanCondition =
+                maritime.maritimeMonitoringPlanIdentifier.contains(identifier);
+
+        return installationPermitCondition.or(aircraftMonitoringPlanCondition).or(maritimePlanCondition);
     }
 
     private BooleanExpression getMaritimeImoCondition(String imo) {

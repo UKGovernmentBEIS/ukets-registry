@@ -49,6 +49,8 @@ import gov.uk.ets.registry.api.user.service.UserService;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 import gov.uk.ets.reports.model.ReportType;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -378,8 +380,8 @@ public class TaskService {
     })
     @Transactional
     @EmitsGroupNotifications(GroupNotificationType.TASK_COMPLETE_OUTCOME)
-    public TaskCompleteResponse complete(Long requestId, TaskOutcome outcome, String comment) {
-        TaskCompleteResponse response = null;
+    public TaskCompleteResponse complete(Long requestId, TaskOutcome outcome, String comment, BigDecimal amountPaid) {
+
         if (requestId == null) {
             throw new IllegalArgumentException("Input parameter requestId cannot be empty");
         }
@@ -395,14 +397,17 @@ public class TaskService {
             // There is no need to block the requests at this point but we want to make them fail fast
             // if another request is currently completing the same task.
             openSessionInViewAwareLockService.lock(currentTask, LockModeType.PESSIMISTIC_WRITE,
-                Collections.singletonMap(AvailableSettings.JPA_LOCK_TIMEOUT, LockOptions.NO_WAIT));
+                Collections.singletonMap(AvailableSettings.JAKARTA_LOCK_TIMEOUT, LockOptions.NO_WAIT));
         } catch (Throwable throwable) {
             throw new IllegalStateException("Other task completion request is in process", throwable);
         }
         if (Set.of(RequestStateEnum.APPROVED, RequestStateEnum.REJECTED).contains(currentTask.getStatus())) {
             throw new IllegalArgumentException("The task is already completed");
         }
+        
+        //Fetch the task details
         TaskDetailsDTO taskDetailsDTO = getTaskDetails(requestId);
+        
         if (taskDetailsDTO == null) {
             throw new IllegalArgumentException(String
                 .format("Task with unique business identifier %d not found in the database",
@@ -410,7 +415,10 @@ public class TaskService {
         }
         // we need the completedDate here to generate the compliance event accordingly
         taskDetailsDTO.setCompletedDate(new Date());
+        taskDetailsDTO.setBacsAmountPaid(amountPaid);
 
+        TaskCompleteResponse response = null;
+        //Instantiate the proper service
         Optional<TaskTypeService> taskTypeServiceOptional = this.getTaskService(taskDetailsDTO.getTaskType());
         if (taskTypeServiceOptional.isPresent()) {
             TaskTypeService taskTypeService = taskTypeServiceOptional.get();

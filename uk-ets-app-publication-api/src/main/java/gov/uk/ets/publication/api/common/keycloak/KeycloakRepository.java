@@ -55,7 +55,7 @@ public class KeycloakRepository {
     public RoleRepresentation fetchRoleDataByClientIdAndRoleName(
             String token, String clientId, String roleName) {
         UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(
+                UriComponentsBuilder.fromUriString(
                         authServer + REALMS_PATH + clientPath + "/" + clientId + "/roles/" + roleName);
 
         HttpEntity<?> request = new HttpEntity<>(generateHeaders(token));
@@ -67,7 +67,7 @@ public class KeycloakRepository {
     public RoleRepresentation addRoleDataByUserIdAndClient(String token, String userId, String clientId,
                                                            List<RoleRepresentation> roles) {
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(authServer + REALMS_PATH + userPath + "/" + userId + roleMappingClientPath + "/" + clientId);
+                .fromUriString(authServer + REALMS_PATH + userPath + "/" + userId + roleMappingClientPath + "/" + clientId);
 
         HttpEntity<?> request = new HttpEntity<>(roles, generateHeaders(token));
 
@@ -78,7 +78,7 @@ public class KeycloakRepository {
     public RoleRepresentation deleteRoleDataByUserIdAndClient(String token, String userId, String clientId,
                                                               List<RoleRepresentation> roles) {
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(authServer + REALMS_PATH + userPath + "/" + userId + roleMappingClientPath + "/" + clientId);
+                .fromUriString(authServer + REALMS_PATH + userPath + "/" + userId + roleMappingClientPath + "/" + clientId);
 
         HttpEntity<?> request = new HttpEntity<>(roles, generateHeaders(token));
 
@@ -95,7 +95,7 @@ public class KeycloakRepository {
     }
 
     protected UriComponentsBuilder createURI(Map<String, ?> queryParamsMap) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(
                 authServer + REALMS_PATH + clientPath);
         queryParamsMap.forEach((key, value) -> {
             if (value != null) {

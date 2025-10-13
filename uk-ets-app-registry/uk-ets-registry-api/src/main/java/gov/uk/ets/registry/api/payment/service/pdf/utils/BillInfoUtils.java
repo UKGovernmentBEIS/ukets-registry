@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BillInfoUtils {
-    private static final String CUSTOMER_NAME = "Customer Name: ";
+    private static final String CONTACT_NAME = "Contact Name: ";
     private static final String BILLED_TO = "Billed To: ";
     private static final String ADDRESS = "Address: ";
     private final PdfFormatter formater;
@@ -34,38 +34,42 @@ public class BillInfoUtils {
     private final AccountDTOFactory accountDTOFactory;
     private final Mapper mapper;
 
-    public Paragraph getBillingParagraph(Long parentTaskRequestId, boolean isInvoice) {
-        Objects.requireNonNull(parentTaskRequestId, "Parent task id cannot be null");
-        Task task = taskRepository.findByRequestId(parentTaskRequestId);
-        Account account = retrieveAccount(task);
+    public Paragraph getBillingParagraph(Long paymentTaskId, boolean isInvoice) {
+        Objects.requireNonNull(paymentTaskId, "Parent task id cannot be null");
+        Task parentTask = taskRepository.findByRequestId(paymentTaskId);
+        if(parentTask.getType().equals(RequestType.PAYMENT_REQUEST)) {
+            parentTask = parentTask.getParentTask();
+        }
+
+        Account account = parentTask.getAccount();
         if (account != null) {
            return getBillingParagraph(account);
         }
-        return getBillingParagraph(retrieveAccountDTO(task), isInvoice);
+        return getBillingParagraph(retrieveAccountDTO(parentTask), isInvoice);
     }
 
     private Paragraph getBillingParagraph(AccountDTO accountDTO, boolean isInvoice) {
         AccountHolderDTO accountHolder = accountDTO.getAccountHolder();
         BillingContactDetailsDTO billingContactDetails = accountDTO.getAccountDetails().getBillingContactDetails();
-
+        AddressDTO address = accountDTO.getAccountDetails().getAddress();
         Paragraph boxContent = new Paragraph();
         if (isInvoice) {
             boxContent.add(
-                    formater.labelWithBoldValue(CUSTOMER_NAME, billingContactDetails != null && billingContactDetails.getContactName() != null ?
+                    formater.labelWithBoldValue(CONTACT_NAME, billingContactDetails != null && billingContactDetails.getContactName() != null ?
                             billingContactDetails.getContactName()
                             : getCustomerName(accountHolder)));
             boxContent.add(
                     formater.labelWithBoldValue(BILLED_TO, accountHolder.actualName()));
         } else {
             boxContent.add(
-                    formater.boldParagraph(billingContactDetails != null && billingContactDetails.getContactName() != null ?
+                    formater.boldParagraph(address != null && billingContactDetails.getContactName() != null ?
                             billingContactDetails.getContactName()
                             : getCustomerName(accountHolder)));
         }
         boxContent.add(
                 formater.labelWithBoldValue(ADDRESS,
-                        billingContactDetails != null && billingContactDetails.getContactName() != null ?
-                                billingContactDetails.getContactName()
+                        address != null ?
+                                getAddress(address)
                                 : getAddress(accountHolder.getAddress())));
         return boxContent;
     }
@@ -75,7 +79,7 @@ public class BillInfoUtils {
         AccountHolder accountHolder = account.getAccountHolder();
         Paragraph boxContent = new Paragraph();
         boxContent.add(
-                formater.labelWithBoldValue(CUSTOMER_NAME, accountHolder.getName()));
+                formater.labelWithBoldValue(CONTACT_NAME, accountHolder.getName()));
         boxContent.add(
                 formater.labelWithBoldValue(BILLED_TO, getAddress(accountHolder.getContact())));
         boxContent.add(
@@ -117,10 +121,6 @@ public class BillInfoUtils {
 
     private String getCustomerName(AccountHolderDTO accountHolder) {
         return accountHolder.getDetails().getName();
-    }
-
-    private Account retrieveAccount(Task task) {
-        return accountRepository.findById(task.getId()).orElse(null);
     }
 
     private AccountDTO retrieveAccountDTO(Task task) {

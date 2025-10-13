@@ -39,7 +39,7 @@
         <junit-platform.version>5.6.1</junit-platform.version>
         <h2.version>1.4.200</h2.version>
         <git.commit.id.plugin.version>5.0.0</git.commit.id.plugin.version>
-        <kafka.clients.version>3.6.1</kafka.clients.version>
+        <kafka.clients.version>3.7.1</kafka.clients.version>
         <jboss-logging.version>3.4.1.Final</jboss-logging.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     </properties>

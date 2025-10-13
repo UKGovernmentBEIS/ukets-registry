@@ -1,6 +1,5 @@
 package gov.uk.ets.registry.api.system.administration.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.QAccount;
@@ -30,10 +29,6 @@ import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.migration.UserRolesMigrator;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -105,15 +100,14 @@ public class SystemAdministrationServiceImpl implements SystemAdministrationServ
     @Transactional
     public ResetDatabaseActionResult reset() {
         log.debug("Resetting db state...");
-//        deleteEverything();
-//        resetKyotoProtocolUnitLimits();
-//        resetAllocationLimits();
-//        Keycloak keycloak = Keycloak.getInstance(keycloakAuthServerUrl, keycloakRealm, keycloakClientId,
-//            authorizationServiceImpl.getTokenString());
-//        UsersActionResultDTO usersResult = resetUsers(keycloak);
-//        syncSystemAdmin(keycloak);
+        deleteEverything();
+        resetKyotoProtocolUnitLimits();
+        resetAllocationLimits();
+        Keycloak keycloak = Keycloak.getInstance(keycloakAuthServerUrl, keycloakRealm, keycloakClientId,
+            authorizationServiceImpl.getTokenString());
+        UsersActionResultDTO usersResult = resetUsers(keycloak);
+        syncSystemAdmin(keycloak);
 
-        UsersActionResultDTO usersResult = UsersActionResultDTO.builder().usersCreated(2).usersDeleted(3).build();
         AccountsActionResultDTO accountsResult = createAccounts();
         log.debug("Reseting db state success...");
         return ResetDatabaseActionResult.

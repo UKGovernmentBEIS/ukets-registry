@@ -105,6 +105,13 @@ const routes: Routes = [
         './transaction-management/transaction-details/transaction-details.module'
       ).then((mod) => mod.TransactionDetailsModule),
   },
+  {
+    path: 'payment-list',
+    loadChildren: () =>
+      import('./payment-management/payment-list/payment-list.module').then(
+        (m) => m.PaymentListModule
+      ),
+  },
   // TODO: move path to kp-administration
   {
     path: 'kpadministration',

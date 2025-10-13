@@ -1,0 +1,49 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Payments</h1>
+  </div>
+</div>
+
+<app-search-payments-form
+  *ngIf="sortParameters$ | async as sortParameters"
+  [ngStyle]="{ display: (hideCriteria$ | async) ? 'none' : 'block' }"
+  (search)="onSearchPayments($event, sortParameters)"
+  (submitClick)="onSubmitClick()"
+  (errorDetails)="onError($event)"
+  [storedCriteria]="storedCriteria$ | async"
+  [isAdmin]="isAdmin$ | async"
+  [showAdvancedSearch]="showAdvancedSearch$ | async"
+  (advancedSearch)="toggleAdvancedSearch($event)"
+>
+</app-search-payments-form>
+
+<app-search-payments-results
+  *ngIf="resultsLoaded$ | async"
+  [results]="results$ | async"
+  (sort)="onSort($event)"
+  [sortParameters]="sortParameters$ | async"
+  [goBackToListRoute]="'payment-list'"
+  (openTaskDetail)="onOpenTaskDetails($event)"
+  [isAdmin]="isAdmin$ | async"
+>
+</app-search-payments-results>
+
+<app-empty-search-results
+  *ngIf="(resultsLoaded$ | async) && (results$ | async).length === 0"
+>
+</app-empty-search-results>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-paginator
+      [pagination]="pagination$ | async"
+      [pageSizeOptions]="pageSizeOptions"
+      (selectFirstPage)="goToFirstPageOfResults($event)"
+      (selectLastPage)="goToLastPageOfResults($event)"
+      (selectNextPage)="goToNextPageOfResults($event)"
+      (selectPreviousPage)="goToPreviousPageOfResults($event)"
+      (changePageSize)="onChangePageSize($event)"
+    >
+    </app-paginator>
+  </div>
+</div>

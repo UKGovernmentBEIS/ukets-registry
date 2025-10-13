@@ -93,8 +93,6 @@ class KeycloakRoleMappingEventHandlerIntegrationTest extends KeycloakEventHandle
 
         cut.handle(event);
 
-        persistState();
-
         List<IamUserRole> allRoles = iamUserRoleRepository.findAll();
 
         assertThat(allRoles).hasSize(3);
@@ -102,6 +100,8 @@ class KeycloakRoleMappingEventHandlerIntegrationTest extends KeycloakEventHandle
             .containsOnly(TEST_ROLE_ID, TEST_ROLE_ID_2, TEST_ROLE_ID_3);
 
         Set<UserRoleMapping> userRoles = userRepository.findByIamIdentifier(TEST_USER_IAM_ID).getUserRoles();
+        persistState();
+
         assertThat(userRoles).hasSize(2);
         assertThat(userRoles).extracting(UserRoleMapping::getRole).extracting(IamUserRole::getRoleName)
             .containsOnly(TEST_ROLE_NAME_2, TEST_ROLE_NAME_3);

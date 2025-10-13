@@ -54,6 +54,7 @@ import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 import gov.uk.ets.registry.api.user.admin.web.UserSearchByNameResultDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.validation.constraints.Size;
@@ -244,8 +245,9 @@ public class TaskController {
                                          @MDCParam(TASK_REQUEST_ID) Long requestId,
                                          @RuleInput(RuleInputType.TASK_OUTCOME) TaskOutcome taskOutcome,
                                          @RuleInput(RuleInputType.TASK_COMPLETE_COMMENT) @RequestParam(required = false)
-                                                 String comment) {
-        return taskService.complete(requestId, taskOutcome, comment);
+                                                 String comment,
+                                         @RequestParam(required = false) BigDecimal amountPaid) {
+        return taskService.complete(requestId, taskOutcome, comment, amountPaid);
     }
 
     /**

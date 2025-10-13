@@ -47,4 +47,15 @@ public class PaymentUrl {
         return String.format(paymentProperties.getWeblink().getReturnUrl(),
                 URLEncoder.encode(urlSuffix, StandardCharsets.UTF_8));
     }
+    
+    /**
+     * Generates the payment link error url.
+     * 
+     * @param urlSuffix the uuid of the payment
+     * @return the payment via weblink return url
+     */
+    public String generatePaymentWebLinkErrorUrl(String urlSuffix) {
+        return String.format(paymentProperties.getWeblink().getErrorUrl(),
+                URLEncoder.encode(urlSuffix, StandardCharsets.UTF_8));
+    }
 }

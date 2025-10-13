@@ -854,13 +854,10 @@
       "ownerManagedAccess": false,
       "displayName": "List payment history",
       "attributes": {},
-      "uris": ["/api-registry/payment.get.history"],
+      "uris": ["/api-registry/payments.list"],
       "scopes": [
         {
-          "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
-        },
-        {
-          "name": "urn:uk-ets-registry-api:actionForEnrolledNonAdmin"
+          "name": "urn:uk-ets-registry-api:page:dashboard:paymentMenuItem:view"
         }
       ]
     },
@@ -1572,6 +1569,17 @@
       "config": {
         "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:transactionMenuItem:view\"]",
         "applyPolicies": "[\"Enrolled User Policy\"]"
+      }
+    },
+    {
+      "name": "DashBoard Page Payments  Menu Item View Scope Permission",
+      "description": "Defines who can view payments menu on the dashboard page",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:paymentMenuItem:view\"]",
+        "applyPolicies": "[\"Any UK ETS User\"]"
       }
     },
     {
@@ -2443,6 +2451,9 @@
     },
     {
       "name": "urn:uk-ets-registry-api:page:dashboard:transactionMenuItem:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:page:dashboard:paymentMenuItem:view"
     },
     {
       "name": "urn:uk-ets-registry-api:actionForAnyAdmin"

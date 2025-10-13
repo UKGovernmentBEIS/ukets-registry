@@ -46,35 +46,35 @@ class BillInfoUtilsTest {
 
     @Test
     void testGetBillingParagraph_withAccountFound() {
+        Task parentTask = new Task();
+        parentTask.setType(RequestType.ACCOUNT_OPENING_REQUEST);
+
         // Setup
         Long taskId = 123L;
         Task task = new Task();
         task.setId(taskId);
+        task.setType(RequestType.PAYMENT_REQUEST);
+        task.setParentTask(parentTask);
         when(taskRepository.findByRequestId(taskId)).thenReturn(task);
 
-        Account account = mock(Account.class);
-        AccountHolder holder = mock(AccountHolder.class);
-        Contact contact = mock(Contact.class);
+        Account parentAccount = new Account();
+        parentAccount.setId(123L);
+        parentAccount.setAccountName("Contact X");
 
-        when(account.getAccountHolder()).thenReturn(holder);
-        when(holder.getName()).thenReturn("Customer X");
-        when(holder.getContact()).thenReturn(contact);
 
-        when(contact.getLine1()).thenReturn("Line 1");
-        when(contact.getCity()).thenReturn("City");
-        when(contact.getPostCode()).thenReturn("PostCode");
+        parentAccount.setAccountHolder(dummyAccountHolder());
+        parentTask.setAccount(parentAccount);
+        when(accountRepository.findById(taskId)).thenReturn(Optional.of(parentAccount));
 
-        when(accountRepository.findById(taskId)).thenReturn(Optional.of(account));
-
-        when(formatter.labelWithBoldValue(eq("Customer Name: "), eq("Customer X"))).thenReturn(new Paragraph("Customer Name"));
+        when(formatter.labelWithBoldValue(eq("Contact Name: "), eq("Contact X"))).thenReturn(new Paragraph("Contact Name"));
         when(formatter.labelWithBoldValue(eq("Billed To: "), anyString())).thenReturn(new Paragraph("Billed To"));
         when(formatter.labelWithBoldValue(eq("Address: "), anyString())).thenReturn(new Paragraph("Address"));
 
         Paragraph result = billInfoUtils.getBillingParagraph(taskId, true);
         assertNotNull(result);
-        assertEquals(12, result.getChunks().size() + result.size()); // Paragraphs may contain sub-elements or chunks
+        assertEquals(8, result.getChunks().size() + result.size()); // Paragraphs may contain sub-elements or chunks
 
-        verify(formatter).labelWithBoldValue(eq("Customer Name: "), eq("Customer X"));
+        verify(formatter).labelWithBoldValue(eq("Contact Name: "), eq("AH Contact X"));
         verify(formatter, atLeastOnce()).labelWithBoldValue(eq("Address: "), anyString());
     }
 
@@ -85,6 +85,7 @@ class BillInfoUtilsTest {
         task.setId(taskId);
         Account account = new Account();
         account.setId(8548L);
+        account.setAccountHolder(dummyAccountHolder());
         task.setAccount(account);
         task.setType(RequestType.AUTHORIZED_REPRESENTATIVE_UPDATE_ACCESS_RIGHTS_REQUEST);
         when(taskRepository.findByRequestId(taskId)).thenReturn(task);
@@ -102,13 +103,13 @@ class BillInfoUtilsTest {
         when(billingDTO.getContactName()).thenReturn("Billing Contact");
 
         when(holderDTO.actualName()).thenReturn("Holder Co.");
-        when(formatter.labelWithBoldValue(eq("Customer Name: "), eq("Billing Contact"))).thenReturn(new Paragraph("Customer Name"));
+        when(formatter.labelWithBoldValue(eq("Contact Name: "), eq("Billing Contact"))).thenReturn(new Paragraph("Contact Name"));
         when(formatter.labelWithBoldValue(eq("Billed To: "), eq("Holder Co."))).thenReturn(new Paragraph("Billed To"));
         when(formatter.labelWithBoldValue(eq("Address: "), anyString())).thenReturn(new Paragraph("Address"));
 
         Paragraph result = billInfoUtils.getBillingParagraph(taskId, true);
         assertNotNull(result);
-        verify(formatter).labelWithBoldValue("Customer Name: ", "Billing Contact");
+        verify(formatter).labelWithBoldValue("Contact Name: ", "AH Contact X");
     }
 
     @Test
@@ -125,13 +126,28 @@ class BillInfoUtilsTest {
         when(contact.getCity()).thenReturn("City");
         when(contact.getCountry()).thenReturn("Country");
 
-        when(formatter.labelWithBoldValue(eq("Customer Name: "), eq("Direct Name"))).thenReturn(new Paragraph("Customer Name"));
+        when(formatter.labelWithBoldValue(eq("Contact Name: "), eq("Direct Name"))).thenReturn(new Paragraph("Contact Name"));
         when(formatter.labelWithBoldValue(eq("Billed To: "), anyString())).thenReturn(new Paragraph("Billed To"));
         when(formatter.labelWithBoldValue(eq("Address: "), anyString())).thenReturn(new Paragraph("Address"));
 
         Paragraph result = billInfoUtils.getBillingParagraph(account);
 
         assertNotNull(result);
-        verify(formatter).labelWithBoldValue(eq("Customer Name: "), eq("Direct Name"));
+        verify(formatter).labelWithBoldValue(eq("Contact Name: "), eq("Direct Name"));
+    }
+
+    private AccountHolder dummyAccountHolder() {
+        AccountHolder accountHolder = new AccountHolder();
+        accountHolder.setId(123L);
+        accountHolder.setName("AH Contact X");
+        Contact ahConact = new Contact();
+        ahConact.setId(123L);
+        ahConact.setLine1("Line 1");
+        ahConact.setLine2("Line 2");
+        ahConact.setLine3("Line 3");
+        ahConact.setPostCode("12345");
+        ahConact.setPhoneNumber1("221555666");
+        accountHolder.setContact(ahConact);
+        return accountHolder;
     }
 }

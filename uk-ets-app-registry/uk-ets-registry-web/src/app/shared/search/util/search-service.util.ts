@@ -2,6 +2,16 @@ import { PageParameters } from '@shared/search/paginator';
 import { SortParameters } from '../sort/SortParameters';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { ErrorDetail } from '@shared/error-summary';
+
+export interface SearchActionPayload<T> {
+  criteria: T;
+  pageParameters: PageParameters;
+  sortParameters: SortParameters;
+  potentialErrors: Map<any, ErrorDetail>;
+  isReport?: boolean;
+  loadPageParametersFromState?: boolean;
+}
 
 export interface PagedResults<T> {
   totalResults: number;

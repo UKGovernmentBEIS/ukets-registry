@@ -56,6 +56,28 @@ export const PaymentStatus = {
       throw Error('Invalid payment status');
     }
   },
+
+  color(status = PaymentStatus.DEFAULT): string {
+    if (status === 'CREATED') {
+      return 'purple';
+    } else if (status === 'STARTED') {
+      return 'yellow';
+    } else if (status === 'SUBMITTED') {
+      return 'yellow';
+    } else if (status === 'CAPTURABLE') {
+      return 'pink';
+    } else if (status === 'SUCCESS') {
+      return 'green';
+    } else if (status === 'FAILED') {
+      return 'red';
+    } else if (status === 'CANCELLED') {
+      return 'red';
+    } else if (status === 'ERROR') {
+      return 'red';
+    } else {
+      throw Error('Invalid payment status');
+    }
+  },
 };
 
 export const AvailablePaymentMethods = [

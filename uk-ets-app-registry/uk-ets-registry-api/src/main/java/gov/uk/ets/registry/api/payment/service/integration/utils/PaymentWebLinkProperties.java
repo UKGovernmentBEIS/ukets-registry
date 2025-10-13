@@ -8,11 +8,14 @@ import lombok.Setter;
 @Setter
 public class PaymentWebLinkProperties {
 
-	
+
     @NotBlank
     private String url;
-	
+
     @NotBlank
     private String returnUrl;
+    
+    @NotBlank
+    private String errorUrl;
     
 }

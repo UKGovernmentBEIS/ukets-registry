@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>3.5.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>uk.gov.ets</groupId>
@@ -29,7 +29,7 @@
         <maven.project.info.reports.plugin>3.0.0</maven.project.info.reports.plugin>
         <shedlock-spring.version>4.23.0</shedlock-spring.version>
         <checkstyle.version>8.45.1</checkstyle.version>
-        <springdoc.openapi.ui.version>2.3.0</springdoc.openapi.ui.version>
+        <springdoc.openapi.ui.version>2.8.13</springdoc.openapi.ui.version>
     </properties>
     <dependencies>
         <dependency>

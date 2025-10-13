@@ -3,6 +3,10 @@ package gov.uk.ets.registry.api.payment.service;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
 import gov.uk.ets.registry.api.payment.domain.Payment;
+import gov.uk.ets.registry.api.payment.domain.PaymentHistory;
+import gov.uk.ets.registry.api.payment.domain.types.PaymentMethod;
+import gov.uk.ets.registry.api.payment.domain.types.PaymentStatus;
+import gov.uk.ets.registry.api.payment.repository.PaymentHistoryRepository;
 import gov.uk.ets.registry.api.payment.repository.PaymentRepository;
 import gov.uk.ets.registry.api.payment.service.integration.utils.PaymentUrl;
 import gov.uk.ets.registry.api.payment.web.model.PaymentFileDTO;
@@ -16,6 +20,7 @@ import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskFileDownloadInfoDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentTaskService implements TaskTypeService<PaymentTaskDetailsDTO> {
 
     private final PaymentRepository paymentRepository;
+    private final PaymentHistoryRepository paymentHistoryRepository;
     private final UploadedFilesRepository filesRepository;
     private final PaymentTaskCompleteResponseFactory paymentTaskCompleteResponseFactory;
     private final PaymentUrl paymentUrl;
@@ -80,6 +86,29 @@ public class PaymentTaskService implements TaskTypeService<PaymentTaskDetailsDTO
     @Override
     public PaymentTaskCompleteResponse complete(PaymentTaskDetailsDTO taskDetailsDTO, TaskOutcome taskOutcome, String comment) {
         Payment payment = paymentRepository.findByReferenceNumber(taskDetailsDTO.getRequestId()).orElseThrow();
+        
+        if (Objects.isNull(payment.getMethod()) || PaymentMethod.BACS.equals(payment.getMethod())) {
+                    
+            if (TaskOutcome.APPROVED.equals(taskOutcome)) {
+                payment.setStatus(PaymentStatus.SUCCESS);
+            } else if (TaskOutcome.REJECTED.equals(taskOutcome)) {
+                payment.setStatus(PaymentStatus.CANCELLED);
+            } else {
+                throw new IllegalArgumentException("Illegal task outcome.");
+            }
+            payment.setAmountPaid(taskDetailsDTO.getBacsAmountPaid());
+            paymentRepository.save(payment);
+            
+            PaymentHistory paymentHistory = new PaymentHistory();
+            paymentHistory.setAmount(payment.getAmountPaid());
+            paymentHistory.setPaymentId(payment.getPaymentId());
+            paymentHistory.setReferenceNumber(payment.getReferenceNumber());
+            paymentHistory.setMethod(payment.getMethod());
+            paymentHistory.setStatus(payment.getStatus());
+            paymentHistory.setUpdated(payment.getUpdated());
+            
+            paymentHistoryRepository.save(paymentHistory);
+        }
              
         return paymentTaskCompleteResponseFactory.create(payment);
     }

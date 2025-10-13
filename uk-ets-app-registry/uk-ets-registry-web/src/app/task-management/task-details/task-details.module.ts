@@ -54,6 +54,8 @@ import {
   PaymentBacsDetailsContainerComponent,
   PaymentBacsConfirmContainerComponent,
   PaymentBacsCancelContainerComponent,
+  PaymentWeblinkErrorComponent,
+  PaymentWeblinkErrorContainerComponent,
 } from '@task-details/components';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -172,6 +174,8 @@ import { PaymentBacsCancelComponent } from './components/payment-bacs-cancel/pay
     PaymentBacsConfirmContainerComponent,
     PaymentBacsCancelContainerComponent,
     PaymentBacsCancelComponent,
+    PaymentWeblinkErrorComponent,
+    PaymentWeblinkErrorContainerComponent,
   ],
   imports: [
     TaskDetailsRoutingModule,

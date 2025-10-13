@@ -38,6 +38,7 @@ import {
   AccountType,
   AccountTypeMap,
   AuthorisedRepresentative,
+  RegistryAccountType,
 } from '@shared/model/account';
 import { TrustedAccountList } from '../trusted-account-list/trusted-account-list';
 import {
@@ -82,6 +83,7 @@ export class MainWizardComponent implements OnInit {
   maxNumberOfARs: number;
 
   readonly AccountTypeMap = AccountTypeMap;
+  readonly maritimeOperatorLabel: string = 'Maritime Operator Holding Account';
 
   accountType$: Observable<AccountType> = this.store.select(selectAccountType);
 
@@ -396,4 +398,6 @@ export class MainWizardComponent implements OnInit {
       { skipLocationChange: true }
     );
   }
+
+  protected readonly RegistryAccountType = RegistryAccountType;
 }

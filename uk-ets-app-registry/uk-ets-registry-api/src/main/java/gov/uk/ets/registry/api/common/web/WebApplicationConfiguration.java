@@ -54,7 +54,7 @@ public class WebApplicationConfiguration implements WebMvcConfigurer {
         filter.setConfig(config);
         FilterRegistrationBean<CustomLoggingFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(filter);
-        registrationBean.addUrlPatterns("/api-registry/*");
+        registrationBean.addUrlPatterns("/api-registry/*","/payment/*");
         return registrationBean;
     }
 }

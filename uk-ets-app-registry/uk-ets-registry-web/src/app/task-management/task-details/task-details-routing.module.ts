@@ -12,6 +12,7 @@ import {
   TaskUserDetailsContainerComponent,
   PaymentBacsConfirmContainerComponent,
   PaymentBacsCancelContainerComponent,
+  PaymentWeblinkErrorContainerComponent,
 } from '@task-details/components';
 import { TaskHeaderGuard } from '@task-management/guards/task-header.guard';
 import { TaskUserDetailsResolver } from '@task-details/task-user-details.resolver';
@@ -119,6 +120,10 @@ export const routes: Routes = [
     path: ':uuid/payment-weblink-confirmation',
     canActivate: [paymentWeblinkConfirmationGuard],
     component: PaymentConfirmationContainerComponent,
+  },
+  {
+    path: ':uuid/payment-weblink-error',
+    component: PaymentWeblinkErrorContainerComponent,
   },
   {
     path: ':requestId/history',

@@ -93,7 +93,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
               .requestMatchers(HttpMethod.POST,"/api-publication/roles.add", 
               "/api-publication/roles.remove").permitAll()
               .requestMatchers(HttpMethod.GET,"/api-publication/actuator/health","/v3/api-docs").permitAll()
-              .requestMatchers("/api-reports/**").hasAnyRole("ets_user")        
+              .requestMatchers("/api-publication/**").hasAnyRole("ets_user")        
               .anyRequest()
               .authenticated())
               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -110,7 +110,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
                   .addHeaderWriter(new StaticHeadersWriter("X-Permitted-Cross-Domain-Policies", "none"))  
                   // without this there is an error concerning the cookies iframe (specifically this header is set to DENY)
                   .frameOptions(FrameOptionsConfig::sameOrigin)          
-                  .permissionsPolicy(p -> p.policy(SecurityHeaders.FEATURE_POLICY_HEADER))
+                  .permissionsPolicyHeader(p -> p.policy(SecurityHeaders.FEATURE_POLICY_HEADER))
             );
 
         return http.build();

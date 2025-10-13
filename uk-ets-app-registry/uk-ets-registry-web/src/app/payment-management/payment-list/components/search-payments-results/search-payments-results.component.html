@@ -1,0 +1,130 @@
+<table appSortableTable (sorting)="sort.emit($event)" class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'referenceNumber'"
+        [sortDirection]="
+          sortParameters?.sortField === 'referenceNumber'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Reference number
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'id'"
+        [sortDirection]="
+          sortParameters?.sortField === 'id'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Payment ID
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'type'"
+        [sortDirection]="
+          sortParameters?.sortField === 'type'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Type
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'method'"
+        [sortDirection]="
+          sortParameters?.sortField === 'method'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Payment method
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'status'"
+        [sortDirection]="
+          sortParameters?.sortField === 'status'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Status
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'amount'"
+        [sortDirection]="
+          sortParameters?.sortField === 'amount'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Amount
+      </th>
+      <th
+        scope="col"
+        appSortableColumn
+        [sortDisable]="!isSortable"
+        [sortField]="'updated'"
+        [sortDirection]="
+          sortParameters?.sortField === 'updated'
+            ? sortParameters.sortDirection
+            : null
+        "
+      >
+        Last Updated
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let payment of results" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a
+          [routerLink]="[]"
+          class="disabled"
+          (click)="navigateToTask(payment.referenceNumber, $event)"
+        >
+          {{ payment.referenceNumber }}</a
+        >
+      </td>
+      <td class="govuk-table__cell">
+        {{ payment.paymentId }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ paymentTypeLabel(payment.type) }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ paymentMethodLabel(payment.method) }}
+      </td>
+      <td class="govuk-table__cell">
+        <app-govuk-tag [color]="paymentStatusColor(payment.status)">
+          {{ paymentStatusLabel(payment.status) }}
+        </app-govuk-tag>
+      </td>
+      <td class="govuk-table__cell">
+        {{ payment.amount | currency: 'GBP' : 'symbol' : '1.2-2' : 'en-GB' }}
+      </td>
+      <td class="govuk-table__cell">
+        {{ payment.updated | gdsDateTimeShort }}
+      </td>
+    </tr>
+  </tbody>
+</table>

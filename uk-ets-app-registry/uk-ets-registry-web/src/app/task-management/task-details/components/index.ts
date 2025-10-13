@@ -33,3 +33,4 @@ export * from './payment-bacs-details';
 export * from './payment-bacs-confirm';
 export * from './payment-bacs-cancel';
 export * from './payment-confirmation';
+export * from './payment-weblink-error';

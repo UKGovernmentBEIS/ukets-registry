@@ -15,7 +15,6 @@ export const paymentWeblinkConfirmationGuard: CanActivateFn = (
   state
 ) => {
   const store = inject(Store);
-  console.log(`paymentWeblinkConfirmationGuard ${route.url[0].path}`);
   store.dispatch(
     fetchPaymentViaWebLinkCompleteResponseWithExternalService({
       uuid: route.url[0].path,

@@ -23,6 +23,7 @@ import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTa
 import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.messaging.UktlAccountNotifyMessageService;
 import gov.uk.ets.registry.api.messaging.domain.AccountNotification;
+import gov.uk.ets.registry.api.payment.service.PaymentTaskAutoCompletionService;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.domain.types.TaskUpdateAction;
 import gov.uk.ets.registry.api.task.service.TaskTypeService;
@@ -71,6 +72,8 @@ public class AccountOpeningTaskService
     private final AccountCreationService accountCreationService;
 
     private final RequestedDocsTaskService requestedDocsTaskService;
+    
+    private final PaymentTaskAutoCompletionService paymentTaskAutoCompletionService;
     
     @Override
     public Set<RequestType> appliesFor() {
@@ -121,6 +124,9 @@ public class AccountOpeningTaskService
 
         //UKETS-6528 Also complete child document subtasks
         requestedDocsTaskService.completeChildRequestedDocumentTasks( taskDTO.getRequestId(),taskOutcome);
+        
+        //Also complete any pending payment sub-tasks
+        paymentTaskAutoCompletionService.completeChildRequestedPaymentTasks(taskDTO.getRequestId(), taskOutcome);
         
         if (TaskOutcome.REJECTED.equals(taskOutcome)) {
             return defaultResponseBuilder(taskDTO).build();

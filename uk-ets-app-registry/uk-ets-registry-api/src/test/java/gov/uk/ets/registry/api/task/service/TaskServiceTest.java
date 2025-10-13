@@ -10,6 +10,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.rules.ExpectedException;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.authorization.DecisionEffect;
+import org.keycloak.representations.idm.authorization.PolicyEvaluationResponse;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
+
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.allocation.service.RequestAllocationExcelFileGenerator;
 import gov.uk.ets.registry.api.auditevent.DomainObject;
@@ -34,32 +61,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.transaction.service.TransactionProposalTaskService;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Builder;
-import org.junit.Rule;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
-import org.keycloak.representations.AccessToken;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.authorization.DecisionEffect;
-import org.keycloak.representations.idm.authorization.PolicyEvaluationResponse;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.context.ApplicationEventPublisher;
 
 public class TaskServiceTest {
 
@@ -220,11 +222,12 @@ public class TaskServiceTest {
             .requestId(1234L)
             .outcome(TaskOutcome.APPROVED)
             .comment("No comment")
+            .amountPaid(BigDecimal.valueOf(123L))
             .build();
         testComplete(command);
 
         TaskActionException exception = assertThrows(TaskActionException.class,
-            () -> taskService.complete(command.requestId, command.outcome, command.comment));
+            () -> taskService.complete(command.requestId, command.outcome, command.comment, command.amountPaid));
 
         assertEquals(exception.getTaskActionErrors().get(0), expectedError);
 
@@ -233,7 +236,7 @@ public class TaskServiceTest {
         testComplete(command);
 
         exception = assertThrows(TaskActionException.class,
-            () -> taskService.complete(command.requestId, command.outcome, command.comment));
+            () -> taskService.complete(command.requestId, command.outcome, command.comment, command.amountPaid));
 
         assertEquals(exception.getTaskActionErrors().get(0), expectedError);
     }
@@ -254,11 +257,12 @@ public class TaskServiceTest {
             .requestId(1234L)
             .outcome(TaskOutcome.APPROVED)
             .comment("No comment")
+            .amountPaid(BigDecimal.valueOf(123L))
             .build();
         testComplete(command);
 
         TaskActionException exception = assertThrows(TaskActionException.class,
-            () -> taskService.complete(command.requestId, command.outcome, command.comment));
+            () -> taskService.complete(command.requestId, command.outcome, command.comment, command.amountPaid));
 
         assertEquals(exception.getTaskActionErrors().get(0), expectedError);
 
@@ -267,7 +271,7 @@ public class TaskServiceTest {
         testComplete(command);
 
         exception = assertThrows(TaskActionException.class,
-            () -> taskService.complete(command.requestId, command.outcome, command.comment));
+            () -> taskService.complete(command.requestId, command.outcome, command.comment, command.amountPaid));
 
         assertEquals(exception.getTaskActionErrors().get(0), expectedError);
     }
@@ -747,5 +751,6 @@ public class TaskServiceTest {
         private Long requestId;
         private TaskOutcome outcome;
         private String comment;
+        private BigDecimal amountPaid;
     }
 }

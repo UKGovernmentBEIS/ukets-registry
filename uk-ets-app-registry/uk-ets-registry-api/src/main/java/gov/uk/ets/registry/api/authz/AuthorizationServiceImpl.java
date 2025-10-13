@@ -174,6 +174,19 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     public boolean hasScopePermission(Scope scope) {
         return getAuthorizationContext().hasScopePermission(scope.getScopeName());
     }
+    
+    @Override
+    public boolean isLoggedIn() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication instanceof BearerTokenAuthentication) {
+            return true;
+        }
+
+        return false;
+    }
+    
+    
 
     private AuthzClient getAuthzClient() {
         Configuration configuration = getAuthorizationContext().getClient().getConfiguration();

@@ -5,10 +5,11 @@ import { MENU_ITEMS, MENU_SCOPES } from '@shared/model/navigation-menu';
 import { HeaderItem } from '@shared/header/header-item.enum';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
 import { KeycloakService } from 'keycloak-angular';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { cold } from 'jasmine-marbles';
 import { map } from 'rxjs/operators';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('NavMenuService', () => {
   let service: NavMenuService;
@@ -16,8 +17,9 @@ describe('NavMenuService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         NavMenuService,
         AuthApiService,
         {
@@ -33,14 +35,17 @@ describe('NavMenuService', () => {
     service = TestBed.inject(NavMenuService);
     authApiService = TestBed.inject(AuthApiService);
   });
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
   describe('Load menu permissions', () => {
-    it('should retrieve all scopes', () => {
+    test('should retrieve all scopes', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
       allMenuScopes.splice(5, 1);
+
+      //Mock hasScope
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
       authApiServiceSpy.mockImplementation((_, __) => {
         return of(true);
@@ -86,7 +91,7 @@ describe('NavMenuService', () => {
       allMenuScopes.splice(5, 1);
       const scopes = service.getAllUniqueScopesForMenu(false, true, true);
 
-      expect(scopes.length).toEqual(19);
+      expect(scopes.length).toEqual(20);
       expect(scopes.map((s) => s.name).sort()).toEqual(allMenuScopes);
     });
   });
@@ -140,7 +145,7 @@ describe('NavMenuService', () => {
       allMenuScopes.splice(3, 1);
       const scopes = service.getAllUniqueScopesForMenu(true, true, true);
 
-      expect(scopes.length).toEqual(19);
+      expect(scopes.length).toEqual(20);
       expect(scopes.map((s) => s.name).sort()).toEqual(allMenuScopes);
     });
   });

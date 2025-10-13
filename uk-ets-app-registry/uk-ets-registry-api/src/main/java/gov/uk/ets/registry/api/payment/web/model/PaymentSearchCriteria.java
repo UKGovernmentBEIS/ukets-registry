@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PaymentHistoryCriteria {
+public class PaymentSearchCriteria {
 
     private Long referenceNumber;
 

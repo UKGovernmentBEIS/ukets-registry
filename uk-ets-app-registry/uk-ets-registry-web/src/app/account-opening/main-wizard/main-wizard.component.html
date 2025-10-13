@@ -168,7 +168,12 @@
               <dt class="govuk-summary-list__key govuk-heading-m">
                 {{
                   '2. Add the ' +
-                    (AccountTypeMap[accountType$ | async]?.label | lowercase) +
+                    (AccountTypeMap[accountType$ | async]
+                      ?.registryAccountType ===
+                    RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+                      ? maritimeOperatorLabel
+                      : (AccountTypeMap[accountType$ | async]?.label
+                        | lowercase)) +
                     ' details'
                 }}
               </dt>

@@ -266,6 +266,7 @@
         [taskActionsVisibility]="true"
         (downloadTemplateFile)="downloadTemplate($event)"
         (downloadRequestDocumentFile)="downloadRequestDocument($event)"
+        (navigateToPaymentsList)="onNavigateToPaymentList()"
         (userDecision)="onUserDecisionForTask($event)"
       ></app-request-payment-task-details>
       <app-account-holder-update-details-container

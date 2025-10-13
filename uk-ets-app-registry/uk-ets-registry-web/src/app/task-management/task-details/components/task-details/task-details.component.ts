@@ -54,6 +54,8 @@ export class TaskDetailsComponent implements OnInit {
 
   @Output() readonly requestPaymentEmitter = new EventEmitter();
 
+  @Output() readonly navigateToPaymentsListEmitter = new EventEmitter();
+
   @Output() userDecision = new EventEmitter();
 
   requestTypes = RequestType;
@@ -98,6 +100,12 @@ export class TaskDetailsComponent implements OnInit {
 
   onRequestPayment(requestPaymentDetails) {
     this.requestPaymentEmitter.emit(requestPaymentDetails);
+  }
+
+  onNavigateToPaymentList() {
+    this.navigateToPaymentsListEmitter.emit({
+      referenceNumber: this.taskDetails.requestId,
+    });
   }
 
   onUserDecisionForTask(decision) {

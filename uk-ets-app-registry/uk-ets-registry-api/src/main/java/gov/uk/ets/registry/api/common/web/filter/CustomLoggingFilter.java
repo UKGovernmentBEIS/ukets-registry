@@ -4,7 +4,6 @@ import gov.uk.ets.commons.logging.MDCLoggingFilter;
 import gov.uk.ets.commons.logging.SecurityLog;
 import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +24,10 @@ public class CustomLoggingFilter extends MDCLoggingFilter {
 
     @Override
     public String userId(HttpServletRequest httpServletRequest) {
-        String userId = "";
+        String userId = "Public resource - no user ID";
 
-        //If the resource is public -hence no authentication required- getAuthType() returns null
-        if (httpServletRequest.getAuthType() == null) {
-            return "Public resource - no user ID";
-        }
         try {
-            if (authorizationService != null && authorizationService.getClaim(OAuth2ClaimNames.SUBJECT) != null) {
+            if (authorizationService.isLoggedIn() && authorizationService.getClaim(OAuth2ClaimNames.SUBJECT) != null) {
                 userId = authorizationService.getClaim(OAuth2ClaimNames.SUBJECT);
             }
         } catch (Exception e) {
@@ -43,14 +38,10 @@ public class CustomLoggingFilter extends MDCLoggingFilter {
 
     @Override
     public String etsUserId(HttpServletRequest httpServletRequest) {
-        String etsUserId = "";
+        String etsUserId = "Public resource - no ETS userId";
 
-        //If the resource is public -hence no authentication required- getAuthType() returns null
-        if (httpServletRequest.getAuthType() == null) {
-            return "Public resource - no ETS userId";
-        }
         try {
-            if (authorizationService != null && authorizationService.getUrid() != null) {
+            if (authorizationService.isLoggedIn() && authorizationService.getUrid() != null) {
                 etsUserId = authorizationService.getUrid();
             }
         } catch (Exception e) {

@@ -121,7 +121,6 @@ export class RequestPaymentService {
   getMakePaymentWebLinkResponse(
     paymentUUID: string
   ): Observable<PaymentCompleteResponse> {
-    console.log(`getMakePaymentWebLinkResponse uuid:${paymentUUID}`);
     let params = new HttpParams();
     params = params.set('paymentUUID', paymentUUID);
     return this.httpClient.get<PaymentCompleteResponse>(

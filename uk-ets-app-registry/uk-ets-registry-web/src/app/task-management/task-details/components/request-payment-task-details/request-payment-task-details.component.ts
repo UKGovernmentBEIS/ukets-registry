@@ -29,6 +29,8 @@ export class RequestPaymentTaskDetailsComponent {
 
   @Output() readonly downloadRequestDocumentFile = new EventEmitter<FileBase>();
 
+  @Output() readonly navigateToPaymentsList = new EventEmitter();
+
   @Output() readonly userDecision = new EventEmitter<{
     taskOutcome: TaskOutcome;
     taskType: RequestType;
@@ -45,6 +47,10 @@ export class RequestPaymentTaskDetailsComponent {
     this.downloadRequestDocumentFile.emit(this.taskDetails.receiptFile);
   }
 
+  onNavigateToPaymentList() {
+    this.navigateToPaymentsList.emit();
+  }
+
   proceedWith(taskOutcome: TaskOutcome) {
     this.userDecision.emit({
       taskOutcome,
@@ -59,6 +65,8 @@ export class RequestPaymentTaskDetailsComponent {
   shouldShowPaymentLink() {
     return (
       !this.taskDetails.paymentStatus ||
+      this.taskDetails.paymentStatus === 'CANCELLED'||
+      this.taskDetails.paymentStatus === 'FAILED'||
       this.taskDetails.paymentStatus === 'CREATED'
     );
   }

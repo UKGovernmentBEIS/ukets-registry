@@ -13,6 +13,8 @@ export enum MENU_ROUTES {
 
   TRANSACTION_SEARCH = '/transaction-list',
 
+  PAYMENTS_SEARCH = '/payment-list',
+
   KP_ADMINISTRATION = '/kpadministration',
   KP_ADMINISTRATION_ISSUE_UNITS = '/kpadministration/issuekpunits',
   KP_ADMINISTRATION_ITL_MESSAGES = '/kpadministration/itl-message-list',
@@ -47,6 +49,7 @@ export enum MENU_ROUTES {
 
 export enum MENU_SCOPES {
   TRANSACTION_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:transactionMenuItem:view',
+  PAYMENT_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:paymentMenuItem:view',
   ADMIN_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:adminMenuItem:view',
   ISSUE_ALLOWANCES_READ = 'urn:uk-ets-registry-api:issue-allowances:read',
   SEARCH_ACCOUNT_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:searchAccountMenuItem:view',
@@ -224,6 +227,13 @@ export const MENU_ITEMS = function (
       routerLink: MENU_ROUTES.TRANSACTION_SEARCH,
       protectedScopes: [{ name: MENU_SCOPES.TRANSACTION_MENU_ITEM_VIEW }],
       activeMenuItem: HeaderItem.TRANSACTIONS,
+      queryParams: { mode: SearchMode.INITIAL_LOAD },
+    },
+    {
+      label: 'Payments',
+      routerLink: MENU_ROUTES.PAYMENTS_SEARCH,
+      protectedScopes: [{ name: MENU_SCOPES.PAYMENT_MENU_ITEM_VIEW }],
+      activeMenuItem: HeaderItem.PAYMENTS,
       queryParams: { mode: SearchMode.INITIAL_LOAD },
     },
     {

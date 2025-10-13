@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.2</version>
+		<version>3.5.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>uk.gov.ets</groupId>
@@ -33,7 +33,7 @@
 		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
 		<uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
 		<jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
-        <springdoc.openapi.ui.version>2.3.0</springdoc.openapi.ui.version>    		
+        <springdoc.openapi.ui.version>2.8.13</springdoc.openapi.ui.version>    		
 	</properties>
 
 	<profiles>

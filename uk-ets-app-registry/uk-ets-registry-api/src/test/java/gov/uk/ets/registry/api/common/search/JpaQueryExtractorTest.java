@@ -71,7 +71,7 @@ class JpaQueryExtractorTest {
     private static final CharSequence[] ACCOUNT_SEARCH_SELECT_CLAUSE_TOKENS_FULL_FILTER =
         {"id", "id", "account_name", "account_status", "type_label", "approval_second_ar_required",
             "balance", "billing_address_same_as_account_holder_address", "check_digits", "commitment_period_code",
-            "compliance_status", "compliant_entity_id", "contact_id", "full_identifier", "identifier",
+            "compliance_status", "id", "contact_id", "full_identifier", "identifier",
             "kyoto_account_type", "opening_date", "registry_account_type", "registry_code", "request_status",
             "transfers_outside_tal", "unit_type", "birth_country", "birth_date", "contact_id",
             "first_name", "identifier", "last_name", "name",

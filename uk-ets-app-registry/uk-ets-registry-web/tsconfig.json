@@ -69,6 +69,7 @@
       ],
       "@request-documents/*": ["src/app/request-documents/*"],
       "@request-payment/*": ["src/app/request-payment/*"],
+      "@payment-management/*": ["src/app/payment-management/*"],
       "@delete-file/*": ["src/app/delete-file/*"],
       "@allocation-status/*": [
         "src/app/account-management/account/allocation-status/*"

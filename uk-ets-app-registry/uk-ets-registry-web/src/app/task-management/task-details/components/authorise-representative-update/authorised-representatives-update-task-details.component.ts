@@ -49,13 +49,13 @@ export class AuthorisedRepresentativesUpdateTaskDetailsComponent {
 
   showRequestPaymentButton() {
     return (
-      this.authoriseRepresentativeTaskDetails.arUpdateType ===
-        AuthorisedRepresentativesUpdateType.ADD ||
-      this.authoriseRepresentativeTaskDetails.arUpdateType ===
-        AuthorisedRepresentativesUpdateType.REPLACE ||
       (this.authoriseRepresentativeTaskDetails.arUpdateType ===
-        AuthorisedRepresentativesUpdateType.CHANGE_ACCESS_RIGHTS &&
-        this.authoriseRepresentativeTaskDetails.currentUserClaimant)
+        AuthorisedRepresentativesUpdateType.ADD ||
+        this.authoriseRepresentativeTaskDetails.arUpdateType ===
+          AuthorisedRepresentativesUpdateType.REPLACE ||
+        this.authoriseRepresentativeTaskDetails.arUpdateType ===
+          AuthorisedRepresentativesUpdateType.CHANGE_ACCESS_RIGHTS) &&
+      this.authoriseRepresentativeTaskDetails.currentUserClaimant
     );
   }
 }

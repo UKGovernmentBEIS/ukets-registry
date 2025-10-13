@@ -103,7 +103,8 @@ public class OAuth2ResourceServerSecurityConfiguration {
               "/api-registry/user-profile.emergency.password-otp.task").permitAll()
               .requestMatchers(HttpMethod.GET,"/api-registry/actuator/health","/api-registry/configuration","/v3/api-docs").permitAll()
               .requestMatchers("/*","/css/**","/js/**","/assets/**").permitAll() //To download angular app related files in AWS envs
-              .requestMatchers(HttpMethod.GET,"/payment/*","/payment/*/completed","/task-details/*/payment-confirmation","/task-details/*/payment-weblink-confirmation").permitAll()
+              .requestMatchers(HttpMethod.GET,"/payment/*","/payment/*/completed","/task-details/*/payment-confirmation").permitAll()
+              .requestMatchers(HttpMethod.GET,"/task-details/*/payment-weblink-confirmation","/task-details/*/payment-weblink-error").permitAll()
               .requestMatchers("/api-registry/**").hasAnyRole("ets_user")
               .anyRequest()
               .authenticated())

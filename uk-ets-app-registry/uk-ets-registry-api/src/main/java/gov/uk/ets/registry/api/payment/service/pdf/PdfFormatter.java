@@ -1,6 +1,5 @@
 package gov.uk.ets.registry.api.payment.service.pdf;
 
-import com.lowagie.text.Anchor;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -68,9 +67,9 @@ public class PdfFormatter {
 
     public Paragraph hyperLink(String text, String url) {
         Font underline = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.UNDERLINE, Color.BLUE);
-        Anchor hyperlink = new Anchor(text, underline);
-        hyperlink.setReference(url);
-        return prepareParagraph(new Paragraph(hyperlink));
+        Chunk chunk = new Chunk(text, underline);
+        chunk.setAnchor(url);
+        return prepareParagraph(new Paragraph(chunk));
     }
 
     public PdfPCell logo() throws IOException {

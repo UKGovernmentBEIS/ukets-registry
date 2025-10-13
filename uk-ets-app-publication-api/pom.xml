@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>3.5.5</version>
         <relativePath />
     </parent>
 
@@ -34,7 +34,7 @@
         <re2j.version>1.6</re2j.version>
         <shedlock.version>4.18.0</shedlock.version>
         <checkstyle.version>8.45.1</checkstyle.version>
-        <springdoc.openapi.ui.version>2.3.0</springdoc.openapi.ui.version>
+        <springdoc.openapi.ui.version>2.8.13</springdoc.openapi.ui.version>
     </properties>
 
     <dependencies>

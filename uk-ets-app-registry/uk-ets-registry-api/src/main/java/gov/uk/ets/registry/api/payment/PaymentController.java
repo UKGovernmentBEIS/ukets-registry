@@ -13,20 +13,19 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.ReadOnlyAdministratorsC
 import gov.uk.ets.registry.api.authz.ruleengine.features.payment.rules.make.OnlyNonSucceededPaymentsCanBeSubmitted;
 import gov.uk.ets.registry.api.common.search.PageParameters;
 import gov.uk.ets.registry.api.common.search.SearchResponse;
+import gov.uk.ets.registry.api.payment.domain.PaymentHistoryProjection;
 import gov.uk.ets.registry.api.payment.domain.types.PaymentStatus;
 import gov.uk.ets.registry.api.payment.service.PaymentHistoryService;
 import gov.uk.ets.registry.api.payment.service.PaymentService;
 import gov.uk.ets.registry.api.payment.web.model.PaymentDTO;
-import gov.uk.ets.registry.api.payment.web.model.PaymentHistoryCriteria;
-import gov.uk.ets.registry.api.payment.web.model.PaymentHistoryDTO;
+import gov.uk.ets.registry.api.payment.web.model.PaymentSearchCriteria;
+import gov.uk.ets.registry.api.payment.web.model.PaymentSearchResult;
 import gov.uk.ets.registry.api.payment.web.model.PaymentTaskCompleteResponse;
-import gov.uk.ets.registry.api.task.shared.TaskSearchCriteria;
-import gov.uk.ets.registry.api.task.web.model.TaskSearchResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -189,19 +188,21 @@ public class PaymentController {
     }
 
     /**
-     * Searches for tasks according to the passed criteria.
+     * Searches for payments according to the passed criteria.
      *
-     * @param criteria       The {@link TaskSearchCriteria} search criteria
+     * @param criteria       The {@link PaymentSearchCriteria} search criteria
      * @param pageParameters The {@link PageParameters} parameters
-     * @return The {@link SearchResponse} for {@link TaskSearchResult} response.
+     * @return The {@link SearchResponse} for {@link PaymentSearchResult} response.
      */
-    @GetMapping(path = "/payment.get.history", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SearchResponse<PaymentHistoryDTO> search(PaymentHistoryCriteria criteria, PageParameters pageParameters) {
-        List<PaymentHistoryDTO> searchResults = paymentHistoryService.search(criteria, pageParameters);
+    @GetMapping(path = "/payments.list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SearchResponse<PaymentSearchResult> search(PaymentSearchCriteria criteria, PageParameters pageParameters) {
+        Page<PaymentHistoryProjection> searchResults = paymentHistoryService.search(criteria, pageParameters);
 
-        SearchResponse <PaymentHistoryDTO> searchResponse = new SearchResponse<>();
-        searchResponse.setItems(searchResults);
+        SearchResponse<PaymentSearchResult> searchResponse = new SearchResponse<>();
+        searchResponse.setItems(searchResults.getContent().stream().map(t -> PaymentSearchResult.from(t)).toList());
+        pageParameters.setTotalResults(searchResults.getTotalElements());
         searchResponse.setPageParameters(pageParameters);
+        
         return searchResponse;
     }
 }

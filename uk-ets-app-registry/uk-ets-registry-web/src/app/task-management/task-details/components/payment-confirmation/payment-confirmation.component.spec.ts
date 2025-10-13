@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GdsDateTimePipe } from '@registry-web/shared/pipes';
+import { GdsDatePipe } from '@registry-web/shared/pipes';
 import { PaymentConfirmationComponent } from '@task-details/components';
 import { RequestType, TaskOutcome } from '@task-management/model';
 
@@ -9,7 +9,7 @@ describe('PaymentConfirmationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PaymentConfirmationComponent, GdsDateTimePipe],
+      declarations: [PaymentConfirmationComponent, GdsDatePipe],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PaymentConfirmationComponent);

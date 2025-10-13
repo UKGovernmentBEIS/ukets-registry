@@ -41,10 +41,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.http.AbortableInputStream;
@@ -81,7 +81,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @MockBean
+    @MockitoBean
     S3ClientService s3ClientService;
     
     //Indicates the number of sections loaded via liquibase

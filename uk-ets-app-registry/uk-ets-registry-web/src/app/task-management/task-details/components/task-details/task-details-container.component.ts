@@ -29,6 +29,7 @@ import {
 import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actions';
 import { enterRequestPaymentWizard } from '@request-payment/store/actions';
 import { navigateToSelectPaymentMethod } from '../../actions/task-details-navigation.actions';
+import { navigateAndLoadPaymentList } from '@registry-web/payment-management/payment-list/store/actions';
 
 @Component({
   selector: 'app-task-details-container',
@@ -63,6 +64,7 @@ import { navigateToSelectPaymentMethod } from '../../actions/task-details-naviga
       (downloadRequestDocumentFile)="downloadRequestDocumentFile($event)"
       (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
       (requestPaymentEmitter)="onRequestPayment($event)"
+      (navigateToPaymentsListEmitter)="onNavigateToPaymentsList($event)"
       [taskTypeOptions]="taskTypeOptions$ | async"
       [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
       (openDetail)="onOpenTaskDetail($event)"
@@ -176,5 +178,9 @@ export class TaskDetailsContainerComponent implements OnInit {
 
   onMakePayment(requestPaymentWizardDetails) {
     this.store.dispatch(navigateToSelectPaymentMethod());
+  }
+
+  onNavigateToPaymentsList(referenceNumber) {
+    this.store.dispatch(navigateAndLoadPaymentList(referenceNumber));
   }
 }

@@ -1,20 +1,23 @@
 package gov.uk.ets.registry.api.task.web.model;
 
-import com.querydsl.core.annotations.QueryProjection;
-import gov.uk.ets.registry.api.common.ConversionServiceImpl;
-import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
-import gov.uk.ets.registry.api.task.domain.types.RequestType;
-import gov.uk.ets.registry.api.task.domain.types.TaskStatus;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.util.StringUtils;
+
+import com.querydsl.core.annotations.QueryProjection;
+
+import gov.uk.ets.registry.api.common.ConversionServiceImpl;
+import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
+import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.task.domain.types.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.util.StringUtils;
 
 /**
  * Transfer object for tasks. This DTO contains information from the task entity Only.
@@ -130,6 +133,8 @@ public class TaskDetailsDTO {
      */
     private List<String> transactionIdentifiers;
 
+    private BigDecimal bacsAmountPaid;
+    
     // TODO describe this field.
     private String difference;
 

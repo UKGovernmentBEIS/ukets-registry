@@ -84,6 +84,19 @@
       </div>
     </dl>
   </div>
+
+  <div class="govuk-grid-row">
+    <p class="govuk-body">
+      <a
+        class="govuk-link govuk-link--no-visited-state"
+        (click)="onNavigateToPaymentList()"
+        [routerLink]="[]"
+        id="paymentHistory"
+        >View payments history
+      </a>
+    </p>
+  </div>
+
   <div
     class="govuk-grid-row"
     *ngIf="

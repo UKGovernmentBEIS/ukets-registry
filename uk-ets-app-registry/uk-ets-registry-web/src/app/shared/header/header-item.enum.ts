@@ -3,6 +3,7 @@ export enum HeaderItem {
   TASKS,
   ACCOUNTS,
   TRANSACTIONS,
+  PAYMENTS,
   USER_ADMIN,
   ETS_ADMIN,
   KP_ADMIN,

@@ -6,17 +6,17 @@ import gov.uk.ets.registry.api.common.exception.BusinessRuleErrorException;
 import gov.uk.ets.registry.api.common.exception.NotFoundException;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.payment.domain.Payment;
+import gov.uk.ets.registry.api.payment.domain.PaymentHistory;
 import gov.uk.ets.registry.api.payment.domain.types.PaymentMethod;
 import gov.uk.ets.registry.api.payment.domain.types.PaymentStatus;
 import gov.uk.ets.registry.api.payment.repository.PaymentHistoryRepository;
 import gov.uk.ets.registry.api.payment.repository.PaymentRepository;
 import gov.uk.ets.registry.api.payment.service.integration.UkGovPaymentIntegrationService;
+import gov.uk.ets.registry.api.payment.service.integration.exception.WebLinkPaymentAlreadyCompletedException;
 import gov.uk.ets.registry.api.payment.service.integration.model.PaymentIntegrationCreateDTO;
 import gov.uk.ets.registry.api.payment.service.integration.model.PaymentIntegrationCreatedResponseDTO;
 import gov.uk.ets.registry.api.payment.service.integration.model.PaymentIntegrationStatusResponseDTO;
 import gov.uk.ets.registry.api.payment.service.integration.utils.PaymentUrl;
-import gov.uk.ets.registry.api.payment.service.integration.utils.UkGovPaymentProperties;
-import gov.uk.ets.registry.api.payment.service.mapper.PaymentHistoryMapper;
 import gov.uk.ets.registry.api.payment.service.mapper.PaymentIntegrationMapper;
 import gov.uk.ets.registry.api.payment.web.model.PaymentDTO;
 import gov.uk.ets.registry.api.payment.web.model.PaymentTaskCompleteResponse;
@@ -32,15 +32,10 @@ import gov.uk.ets.registry.api.user.service.UserService;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 import jakarta.validation.Valid;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,10 +59,7 @@ public class PaymentService {
     private final PaymentTaskService paymentTaskService;
     private final UkGovPaymentIntegrationService paymentIntegrationService;
     private final PaymentIntegrationMapper paymentIntegrationMapper;
-    private final PaymentHistoryMapper paymentHistoryMapper;
     private final PaymentUrl paymentUrl;
-
-    @Value("${application.url}") String applicationUrl;
 
     /**
      * Creates a new payment task.
@@ -116,6 +108,13 @@ public class PaymentService {
         return requestPaymentTask.getRequestId();
     }
 
+    /**
+     * 
+     * @param uuid
+     * @param method
+     * @return the redirect url or null in the case of BACS.
+     * @throws Exception
+     */
     @Transactional
     public String makePayment(String uuid,String method) throws Exception {
         Payment payment = paymentRepository.findByUrlSuffix(uuid).orElseThrow(
@@ -138,6 +137,12 @@ public class PaymentService {
             paymentRepository.save(payment);
         } else if (PaymentMethod.WEBLINK.equals(paymentMethod)) {
 
+        	Task task = taskRepository.findByRequestId(payment.getReferenceNumber());
+            if (PaymentStatus.SUCCESS.equals(payment.getStatus()) || RequestStateEnum.REJECTED.equals(task.getStatus())) {
+            	String erroUrl = paymentUrl.generatePaymentWebLinkErrorUrl(uuid).concat("?message=" + "The link is no longer valid.");
+                throw new WebLinkPaymentAlreadyCompletedException(erroUrl);
+            }
+        	
         	PaymentIntegrationCreateDTO paymentRequest = paymentIntegrationMapper.createPaymentRequest(payment);
             PaymentIntegrationCreatedResponseDTO paymentResponse = paymentIntegrationService.createPayment(paymentRequest);
 
@@ -165,15 +170,14 @@ public class PaymentService {
         if (PaymentStatus.SUBMITTED.equals(status)) { 
             payment.setPaidBy(userService.getCurrentUser().getDisclosedName());
             payment.setPaidOn(LocalDate.now());
-            payment.setAmountPaid(payment.getAmountRequested());
+            //Amount paid should be set by the admin during task approval.
+            //payment.setAmountPaid(payment.getAmountRequested());
             Task paymentTask = taskRepository.findByRequestId(payment.getReferenceNumber());
             paymentTask.setClaimedBy(paymentTask.getParentTask().getClaimedBy());
             paymentTask.setClaimedDate(new Date());
         }
-        
+        persistPaymentHistory(payment);
         paymentRepository.save(payment);
-        
-        return;
     }
 
     @Transactional
@@ -227,6 +231,7 @@ public class PaymentService {
                     paymentTask.setClaimedDate(new Date());  
                     
                     paymentDocumentsService.generateAndPersistReceipt(payment, paymentTask);
+                    approvePaymentTask(paymentTask);
                 }
 
                 Payment updatedPayment = paymentRepository.save(payment);
@@ -255,6 +260,19 @@ public class PaymentService {
     }
 
     private void persistPaymentHistory(Payment payment) {
-        paymentHistoryRepository.save(paymentHistoryMapper.map(payment));
+        PaymentHistory paymentHistory = new PaymentHistory();
+        paymentHistory.setAmount(payment.getAmountPaid());
+        paymentHistory.setPaymentId(payment.getPaymentId());
+        paymentHistory.setReferenceNumber(payment.getReferenceNumber());
+        paymentHistory.setMethod(payment.getMethod());
+        paymentHistory.setStatus(payment.getStatus());
+        paymentHistory.setUpdated(payment.getUpdated());
+        
+        paymentHistoryRepository.save(paymentHistory);
+    }
+
+    private Task approvePaymentTask(Task paymentTask) {
+        paymentTask.setStatus(RequestStateEnum.APPROVED);
+        return taskRepository.save(paymentTask);
     }
 }

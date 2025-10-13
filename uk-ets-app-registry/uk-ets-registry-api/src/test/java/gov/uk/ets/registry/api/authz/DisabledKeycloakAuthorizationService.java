@@ -13,6 +13,9 @@ import org.keycloak.representations.idm.authorization.DecisionEffect;
 import org.keycloak.representations.idm.authorization.PolicyEvaluationRequest;
 import org.keycloak.representations.idm.authorization.PolicyEvaluationResponse.EvaluationResultRepresentation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -67,5 +70,10 @@ public class DisabledKeycloakAuthorizationService implements AuthorizationServic
     @Override
     public String getClaim(OAuth2ClaimNames name) {
         return "";
+    }
+    
+    @Override
+    public boolean isLoggedIn() {
+        return false;
     }
 }

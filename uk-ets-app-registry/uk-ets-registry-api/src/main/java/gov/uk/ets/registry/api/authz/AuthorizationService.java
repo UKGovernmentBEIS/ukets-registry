@@ -68,4 +68,6 @@ public interface AuthorizationService extends AccessTokenRetriever {
      * @return
      */
     String getClaim(OAuth2ClaimNames name);
+
+	boolean isLoggedIn();
 }
