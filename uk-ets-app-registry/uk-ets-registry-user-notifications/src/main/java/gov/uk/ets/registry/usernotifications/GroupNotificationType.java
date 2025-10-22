@@ -155,5 +155,6 @@ public enum GroupNotificationType {
     
     //Payments Related
     PAYMENT_REQUEST,
-    
+    PAYMENT_REMINDER,
+
 }

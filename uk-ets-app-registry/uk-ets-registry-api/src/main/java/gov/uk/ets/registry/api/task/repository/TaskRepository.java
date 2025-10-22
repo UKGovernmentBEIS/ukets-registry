@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.task.repository;
 
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArTaskDTO;
+import gov.uk.ets.registry.api.payment.shared.PaymentTaskReminder;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
@@ -253,6 +254,16 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
         " and cast(difference as json) ->> 'newEmail' = ?1", nativeQuery = true)
     List<Task> findChangeEmailTasksByNewEmail(String newEmail);
 
+    /**
+     * Retrieves non completed payments tasks that need reminder.
+     */
+    @Query(value = "select p.reference_number,p.amount_requested,p.description,t.initiated_date,u.urid as claimant_urid ,u.email as claimant_email "
+            + "from task t inner join payment p on p.reference_number = t.request_identifier inner join users u on u.id=t.claimed_by "
+            + "where t.status = 'SUBMITTED_NOT_YET_APPROVED' and extract(month from age(t.claimed_date))=0 and "
+            + "extract(day from age(t.claimed_date)) in (?1,?2,?3) "
+            + "order by t.initiated_date asc", nativeQuery = true)
+    List<PaymentTaskReminder> findToBeRemindedPaymentTasks(int firstReminderDaysOutstanding, int secondReminderDaysOutstanding, int thirdReminderDaysOutstanding);
+    
     Optional<Task> findByAccount_IdentifierAndTypeAndStatus(Long identifier, RequestType type,
                                                             RequestStateEnum requestStateEnum);
     List<Task> findTasksByType(RequestType type);

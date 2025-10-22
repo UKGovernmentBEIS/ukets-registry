@@ -174,7 +174,10 @@ public class EmailGeneratorSelector {
                     (AccountOpeningSuccessOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             case PAYMENT_REQUEST:
                 return new PaymentRequestEmailGenerator(notificationProperties.getRequestPayment(),
-                    (PaymentRequestGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration);                
+                    (PaymentRequestGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration); 
+            case PAYMENT_REMINDER:
+                return new PaymentReminderEmailGenerator(
+                    (PaymentReminderNotification) groupNotification, freemarkerConfiguration, mailConfiguration);                 
             default:
                 return new DoNothingEmailGenerator();
         }

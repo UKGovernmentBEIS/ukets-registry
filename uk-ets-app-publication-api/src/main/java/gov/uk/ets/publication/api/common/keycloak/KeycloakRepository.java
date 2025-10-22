@@ -1,6 +1,8 @@
 package gov.uk.ets.publication.api.common.keycloak;
 
 import gov.uk.ets.commons.logging.MDCWrapper;
+import lombok.extern.log4j.Log4j2;
+
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.slf4j.MDC;
@@ -18,7 +20,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+@Log4j2
 @Repository
 public class KeycloakRepository {
 
@@ -113,8 +117,15 @@ public class KeycloakRepository {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.set(HttpHeaders.AUTHORIZATION, token);
-        headers.set("X-Request-ID",
-                MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase()));
+
+        if(Objects.nonNull(MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase()))) {
+            log.info("Setting X-Request-ID:{}", MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase()));
+            headers.set("X-Request-ID",
+                    MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase()));
+        } else {
+            log.info("X-Request-ID not found in MDC.");
+        }
+
         return headers;
     }
 }

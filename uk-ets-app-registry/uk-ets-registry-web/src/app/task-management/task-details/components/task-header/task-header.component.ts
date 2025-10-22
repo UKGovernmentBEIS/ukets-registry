@@ -15,7 +15,10 @@ import { GoBackNavigationExtras } from '@shared/back-button';
 import { NavigationExtras, RouterModule } from '@angular/router';
 import { navigateTo } from '@registry-web/shared/shared.action';
 import { Store } from '@ngrx/store';
-import { navigateToChangeTaskDeadline } from '../../actions/task-details-navigation.actions';
+import {
+  navigateToChangeTaskDeadline,
+  navigateToSelectPaymentMethod,
+} from '@task-details/actions/task-details-navigation.actions';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '@registry-web/shared/shared.module';
 
@@ -62,10 +65,6 @@ export class TaskHeaderComponent {
   }>();
 
   @Output() readonly handleExportPDF = new EventEmitter<TaskFileDownloadInfo>();
-
-  @Output() readonly makePayment = new EventEmitter<{
-    taskRequestId: string;
-  }>();
 
   bannerTypes = BannerType;
 
@@ -151,9 +150,7 @@ export class TaskHeaderComponent {
   }
 
   proceedWithPayment() {
-    this.makePayment.emit({
-      taskRequestId: this.taskDetails.requestId,
-    });
+    this.store.dispatch(navigateToSelectPaymentMethod());
   }
 
   changeDeadline() {

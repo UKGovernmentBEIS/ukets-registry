@@ -28,6 +28,10 @@ public class AuthorizationService {
     private String keycloakClientId;
     private final KeycloakRepository keycloakRepository;
 
+    public String getCurrentUserUrid() {
+        return getClaim(OAuth2ClaimNames.URID);
+    }
+    
     /**
      * User should be admin and request should include token created for service account.
      */
