@@ -216,7 +216,7 @@ export class TaskDetailsNavigationEffects {
   navigateToPaymentConfirmation$ = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(TaskDetailsActions.bacsPaymentCompleteSuccess),
+        ofType(TaskDetailsNavigationActions.navigateToBACSAwaitingPayment),
         concatLatestFrom(() => this.store.select(selectTask)),
         tap(([action, task]) =>
           this._router.navigate(

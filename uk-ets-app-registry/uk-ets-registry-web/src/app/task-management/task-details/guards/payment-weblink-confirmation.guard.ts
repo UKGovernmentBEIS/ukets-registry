@@ -9,6 +9,9 @@ import {
 import { catchError, filter, first, Observable, of, switchMap } from 'rxjs';
 import { selectTaskCompleteResponse } from '@task-details/reducers/task-details.selector';
 import { navigateToTaskDetails } from '@task-details/actions/task-details-navigation.actions';
+import { canGoBackToList } from '@shared/shared.action';
+import { SearchMode } from '@shared/resolvers/search.resolver';
+import { IsLoggedInCheck } from '@registry-web/auth/auth.actions';
 
 export const paymentWeblinkConfirmationGuard: CanActivateFn = (
   route,
@@ -33,6 +36,18 @@ export const paymentWeblinkConfirmationGuard: CanActivateFn = (
       ) {
         return of(true);
       } else {
+        store.dispatch(IsLoggedInCheck());
+        store.dispatch(
+          canGoBackToList({
+            goBackToListRoute: `/task-list`,
+            extras: {
+              skipLocationChange: false,
+              queryParams: {
+                mode: SearchMode.INITIAL_LOAD,
+              },
+            },
+          })
+        );
         store.dispatch(navigateToTaskDetails({}));
         return of(false);
       }

@@ -111,10 +111,10 @@ class PaymentServiceTest {
             payment.setUrlSuffix(paymentLink); // set random suffix
             return payment;
         });
-        when(paymentInvoiceBuilder.createInvoicePdf(any(Task.class), eq(dto), any()))
+        when(paymentInvoiceBuilder.createInvoicePdf(any(), eq(dto), any()))
                 .thenReturn("fake-pdf-content".getBytes());
         when(conversionService.convertByteAmountToHumanReadable(anyLong())).thenReturn("10 KB");
-        doNothing().when(paymentDocumentsService).generateAndPersistInvoice(any(PaymentDTO.class), any(Task.class), any());
+        doNothing().when(paymentDocumentsService).generateAndPersistInvoice(any(PaymentDTO.class), any(Task.class), any(), any());
 
         when(paymentUrl.generatePaymentWebLinkUrl(any())).thenReturn("return-url");
         Long result = paymentService.submitPaymentRequest(parentId, dto);
@@ -132,7 +132,7 @@ class PaymentServiceTest {
         assertEquals(dto.getDescription(), savedPayment.getDescription());
         assertEquals(requestId, savedPayment.getReferenceNumber());
 
-        verify(paymentDocumentsService).generateAndPersistInvoice(eq(dto), any(Task.class), any());
+        verify(paymentDocumentsService).generateAndPersistInvoice(eq(dto), any(Task.class), any(), any());
         verify(taskEventService).createAndPublishTaskAndAccountRequestEvent(savedTask, "user-urid");
         verify(taskService).assign(List.of(requestId), "recipient-urid", "Test payment");
     }

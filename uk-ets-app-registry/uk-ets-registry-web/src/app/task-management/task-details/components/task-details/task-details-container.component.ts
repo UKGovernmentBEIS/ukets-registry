@@ -29,6 +29,7 @@ import {
 import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actions';
 import { enterRequestPaymentWizard } from '@request-payment/store/actions';
 import { navigateAndLoadPaymentList } from '@registry-web/payment-management/payment-list/store/actions';
+import { navigateToGovUKPayService } from '../../actions/task-details-navigation.actions';
 
 @Component({
   selector: 'app-task-details-container',
@@ -63,6 +64,7 @@ import { navigateAndLoadPaymentList } from '@registry-web/payment-management/pay
       (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
       (requestPaymentEmitter)="onRequestPayment($event)"
       (navigateToPaymentsListEmitter)="onNavigateToPaymentsList($event)"
+      (navigateToGovUKPayEmitter)="onNavigateToGovUKPay($event)"
       [taskTypeOptions]="taskTypeOptions$ | async"
       [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
       (openDetail)="onOpenTaskDetail($event)"
@@ -176,5 +178,9 @@ export class TaskDetailsContainerComponent implements OnInit {
 
   onNavigateToPaymentsList(referenceNumber) {
     this.store.dispatch(navigateAndLoadPaymentList(referenceNumber));
+  }
+
+  onNavigateToGovUKPay(nextUrl) {
+    this.store.dispatch(navigateToGovUKPayService(nextUrl));
   }
 }

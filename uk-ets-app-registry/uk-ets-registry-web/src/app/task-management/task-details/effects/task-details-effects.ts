@@ -73,6 +73,7 @@ import {
 import { AccountApiService } from '@account-management/service/account-api.service';
 import { TaskService } from '@shared/services/task-service';
 import {
+  navigateToBACSAwaitingPayment,
   navigateToBACSDetailsPaymentMethod,
   navigateToChangeTaskDeadlineSuccess,
   navigateToCheckChangeTaskDeadline,
@@ -796,6 +797,13 @@ export class TaskDetailsEffects {
             })
           )
       )
+    );
+  });
+
+  submitBacsPaymentCompleteSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TaskDetailsActions.bacsPaymentCompleteSuccess),
+      map(() => navigateToBACSAwaitingPayment())
     );
   });
 

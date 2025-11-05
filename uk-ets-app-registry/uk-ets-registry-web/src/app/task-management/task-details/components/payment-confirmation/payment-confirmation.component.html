@@ -5,7 +5,7 @@
         Payment complete
       </h1>
       <h1 *ngIf="isBACSPayment()" class="govuk-panel__title">
-        Payment under review
+        Awaiting Payment
       </h1>
     </div>
     <h2 class="govuk-heading-m">Payment summary</h2>
@@ -96,5 +96,17 @@
         </p>
       </div>
     </div>
+  </div>
+</div>
+<div class="govuk-grid-row" *ngIf="isBACSPayment()">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">What happens next</h1>
+    <p class="govuk-body">
+      <span
+        >Please make payment to us using the bank details provided on the
+        invoice and let the Registry team know when you have done this. After
+        payment has been made, we will continue with your application.</span
+      >
+    </p>
   </div>
 </div>

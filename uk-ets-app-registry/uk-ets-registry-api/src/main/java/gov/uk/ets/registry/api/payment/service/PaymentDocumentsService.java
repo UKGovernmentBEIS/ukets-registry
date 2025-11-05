@@ -40,11 +40,12 @@ public class PaymentDocumentsService {
         );
     }
 
-    public void generateAndPersistInvoice(PaymentDTO paymentDTO, Task paymentRequestSubtask, String paymentLink) throws Exception {
+    public void generateAndPersistInvoice(PaymentDTO paymentDTO, Task paymentRequestSubtask, String paymentLink, Long paymentSubtaskId) throws Exception {
         byte[] invoicePdf = paymentInvoiceBuilder.createInvoicePdf(
                 paymentRequestSubtask,
                 paymentDTO,
-                paymentLink
+                paymentLink,
+                paymentSubtaskId
         );
         UploadedFile uploadedFile = new UploadedFile();
         uploadedFile.setFileName(PaymentFilePrefix.Invoice.toString() + "_" + paymentRequestSubtask.getRequestId());

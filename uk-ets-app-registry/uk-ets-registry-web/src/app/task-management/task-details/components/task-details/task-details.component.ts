@@ -56,6 +56,10 @@ export class TaskDetailsComponent implements OnInit {
 
   @Output() readonly navigateToPaymentsListEmitter = new EventEmitter();
 
+  @Output() readonly navigateToGovUKPayEmitter = new EventEmitter<{
+    nextUrl: string;
+  }>();
+
   @Output() userDecision = new EventEmitter();
 
   requestTypes = RequestType;
@@ -106,6 +110,10 @@ export class TaskDetailsComponent implements OnInit {
     this.navigateToPaymentsListEmitter.emit({
       referenceNumber: this.taskDetails.requestId,
     });
+  }
+
+  onNavigateToGovUKPay(nextUrl) {
+    this.navigateToGovUKPayEmitter.emit(nextUrl);
   }
 
   onUserDecisionForTask(decision) {

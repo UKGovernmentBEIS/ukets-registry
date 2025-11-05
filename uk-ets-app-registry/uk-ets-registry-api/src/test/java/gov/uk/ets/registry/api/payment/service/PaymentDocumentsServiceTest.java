@@ -83,12 +83,14 @@ class PaymentDocumentsServiceTest {
         String humanReadableSize = "3 KB";
         String paymentLink = "PaymentLink";
 
-        when(paymentInvoiceBuilder.createInvoicePdf(task, dto, paymentLink)).thenReturn(generatedPdf);
+        when(paymentInvoiceBuilder.createInvoicePdf(eq(task), eq(dto), eq(paymentLink), any()))
+                .thenReturn(generatedPdf);
+
         when(conversionService.convertByteAmountToHumanReadable(generatedPdf.length))
                 .thenReturn(humanReadableSize);
 
         // Act
-        paymentDocumentsService.generateAndPersistInvoice(dto, task, paymentLink);
+        paymentDocumentsService.generateAndPersistInvoice(dto, task, paymentLink, 1000023L);
 
         // Assert
         ArgumentCaptor<UploadedFile> captor = ArgumentCaptor.forClass(UploadedFile.class);
@@ -101,7 +103,7 @@ class PaymentDocumentsServiceTest {
         assertEquals(FileStatus.SUBMITTED, uploadedFile.getFileStatus());
         assertEquals(task, uploadedFile.getTask());
 
-        verify(paymentInvoiceBuilder).createInvoicePdf(task, dto, paymentLink);
+        verify(paymentInvoiceBuilder).createInvoicePdf(task, dto, paymentLink, 1000023L);
         verify(conversionService).convertByteAmountToHumanReadable(generatedPdf.length);
     }
 }

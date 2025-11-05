@@ -98,8 +98,8 @@ public class PaymentTaskService implements TaskTypeService<PaymentTaskDetailsDTO
             }
             payment.setAmountPaid(taskDetailsDTO.getBacsAmountPaid());
             paymentRepository.save(payment);
-            
-            PaymentHistory paymentHistory = new PaymentHistory();
+
+            PaymentHistory paymentHistory = paymentHistoryRepository.findByReferenceNumberAndStatus(taskDetailsDTO.getRequestId(), PaymentStatus.SUBMITTED).orElse(new PaymentHistory());
             paymentHistory.setAmount(payment.getAmountPaid());
             paymentHistory.setPaymentId(payment.getPaymentId());
             paymentHistory.setReferenceNumber(payment.getReferenceNumber());

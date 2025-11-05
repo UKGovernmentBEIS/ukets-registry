@@ -63,3 +63,7 @@ export const navigateToBACSConfirmPaymentMethod = createAction(
 export const navigateToBACSCancelPaymentMethod = createAction(
   '[Task Details] Navigate To BACS Cancel'
 );
+
+export const navigateToBACSAwaitingPayment = createAction(
+  '[Task Details] Navigate To BACS Awaiting Payment'
+);

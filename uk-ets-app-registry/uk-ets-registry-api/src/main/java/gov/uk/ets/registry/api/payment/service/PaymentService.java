@@ -98,7 +98,7 @@ public class PaymentService {
         payment = paymentRepository.save(payment);
 
         String paymentWebLink = paymentUrl.generatePaymentWebLinkUrl(payment.getUrlSuffix());
-        paymentDocumentsService.generateAndPersistInvoice(paymentDTO, requestPaymentTask, paymentWebLink);
+        paymentDocumentsService.generateAndPersistInvoice(paymentDTO, requestPaymentTask, paymentWebLink, payment.getReferenceNumber());
         String action = "PAYMENT task request submitted.";
         eventService.createAndPublishEvent(payment.getUrlSuffix(), currentUser.getUrid(),
             String.format("Task requestId %s.", requestPaymentTask.getRequestId()),

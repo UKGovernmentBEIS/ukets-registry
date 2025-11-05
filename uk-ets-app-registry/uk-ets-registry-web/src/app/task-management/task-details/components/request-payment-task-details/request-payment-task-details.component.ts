@@ -31,6 +31,10 @@ export class RequestPaymentTaskDetailsComponent {
 
   @Output() readonly navigateToPaymentsList = new EventEmitter();
 
+  @Output() readonly navigateToGovUKPay = new EventEmitter<{
+    nextUrl: string;
+  }>();
+
   @Output() readonly userDecision = new EventEmitter<{
     taskOutcome: TaskOutcome;
     taskType: RequestType;
@@ -51,6 +55,10 @@ export class RequestPaymentTaskDetailsComponent {
     this.navigateToPaymentsList.emit();
   }
 
+  onNavigateToGovUKPay() {
+    this.navigateToGovUKPay.emit({ nextUrl: this.taskDetails.paymentLink });
+  }
+
   proceedWith(taskOutcome: TaskOutcome) {
     this.userDecision.emit({
       taskOutcome,
@@ -65,8 +73,8 @@ export class RequestPaymentTaskDetailsComponent {
   shouldShowPaymentLink() {
     return (
       !this.taskDetails.paymentStatus ||
-      this.taskDetails.paymentStatus === 'CANCELLED'||
-      this.taskDetails.paymentStatus === 'FAILED'||
+      this.taskDetails.paymentStatus === 'CANCELLED' ||
+      this.taskDetails.paymentStatus === 'FAILED' ||
       this.taskDetails.paymentStatus === 'CREATED'
     );
   }

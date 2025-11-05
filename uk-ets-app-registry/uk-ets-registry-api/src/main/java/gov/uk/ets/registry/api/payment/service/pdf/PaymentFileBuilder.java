@@ -52,7 +52,7 @@ public class PaymentFileBuilder {
         return outputStream.toByteArray();
     }
 
-    public byte[] createInvoicePdf(Task paymentSubtask, PaymentDTO paymentDTO, String paymentLink) throws Exception {
+    public byte[] createInvoicePdf(Task paymentSubtask, PaymentDTO paymentDTO, String paymentLink, Long paymentSubtaskId) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
         PdfWriter.getInstance(document, outputStream);
@@ -61,7 +61,7 @@ public class PaymentFileBuilder {
                 document,
                 paymentSubtask.getParentTask().getRequestId(),
                 paymentDTO,
-                paymentSubtask.getId(),
+                paymentSubtaskId,
                 paymentLink
             );
         document.close();
@@ -71,10 +71,10 @@ public class PaymentFileBuilder {
     private void setPdfContent(Document document,
                                Long parentTaskRequestId,
                                PaymentDTO payment,
-                               Long subtaskId,
+                               Long paymentSubtaskId,
                                String paymentLink
                                ) throws Exception {
-        addHeaderLayout(document, subtaskId, true);
+        addHeaderLayout(document, paymentSubtaskId, true);
         addBillingInfo(document, parentTaskRequestId, true);
         addPaymentTable(document);
         document.add(
@@ -91,7 +91,7 @@ public class PaymentFileBuilder {
     private void addHeaderLayout(Document document, Long subtaskId, boolean isInvoice) throws Exception {
         PdfPTable headerTable = new PdfPTable(3);
         headerTable.setWidthPercentage(100);
-        headerTable.setWidths(new float[]{2, 6, 3}); // logo | title | right-side
+        headerTable.setWidths(new float[]{2, 5, 4}); // logo | title | right-side
         headerTable.addCell(pdfFormatter.logo());
         headerTable.addCell(pdfFormatter.title(isInvoice));
         headerTable.addCell(pdfFormatter.rightHeader(subtaskId));

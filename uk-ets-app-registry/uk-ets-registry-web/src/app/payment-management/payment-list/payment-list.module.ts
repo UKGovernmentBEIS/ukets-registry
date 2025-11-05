@@ -17,6 +17,11 @@ import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SortService } from '@shared/search/sort/sort.service';
 import { PaymentListResolver } from '@payment-management/resolvers';
+import * as fromTaskDetails from '@registry-web/task-management/task-details/reducers/task-details.reducer';
+import {
+  TaskDetailsEffects,
+  TaskDetailsNavigationEffects,
+} from '@task-details/effects';
 
 @NgModule({
   declarations: [
@@ -36,6 +41,14 @@ import { PaymentListResolver } from '@payment-management/resolvers';
     EffectsModule.forFeature([
       PaymentListEffects,
       PaymentListNavigationEffects,
+    ]),
+    StoreModule.forFeature(
+      fromTaskDetails.taskDetailsFeatureKey,
+      fromTaskDetails.reducer
+    ),
+    EffectsModule.forFeature([
+      TaskDetailsEffects,
+      TaskDetailsNavigationEffects,
     ]),
   ],
   providers: [SortService, PaymentListResolver],

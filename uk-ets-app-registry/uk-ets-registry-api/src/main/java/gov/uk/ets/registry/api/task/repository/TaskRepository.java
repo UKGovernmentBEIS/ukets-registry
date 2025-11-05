@@ -259,8 +259,8 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
      */
     @Query(value = "select p.reference_number,p.amount_requested,p.description,t.initiated_date,u.urid as claimant_urid ,u.email as claimant_email "
             + "from task t inner join payment p on p.reference_number = t.request_identifier inner join users u on u.id=t.claimed_by "
-            + "where t.status = 'SUBMITTED_NOT_YET_APPROVED' and extract(month from age(t.claimed_date))=0 and "
-            + "extract(day from age(t.claimed_date)) in (?1,?2,?3) "
+            + "where t.status = 'SUBMITTED_NOT_YET_APPROVED' and extract(month from age(now(),t.claimed_date))=0 and "
+            + "extract(day from age(now(),t.claimed_date)) in (?1,?2,?3) "
             + "order by t.initiated_date asc", nativeQuery = true)
     List<PaymentTaskReminder> findToBeRemindedPaymentTasks(int firstReminderDaysOutstanding, int secondReminderDaysOutstanding, int thirdReminderDaysOutstanding);
     

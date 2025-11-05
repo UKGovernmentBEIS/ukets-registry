@@ -8,6 +8,7 @@ import {
   AccountOpeningTaskDetails,
   Amount,
   RequestedDocumentsModel,
+  RequestPaymentTaskDetails,
   RequestType,
   TaskCompleteResponse,
   TaskDetails,
@@ -163,6 +164,7 @@ const taskDetailsReducer = createReducer(
   ),
   mutableOn(TaskDetailsActions.submitMakePayment, (state, { method }) => {
     if (state.taskDetails.taskType === 'PAYMENT_REQUEST') {
+      state.taskResponse = initialState.taskResponse;
       state.taskDetails.paymentMethod = method;
     }
   }),
@@ -289,6 +291,14 @@ const taskDetailsReducer = createReducer(
   ),
   mutableOn(TaskDetailsActions.resetSubmittedApproveTask, (state) => {
     state.submittedApproveTask = false;
+  }),
+  mutableOn(TaskDetailsActions.bacsPaymentCompleteSuccess, (state) => {
+    if (state.taskDetails.taskType === RequestType.PAYMENT_REQUEST) {
+      const requestPaymentTaskDetails =
+        state.taskDetails as RequestPaymentTaskDetails;
+      requestPaymentTaskDetails.paymentMethod = 'BACS';
+      requestPaymentTaskDetails.paymentStatus = 'SUBMITTED';
+    }
   }),
   mutableOn(
     TaskDetailsApiActions.fetchPaymentCompleteResponseWithExternalServiceSuccess,
