@@ -23,7 +23,7 @@ import static gov.uk.ets.registry.api.payment.service.pdf.PaymentInvoicePdfUtils
 public class PdfFormatter {
     private static final int FONT_SIZE = 12;
     public static final float CELL_PADDING = 1f;
-    private static final String CURRENCY = " £";
+    private static final String VALUE_FORMAT = "%s %s";
 
     public Paragraph labelWithBoldValue(String label, String value) {
         Phrase phrase = new Phrase();
@@ -38,7 +38,7 @@ public class PdfFormatter {
     }
 
     public PdfPCell poundsBoldCell(Object value) {
-        PdfPCell cell = new PdfPCell(new Phrase(value + CURRENCY, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11)));
+        PdfPCell cell = new PdfPCell(new Phrase(String.format(VALUE_FORMAT, CURRENCY, value), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11)));
         return prepareCell(cell);
     }
 

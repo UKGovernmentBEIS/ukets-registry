@@ -36,7 +36,7 @@ class PdfFormatterTest {
     void poundsBoldCell_shouldReturnCellWithCurrency() {
         PdfPCell cell = pdfFormatter.poundsBoldCell(100);
 
-        assertEquals("100 £", cell.getPhrase().getContent());
+        assertEquals("£ 100", cell.getPhrase().getContent());
         assertEquals(PdfFormatter.CELL_PADDING, cell.getPaddingBottom());
     }
 

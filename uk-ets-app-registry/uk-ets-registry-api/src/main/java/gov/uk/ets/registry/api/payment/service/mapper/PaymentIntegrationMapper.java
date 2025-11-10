@@ -50,9 +50,7 @@ public class PaymentIntegrationMapper {
 
     public void setPaymentBasedOnResponse(PaymentIntegrationStatusResponseDTO paymentResponse, Payment payment) {
         payment.setStatus(paymentResponse.getStatus()); //Update only the status and return
-        if (paymentResponse.getStatus().equals(PaymentStatus.CANCELLED) ||
-            paymentResponse.getStatus().equals(PaymentStatus.FAILED)
-        ) {
+        if (!paymentResponse.getStatus().equals(PaymentStatus.SUCCESS)) {
             return;
         }
         payment.setAmountPaid(penceToBigDecimal(paymentResponse.getAmount()));

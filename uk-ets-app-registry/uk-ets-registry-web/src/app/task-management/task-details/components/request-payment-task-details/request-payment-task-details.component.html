@@ -76,7 +76,7 @@
           <a
             class="govuk-link govuk-link--no-visited-state"
             (click)="onNavigateToGovUKPay()"
-            [routerLink]="[]"
+            href="{{ taskDetails.paymentLink }}"
           >
             {{ taskDetails.paymentLink }}
           </a>

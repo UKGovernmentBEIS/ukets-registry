@@ -91,7 +91,7 @@ public class PaymentFileBuilder {
     private void addHeaderLayout(Document document, Long subtaskId, boolean isInvoice) throws Exception {
         PdfPTable headerTable = new PdfPTable(3);
         headerTable.setWidthPercentage(100);
-        headerTable.setWidths(new float[]{2, 5, 4}); // logo | title | right-side
+        headerTable.setWidths(new float[]{4, 4, 4}); // logo | title | right-side
         headerTable.addCell(pdfFormatter.logo());
         headerTable.addCell(pdfFormatter.title(isInvoice));
         headerTable.addCell(pdfFormatter.rightHeader(subtaskId));

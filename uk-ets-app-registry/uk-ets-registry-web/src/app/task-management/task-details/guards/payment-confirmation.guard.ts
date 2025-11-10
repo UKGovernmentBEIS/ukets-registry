@@ -29,8 +29,9 @@ export const paymentConfirmationGuard: CanActivateFn = (route, state) => {
     first(),
     switchMap((response) => {
       if (
-        (response.taskDetailsDTO as RequestPaymentTaskDetails).paymentStatus !==
-        'FAILED'
+        (
+          response.taskDetailsDTO as RequestPaymentTaskDetails
+        ).paymentStatus.match(/SUCCESS/)
       ) {
         return of(true);
       } else {

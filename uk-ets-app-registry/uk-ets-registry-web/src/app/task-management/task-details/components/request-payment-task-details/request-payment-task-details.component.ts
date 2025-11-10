@@ -75,6 +75,7 @@ export class RequestPaymentTaskDetailsComponent {
       !this.taskDetails.paymentStatus ||
       this.taskDetails.paymentStatus === 'CANCELLED' ||
       this.taskDetails.paymentStatus === 'FAILED' ||
+      this.taskDetails.paymentStatus === 'ERROR' ||
       this.taskDetails.paymentStatus === 'CREATED'
     );
   }

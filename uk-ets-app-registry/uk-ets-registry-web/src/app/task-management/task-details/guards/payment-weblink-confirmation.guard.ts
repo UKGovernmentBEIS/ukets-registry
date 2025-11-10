@@ -31,8 +31,9 @@ export const paymentWeblinkConfirmationGuard: CanActivateFn = (
     first(),
     switchMap((response) => {
       if (
-        (response.taskDetailsDTO as RequestPaymentTaskDetails).paymentStatus !==
-        'FAILED'
+        (
+          response.taskDetailsDTO as RequestPaymentTaskDetails
+        ).paymentStatus.match(/SUCCESS/)
       ) {
         return of(true);
       } else {

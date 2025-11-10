@@ -7,7 +7,7 @@ public class PaymentInvoicePdfUtils {
     public static final String CURRENCY = "£";
     public static final String TOTAL = "Total to Pay";
     public static final String INVOICE_TITLE = "PAYMENT Request";
-    public static final String RECEIPT_TITLE = "Receipt of";
+    public static final String RECEIPT_TITLE = "Receipt of Payment";
     public static final String COLUMN_1 = "Description";
     public static final String COLUMN_2 = "Fee ("+CURRENCY+")";
     public static final String COLUMN_3 = "VAT";
