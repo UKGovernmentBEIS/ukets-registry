@@ -80,11 +80,7 @@ export class RequestPaymentTaskDetailsComponent {
     );
   }
 
-  shouldShowPaymentReceipt() {
-    return (
-      this.taskDetails.paymentStatus === 'SUCCESS' &&
-      (this.taskDetails.paymentMethod === 'CARD_OR_DIGITAL_WALLET' ||
-        this.taskDetails.paymentMethod === 'WEBLINK')
-    );
+  shouldShowPaymentReceipt(): boolean {
+    return !!(this.taskDetails?.receiptFile);
   }
 }

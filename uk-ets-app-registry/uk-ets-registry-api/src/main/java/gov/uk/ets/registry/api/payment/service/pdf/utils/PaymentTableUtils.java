@@ -5,7 +5,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
-import gov.uk.ets.registry.api.payment.service.pdf.PaymentInvoicePdfUtils;
 import gov.uk.ets.registry.api.payment.service.pdf.PdfFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,7 +26,10 @@ public class PaymentTableUtils {
 
     private final PdfFormatter pdfFormatter;
 
-    public PdfPTable addPaymentTable(List<String[]> dataRows, String total) {
+    public PdfPTable addPaymentTable(List<String[]> dataRows,
+                                     String total,
+                                     String totalPaidLabel
+    ) {
         PdfPTable table = new PdfPTable(4);
         table.setWidthPercentage(100);
         table.setSpacingBefore(10f);
@@ -35,17 +37,17 @@ public class PaymentTableUtils {
         table.setWidths(new float[]{3f, 1f, 1f, 1f});
         addHeaders(table);
         addContent(table, dataRows);
-        addTotal(table, total);
+        addTotal(table, total, totalPaidLabel);
         return table;
     }
 
-    private void addTotal(PdfPTable table, String total) {
+    private void addTotal(PdfPTable table, String total, String totalPaidLabel) {
         PdfPCell emptyCell = pdfFormatter.emptyCell();
         emptyCell.setColspan(2);
         emptyCell.setBorder(Rectangle.NO_BORDER);
         table.addCell(emptyCell);
 
-        PdfPCell labelCell = pdfFormatter.boldCell(PaymentInvoicePdfUtils.TOTAL);
+        PdfPCell labelCell = pdfFormatter.boldCell(totalPaidLabel);
         labelCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         labelCell.setPadding(TABLE_CELL_PADDING);
         table.addCell(labelCell);

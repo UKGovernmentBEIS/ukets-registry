@@ -76,14 +76,14 @@ public class PaymentTaskAutoCompletionService {
     
     
     private PaymentHistory createPaymentHistory(Payment payment) {
-        PaymentHistory paymentHistory = new PaymentHistory();
+        PaymentHistory paymentHistory = paymentHistoryRepository.findByReferenceNumberAndStatus(
+                payment.getReferenceNumber(), PaymentStatus.SUBMITTED).orElse(new PaymentHistory());
         paymentHistory.setAmount(payment.getAmountPaid());
         paymentHistory.setPaymentId(payment.getPaymentId());
         paymentHistory.setReferenceNumber(payment.getReferenceNumber());
         paymentHistory.setMethod(payment.getMethod());
         paymentHistory.setStatus(payment.getStatus());
         paymentHistory.setUpdated(payment.getUpdated());
-        
         return paymentHistory;
     }
 }

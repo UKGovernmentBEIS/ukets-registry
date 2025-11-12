@@ -80,7 +80,9 @@ public class PaymentFileBuilder {
         document.add(
                 paymentTableUtils.addPaymentTable(
                         paymentConverter.convert(payment),
-                        paymentConverter.total(payment))
+                        paymentConverter.total(payment),
+                        PaymentInvoicePdfUtils.TOTAL
+                )
         );
         document.add(Chunk.NEWLINE);
         document.add(howToPayUtils.buildPaymentDetailsTable(paymentLink));
@@ -119,7 +121,9 @@ public class PaymentFileBuilder {
         document.add(
                 paymentTableUtils.addPaymentTable(
                         paymentConverter.convert(payment),
-                        paymentConverter.total(payment))
+                        paymentConverter.total(payment),
+                        PaymentInvoicePdfUtils.TOTAL_PAID
+                )
         );
         document.add(Chunk.NEWLINE);
         document.add(Chunk.NEWLINE);

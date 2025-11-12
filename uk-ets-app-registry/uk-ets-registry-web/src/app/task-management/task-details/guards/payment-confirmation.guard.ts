@@ -28,10 +28,12 @@ export const paymentConfirmationGuard: CanActivateFn = (route, state) => {
     filter((response) => response != undefined),
     first(),
     switchMap((response) => {
+      const taskDetails = response.taskDetailsDTO as RequestPaymentTaskDetails;
       if (
-        (
-          response.taskDetailsDTO as RequestPaymentTaskDetails
-        ).paymentStatus.match(/SUCCESS/)
+        (taskDetails.paymentStatus.match(/SUCCESS/) &&
+          taskDetails.paymentMethod !== 'BACS') ||
+        (taskDetails.paymentMethod === 'BACS' &&
+          taskDetails.paymentStatus.match(/SUBMITTED/))
       ) {
         return of(true);
       } else {

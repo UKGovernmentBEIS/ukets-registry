@@ -9,6 +9,7 @@ import gov.uk.ets.registry.api.payment.repository.PaymentHistoryRepository;
 import gov.uk.ets.registry.api.payment.repository.PaymentRepository;
 import gov.uk.ets.registry.api.payment.web.model.PaymentTaskCompleteResponse;
 import gov.uk.ets.registry.api.payment.web.model.PaymentTaskDetailsDTO;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,12 @@ class PaymentTaskServiceTest {
     private PaymentHistoryRepository paymentHistoryRepository;
     @Mock
     private PaymentTaskCompleteResponseFactory paymentTaskCompleteResponseFactory;
+
+    @Mock
+    private TaskRepository taskRepository;
+
+    @Mock
+    private PaymentDocumentsService paymentDocumentsService;
 
     @InjectMocks
     private PaymentTaskService paymentTaskService; // whatever your class name is

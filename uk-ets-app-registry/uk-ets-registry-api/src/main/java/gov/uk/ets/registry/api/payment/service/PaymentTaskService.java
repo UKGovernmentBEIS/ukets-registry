@@ -12,10 +12,10 @@ import gov.uk.ets.registry.api.payment.service.integration.utils.PaymentUrl;
 import gov.uk.ets.registry.api.payment.web.model.PaymentFileDTO;
 import gov.uk.ets.registry.api.payment.web.model.PaymentTaskCompleteResponse;
 import gov.uk.ets.registry.api.payment.web.model.PaymentTaskDetailsDTO;
+import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
-import gov.uk.ets.registry.api.task.service.TaskActionError;
-import gov.uk.ets.registry.api.task.service.TaskServiceException;
-import gov.uk.ets.registry.api.task.service.TaskTypeService;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
+import gov.uk.ets.registry.api.task.service.*;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskFileDownloadInfoDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
@@ -38,7 +38,9 @@ public class PaymentTaskService implements TaskTypeService<PaymentTaskDetailsDTO
     private final UploadedFilesRepository filesRepository;
     private final PaymentTaskCompleteResponseFactory paymentTaskCompleteResponseFactory;
     private final PaymentUrl paymentUrl;
-    
+    private final PaymentDocumentsService paymentDocumentsService;
+    private final TaskRepository taskRepository;
+
     @Override
     public Set<RequestType> appliesFor() {
         return Set.of(RequestType.PAYMENT_REQUEST);
@@ -109,7 +111,18 @@ public class PaymentTaskService implements TaskTypeService<PaymentTaskDetailsDTO
             
             paymentHistoryRepository.save(paymentHistory);
         }
-             
+
+        if(PaymentStatus.SUCCESS.equals(payment.getStatus())) {
+            Task paymentTask = taskRepository.findByRequestId(payment.getReferenceNumber());
+            try {
+                paymentDocumentsService.generateAndPersistReceipt(payment,paymentTask);
+            } catch (Exception e) {
+                throw TaskActionException.create(TaskActionError.builder()
+                        .code(TaskActionError.NOT_PAYMENT_TASK_RECEIPT_GENERATED)
+                        .message("Payment receipt generation failed.")
+                        .build());
+            }
+        }
         return paymentTaskCompleteResponseFactory.create(payment);
     }
     

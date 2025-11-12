@@ -6,6 +6,7 @@ public class PaymentInvoicePdfUtils {
     static final String LOGO_IMAGE_PATH = "images/ea_logo.png";
     public static final String CURRENCY = "£";
     public static final String TOTAL = "Total to Pay";
+    public static final String TOTAL_PAID = "Total paid";
     public static final String INVOICE_TITLE = "PAYMENT Request";
     public static final String RECEIPT_TITLE = "Receipt of Payment";
     public static final String COLUMN_1 = "Description";

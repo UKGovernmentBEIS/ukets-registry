@@ -106,6 +106,10 @@ public class TaskActionError implements Serializable {
      * Error code for the case that the current user changes the account holder id of the open accounting task and it does not exist.
      */
     public static final String ACCOUNT_HOLDER_NON_EXISTENT = "ACCOUNT_HOLDER_NON_EXISTENT";
+    /**
+     * Error code for the case that the receipt not generated.
+     */
+    public static final String NOT_PAYMENT_TASK_RECEIPT_GENERATED = "NOT_PAYMENT_TASK_RECEIPT_GENERATED";
     
     /**
      * The error code.

@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.payment.service.pdf.utils;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import gov.uk.ets.registry.api.payment.service.pdf.PaymentInvoicePdfUtils;
 import gov.uk.ets.registry.api.payment.service.pdf.PdfFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class PaymentTableUtilsTest {
                 new String[]{"Item 1", "10", "2", "20"},
                 new String[]{"Item 2", "5", "3", "15"}
         );
-        PdfPTable table = paymentTableUtils.addPaymentTable(data, "£99.99");
+        PdfPTable table = paymentTableUtils.addPaymentTable(data, "£99.99", PaymentInvoicePdfUtils.TOTAL);
         int totalExpectedCells = 4 /* headers */ + 8 /* 2 data rows */ + 4 /* total section */;
         int actualCellCount = table.getRows().stream()
                 .mapToInt(row -> row.getCells().length)
@@ -53,7 +54,7 @@ class PaymentTableUtilsTest {
         when(pdfFormatter.poundsBoldCell(anyString())).thenReturn(new PdfPCell());
 
         List<String[]> data = List.of();
-        PdfPTable table = paymentTableUtils.addPaymentTable(data, "£0.00");
+        PdfPTable table = paymentTableUtils.addPaymentTable(data, "£0.00", PaymentInvoicePdfUtils.TOTAL);
         assertEquals(4, table.getNumberOfColumns());
         assertEquals(100f, table.getWidthPercentage());
     }
