@@ -24,7 +24,6 @@ import { ContactType } from '@shared/model/account-holder-contact-type';
 import { selectIsMOHA } from '@account-opening/account-opening.selector';
 import { take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { CountryCodeModel } from '@shared/countries/country-code.model';
 
 @Component({
   selector: 'app-account-holder-contact-work-details',
@@ -34,6 +33,7 @@ export class AccountHolderContactWorkDetailsComponent
   implements OnInit, AfterViewInit
 {
   _accountHolderContact: AccountHolderContact;
+  @Input() caption: string;
   @Input() isAHUpdateWizard = false;
   @Input() useUpdateLabel = true;
   @Input() accountHolderAddress: any;
@@ -46,7 +46,7 @@ export class AccountHolderContactWorkDetailsComponent
   @Output()
   readonly copyAccountHolderAddressToWorkAddress = new EventEmitter<boolean>();
 
-  _countries: IUkOfficialCountry[];
+  private _countries: IUkOfficialCountry[];
   _countryOptions: Option[];
   _phoneInfo1: PhoneInfo;
   _phoneInfo2: PhoneInfo;
@@ -298,12 +298,21 @@ export class AccountHolderContactWorkDetailsComponent
     this.formGroup.get('emailAddress').patchValue(legalRep.emailAddress);
   }
 
-  getSubtitle(): string {
+  getCaption(): string {
+    if (this.caption) {
+      return this.caption;
+    }
+    if (this.isAHUpdateWizard) {
+      return 'Request to update the account holder';
+    }
+    return `Add the ${this.getContactLabel()}`;
+  }
+
+  getTitle(): string {
     if (this.isAHUpdateWizard && this.useUpdateLabel) {
       return `Update the ${this.getContactLabel()} details`;
-    } else {
-      return `Add the ${this.getContactLabel()} details`;
     }
+    return `Add the ${this.getContactLabel()} details`;
   }
 
   onAddressCheckChange(event) {

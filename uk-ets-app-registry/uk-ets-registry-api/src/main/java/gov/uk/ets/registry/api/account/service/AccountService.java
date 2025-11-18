@@ -8,6 +8,7 @@ import gov.uk.ets.registry.api.account.domain.AccountFilter;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AccountOwnership;
+import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
@@ -19,12 +20,14 @@ import gov.uk.ets.registry.api.account.domain.UnitBlockFilter;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.domain.types.AccountOwnershipStatus;
+import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
 import gov.uk.ets.registry.api.account.repository.InstallationOwnershipRepository;
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
@@ -111,6 +114,7 @@ import gov.uk.ets.reports.model.ReportType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
@@ -126,10 +130,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -166,6 +172,7 @@ public class AccountService {
     private final AccountDTOFactory accountDTOFactory;
     private final AuthorizationService authorizationService;
     private final UnitBlockRepository unitBlockRepository;
+    private final ActivityTypeRepository activityTypeRepository;
 
     private final TransactionProposalService transactionProposalService;
 
@@ -404,7 +411,6 @@ public class AccountService {
     private Installation createInstallation(OperatorDTO installationDTO) {
         Installation installation = new Installation();
         installation.setIdentifier(compliantEntityRepository.getNextIdentifier());
-        installation.setActivityType(installationDTO.getActivityType().name());
         installation.setInstallationName(installationDTO.getName());
         installation.setPermitIdentifier(installationDTO.getPermit().getId());
         installation.setRegulator(getRegulatorIfChanged(installationDTO));
@@ -412,6 +418,26 @@ public class AccountService {
         installation.setEndYear(installationDTO.getLastYear());
         installation.setEmitterId(installationDTO.getEmitterId());
         installation = persistenceService.save(installation);
+
+        Set<ActivityType> activityTypes = new HashSet<>();
+        // Special case for old tasks
+        if (CollectionUtils.isEmpty(installationDTO.getActivityTypes())) {
+            ActivityType activityType = new ActivityType();
+            activityType.setInstallation(installation);
+            activityType.setDescription(installationDTO.getActivityType().name());
+            activityTypes.add(activityType);
+        } else {
+            for (InstallationActivityType type : installationDTO.getActivityTypes()) {
+                ActivityType activityType = new ActivityType();
+                activityType.setInstallation(installation);
+                activityType.setDescription(type.name());
+                activityTypes.add(activityType);
+            }
+        }
+
+        activityTypeRepository.saveAll(activityTypes);
+        installation.setActivityTypes(activityTypes);
+
         return installation;
     }
 
@@ -1179,6 +1205,20 @@ public class AccountService {
     }
 
     /**
+     * Check if Installation Permit Identifier exists.
+     * If present an exception is thrown.
+     *
+     * @param installationPermitId The Installation Permit ID to check.
+     */
+    public void validatePermitId(String installationPermitId) {
+        if (installationPermitIdExists(installationPermitId)) {
+            throw AccountActionException
+                    .create(AccountActionError.build(MULTIPLE_INSTALLATION_PERMIT_IDS_NOT_ALLOWED.name(),
+                            MULTIPLE_INSTALLATION_PERMIT_IDS_NOT_ALLOWED.getMessage()));
+        }
+    }
+
+    /**
      * Returns true/false if Installation Permit Identifier exists and account is not closed.
      *
      * @param installationPermitId The Installation Permit ID to check.
@@ -1188,12 +1228,7 @@ public class AccountService {
         Long installationPermitIdCount =
             accountRepository.countInstallationsByPermitIdForNonClosedOrRejectedAccounts(
                 StringUtils.upperCase(installationPermitId));
-        if (installationPermitIdCount != 0) {
-			throw AccountActionException
-					.create(AccountActionError.build(MULTIPLE_INSTALLATION_PERMIT_IDS_NOT_ALLOWED.name(),
-							MULTIPLE_INSTALLATION_PERMIT_IDS_NOT_ALLOWED.getMessage()));
-        }
-        return false;
+        return installationPermitIdCount != 0;
     }
 
     public OperatorDTO getInstallationByIdentifier(Long identifier) {

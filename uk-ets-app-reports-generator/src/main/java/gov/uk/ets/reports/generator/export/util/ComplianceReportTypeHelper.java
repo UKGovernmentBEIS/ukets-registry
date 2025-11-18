@@ -29,7 +29,7 @@ public class ComplianceReportTypeHelper {
         "Account type",
         "Installation name",
         "Installation ID / Aircraft operator ID",
-        "Activity type",
+        "Regulated activity",
         "Permit ID/Monitoring plan ID"
     );
 

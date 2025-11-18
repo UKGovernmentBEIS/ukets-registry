@@ -3,23 +3,28 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { isAdmin } from '@registry-web/auth/auth.selector';
 import { canGoBack } from '@registry-web/shared/shared.action';
-import { Observable } from 'rxjs';
+import { selectSubmittedRequestIdentifier } from '@registry-web/account-management/account/change-account-holder-wizard/store/selectors';
 
 @Component({
   selector: 'app-change-account-holder-request-submitted-container',
   template: `
     <app-request-submitted
-      [confirmationMessageTitle]="'The account holder has been changed'"
+      [confirmationMessageTitle]="
+        'You have submitted a request to change the account holder.'
+      "
+      [confirmationMessageBody]="'Your request ID'"
       [accountId]="accountId"
       [isAdmin]="isAdmin$ | async"
-    ></app-request-submitted>
+      [submittedIdentifier]="submittedIdentifier$ | async"
+    />
   `,
-  styles: ``,
 })
 export class RequestSubmittedContainerComponent implements OnInit {
-  submittedIdentifier$: Observable<string>;
+  readonly isAdmin$ = this.store.select(isAdmin);
+  readonly submittedIdentifier$ = this.store.select(
+    selectSubmittedRequestIdentifier
+  );
   accountId: string;
-  isAdmin$: Observable<boolean>;
 
   constructor(
     private store: Store,
@@ -27,7 +32,6 @@ export class RequestSubmittedContainerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isAdmin$ = this.store.select(isAdmin);
     this.store.dispatch(canGoBack({ goBackRoute: null }));
     this.accountId = this.route.snapshot.paramMap.get('accountId');
   }

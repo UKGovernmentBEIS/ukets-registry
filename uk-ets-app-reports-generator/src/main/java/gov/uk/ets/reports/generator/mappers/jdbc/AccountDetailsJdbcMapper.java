@@ -102,7 +102,7 @@ public class AccountDetailsJdbcMapper
 
             "       case when i.compliant_entity_id IS NOT NULL then ce.identifier end      as installation_id,\n" +
             "       i.installation_name                                                     as installation_name,\n" +
-            "       i.activity_type                                                         as installation_activity,\n" +
+            "       at.activity_type                                                        as installation_activity,\n" +
             "       i.permit_identifier                                                     as installation_permit_id,\n" +
 
             "       case when ao.compliant_entity_id IS NOT NULL then ce.identifier end     as aircraft_operator_id,\n" +
@@ -119,6 +119,9 @@ public class AccountDetailsJdbcMapper
             "         left join account_holder ah on ah.id = a.account_holder_id\n" +
             "         left join contact ahContact on ahContact.id = ah.contact_id\n" +
             "         left join installation i on ce.id = i.compliant_entity_id\n" +
+            "         left join lateral (\n" +
+            "                    select compliant_entity_id, STRING_AGG(description, '; ') as activity_type from activity_type group by compliant_entity_id\n" +
+            "         ) at on i.compliant_entity_id = at.compliant_entity_id \n" +
             "         left join aircraft_operator ao on ce.id = ao.compliant_entity_id\n" +
             "         left join maritime_operator mo on ce.id = mo.compliant_entity_id\n" +
             "         left join (select aa.account_id, count(aa.id) as numOfArs\n" +

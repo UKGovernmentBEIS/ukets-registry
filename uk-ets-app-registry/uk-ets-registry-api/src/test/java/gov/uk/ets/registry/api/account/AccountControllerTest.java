@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.account;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -62,6 +63,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
@@ -181,7 +183,7 @@ class AccountControllerTest {
         OperatorDTO dto = new OperatorDTO();
         dto.setIdentifier(10001L);
         dto.setFirstYear(2022);
-        dto.setActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS);
+        dto.setActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS));
 
         Mockito.when(accountService.getInstallationOrAircraftOperatorDTO(any()))
             .thenReturn(dto);
@@ -192,7 +194,7 @@ class AccountControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.identifier", is(10001)))
             .andExpect(jsonPath("$.firstYear", is(2022)))
-            .andExpect(jsonPath("$.activityType", is(InstallationActivityType.MANUFACTURE_OF_CERAMICS.toString())));
+            .andExpect(jsonPath("$.activityTypes", contains(InstallationActivityType.MANUFACTURE_OF_CERAMICS.toString())));
     }
 
     @Test

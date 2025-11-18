@@ -1,0 +1,183 @@
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-3">
+      {{ headingCaption() }}
+    </h2>
+    <div class="govuk-summary-list__actions">
+      @if (showChangeLink()) {
+        <a
+          class="govuk-link govuk-link--no-visited-state"
+          [routerLink]="[]"
+          (click)="navigateToChangeForm()"
+          (keypress)="navigateToChangeForm()"
+        >
+          Change<span class="govuk-visually-hidden">
+            account holder details</span
+          >
+        </a>
+      }
+    </div>
+  </div>
+</dl>
+
+@if (accountHolder().id) {
+  <dl
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+  >
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Account Holder ID</dt>
+      <dd class="govuk-summary-list__value">
+        {{ accountHolder().id }}
+      </dd>
+    </div>
+  </dl>
+}
+
+<!-- Case of AccountHolderType.INDIVIDUAL -->
+@if (individual(); as individual) {
+  <h2 class="govuk-heading-m">Individual's details</h2>
+  @if (individual.details) {
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">First and middle names</dt>
+        <dd class="govuk-summary-list__value">
+          {{ individual.details | individualFirstAndMiddleNames }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Last name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ individual.details.lastName }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country of birth</dt>
+        <dd class="govuk-summary-list__value">
+          {{ individual.details.countryOfBirth }}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          I confirm that the account holder is aged 18 or over
+        </dt>
+        <dd class="govuk-summary-list__value">Yes</dd>
+      </div>
+    </dl>
+  }
+
+  <h2 class="govuk-heading-m">Individual's contact details</h2>
+  <dl
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+  >
+    @if (individual.address) {
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Address</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-three-line-address
+            [line1]="individual.address.buildingAndStreet"
+            [line2]="individual.address.buildingAndStreet2"
+            [line3]="individual.address.buildingAndStreet3"
+          />
+          {{ individual.address.townOrCity }}
+          @if (individual.address.stateOrProvince) {
+            <br />{{ individual.address.stateOrProvince }}
+          }
+          <br />
+          {{ individual.address.country | countryNameAsync | async }}
+          <br />
+          {{ individual.address.postCode }}
+        </dd>
+      </div>
+    }
+    @if (individual.phoneNumber?.phoneNumber1) {
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Phone number 1</dt>
+        <dd class="govuk-summary-list__value">
+          +{{ individual.phoneNumber.countryCode1
+          }}{{ individual.phoneNumber.phoneNumber1 }}
+        </dd>
+      </div>
+    }
+    @if (individual.phoneNumber?.phoneNumber2) {
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Phone number 2</dt>
+        <dd class="govuk-summary-list__value">
+          +{{ individual.phoneNumber.countryCode2
+          }}{{ individual.phoneNumber.phoneNumber2 }}
+        </dd>
+      </div>
+    }
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Email address</dt>
+      <dd class="govuk-summary-list__value">
+        {{ individual.emailAddress?.emailAddress }}
+      </dd>
+    </div>
+  </dl>
+}
+
+<!-- Case of AccountHolderType.ORGANISATION -->
+@if (organisation(); as organisation) {
+  <h2 class="govuk-heading-m">Organisation details</h2>
+  @if (organisation.details) {
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ organisation.details.name }}
+        </dd>
+      </div>
+      @if (organisation.details.registrationNumber) {
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Registration number</dt>
+          <dd class="govuk-summary-list__value">
+            {{ organisation.details.registrationNumber }}
+          </dd>
+        </div>
+      }
+      @if (organisation.details.noRegistrationNumJustification) {
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            Reason for not providing a registration number
+          </dt>
+          <dd class="govuk-summary-list__value">
+            {{ organisation.details.noRegistrationNumJustification }}
+          </dd>
+        </div>
+      }
+    </dl>
+  }
+
+  @if (organisation.address) {
+    <h2 class="govuk-heading-m">Organisation address</h2>
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Address</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-three-line-address
+            [line1]="organisation.address.buildingAndStreet"
+            [line2]="organisation.address.buildingAndStreet2"
+            [line3]="organisation.address.buildingAndStreet3"
+          />
+          {{ organisation.address.townOrCity }}
+          @if (organisation.address.stateOrProvince) {
+            <br />{{ organisation.address.stateOrProvince }}
+          }
+          <br />
+          {{ organisation.address.country | countryNameAsync | async }}
+          <br />
+          {{ organisation.address.postCode }}
+        </dd>
+      </div>
+    </dl>
+  }
+}

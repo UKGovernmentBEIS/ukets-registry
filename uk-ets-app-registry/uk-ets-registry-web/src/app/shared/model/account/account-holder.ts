@@ -18,6 +18,7 @@ export interface AccountHolder {
   details: IndividualDetails | OrganisationDetails | GovernmentDetails;
   address: AccountHolderAddress;
 }
+
 // TODO: remove this class and use a union for different account holders
 export class Individual implements AccountHolder {
   id: number;

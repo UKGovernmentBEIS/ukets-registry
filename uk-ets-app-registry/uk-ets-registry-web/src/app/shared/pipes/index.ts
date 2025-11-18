@@ -23,3 +23,4 @@ export * from './keycloak-user-display-name.pipe';
 export * from './ar-display-name.pipe';
 export * from './allocation-category.pipe';
 export * from './is-past-date.pipe';
+export * from './account-contacts.pipes';

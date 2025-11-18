@@ -10,5 +10,7 @@ export class SideMenuComponent {
   menuItems: string[];
   @Input()
   selectedItem: string;
+  @Input()
+  labels: Map<string, string> = new Map<string, string>();
   @Output() readonly selectItem = new EventEmitter();
 }

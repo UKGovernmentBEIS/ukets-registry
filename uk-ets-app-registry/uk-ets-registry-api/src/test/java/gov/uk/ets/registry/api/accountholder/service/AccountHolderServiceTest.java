@@ -1,9 +1,11 @@
 package gov.uk.ets.registry.api.accountholder.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
@@ -29,14 +31,12 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.AccessToken;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AuthorizationServiceException;
 
-public class AccountHolderServiceTest {
+class AccountHolderServiceTest {
 
     private AccountHolderService accountHolderService;
 
@@ -61,7 +61,7 @@ public class AccountHolderServiceTest {
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.initMocks(this);
         accountHolderService = new AccountHolderService(holderRepository, holderFileRepository, accountRepository, 
         		uploadedFilesRepository, accountHolderRepresentativeRepository, accountConversionService, eventService, authorizationService);
@@ -74,14 +74,14 @@ public class AccountHolderServiceTest {
         AccountHolderFileDTO file1 =
             new AccountHolderFileDTO(1L, "Filename1", "Proof of identity", LocalDateTime.now());
         files.add(file1);
-        Mockito.when(holderRepository.getAccountHolderFiles(1000036L)).thenReturn(files);
+        when(holderRepository.getAccountHolderFiles(1000036L)).thenReturn(files);
 
         Account account = new Account();
         account.setIdentifier(10001L);
         AccountHolder accountHolder = new AccountHolder();
         accountHolder.setIdentifier(1000036L);
         account.setAccountHolder(accountHolder);
-        Mockito.when(accountRepository.findByIdentifier(10001L)).thenReturn(Optional.of(account));
+        when(accountRepository.findByIdentifier(10001L)).thenReturn(Optional.of(account));
 
         List<AccountHolderFileDTO> ahFiles = accountHolderService.getAccountHolderFiles(10001L);
         assertEquals(1, ahFiles.size());
@@ -95,7 +95,7 @@ public class AccountHolderServiceTest {
         uploadedFile.setId(1L);
         uploadedFile.setFileStatus(FileStatus.SUBMITTED);
         uploadedFile.setFileName("Filename");
-        Mockito.when(uploadedFilesRepository.findById(1L)).thenReturn(Optional.of(uploadedFile));
+        when(uploadedFilesRepository.findById(1L)).thenReturn(Optional.of(uploadedFile));
 
         UploadedFile fileById = accountHolderService.getFileById(1L);
         assertEquals(1L, fileById.getId());
@@ -111,8 +111,8 @@ public class AccountHolderServiceTest {
     	holder.setIdentifier(1234L);
         User user = new User();
         user.setUrid("urid");
-        Mockito.when(holderRepository.getAccountHolder(holder.getIdentifier())).thenReturn(holder);
-        Mockito.when(holderFileRepository.findByIdAndAccountHolder(1234L, holder)).thenReturn(null);
+        when(holderRepository.getAccountHolder(holder.getIdentifier())).thenReturn(holder);
+        when(holderFileRepository.findByIdAndAccountHolder(1234L, holder)).thenReturn(null);
 
         AuthorizationServiceException exception = assertThrows(
         		AuthorizationServiceException.class,
@@ -137,12 +137,50 @@ public class AccountHolderServiceTest {
         AccountHolder holder = new AccountHolder();
         holder.setIdentifier(1234L);
         var urid = "urid";
-        Mockito.when(holderRepository.getAccountHolder(holder.getIdentifier())).thenReturn(holder);
-        Mockito.when(holderFileRepository.findByIdAndAccountHolder(1234L, holder)).thenReturn(holderFile);
-        Mockito.when(authorizationService.getUrid()).thenReturn(urid);
+        when(holderRepository.getAccountHolder(holder.getIdentifier())).thenReturn(holder);
+        when(holderFileRepository.findByIdAndAccountHolder(1234L, holder)).thenReturn(holderFile);
+        when(authorizationService.getUrid()).thenReturn(urid);
         accountHolderService.deleteAccountHolderFile(holder.getIdentifier(), 1234L);
         verify(eventService, Mockito.times(1)).createAndPublishEvent("4321", urid,
         		uploadedFile.getFileName(), EventType.ACCOUNT_HOLDER_DELETE_SUBMITTED_DOCUMENT, 
         		"Account Holder documentation deleted");
+    }
+
+    @Test
+    void isOrphanedAccountHolder_true() {
+        final Long accountHolderIdentifier = 123L;
+        final Long accountIdentifier = 456L;
+        List<Account> accounts = List.of(createAccount(accountIdentifier));
+        when(holderRepository.getAccountHolder(accountHolderIdentifier))
+                .thenReturn(createAccountHolder(accountHolderIdentifier, accounts));
+        final Boolean actual = accountHolderService.isOrphanedAccountHolder(accountHolderIdentifier, accountIdentifier);
+        assertTrue(actual);
+    }
+
+    @Test
+    void isOrphanedAccountHolder_false() {
+        final Long accountHolderIdentifier = 123L;
+        final Long accountIdentifier = 456L;
+        final Long accountIdentifier2 = 789L;
+        List<Account> accounts = List.of(createAccount(accountIdentifier), createAccount(accountIdentifier2));
+        when(holderRepository.getAccountHolder(accountHolderIdentifier))
+                .thenReturn(createAccountHolder(accountHolderIdentifier, accounts));
+        final Boolean actual = accountHolderService.isOrphanedAccountHolder(accountHolderIdentifier, accountIdentifier);
+        assertFalse(actual);
+    }
+
+    private AccountHolder createAccountHolder(Long accountHolderIdentifier, List<Account> accounts) {
+        AccountHolder accountHolder = new AccountHolder();
+        accountHolder.setId(1L);
+        accountHolder.setIdentifier(accountHolderIdentifier);
+        accountHolder.setAccounts(accounts);
+        return accountHolder;
+    }
+
+    private Account createAccount(Long accountIdentifier) {
+        Account account = new Account();
+        account.setId(1L);
+        account.setIdentifier(accountIdentifier);
+        return account;
     }
 }

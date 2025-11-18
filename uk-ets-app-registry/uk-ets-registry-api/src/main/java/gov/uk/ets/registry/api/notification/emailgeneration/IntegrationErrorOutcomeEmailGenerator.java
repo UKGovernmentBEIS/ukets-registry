@@ -3,12 +3,6 @@ package gov.uk.ets.registry.api.notification.emailgeneration;
 import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.common.DateUtils;
 import gov.uk.ets.registry.api.common.mail.MailConfiguration;
-import gov.uk.ets.registry.api.integration.error.ContactPoint;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
-import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
 import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotification;
 import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotificationProperties;
 import gov.uk.ets.registry.usernotifications.GroupNotification;
@@ -23,6 +17,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
+import uk.gov.netz.integration.model.error.ContactPoint;
+import uk.gov.netz.integration.model.error.IntegrationEventError;
+import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
+import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 
 @RequiredArgsConstructor
 public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
@@ -100,10 +100,10 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
     @Override
     public GroupNotification generate() {
 
-        List<IntegrationEventError> integrationErrors = notification.getErrors().stream()
+        Set<IntegrationEventError> integrationErrors = notification.getErrors().stream()
             .map(IntegrationEventErrorDetails::getError)
             .filter(error -> error.isRelatedFor(notification.getContactPoint()))
-            .toList();
+            .collect(Collectors.toSet());
 
         String errors = integrationErrors.stream().map(Enum::name).collect(Collectors.joining(", "));
         String integrationPoint = notification.getIntegrationPoint().name();
@@ -142,14 +142,13 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
 
         // account details
         fields.put("AccountDetails.EmitterID", asStringOrEmpty(event.getAccountDetails().getEmitterId()));
-        fields.put("AccountDetails.InstallationActivityType", asStringOrEmpty(event.getAccountDetails().getInstallationActivityType()));
+        fields.put("AccountDetails.InstallationActivityTypes", asStringOrEmpty(event.getAccountDetails().getInstallationActivityTypes()));
         fields.put("AccountDetails.InstallationName", asStringOrEmpty(event.getAccountDetails().getInstallationName()));
         fields.put("AccountDetails.Account Name", asStringOrEmpty(event.getAccountDetails().getAccountName()));
         fields.put("AccountDetails.PermitID", asStringOrEmpty(event.getAccountDetails().getPermitId()));
         fields.put("AccountDetails.MonitoringPlanID", asStringOrEmpty(event.getAccountDetails().getMonitoringPlanId()));
         fields.put("AccountDetails.CompanyImoNumber", asStringOrEmpty(event.getAccountDetails().getCompanyImoNumber()));
         fields.put("AccountDetails.Regulator", asStringOrEmpty(event.getAccountDetails().getRegulator()));
-        fields.put("AccountDetails.DateOfEmpIssuance", asStringOrEmpty(event.getAccountDetails().getEmpPermitIssuanceDate()));
         fields.put("AccountDetails.FirstYearOfVerifiedEmission", asStringOrEmpty(event.getAccountDetails().getFirstYearOfVerifiedEmissions()));
         //account holder
         fields.put("AccountHolder.Name", asStringOrEmpty(event.getAccountHolder().getName()));

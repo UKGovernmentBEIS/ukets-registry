@@ -1182,6 +1182,18 @@
       ]
     },
     {
+      "name": "Check if Account Holder is orphan",
+      "ownerManagedAccess": false,
+      "displayName": "Check if Account Holder is orphan",
+      "attributes": {},
+      "uris": ["/api-registry/account-holder.orphan"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        }
+      ]
+    },
+    {
       "name": "View Note Resource",
       "ownerManagedAccess": false,
       "displayName": "View Note Resource",

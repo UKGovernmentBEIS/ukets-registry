@@ -1,8 +1,8 @@
 package gov.uk.ets.registry.api.integration.service.account;
 
-import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
 import java.util.List;
 import lombok.Getter;
+import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @Getter
 public class AccountOpeningResult {

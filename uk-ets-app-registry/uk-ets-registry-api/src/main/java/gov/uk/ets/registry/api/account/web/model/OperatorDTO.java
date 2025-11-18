@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.account.web.model;
 import static gov.uk.ets.commons.logging.RequestParamType.COMPLIANT_ENTITY_ID;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Digits;
@@ -78,6 +79,11 @@ public class OperatorDTO implements Serializable {
      * The activity type. Installation only
      */
     InstallationActivityType activityType;
+
+    /**
+     * The activity types. Installation only
+     */
+    Set<InstallationActivityType> activityTypes;
 
     /**
      * The permit. Installation only.

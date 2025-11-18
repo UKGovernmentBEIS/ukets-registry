@@ -8,6 +8,7 @@
     <app-side-menu
       [menuItems]="sideMenuItems"
       [selectedItem]="currentMenuItem"
+      [labels]="sideMenuItemLabels"
       (selectItem)="onSelectMenuItem($event)"
     ></app-side-menu>
     <div class="govuk-grid-column-three-quarters" [ngSwitch]="currentMenuItem">
@@ -211,6 +212,11 @@
         "
         *ngSwitchCase="menuItems.ARS"
       ></app-authorised-representatives>
+      <app-account-contacts
+        *ngSwitchCase="menuItems.CONTACTS"
+        [account]="account"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
+      />
       <app-emissions-surrenders-container
         [isAdmin]="isAdmin"
         [accountId]="accountId"
@@ -291,8 +297,8 @@
       <app-account-notes
         *ngSwitchCase="menuItems.NOTES"
         [accountFullId]="account.accountDetails.accountNumber"
-        [accountNotes]="accountNotes"
-        [accountHolderNotes]="accountHolderNotes"
+        [accountNotes]="accountNotesArr"
+        [accountHolderNotes]="accountHolderNotesArr"
         [isSeniorAdmin]="isSeniorAdmin"
         [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
         [isAdmin]="isAdmin"
@@ -359,33 +365,38 @@
         No operator is linked to this account.
       </span>
     </div>
-    <div
-      class="govuk-grid-column-one-third"
-      *ngIf="
-        (compliantEntityIdentifier !== null ||
-          compliantEntityIdentifier !== undefined) &&
-        currentMenuItem === menuItems.ALLOCATION &&
-        (isSeniorAdmin
-          | canRequestUpdate
-            : isReadOnlyAdmin
-            : account.governmentAccount
-            : account.accountDetails.accountStatus
-            : false
-            : account.accountDetails.accountNumber
-            : ArAccessRights.INITIATE
-            : true
-          | async)
-      "
-    >
-      <button
-        class="govuk-button govuk-!-margin-top-9 govuk-!-font-size-16"
-        data-module="govuk-button"
-        (click)="onUpdateAllocationStatus()"
-        style="float: right"
+    <ng-container *ngIf="accountAllocation$ | async as accountAllocation">
+      <div
+        class="govuk-grid-column-one-third"
+        *ngIf="
+          (compliantEntityIdentifier !== null ||
+            compliantEntityIdentifier !== undefined) &&
+          currentMenuItem === menuItems.ALLOCATION &&
+          (isSeniorAdmin
+            | canRequestUpdate
+              : isReadOnlyAdmin
+              : account.governmentAccount
+              : account.accountDetails.accountStatus
+              : false
+              : account.accountDetails.accountNumber
+              : ArAccessRights.INITIATE
+              : true
+            | async) &&
+          accountAllocation.standard !== null &&
+          accountAllocation.standard !== undefined &&
+          accountAllocation.standard.annuals.length > 0
+        "
       >
-        Change withhold status
-      </button>
-    </div>
+        <button
+          class="govuk-button govuk-!-margin-top-9 govuk-!-font-size-16"
+          data-module="govuk-button"
+          (click)="onUpdateAllocationStatus()"
+          style="float: right"
+        >
+          Change withhold status
+        </button>
+      </div>
+    </ng-container>
     <div
       class="govuk-grid-column-one-third govuk-!-text-align-right"
       *ngIf="

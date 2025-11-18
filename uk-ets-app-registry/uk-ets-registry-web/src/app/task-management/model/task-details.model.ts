@@ -24,6 +24,7 @@ import { KeycloakUser } from '@shared/user';
 import { UserDeactivationDetails } from '@registry-web/user-management/user-details/model/user-deactivation-details';
 import { AllocationStatus } from '@account-management/account-list/account-list.model';
 import { PaymentMethod, PaymentStatus } from '@request-payment/model';
+import { ChangeAccountHolderActionType } from '@registry-web/account-management/account/change-account-holder-wizard/model';
 
 export interface TaskDetailsBase {
   requestId: string;
@@ -182,6 +183,18 @@ export interface AccountHolderUpdateDetails extends TaskDetailsBase {
   accountHolderDiff: AccountHolderInfoChanged;
 }
 
+export interface AccountHolderChangeTaskDetails extends TaskDetailsBase {
+  taskType: RequestType.ACCOUNT_HOLDER_CHANGE;
+  currentAccountHolder: AccountHolder;
+  action: {
+    type: ChangeAccountHolderActionType;
+    accountHolderDTO: AccountHolder;
+    accountHolderContactInfo: AccountHolderContact;
+    accountHolderDelete: boolean;
+  };
+  isAccountHolderOrphan?: boolean;
+}
+
 export interface AccountHolderPrimaryContactUpdateDetails
   extends TaskDetailsBase {
   taskType:
@@ -274,7 +287,8 @@ export type TaskDetails =
   | AccountTransferTaskDetails
   | AccountClosureTaskDetails
   | UserDetailsUpdateTaskDetails
-  | UserDeactivationTaskDetails;
+  | UserDeactivationTaskDetails
+  | AccountHolderChangeTaskDetails;
 
 export enum TaskOutcome {
   APPROVED = 'APPROVED',

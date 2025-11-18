@@ -5,7 +5,8 @@ import {
   IsItAnInstallationTransferContainerComponent,
   MaritimeOperatorContainerComponent,
 } from '@account-opening/operator/components';
-import {AircraftOperatorContainerComponent} from "@account-opening/operator/components/aircraft-operator";
+import { AircraftOperatorContainerComponent } from '@account-opening/operator/components/aircraft-operator';
+import { InstallationActivityTypeSelectorContainerComponent } from '@account-opening/operator/components/installation/installation-activity-type-selector-container.component';
 
 export const OPERATOR_ROUTES = [
   {
@@ -38,5 +39,10 @@ export const OPERATOR_ROUTES = [
     path: 'operator-overview',
     canActivate: [LoginGuard],
     component: OverviewContainerComponent,
+  },
+  {
+    path: 'select-activity',
+    canActivate: [LoginGuard],
+    component: InstallationActivityTypeSelectorContainerComponent,
   },
 ];

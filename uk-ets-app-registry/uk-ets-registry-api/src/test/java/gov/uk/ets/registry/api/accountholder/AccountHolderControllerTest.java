@@ -23,7 +23,6 @@ import java.util.List;
 
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -78,7 +77,6 @@ class AccountHolderControllerTest {
 
 
     @Test
-    @Disabled
     void shouldReturnBadRequestWhenDtoIsInvalidForAccountHolderChange() throws Exception {
         String invalidJson = """
             {
@@ -93,23 +91,25 @@ class AccountHolderControllerTest {
     }
 
     @Test
-    @Disabled
     void shouldReturnOkWhenRequestIsValidForAccountHolderChange() throws Exception {
         AccountHolderChangeDTO dto = new AccountHolderChangeDTO();
         Long accountIdentifier = 123L;
         dto.setAccountIdentifier(accountIdentifier);
         dto.setAcquiringAccountHolder(new AccountHolderDTO());
         dto.setAcquiringAccountHolderContactInfo(new AccountHolderRepresentativeDTO());
+        dto.setAccountHolderChangeActionType(AccountHolderChangeActionType.ACCOUNT_HOLDER_CHANGE_TO_CREATED_HOLDER);
+        dto.setAccountHolderDelete(Boolean.FALSE);
+        Long requestId = 1L;
 
-        Mockito.when(accountHolderUpdateService.submitChangeAccountHolderRequest(any()))
-                .thenReturn(true);
+        Mockito.when(accountHolderUpdateService.accountHolderChange(any()))
+                .thenReturn(requestId);
 
         mockMvc.perform(post("/api-registry/change-account-holder.perform")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
                         .param("accountIdentifier", accountIdentifier.toString()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string(requestId.toString()));
     }
 
     @Test
@@ -216,5 +216,22 @@ class AccountHolderControllerTest {
             .andExpect(jsonPath("$.[0].id", is(1)))
             .andExpect(jsonPath("$.[0].name", is("File")))
             .andExpect(jsonPath("$.[0].type", is("Type")));
+    }
+
+    @Test
+    void isAccountHolderOrphan() throws Exception {
+        final Long accountIdentifier = 100000002L;
+        final Long accountHolderIdentifier = 100000003L;
+        Mockito.when(accountHolderService.isOrphanedAccountHolder(accountHolderIdentifier,
+                        accountIdentifier))
+                .thenReturn(false);
+
+        mockMvc.perform(get("/api-registry/account-holder.orphan")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("accountHolderIdentifier", accountHolderIdentifier.toString())
+                        .param("accountIdentifier", accountIdentifier.toString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
     }
 }

@@ -2,6 +2,7 @@ package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
+import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
@@ -31,6 +32,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service for converting account management entities to transfer objects and
@@ -181,7 +184,11 @@ public class AccountConversionService {
         OperatorDTO result = new OperatorDTO();
         result.setIdentifier(input.getIdentifier());
         result.setType(OperatorType.INSTALLATION.name());
-        result.setActivityType(InstallationActivityType.valueOf(input.getActivityType()));
+        Set<InstallationActivityType> activityTypes = input.getActivityTypes().stream()
+                .map(ActivityType::getDescription)
+                .map(InstallationActivityType::valueOf)
+                .collect(Collectors.toSet());
+        result.setActivityTypes(activityTypes);
         result.setFirstYear(input.getStartYear());
         result.setLastYear(input.getEndYear());
         result.setName(input.getInstallationName());

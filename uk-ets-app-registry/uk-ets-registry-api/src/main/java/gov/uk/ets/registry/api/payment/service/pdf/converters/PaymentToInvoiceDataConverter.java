@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @Component
@@ -65,6 +66,6 @@ public class PaymentToInvoiceDataConverter {
         if (amount == null) {
             return "0.00";
         }
-        return String.format("%.2f", amount);
+        return String.format(Locale.UK, "%.2f", amount);
     }
 }

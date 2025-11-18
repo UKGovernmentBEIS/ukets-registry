@@ -41,7 +41,7 @@ public class OHAAllocationReportService implements ReportTypeService<OHAAllocati
 
     @Override
     public List<String> getReportHeaders(Long year) {
-        return List.of("Account Holder Name", "Sales Contact Email", "Sales Contact Phone", "Installation ID", "Installation Name", "Permit ID", "Activity Type",
+        return List.of("Account Holder Name", "Sales Contact Email", "Sales Contact Phone", "Installation ID", "Installation Name", "Permit ID", "Regulated activity",
                 "First Year of Operation", "Regulator", "Allocation Entitlement_"+ year, "Allocation Delivered_"+ year);
     }
 

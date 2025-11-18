@@ -105,6 +105,9 @@ import { TaskNotesComponent } from './components/task-notes/components/task-note
 import { NotesEffect } from './components/task-notes/store/task-notes.effects';
 import * as fromTaskNotes from './components/task-notes/store/task-notes.reducer';
 import { PaymentBacsCancelComponent } from './components/payment-bacs-cancel/payment-bacs-cancel.component';
+import { ChangeAccountHolderTaskDetailsComponent } from '@task-details/components/change-account-holder-task-details/change-account-holder-task-details.component';
+import { AccountHolderSharedModule } from '@registry-web/account-shared/account-holder-shared.module';
+import { DeleteOrphanAccountHolderOverviewComponent } from '@registry-web/account-management/account/change-account-holder-wizard/components/delete-orphan-account-holder-overview';
 
 @NgModule({
   declarations: [
@@ -176,6 +179,7 @@ import { PaymentBacsCancelComponent } from './components/payment-bacs-cancel/pay
     PaymentBacsCancelComponent,
     PaymentWeblinkErrorComponent,
     PaymentWeblinkErrorContainerComponent,
+    ChangeAccountHolderTaskDetailsComponent,
   ],
   imports: [
     TaskDetailsRoutingModule,
@@ -207,6 +211,8 @@ import { PaymentBacsCancelComponent } from './components/payment-bacs-cancel/pay
     SigningModule,
     AccountTransferSharedModule,
     OperatorModule,
+    AccountHolderSharedModule,
+    DeleteOrphanAccountHolderOverviewComponent,
   ],
   providers: [
     ExportFileService,

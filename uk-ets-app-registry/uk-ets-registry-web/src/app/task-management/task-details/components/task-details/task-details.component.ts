@@ -10,7 +10,6 @@ import {
 import { Configuration } from '@shared/configuration/configuration.interface';
 import { AuthModel } from '@registry-web/auth/auth.model';
 import { FileDetails } from '@shared/model/file/file-details.model';
-import { getLabel } from '@shared/shared.util';
 import { FileBase } from '@shared/model/file';
 import { IsPastDatePipe } from '@registry-web/shared/pipes';
 

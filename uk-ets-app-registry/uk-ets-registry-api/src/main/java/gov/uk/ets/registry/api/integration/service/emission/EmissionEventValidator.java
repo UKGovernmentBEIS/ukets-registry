@@ -4,8 +4,6 @@ import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
 import gov.uk.ets.registry.api.compliance.repository.ExcludeEmissionsRepository;
 import gov.uk.ets.registry.api.file.upload.emissionstable.model.SubmitEmissionsValidityInfo;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import java.time.LocalDate;
 import java.time.Year;
@@ -18,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
+import uk.gov.netz.integration.model.error.IntegrationEventError;
 
 @Component
 @RequiredArgsConstructor

@@ -29,7 +29,7 @@ public class OHAAllocationReportJdbcMapper
             "           ce.identifier as installation_id, \n"+
             "           ins.installation_name, \n"+
             "           ins.permit_identifier, \n"+
-            "           ins.activity_type, \n"+
+            "           at.activity_type, \n"+
             "           ce.start_year as first_year, \n"+
             "           ce.regulator, \n"+
             "           ac.sales_contact_email, \n"+
@@ -46,6 +46,9 @@ public class OHAAllocationReportJdbcMapper
             "       on ac.compliant_entity_id = ce.id \n" +
             "   inner join installation as ins \n"+
             "       on ce.id = ins.compliant_entity_id \n"+
+            "   inner join lateral (\n" +
+            "       select compliant_entity_id, STRING_AGG(description, '; ') as activity_type from activity_type group by compliant_entity_id\n" +
+            "   ) at on ins.compliant_entity_id = at.compliant_entity_id \n" +
             "   left join allocation_entry as ae \n"+
             "       on ce.id=ae.compliant_entity_id \n"+
             "   left join allocation_year as ay \n"+
@@ -59,7 +62,7 @@ public class OHAAllocationReportJdbcMapper
             "           ce.identifier, \n"+
             "           ins.installation_name, \n"+
             "           ins.permit_identifier, \n"+
-            "           ins.activity_type, \n"+
+            "           at.activity_type, \n"+
             "           ce.start_year, \n"+
             "           ce.regulator, \n"+
             "           ac.sales_contact_email, \n"+

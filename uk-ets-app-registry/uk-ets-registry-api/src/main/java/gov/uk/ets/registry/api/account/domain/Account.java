@@ -8,9 +8,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -30,6 +28,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Represents an account.
@@ -239,4 +242,7 @@ public class Account implements Serializable {
     @Convert(converter = StringTrimConverter.class)
     @Column(name = "excluded_from_billing_remarks")
     private String excludedFromBillingRemarks;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MetsAccountContact> metsAccountContacts = new ArrayList<>();
 }

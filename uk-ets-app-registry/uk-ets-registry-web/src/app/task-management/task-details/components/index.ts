@@ -34,3 +34,4 @@ export * from './payment-bacs-confirm';
 export * from './payment-bacs-cancel';
 export * from './payment-confirmation';
 export * from './payment-weblink-error';
+export * from './change-account-holder-task-details';

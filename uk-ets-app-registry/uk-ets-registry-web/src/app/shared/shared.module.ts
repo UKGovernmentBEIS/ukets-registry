@@ -201,6 +201,7 @@ import { SetDeadlineComponent } from './components/set-deadline/set-deadline.com
 import { TaskTypeLabelPipe } from './pipes/task-type-label.pipe';
 import { MaritimeInputComponent } from '@shared/components/account/operator/maritime-input';
 import { MaritimeOperatorComponent } from './components/account/operator/maritime-operator/maritime-operator.component';
+import { InstallationActivityTypeComponent } from '@shared/components/account/operator/installation-activity-type/installation-activity-type.component';
 
 @NgModule({
   declarations: [
@@ -343,6 +344,7 @@ import { MaritimeOperatorComponent } from './components/account/operator/maritim
     SearchReportButtonComponent,
     ReportSuccessBannerComponent,
     InstallationInputComponent,
+    InstallationActivityTypeComponent,
     AircraftInputComponent,
     MaritimeInputComponent,
     OperatorSummaryChangesComponent,
@@ -548,6 +550,7 @@ import { MaritimeOperatorComponent } from './components/account/operator/maritim
     ReadMoreComponent,
     NotesListComponent,
     SetDeadlineComponent,
+    InstallationActivityTypeComponent,
   ],
   providers: [
     TypeAheadService,

@@ -1,4 +1,5 @@
 import { UkDate } from '../uk-date';
+import { ContactPhoneNumbers } from '@registry-web/shared/model/account/account-contacts.interface';
 
 export class AccountHolderContact {
   id: number;
@@ -20,12 +21,7 @@ export class AccountHolderContact {
     country: string;
     postCode: string;
   };
-  phoneNumber: {
-    countryCode1: string;
-    phoneNumber1: string;
-    countryCode2: string;
-    phoneNumber2: string;
-  };
+  phoneNumber: ContactPhoneNumbers;
   emailAddress: {
     emailAddress: string;
     emailAddressConfirmation: string;

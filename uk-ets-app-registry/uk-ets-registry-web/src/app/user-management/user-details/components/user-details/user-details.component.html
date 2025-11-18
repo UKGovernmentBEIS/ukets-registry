@@ -44,7 +44,7 @@
               <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
               <strong class="govuk-warning-text__text">
                 <span class="govuk-visually-hidden">Warning</span>
-                Not all account recovery methods have been added yet. You are
+                Not all sign in recovery methods have been added yet. You are
                 advised to use one or both of the recovery methods mentioned
                 below.
               </strong>
@@ -93,6 +93,7 @@
           <app-recovery-methods
             [user]="user"
             [initiatorUrid]="initiatorUrid"
+            [showHint]="currentViewMode === viewMode.MY_PROFILE"
             (initUpdateRecoveryPhone)="onUpdateRecoveryPhone()"
             (initRemoveRecoveryPhone)="onRemoveRecoveryPhone()"
             (initUpdateRecoveryEmail)="onUpdateRecoveryEmail()"

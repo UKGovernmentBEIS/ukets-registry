@@ -1,11 +1,5 @@
 package gov.uk.ets.registry.api.integration.config;
 
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEventOutcome;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEventOutcome;
-import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.OperatorUpdateEventOutcome;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,6 +37,12 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
+import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.account.AccountOpeningEventOutcome;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEventOutcome;
+import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
+import uk.gov.netz.integration.model.operator.OperatorUpdateEventOutcome;
 
 @Configuration
 @Log4j2

@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.accountholder.web.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import gov.uk.ets.commons.logging.MDCParam;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
 @EqualsAndHashCode
@@ -18,12 +21,18 @@ import lombok.ToString;
 @NoArgsConstructor
 public class AccountHolderChangeDTO {
 
+    @MDCParam(ACCOUNT_ID)
     @NotNull
     private Long accountIdentifier;
+
+    @NotNull
+    private AccountHolderChangeActionType accountHolderChangeActionType;
 
     @NotNull
     private AccountHolderDTO acquiringAccountHolder;
 
     @NotNull
     private AccountHolderRepresentativeDTO acquiringAccountHolderContactInfo;
+
+    private Boolean accountHolderDelete;
 }

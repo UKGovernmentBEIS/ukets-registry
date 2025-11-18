@@ -2,11 +2,6 @@ package gov.uk.ets.registry.api.integration.consumer.account;
 
 import gov.uk.ets.registry.api.account.validation.AccountValidationException;
 import gov.uk.ets.registry.api.account.validation.Violation;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEventOutcome;
-import gov.uk.ets.registry.api.integration.message.IntegrationEventOutcome;
 import gov.uk.ets.registry.api.integration.service.account.AccountEventOpeningService;
 import gov.uk.ets.registry.api.integration.service.account.AccountOpeningResult;
 import java.util.List;
@@ -30,12 +25,19 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.netz.integration.model.IntegrationEventOutcome;
+import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.account.AccountOpeningEventOutcome;
+import uk.gov.netz.integration.model.error.IntegrationEventError;
+import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @Service
 @Log4j2
 @KafkaListener(
     containerFactory = "accountOpeningConsumerFactory",
-    topics = {"${kafka.integration.maritime.account.opening.request.topic}"}
+    topics = {"${kafka.integration.installation.account.opening.request.topic}",
+              "${kafka.integration.aviation.account.opening.request.topic}",
+              "${kafka.integration.maritime.account.opening.request.topic}"}
 )
 @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.account.opening.enabled"}, havingValue = "true")
 public class AccountOpeningEventConsumer {

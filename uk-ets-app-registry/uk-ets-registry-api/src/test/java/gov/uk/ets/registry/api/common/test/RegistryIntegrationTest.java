@@ -35,6 +35,7 @@ import org.springframework.test.context.TestPropertySource;
     "installation-account-emissions-updated-response-topic",
     "installation-account-emissions-updated-request-topic-dlt",
     "installation-account-created-response-topic",
+    "aviation-account-created-response-topic",
     "maritime-account-created-request-topic-dlt",
     "maritime-account-created-response-topic",
     "maritime-set-operator-request-topic",

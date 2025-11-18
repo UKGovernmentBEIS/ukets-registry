@@ -1,9 +1,12 @@
 package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.common.Mapper;
@@ -34,10 +37,12 @@ import org.mockito.quality.Strictness;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,6 +55,8 @@ class AccountOperatorUpdateServiceTest {
     private static final Long TEST_COMPLIANT_ENTITY_ID = 12345L;
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private ActivityTypeRepository activityTypeRepository;
     @Mock
     private PersistenceService persistenceService;
     @Mock
@@ -184,18 +191,23 @@ class AccountOperatorUpdateServiceTest {
         Account account = new Account();
         account.setIdentifier(10001L);
         Installation installation = new Installation();
+        installation.setId(1111L);
         installation.setIdentifier(1000036L);
         installation.setInstallationName("Installation Name");
-        installation.setActivityType("COMBUSTION_OF_FUELS");
         installation.setPermitIdentifier("1234589");
         installation.setStartYear(2021);
         installation.setEndYear(2022);
         account.setCompliantEntity(installation);
+        ActivityType activityType = new ActivityType();
+        activityType.setDescription("COMBUSTION_OF_FUELS");
+
         when(accountRepository.findByIdentifier(10001L)).thenReturn(Optional.of(account));
+        when(activityTypeRepository.findByInstallation_id(1111L)).thenReturn(Set.of(activityType));
 
         OperatorDTO dto = new OperatorDTO();
         dto.setRegulator(RegulatorType.EA);
         dto.setType("INSTALLATION");
+        dto.setActivityTypes(Set.of(InstallationActivityType.PRODUCTION_OF_COKE));
         dto.setFirstYear(2022);
         dto.setLastYear(2024);
         dto.setLastYearChanged(true);
@@ -204,6 +216,9 @@ class AccountOperatorUpdateServiceTest {
 
         ArgumentCaptor<Installation> captor = ArgumentCaptor.forClass(Installation.class);
         then(persistenceService).should(times(1)).save(captor.capture());
+        then(activityTypeRepository).should(times(1)).findByInstallation_id(1111L);
+        then(activityTypeRepository).should(times(1)).deleteAll(any());
+        then(activityTypeRepository).should(times(1)).saveAll(any());
     }
 
     private AccountOperatorDetailsUpdateDTO populateAccountOperatorDetailsUpdateDTO() {

@@ -13,8 +13,6 @@ import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.accountaccess.service.AccountAccessService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
 import gov.uk.ets.registry.api.integration.service.IntegrationHeadersUtil;
 import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.messaging.UktlAccountNotifyMessageService;
@@ -32,6 +30,8 @@ import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @Log4j2
 @Service

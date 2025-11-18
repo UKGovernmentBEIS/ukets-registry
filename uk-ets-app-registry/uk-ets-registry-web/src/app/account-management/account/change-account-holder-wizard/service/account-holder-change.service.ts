@@ -26,4 +26,14 @@ export class AccountHolderChangeService {
       { params }
     );
   }
+
+  getAccountHolderOrphan(
+    accountHolderIdentifier: number,
+    accountIdentifier: number | string
+  ): Observable<boolean> {
+    return this.httpClient.get<boolean>(
+      `${this.ukEtsRegistryApiBaseUrl}/account-holder.orphan`,
+      { params: { accountHolderIdentifier, accountIdentifier } }
+    );
+  }
 }

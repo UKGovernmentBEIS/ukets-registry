@@ -56,7 +56,9 @@ export const selectSideMenuItems = createSelector(
   selectState,
   (state, authState) => {
     if (!authState.isAdmin) {
-      return state.sideMenuItems.filter((item) => item !== MenuItemEnum.NOTES);
+      return state.sideMenuItems.filter(
+        (item) => item !== MenuItemEnum.NOTES && item !== MenuItemEnum.CONTACTS
+      );
     } else {
       return state.sideMenuItems;
     }

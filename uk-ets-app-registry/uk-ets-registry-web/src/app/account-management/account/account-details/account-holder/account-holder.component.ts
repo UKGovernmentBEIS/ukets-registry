@@ -9,7 +9,7 @@ import { ContactType } from '@shared/model/account-holder-contact-type';
 import { FileDetails } from '@shared/model/file/file-details.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountHolderDetailsWizardPathsModel } from '@account-management/account/account-holder-details-wizard/model';
-import { ChangeAccountHolderWizardPathsModel } from '@account-management/account/change-account-holder-wizard/model';
+import { CHANGE_ACCOUNT_HOLDER_BASE_PATH } from '@account-management/account/change-account-holder-wizard/model';
 
 @Component({
   selector: 'app-account-holder',
@@ -73,16 +73,14 @@ export class AccountHolderComponent {
   }
 
   goToRequestUpdate() {
-    this.router.navigate([
-      this.activatedRoute.snapshot['_routerState'].url +
-        `/${AccountHolderDetailsWizardPathsModel.BASE_PATH}`,
-    ]);
+    this.router.navigate([AccountHolderDetailsWizardPathsModel.BASE_PATH], {
+      relativeTo: this.activatedRoute,
+    });
   }
 
   goToChangeAccountHolderRequest() {
-    this.router.navigate([
-      this.activatedRoute.snapshot['_routerState'].url +
-        `/${ChangeAccountHolderWizardPathsModel.BASE_PATH}`,
-    ]);
+    this.router.navigate([CHANGE_ACCOUNT_HOLDER_BASE_PATH], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }
