@@ -2,6 +2,8 @@ package gov.uk.ets.registry.api.notification.integration;
 
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
+import gov.uk.ets.registry.api.integration.error.ContactPoint;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
 import gov.uk.ets.registry.api.notification.EmailNotification;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 import java.util.Date;
@@ -12,8 +14,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.netz.integration.model.error.ContactPoint;
-import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor

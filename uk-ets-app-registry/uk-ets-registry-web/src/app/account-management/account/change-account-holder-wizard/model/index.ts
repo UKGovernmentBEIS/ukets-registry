@@ -1,2 +1,9 @@
+import { AccountHolder, AccountHolderContact } from '@shared/model/account';
+
 export * from './change-account-holder-wizard-paths.model';
-export * from './change-account-holder.interface';
+
+export interface ChangeAccountHolderRequest {
+  accountIdentifier: string;
+  acquiringAccountHolder: AccountHolder;
+  acquiringAccountHolderContactInfo: AccountHolderContact;
+}

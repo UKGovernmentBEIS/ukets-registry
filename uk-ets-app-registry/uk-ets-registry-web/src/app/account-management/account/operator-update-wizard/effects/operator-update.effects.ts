@@ -30,14 +30,11 @@ import {
   fetchCurrentOperatorInfo,
   setCurrentOperatorInfoSuccess,
   setNewOperatorInfoSuccess,
-  setUpdateOperatorInfoSuccess,
 } from '@operator-update/actions/operator-update.actions';
 import { OperatorUpdateActions } from '@operator-update/actions';
 import { OperatorUpdateWizardPathsModel } from '@operator-update/model/operator-update-wizard-paths.model';
 import { OperatorUpdateApiService } from '@operator-update/services';
 import { ErrorDetail } from '@shared/error-summary';
-import { AccountOpeningOperatorActions } from '@account-opening/operator/actions';
-import { concatLatestFrom } from '@ngrx/operators';
 
 @Injectable()
 export class OperatorUpdateEffects {
@@ -131,21 +128,6 @@ export class OperatorUpdateEffects {
     );
   });
 
-  navigateToSelectActivityTypes$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(OperatorUpdateActions.setUpdateOperatorInfoSuccess),
-      concatLatestFrom(() => this.store.select(selectAccountId)),
-      map(([, accountId]) =>
-        OperatorUpdateActions.navigateTo({
-          route: `/account/${accountId}/${OperatorUpdateWizardPathsModel.BASE_PATH}/${OperatorUpdateWizardPathsModel.SELECT_REGULATED_ACTIVITY}`,
-          extras: {
-            skipLocationChange: true,
-          },
-        })
-      )
-    );
-  });
-
   submitUpdateRequest$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(OperatorUpdateActions.submitUpdateRequest),
@@ -204,7 +186,7 @@ export class OperatorUpdateEffects {
           )
           .pipe(
             map((data) =>
-              setUpdateOperatorInfoSuccess({
+              setNewOperatorInfoSuccess({
                 operator: action.operator,
               })
             ),

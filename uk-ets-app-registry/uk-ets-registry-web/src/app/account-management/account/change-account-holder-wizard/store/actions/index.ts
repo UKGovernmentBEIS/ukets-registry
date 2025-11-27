@@ -1,1 +1,3 @@
-export * from './change-account-holder-wizard.actions';
+import * as ChangeAccountHolderWizardActions from './change-account-holder-wizard.actions';
+
+export { ChangeAccountHolderWizardActions };

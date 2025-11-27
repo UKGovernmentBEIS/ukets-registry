@@ -89,7 +89,7 @@
     "operator": {
       "type": "INSTALLATION",
       "name": "South Yorkshire",
-      "activityTypes": ["PRODUCTION_OF_CEMENT_CLINKER"],
+      "activityType": "PRODUCTION_OF_CEMENT_CLINKER",
       "regulator": "EA",
       "changedRegulator": null,
       "firstYear": 2021,

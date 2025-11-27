@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginGuard } from '@registry-web/shared/guards';
+import { LoginGuard } from '@shared/guards';
 import {
   ChangeAccountHolderSelectionContainerComponent,
   ChangeAccountHolderTypeContainerComponent,
@@ -8,85 +8,62 @@ import {
   ContactDetailsContainerComponent,
   ContactWorkDetailsContainerComponent,
   RequestSubmittedContainerComponent,
+  INDIVIDUAL_ROUTES,
+  ORGANISATION_ROUTES,
   CancelContainerComponent,
-  IndividualDetailsContainerComponent,
-  IndividualContactDetailsContainerComponent,
-  OrganisationDetailsContainerComponent,
-  OrganisationAddressContainerComponent,
-  DeleteOrphanAccountHolderContainerComponent,
 } from '@change-account-holder-wizard/components';
-import {
-  canActivateChangeAccountHolderAddNewStep,
-  canActivateSelectExistingOrAddNewStep,
-  canActivateChangeAccountHolderDeleteOrphan,
-  canActivateChangeAccountHolderOverview,
-} from '@registry-web/account-management/account/change-account-holder-wizard/guards-and-resolvers';
-import { ChangeAccountHolderWizardPaths } from '@change-account-holder-wizard/model';
+import { ChangeAccountHolderWizardPathsModel } from '@change-account-holder-wizard/model';
 
 const routes: Routes = [
   {
     path: '',
-    canActivate: [LoginGuard],
+    canLoad: [LoginGuard],
     component: ChangeAccountHolderTypeContainerComponent,
   },
   {
-    path: ChangeAccountHolderWizardPaths.SELECT_TYPE,
+    path: ChangeAccountHolderWizardPathsModel.BASE_PATH,
     redirectTo: '',
     pathMatch: 'full',
   },
   {
-    path: ChangeAccountHolderWizardPaths.SELECT_EXISTING_OR_ADD_NEW,
-    canActivate: [LoginGuard, canActivateSelectExistingOrAddNewStep],
+    path: ChangeAccountHolderWizardPathsModel.ACCOUNT_HOLDER_SELECTION,
+    canLoad: [LoginGuard],
     component: ChangeAccountHolderSelectionContainerComponent,
   },
   {
-    path: ChangeAccountHolderWizardPaths.INDIVIDUAL_DETAILS,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderAddNewStep],
-    component: IndividualDetailsContainerComponent,
+    path: ChangeAccountHolderWizardPathsModel.INDIVIDUAL,
+    canActivate: [LoginGuard],
+    children: INDIVIDUAL_ROUTES,
   },
   {
-    path: ChangeAccountHolderWizardPaths.INDIVIDUAL_CONTACT,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderAddNewStep],
-    component: IndividualContactDetailsContainerComponent,
+    path: ChangeAccountHolderWizardPathsModel.ORGANISATION,
+    canActivate: [LoginGuard],
+    children: ORGANISATION_ROUTES,
   },
   {
-    path: ChangeAccountHolderWizardPaths.ORGANISATION_DETAILS,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderAddNewStep],
-    component: OrganisationDetailsContainerComponent,
-  },
-  {
-    path: ChangeAccountHolderWizardPaths.ORGANISATION_ADDRESS,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderAddNewStep],
-    component: OrganisationAddressContainerComponent,
-  },
-  {
-    path: ChangeAccountHolderWizardPaths.PRIMARY_CONTACT,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderAddNewStep],
+    path: ChangeAccountHolderWizardPathsModel.PRIMARY_CONTACT,
+    canLoad: [LoginGuard],
     component: ContactDetailsContainerComponent,
   },
   {
-    path: ChangeAccountHolderWizardPaths.PRIMARY_CONTACT_WORK,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderAddNewStep],
+    path: ChangeAccountHolderWizardPathsModel.PRIMARY_CONTACT_WORK,
+    canLoad: [LoginGuard],
     component: ContactWorkDetailsContainerComponent,
   },
   {
-    path: ChangeAccountHolderWizardPaths.DELETE_ORPHAN_ACCOUNT_HOLDER,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderDeleteOrphan],
-    component: DeleteOrphanAccountHolderContainerComponent,
-  },
-  {
-    path: ChangeAccountHolderWizardPaths.OVERVIEW,
-    canActivate: [LoginGuard, canActivateChangeAccountHolderOverview],
+    path: ChangeAccountHolderWizardPathsModel.CHECK_CHANGE_ACCOUNT_HOLDER,
+    canLoad: [LoginGuard],
+    //resolve: { goBackPath: CheckUpdateRequestResolver },
     component: ChangeAccountHolderOverviewContainerComponent,
   },
   {
-    path: ChangeAccountHolderWizardPaths.CANCEL_REQUEST,
-    canActivate: [LoginGuard],
+    path: ChangeAccountHolderWizardPathsModel.CANCEL_CHANGE_ACCOUNT_HOLDER_REQUEST,
+    canLoad: [LoginGuard],
     component: CancelContainerComponent,
   },
   {
-    path: ChangeAccountHolderWizardPaths.REQUEST_SUBMITTED,
-    canActivate: [LoginGuard],
+    path: ChangeAccountHolderWizardPathsModel.REQUEST_SUBMITTED,
+    canLoad: [LoginGuard],
     component: RequestSubmittedContainerComponent,
   },
 ];

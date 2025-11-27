@@ -62,7 +62,7 @@ export class UpdateAccountHolderDetailsContainerComponent implements OnInit {
         goBackRoute: `/account/${this.route.snapshot.paramMap.get(
           'accountId'
         )}/${AccountHolderDetailsWizardPathsModel.BASE_PATH}/${
-          AccountHolderDetailsWizardPathsModel.CONFIRM_UPDATE
+          AccountHolderDetailsWizardPathsModel.SELECT_UPDATE_TYPE
         }`,
       })
     );

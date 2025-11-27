@@ -6,8 +6,12 @@ import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.common.CountryMap;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
+import gov.uk.ets.registry.api.integration.message.AccountDetailsMessage;
+import gov.uk.ets.registry.api.integration.message.AccountHolderMessage;
+import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +21,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.netz.integration.model.account.AccountDetailsMessage;
-import uk.gov.netz.integration.model.account.AccountHolderMessage;
-import uk.gov.netz.integration.model.account.AccountOpeningEvent;
-import uk.gov.netz.integration.model.error.IntegrationEventError;
-import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @ExtendWith(MockitoExtension.class)
 class AccountEventValidatorTest {
@@ -106,38 +105,6 @@ class AccountEventValidatorTest {
     }
 
     @Test
-    void testValidateAircraftAccountOpeningEventWithoutMonitoringPlanId() {
-        // given
-        AccountOpeningEvent event = new AccountOpeningEvent();
-        AccountDetailsMessage accountDetailsMessage = new AccountDetailsMessage();
-        accountDetailsMessage.setAccountName("Aircraft account name");
-        accountDetailsMessage.setEmitterId("3214567");
-        accountDetailsMessage.setMonitoringPlanId(null);
-        accountDetailsMessage.setRegulator("EA");
-        accountDetailsMessage.setFirstYearOfVerifiedEmissions(2026);
-        event.setAccountDetails(accountDetailsMessage);
-
-        AccountHolderMessage accountHolderMessage = new AccountHolderMessage();
-        accountHolderMessage.setAccountHolderType("ORGANISATION");
-        accountHolderMessage.setName("account holder name");
-        accountHolderMessage.setAddressLine1("address");
-        accountHolderMessage.setTownOrCity("town");
-        accountHolderMessage.setCountry("UK");
-        accountHolderMessage.setPostalCode("123456");
-        accountHolderMessage.setCrnNotExist(false);
-        accountHolderMessage.setCompanyRegistrationNumber("Registration Number");
-        event.setAccountHolder(accountHolderMessage);
-
-        Mockito.when(countryMap.containsCountryCode("UK")).thenReturn(true);
-
-        // when
-        List<IntegrationEventErrorDetails> result = validator.validate(event, OperatorType.AIRCRAFT_OPERATOR);
-
-        // then
-        assertThat(result).isEmpty();
-    }
-
-    @Test
     void testValidateInstallationAccountOpeningEvent() {
         // given
         AccountOpeningEvent event = new AccountOpeningEvent();
@@ -146,7 +113,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
         event.setAccountDetails(accountDetailsMessage);
@@ -175,7 +142,7 @@ class AccountEventValidatorTest {
         // given
         AccountOpeningEvent event = new AccountOpeningEvent();
         AccountDetailsMessage accountDetailsMessage = new AccountDetailsMessage();
-        accountDetailsMessage.setAccountName("aircraft account name");
+        accountDetailsMessage.setAccountName("maritime account name");
         accountDetailsMessage.setEmitterId("3214567");
         accountDetailsMessage.setMonitoringPlanId("Monitoring plan id");
         accountDetailsMessage.setRegulator("EA");
@@ -209,7 +176,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
         event.setAccountDetails(accountDetailsMessage);
@@ -244,7 +211,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
         event.setAccountDetails(accountDetailsMessage);
@@ -279,7 +246,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
         event.setAccountDetails(accountDetailsMessage);
@@ -313,7 +280,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
         event.setAccountDetails(accountDetailsMessage);
@@ -345,7 +312,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
         event.setAccountDetails(accountDetailsMessage);
@@ -378,7 +345,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(999);
         event.setAccountDetails(accountDetailsMessage);
@@ -478,7 +445,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("UNKNOWN");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2026);
         event.setAccountDetails(accountDetailsMessage);
@@ -504,40 +471,6 @@ class AccountEventValidatorTest {
     }
 
     @Test
-    void testValidateUnknownActivityType() {
-        // given
-        AccountOpeningEvent event = new AccountOpeningEvent();
-        AccountDetailsMessage accountDetailsMessage = new AccountDetailsMessage();
-        accountDetailsMessage.setAccountName("account name");
-        accountDetailsMessage.setInstallationName("Installation name");
-        accountDetailsMessage.setEmitterId("321456");
-        accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of("UNKNOWN"));
-        accountDetailsMessage.setRegulator("EA");
-        accountDetailsMessage.setFirstYearOfVerifiedEmissions(2026);
-        event.setAccountDetails(accountDetailsMessage);
-
-        AccountHolderMessage accountHolderMessage = new AccountHolderMessage();
-        accountHolderMessage.setAccountHolderType("ORGANISATION");
-        accountHolderMessage.setName("account holder name");
-        accountHolderMessage.setAddressLine1("address");
-        accountHolderMessage.setTownOrCity("town");
-        accountHolderMessage.setCountry("GR");
-        accountHolderMessage.setCrnNotExist(false);
-        accountHolderMessage.setCompanyRegistrationNumber("Registration Number");
-        event.setAccountHolder(accountHolderMessage);
-
-        Mockito.when(countryMap.containsCountryCode("GR")).thenReturn(true);
-
-        // when
-        List<IntegrationEventErrorDetails> result = validator.validate(event, OperatorType.INSTALLATION);
-
-        // then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getError()).isEqualTo(IntegrationEventError.ERROR_0112);
-    }
-
-    @Test
     void testValidateUnknownAccountHolderType() {
         // given
         AccountOpeningEvent event = new AccountOpeningEvent();
@@ -546,7 +479,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2026);
         event.setAccountDetails(accountDetailsMessage);
@@ -580,7 +513,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId("321456");
         accountDetailsMessage.setPermitId("321456");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2026);
         event.setAccountDetails(accountDetailsMessage);
@@ -613,7 +546,7 @@ class AccountEventValidatorTest {
         accountDetailsMessage.setInstallationName("Installation name");
         accountDetailsMessage.setEmitterId(getString(999));
         accountDetailsMessage.setPermitId(getString(999));
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2026);
         event.setAccountDetails(accountDetailsMessage);

@@ -1,7 +1,6 @@
 package gov.uk.ets.registry.api.accounttransfer.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
-import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
@@ -34,8 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -116,13 +113,7 @@ public class AccountTransferService {
         OperatorDTO details = new OperatorDTO();
         details.setIdentifier(entity.getIdentifier());
         details.setType(OperatorType.INSTALLATION.name());
-
-        Set<InstallationActivityType> activityTypes = entity.getActivityTypes().stream()
-                .map(ActivityType::getDescription)
-                .map(InstallationActivityType::valueOf)
-                .collect(Collectors.toSet());
-        details.setActivityTypes(activityTypes);
-
+        details.setActivityType(InstallationActivityType.valueOf(entity.getActivityType()));
         details.setFirstYear(entity.getStartYear());
         details.setLastYear(entity.getEndYear());
         details.setName(entity.getInstallationName());

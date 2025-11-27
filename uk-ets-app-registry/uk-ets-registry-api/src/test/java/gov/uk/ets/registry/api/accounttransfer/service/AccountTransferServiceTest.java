@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import gov.uk.ets.registry.api.account.domain.*;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
@@ -33,8 +36,6 @@ import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
-
-import java.util.Set;
 
 class AccountTransferServiceTest {
 
@@ -80,10 +81,7 @@ class AccountTransferServiceTest {
         account.setAccountHolder(accountHolder);
         Installation installation = new Installation();
         installation.setIdentifier(1234L);
-        ActivityType activityType = new ActivityType();
-        activityType.setDescription("COMBUSTION_OF_FUELS");
-        activityType.setInstallation(installation);
-        installation.setActivityTypes(Set.of(activityType));
+        installation.setActivityType(InstallationActivityType.COMBUSTION_OF_FUELS.toString());
         account.setCompliantEntity(installation);
         
         when(accountService.getAccount(accountIdentifier)).thenReturn(account);

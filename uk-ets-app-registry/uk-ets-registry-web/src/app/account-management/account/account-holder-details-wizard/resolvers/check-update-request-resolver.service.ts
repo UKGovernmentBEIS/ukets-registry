@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { selectCalculateGoBackPathFromCheckUpdateRequest } from '@account-management/account/account-holder-details-wizard/reducers';
+import { calculateGoBackPathFromCheckUpdateRequest } from '@account-management/account/account-holder-details-wizard/reducers';
 
 @Injectable()
 export class CheckUpdateRequestResolver {
@@ -14,7 +14,7 @@ export class CheckUpdateRequestResolver {
     state: RouterStateSnapshot
   ): Observable<string> {
     return this.store
-      .select(selectCalculateGoBackPathFromCheckUpdateRequest)
+      .select(calculateGoBackPathFromCheckUpdateRequest)
       .pipe(take(1));
   }
 }

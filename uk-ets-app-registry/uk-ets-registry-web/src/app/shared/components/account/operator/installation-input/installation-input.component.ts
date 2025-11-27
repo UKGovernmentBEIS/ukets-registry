@@ -9,10 +9,7 @@ import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
 import { getOptionsFromMap } from '@shared/shared.util';
 import { regulatorMap } from '@account-management/account-list/account-list.model';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
-import {
-  UkRegistryValidators,
-  ExistingEmitterIdAsyncValidator,
-} from '@shared/validation';
+import { UkRegistryValidators, ExistingEmitterIdAsyncValidator } from '@shared/validation';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -25,21 +22,19 @@ export class InstallationInputComponent extends UkFormComponent {
   @Input() headerTitle: string;
   @Input() isSeniorOrJuniorAdmin: boolean;
   @Output() readonly installationOutput = new EventEmitter<Installation>();
+  activityTypes = InstallationActivityType;
   regulatorOptions: Option[] = getOptionsFromMap(regulatorMap);
 
   protected getFormModel() {
     return {
       name: ['', Validators.required],
-      activityType: [''],
+      activityType: ['', Validators.required],
       emitter: this.formBuilder.group({
         emitterId: [
           this.installation?.emitterId,
-          [Validators.required, Validators.pattern('^[a-zA-Z0-9-_]*$')],
-          (control) =>
-            this.existingEmitterIdAsyncValidator.validateEmitterId(
-              this.installation?.identifier
-            )(control),
-        ],
+          [Validators.required,Validators.pattern('^[a-zA-Z0-9-_]*$')],
+          (control) => this.existingEmitterIdAsyncValidator.validateEmitterId(this.installation?.identifier)(control)
+        ]
       }),
       permit: this.formBuilder.group({
         id: ['', Validators.required],
@@ -71,10 +66,13 @@ export class InstallationInputComponent extends UkFormComponent {
       emitterId: {
         required: 'Enter the Emitter ID',
         exists: 'This emitter ID is used by another account',
-        pattern: 'The Emitter ID cannot contain any special characters',
+        pattern: 'The Emitter ID cannot contain any special characters'        
       },
       name: {
         required: 'Enter the installation name',
+      },
+      activityType: {
+        required: 'Enter the  installation activity type',
       },
       id: {
         required: 'Enter the permit ID',
@@ -103,10 +101,10 @@ export class InstallationInputComponent extends UkFormComponent {
   protected doSubmit() {
     this.installationOutput.emit({
       type: OperatorType.INSTALLATION,
-      identifier: this.installation?.identifier,
+      identifier:this.installation?.identifier,
       emitterId: this.formGroup.get('emitter.emitterId').value,
       name: this.formGroup.get('name').value,
-      activityTypes: this.installation.activityTypes,
+      activityType: this.formGroup.get('activityType').value,
       permit: {
         id: this.formGroup.get('permit').get('id').value,
       },
@@ -118,11 +116,14 @@ export class InstallationInputComponent extends UkFormComponent {
     });
   }
 
-  constructor(
-    protected formBuilder: UntypedFormBuilder,
-    private existingEmitterIdAsyncValidator: ExistingEmitterIdAsyncValidator
-  ) {
+  constructor(protected formBuilder: UntypedFormBuilder,private existingEmitterIdAsyncValidator:ExistingEmitterIdAsyncValidator) {
     super();
+  }
+
+  activityTypeOptions(): Option[] {
+    return Object.keys(this.activityTypes)
+      .sort((a, b) => (this.activityTypes[a] > this.activityTypes[b] ? 1 : -1))
+      .map((c) => ({ label: this.activityTypes[c], value: c }));
   }
 
   onContinue() {
@@ -132,8 +133,10 @@ export class InstallationInputComponent extends UkFormComponent {
 
   onSubmit() {
     if (this.formGroup.pending) {
-      this.formGroup.statusChanges.pipe(take(1)).subscribe(() => {
-        super.onSubmit();
+      this.formGroup.statusChanges.
+      pipe(take(1)).
+      subscribe(() => {
+       super.onSubmit();
       });
     } else {
       super.onSubmit();

@@ -25,26 +25,25 @@ export class AccountHolderSelectionComponent
   extends UkFormComponent
   implements OnInit
 {
-  @Input({ required: true }) caption: string;
+  @Input()
+  accountHolder: AccountHolder;
 
-  @Input() accountHolder: AccountHolder;
+  @Input()
+  accountHolderList: AccountHolder[];
 
-  @Input() accountHolderList: AccountHolder[];
+  @Input()
+  accountHolderType: string;
 
-  @Input() accountHolderType: AccountHolderType;
+  @Input()
+  accountHolderSelectionType: AccountHolderSelectionType;
 
-  @Input() accountHolderSelectionType: AccountHolderSelectionType;
+  @Input()
+  loggedinUser: AuthModel;
 
-  @Input() loggedinUser: AuthModel;
+  @Input()
+  searchByNameRequestUrl: string;
 
-  @Input() searchByNameRequestUrl: string;
-
-  @Output() readonly output = new EventEmitter<{
-    selectedIdFromSearch: number;
-    selectedIdFromList: string;
-    accountHolderSelectionType: AccountHolderSelectionType;
-    accountHolderType: AccountHolderType;
-  }>();
+  @Output() readonly output = new EventEmitter<any>();
 
   @Output() readonly errorDetails = new EventEmitter<ErrorDetail[]>();
 
@@ -88,11 +87,8 @@ export class AccountHolderSelectionComponent
 
   getFormModel(): any {
     return {
-      accountHolderSelection: [
-        this.accountHolderSelectionType ?? '',
-        Validators.required,
-      ],
-      selectedIdFromList: [this.accountHolder?.id ?? ''],
+      accountHolderSelection: ['', Validators.required],
+      selectedIdFromList: [''],
     };
   }
 

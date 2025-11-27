@@ -48,16 +48,14 @@ export class OverviewContainerComponent implements OnInit {
     selectInstallationToBeTransferred
   );
 
-  isSeniorOrJuniorAdmin$: Observable<boolean> = this.store.select(
-    isSeniorOrJuniorAdmin
-  );
+  isSeniorOrJuniorAdmin$:Observable<boolean> = this.store.select(isSeniorOrJuniorAdmin);
 
   type = OperatorType;
   operatorWizardRoutes = OperatorWizardRoutes;
   activityTypes = InstallationActivityType;
 
   readonly mainWizardRoute = MainWizardRoutes.TASK_LIST;
-  readonly installationRoute = OperatorWizardRoutes.SELECT_REGULATED_ACTIVITY;
+  readonly installationRoute = OperatorWizardRoutes.INSTALLATION;
   readonly aircraftOperatorRoute = OperatorWizardRoutes.AIRCRAFT_OPERATOR;
   readonly maritimeOperatorRoute = OperatorWizardRoutes.MARITIME_OPERATOR;
 

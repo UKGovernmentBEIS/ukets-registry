@@ -20,20 +20,25 @@ describe('CheckUpdateRequestComponent', () => {
   let component: CheckUpdateRequestComponent;
   let fixture: ComponentFixture<CheckUpdateRequestComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
-      declarations: [
-        CheckUpdateRequestComponent,
-        CancelRequestLinkComponent,
-        FormatUkDatePipe,
-        ScreenReaderPageAnnounceDirective,
-        OperatorSummaryChangesComponent,
-        SummaryListComponent,
-      ],
-      providers: [{ provide: APP_BASE_HREF, useValue: '/' }, FormatUkDatePipe],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
+        declarations: [
+          CheckUpdateRequestComponent,
+          CancelRequestLinkComponent,
+          FormatUkDatePipe,
+          ScreenReaderPageAnnounceDirective,
+          OperatorSummaryChangesComponent,
+          SummaryListComponent,
+        ],
+        providers: [
+          { provide: APP_BASE_HREF, useValue: '/' },
+          FormatUkDatePipe,
+        ],
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CheckUpdateRequestComponent);
@@ -44,7 +49,7 @@ describe('CheckUpdateRequestComponent', () => {
       type: OperatorType.INSTALLATION,
       identifier: 10001,
       name: 'Installation name',
-      activityTypes: [InstallationActivityType.CAPTURE_OF_GREENHOUSE_GASES],
+      activityType: InstallationActivityType.CAPTURE_OF_GREENHOUSE_GASES,
       permit: {
         id: '12345',
         date: {
@@ -56,23 +61,23 @@ describe('CheckUpdateRequestComponent', () => {
       regulator: Regulator.OPRED,
       changedRegulator: null,
       firstYear: '2021',
-      emitterId: '5653357886HT5',
+      emitterId: '5653357886HT5'
     } as Installation;
 
     component.newOperatorInfo = {
       type: OperatorType.INSTALLATION,
       name: 'Installation name change',
-      activityTypes: [InstallationActivityType.MANUFACTURE_OF_CERAMICS],
+      activityType: InstallationActivityType.MANUFACTURE_OF_CERAMICS,
       permit: null,
       regulator: null,
       changedRegulator: Regulator.DAERA,
       firstYear: '2022',
-      emitterId: '5653357886HT5',
+      emitterId: '5653357886HT5'
     } as Installation;
     fixture.detectChanges();
   });
 
-  test('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });

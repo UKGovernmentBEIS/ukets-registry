@@ -21,7 +21,6 @@ import { AccountType } from '@shared/model/account';
   selector: 'app-account-holder-type-container',
   template: `
     <app-account-holder-type
-      [caption]="'Add the account holder'"
       [accountHolderType]="accountHolderType$ | async"
       (selectedAccountHolderType)="onContinue($event)"
       (errorDetails)="onError($event)"

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
-  getEntriesValues,
   InstallationActivityType,
   Operator,
   OperatorType,
@@ -136,18 +135,18 @@ export class OperatorSummaryChangesComponent implements OnInit {
         },
       });
     }
-    if (this.current['activityTypes']) {
+    if (this.current['activityType']) {
       summaryListItems.push({
-        key: { label: 'Regulated activity' },
+        key: { label: 'Installation activity type' },
         value: [
           {
-            label: getEntriesValues(this.current['activityTypes']),
+            label: this.activityTypes[this.current['activityType']],
           },
           {
-            label: this.changed['activityTypes']
-              ? getEntriesValues(this.changed['activityTypes'])
+            label: this.changed['activityType']
+              ? this.activityTypes[this.changed['activityType']]
               : '',
-            class: this.changed['activityTypes']
+            class: this.changed['activityType']
               ? 'summary-list-change-notification'
               : '',
           },
@@ -195,10 +194,10 @@ export class OperatorSummaryChangesComponent implements OnInit {
             label: this.current['emitterId'],
           },
           {
-            label: this.changed['emitterId'],
-            class: this.changed['emitterId']
-              ? 'summary-list-change-notification'
-              : '',
+            label:this.changed['emitterId'],
+            class:this.changed['emitterId']
+                ? 'summary-list-change-notification'
+                : '',
           },
         ],
         action: {
@@ -244,10 +243,10 @@ export class OperatorSummaryChangesComponent implements OnInit {
             label: this.current['imo'],
           },
           {
-            label: this.changed['imo'],
-            class: this.changed['imo']
-              ? 'summary-list-change-notification'
-              : '',
+            label:this.changed['imo'],
+            class:this.changed['imo']
+                ? 'summary-list-change-notification'
+                : '',
           },
         ],
         action: {

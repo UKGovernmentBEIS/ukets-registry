@@ -8,6 +8,7 @@ import {
   Individual,
   IndividualDetails,
   Organisation,
+  OrganisationDetails,
 } from '@shared/model/account';
 import { ChangeAccountHolderWizardActions } from '@change-account-holder-wizard/store/actions';
 
@@ -17,12 +18,9 @@ export interface ChangeAccountHolderWizardState {
   acquiringAccountHolder: AccountHolder;
   accountHolderList: AccountHolder[];
   accountHolderSelectionType: AccountHolderSelectionType;
+  accountHolderCompleted: boolean;
   acquiringAccountHolderContact: AccountHolderContact;
   isPrimaryAddressSameAsHolder: boolean;
-  isAccountHolderOrphan: boolean;
-  accountHolderDelete: boolean;
-  backlinkToOverview: boolean;
-  submittedRequestIdentifier: string;
 }
 
 export const initialState: ChangeAccountHolderWizardState = {
@@ -34,6 +32,7 @@ export const initialState: ChangeAccountHolderWizardState = {
   },
   accountHolderList: [],
   accountHolderSelectionType: null,
+  accountHolderCompleted: false,
   acquiringAccountHolderContact: {
     id: null,
     new: null,
@@ -44,51 +43,66 @@ export const initialState: ChangeAccountHolderWizardState = {
     emailAddress: null,
   },
   isPrimaryAddressSameAsHolder: false,
-  isAccountHolderOrphan: null,
-  accountHolderDelete: null,
-  backlinkToOverview: false,
-  submittedRequestIdentifier: null,
 };
 
 const changeAccountHolderWizardReducer = createReducer(
   initialState,
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_TYPE,
+    ChangeAccountHolderWizardActions.setAccountHolderType,
     (state, { holderType }) => {
-      if (state.acquiringAccountHolder.type === holderType) {
-        return;
+      if (holderType === AccountHolderType.INDIVIDUAL) {
+        state.acquiringAccountHolder = {
+          id: null,
+          type: holderType,
+          details: {
+            name: null,
+            firstName: null,
+            lastName: null,
+            birthDate: null,
+            countryOfBirth: null,
+            isOverEighteen: false,
+          },
+          address: {
+            buildingAndStreet: null,
+            buildingAndStreet2: null,
+            buildingAndStreet3: null,
+            postCode: null,
+            townOrCity: null,
+            stateOrProvince: null,
+            country: null,
+          },
+        };
+      } else {
+        state.acquiringAccountHolder = {
+          id: null,
+          type: holderType,
+          details: {
+            name: null,
+            registrationNumber: null,
+            noRegistrationNumJustification: null,
+          },
+          address: {
+            buildingAndStreet: null,
+            buildingAndStreet2: null,
+            buildingAndStreet3: null,
+            postCode: null,
+            townOrCity: null,
+            stateOrProvince: null,
+            country: null,
+          },
+        };
       }
-
       state.accountHolderSelectionType = null;
-      state.acquiringAccountHolder = getEmptyAccountHolderWithType(holderType);
-      state.acquiringAccountHolderContact =
-        initialState.acquiringAccountHolderContact;
-      state.isPrimaryAddressSameAsHolder =
-        initialState.isPrimaryAddressSameAsHolder;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_SELECTION_TYPE,
+    ChangeAccountHolderWizardActions.setAccountHolderSelectionType,
     (state, { selectionType, id }) => {
-      if (
-        state.accountHolderSelectionType === selectionType &&
-        state.acquiringAccountHolder.id === id
-      ) {
-        return;
-      }
-
       state.accountHolderSelectionType = selectionType;
-      state.acquiringAccountHolder = getEmptyAccountHolderWithType(
-        state.acquiringAccountHolder.type
-      );
-      state.acquiringAccountHolderContact =
-        initialState.acquiringAccountHolderContact;
-      state.isPrimaryAddressSameAsHolder =
-        initialState.isPrimaryAddressSameAsHolder;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_INDIVIDUAL_DETAILS,
+    ChangeAccountHolderWizardActions.setAccountHolderIndividualDetails,
     (state, { details }) => {
       const individualDetails = state.acquiringAccountHolder
         .details as IndividualDetails;
@@ -99,38 +113,38 @@ const changeAccountHolderWizardReducer = createReducer(
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_INDIVIDUAL_CONTACT_DETAILS,
-    (state, { individualContactDetails }) => {
+    ChangeAccountHolderWizardActions.setAccountHolderIndividualContactDetails,
+    (state, { contactDetails }) => {
       const individual = state.acquiringAccountHolder as Individual;
-      individual.address = individualContactDetails.address;
-      individual.phoneNumber = individualContactDetails.phoneNumber;
-      individual.emailAddress = individualContactDetails.emailAddress;
+      individual.address = contactDetails.address;
+      individual.emailAddress = contactDetails.emailAddress;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_ORGANISATION_DETAILS,
+    ChangeAccountHolderWizardActions.setAccountHolderOrganisationDetails,
     (state, { details }) => {
-      state.acquiringAccountHolder.details = {
-        name: details.name,
-        registrationNumber: details.registrationNumber,
-        noRegistrationNumJustification: details.noRegistrationNumJustification,
-      };
+      const organisationDetails = state.acquiringAccountHolder
+        .details as OrganisationDetails;
+      organisationDetails.name = details.name;
+      organisationDetails.registrationNumber = details.registrationNumber;
+      organisationDetails.noRegistrationNumJustification =
+        details.noRegistrationNumJustification;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_ORGANISATION_ADDRESS,
+    ChangeAccountHolderWizardActions.setAccountHolderOrganisationAddress,
     (state, { address }) => {
       state.acquiringAccountHolder.address = address;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_CONTACT_DETAILS,
+    ChangeAccountHolderWizardActions.setAccountHolderContactDetails,
     (state, { contact }) => {
       state.acquiringAccountHolderContact.details = contact.details;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_CONTACT_ADDRESS,
+    ChangeAccountHolderWizardActions.setAccountHolderContactAddress,
     (state, { contact }) => {
       state.acquiringAccountHolderContact.id = contact.id;
       state.acquiringAccountHolderContact.address = contact.address;
@@ -138,70 +152,38 @@ const changeAccountHolderWizardReducer = createReducer(
       state.acquiringAccountHolderContact.phoneNumber = contact.phoneNumber;
       state.acquiringAccountHolderContact.positionInCompany =
         contact.positionInCompany;
+      state.accountHolderCompleted = true;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.POPULATE_ACCOUNT_HOLDER_LIST,
+    ChangeAccountHolderWizardActions.populateAccountHolderList,
     (state, { list }) => {
       state.accountHolderList = list;
     }
   ),
+  //TODO review for edit
   mutableOn(
-    ChangeAccountHolderWizardActions.POPULATE_ACQUIRING_ACCOUNT_HOLDER,
+    ChangeAccountHolderWizardActions.populateAcquiringAccountHolder,
     (state, { accountHolder }) => {
       state.acquiringAccountHolder = accountHolder;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.POPULATE_ACQUIRING_ACCOUNT_HOLDER_PRIMARY_CONTACT,
+    ChangeAccountHolderWizardActions.populateAcquiringAccountHolderPrimaryContact,
     (state, { accountHolderContact }) => {
       state.acquiringAccountHolderContact = accountHolderContact;
     }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.CLEAR_ACCOUNT_HOLDER_CHANGE_REQUEST,
-    (state) => resetState(state)
+    ChangeAccountHolderWizardActions.clearAccountHolderChangeRequest,
+    (state) => {
+      resetState(state);
+    }
   ),
   mutableOn(
-    ChangeAccountHolderWizardActions.SET_SAME_ADDRESS_PRIMARY_CONTACT,
+    ChangeAccountHolderWizardActions.setSameAddressPrimaryContact,
     (state, { sameAddress }) => {
       state.isPrimaryAddressSameAsHolder = sameAddress;
-    }
-  ),
-  mutableOn(
-    ChangeAccountHolderWizardActions.RESOLVE_IS_ACCOUNT_HOLDER_ORPHAN,
-    (state, { isAccountHolderOrphan }) => {
-      state.isAccountHolderOrphan = isAccountHolderOrphan;
-    }
-  ),
-  mutableOn(
-    ChangeAccountHolderWizardActions.SET_DELETE_ORPHAN_ACCOUNT_HOLDER,
-    (state, { accountHolderDelete }) => {
-      state.accountHolderDelete = accountHolderDelete;
-    }
-  ),
-  mutableOn(
-    ChangeAccountHolderWizardActions.SUBMIT_CHANGE_ACCOUNT_HOLDER_REQUEST_SUCCESS,
-    (state, { requestId }) => {
-      state.submittedRequestIdentifier = requestId;
-    }
-  ),
-  mutableOn(ChangeAccountHolderWizardActions.INIT_OVERVIEW, (state) => {
-    state.backlinkToOverview = true;
-  }),
-  mutableOn(
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_TYPE,
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_SELECTION_TYPE,
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_INDIVIDUAL_DETAILS,
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_INDIVIDUAL_CONTACT_DETAILS,
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_ORGANISATION_DETAILS,
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_ORGANISATION_ADDRESS,
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_CONTACT_DETAILS,
-    ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_CONTACT_ADDRESS,
-    ChangeAccountHolderWizardActions.SET_DELETE_ORPHAN_ACCOUNT_HOLDER,
-    ChangeAccountHolderWizardActions.SET_SAME_ADDRESS_PRIMARY_CONTACT,
-    (state) => {
-      state.backlinkToOverview = false;
     }
   )
 );
@@ -217,61 +199,11 @@ function resetState(state: ChangeAccountHolderWizardState) {
   state.acquiringAccountHolder = initialState.acquiringAccountHolder;
   state.acquiringAccountHolderContact =
     initialState.acquiringAccountHolderContact;
+  state.acquiringAccountHolderContact =
+    initialState.acquiringAccountHolderContact;
+  state.accountHolderCompleted = initialState.accountHolderCompleted;
   state.accountHolderList = initialState.accountHolderList;
   state.accountHolderSelectionType = initialState.accountHolderSelectionType;
   state.isPrimaryAddressSameAsHolder =
     initialState.isPrimaryAddressSameAsHolder;
-  state.isAccountHolderOrphan = initialState.isAccountHolderOrphan;
-  state.accountHolderDelete = initialState.accountHolderDelete;
-  state.backlinkToOverview = initialState.backlinkToOverview;
-  state.submittedRequestIdentifier = initialState.submittedRequestIdentifier;
-}
-
-function getEmptyAccountHolderWithType(
-  accountHolderType: AccountHolderType
-): AccountHolder {
-  const baseAccountHolder = {
-    id: null,
-    type: accountHolderType,
-    details: null,
-    address: {
-      buildingAndStreet: null,
-      buildingAndStreet2: null,
-      buildingAndStreet3: null,
-      postCode: null,
-      townOrCity: null,
-      stateOrProvince: null,
-      country: null,
-    },
-  };
-
-  if (accountHolderType === AccountHolderType.INDIVIDUAL) {
-    const individual: Individual = {
-      ...baseAccountHolder,
-      details: {
-        name: null,
-        firstName: null,
-        lastName: null,
-        birthDate: null,
-        countryOfBirth: null,
-        isOverEighteen: false,
-      },
-      phoneNumber: null,
-      emailAddress: null,
-    };
-    return individual;
-  }
-  if (accountHolderType === AccountHolderType.ORGANISATION) {
-    const organisation: Organisation = {
-      ...baseAccountHolder,
-      details: {
-        name: null,
-        registrationNumber: null,
-        noRegistrationNumJustification: null,
-      },
-    };
-    return organisation;
-  }
-
-  return baseAccountHolder;
 }

@@ -38,8 +38,8 @@ export class CheckUpdateRequestComponent implements OnInit {
       this.currentOperatorInfo.type === OperatorType.INSTALLATION;
     this.isAircraft =
       this.currentOperatorInfo.type === OperatorType.AIRCRAFT_OPERATOR;
-    this.isMaritime =
-      this.currentOperatorInfo.type === OperatorType.MARITIME_OPERATOR;
+    this.isMaritime = 
+    this.currentOperatorInfo.type === OperatorType.MARITIME_OPERATOR;
 
     if (this.currentOperatorInfo.type === OperatorType.AIRCRAFT_OPERATOR) {
       this.titleOfIdentifier = 'Aircraft Operator ID';
@@ -49,7 +49,7 @@ export class CheckUpdateRequestComponent implements OnInit {
     }
     if (this.currentOperatorInfo.type === OperatorType.MARITIME_OPERATOR) {
       this.titleOfIdentifier = 'Maritime Operator ID';
-    }
+    }    
     this.changedValues = this.getObjectDiff(
       this.currentOperatorInfo,
       this.newOperatorInfo
@@ -74,26 +74,13 @@ export class CheckUpdateRequestComponent implements OnInit {
           permit: this.getOnlyChangedValues(current, changed, 'permit', false),
         };
       }
-
-      let activityTypes = null;
-      const areEqual =
-        current.activityTypes.length === changed.activityTypes.length &&
-        current.activityTypes.every((v) => changed.activityTypes.includes(v));
-      if (!areEqual) {
-        activityTypes = {
-          activityTypes: Object.values(
-            this.getOnlyChangedValues(current, changed, 'activityTypes', false)
-          ),
-        };
-      }
-
       return {
         ...permit,
-        ...activityTypes,
         ...this.getOnlyChangedValues(current, changed, 'emitterId', false),
         ...this.getOnlyChangedValues(current, changed, 'firstYear', false),
         ...this.getOnlyChangedValues(current, changed, 'lastYear', true),
         ...this.getOnlyChangedValues(current, changed, 'name', false),
+        ...this.getOnlyChangedValues(current, changed, 'activityType', false),
         ...this.getOnlyChangedValues(current, changed, 'regulator', false),
       };
     } else if (this.isAircraft) {
@@ -112,7 +99,7 @@ export class CheckUpdateRequestComponent implements OnInit {
           ),
         };
       }
-
+      
       return {
         ...monitoringPlan,
         ...this.getOnlyChangedValues(current, changed, 'emitterId', false),
@@ -120,7 +107,7 @@ export class CheckUpdateRequestComponent implements OnInit {
         ...this.getOnlyChangedValues(current, changed, 'lastYear', true),
         ...this.getOnlyChangedValues(current, changed, 'regulator', false),
       };
-    } else if (this.isMaritime) {
+    }  else if (this.isMaritime) {
       let monitoringPlan = null;
       if (
         Object.entries(
@@ -144,9 +131,15 @@ export class CheckUpdateRequestComponent implements OnInit {
         ).length > 0
       ) {
         imo = {
-          imo: this.getOnlyChangedValues(current, changed, 'imo', false),
+          imo: this.getOnlyChangedValues(
+            current,
+            changed,
+            'imo',
+            false
+          ),
         };
       }
+
 
       return {
         ...monitoringPlan,
@@ -200,7 +193,7 @@ export class CheckUpdateRequestComponent implements OnInit {
       this.submitRequest.emit({
         type: this.currentOperatorInfo.type,
         name: this.changedValues['name'],
-        activityTypes: this.changedValues['activityTypes'],
+        activityType: this.changedValues['activityType'],
         emitterId: this.changedValues['emitterId'],
         monitoringPlan: this.changedValues['monitoringPlan'],
         imo: this.changedValues['imo'],

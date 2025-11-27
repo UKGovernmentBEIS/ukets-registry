@@ -1,6 +1,9 @@
 package gov.uk.ets.registry.api.integration.notification;
 
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
+import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEventOutcome;
+import gov.uk.ets.registry.api.integration.message.IntegrationEventOutcome;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +14,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.netz.integration.model.IntegrationEventOutcome;
-import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEventOutcome;
-import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @Component
 @Log4j2

@@ -5,6 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.common.test.BaseIntegrationTest;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
+import gov.uk.ets.registry.api.integration.message.IntegrationEventOutcome;
+import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
+import gov.uk.ets.registry.api.integration.message.OperatorUpdateEventOutcome;
 import gov.uk.ets.registry.api.notification.EmailNotification;
 import java.time.Duration;
 import java.util.HashMap;
@@ -33,11 +38,6 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.netz.integration.model.IntegrationEventOutcome;
-import uk.gov.netz.integration.model.error.IntegrationEventError;
-import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
-import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
-import uk.gov.netz.integration.model.operator.OperatorUpdateEventOutcome;
 
 @TestPropertySource(locations = "/integration-test-application.properties", properties = {
     "kafka.integration.enabled=true"

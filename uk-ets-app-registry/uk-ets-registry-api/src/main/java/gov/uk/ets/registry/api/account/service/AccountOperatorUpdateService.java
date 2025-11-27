@@ -1,10 +1,13 @@
 package gov.uk.ets.registry.api.account.service;
 
-import gov.uk.ets.registry.api.account.domain.*;
+import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AircraftOperator;
+import gov.uk.ets.registry.api.account.domain.CompliantEntity;
+import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.messaging.compliance.UpdateFirstYearOfVerifiedEmissionsEvent;
 import gov.uk.ets.registry.api.account.messaging.compliance.UpdateLastYearOfVerifiedEmissionsEvent;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
-import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.common.ConversionService;
@@ -30,7 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static gov.uk.ets.registry.api.account.web.model.OperatorType.AIRCRAFT_OPERATOR;
@@ -43,7 +51,6 @@ public class AccountOperatorUpdateService {
 
     private final EmissionsTableService emissionsTableService;
     private final AccountRepository accountRepository;
-    private final ActivityTypeRepository activityTypeRepository;
     private final PersistenceService persistenceService;
     private final UserService userService;
     private final TaskEventService taskEventService;
@@ -249,36 +256,14 @@ public class AccountOperatorUpdateService {
         if (updatedValues.getName() != null) {
             installation.setInstallationName(updatedValues.getName());
         }
-        if (updatedValues.getActivityTypes() != null) {
-            Set<ActivityType> existingActivityTypes = activityTypeRepository.findByInstallation_id(installation.getId());
-            Set<ActivityType> newActivityTypes = updatedValues.getActivityTypes().stream()
-                    .map(Enum::name)
-                    .map(s -> toActivityType(s, installation))
-                    .collect(Collectors.toSet());
-
-            List<ActivityType> toBeDeleted = existingActivityTypes.stream()
-                    .filter(activityType -> !newActivityTypes.contains(activityType))
-                    .toList();
-
-            List<ActivityType> toBeAdded = newActivityTypes.stream()
-                    .filter(activityType -> !existingActivityTypes.contains(activityType))
-                    .toList();
-
-            activityTypeRepository.deleteAll(toBeDeleted);
-            activityTypeRepository.saveAll(toBeAdded);
+        if (updatedValues.getActivityType() != null) {
+            installation.setActivityType(updatedValues.getActivityType().name());
         }
         if (updatedValues.getPermit() != null) {
             if (updatedValues.getPermit().getId() != null) {
                 installation.setPermitIdentifier(updatedValues.getPermit().getId());
             }
         }
-    }
-
-    private ActivityType toActivityType(String activityType, Installation installation) {
-        ActivityType result = new ActivityType();
-        result.setDescription(activityType);
-        result.setInstallation(installation);
-        return result;
     }
 
     private void updateCommonOperatorInfo(OperatorDTO updatedValues,

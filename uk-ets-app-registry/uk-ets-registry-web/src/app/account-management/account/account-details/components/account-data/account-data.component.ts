@@ -9,7 +9,6 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Account,
-  AccountAllocation,
   AccountHoldingsResult,
   ARAccessRights,
   TrustedAccount,
@@ -25,8 +24,6 @@ import { clearAccountDetailsUpdate } from '@account-management/account/account-d
 import { Configuration } from '@shared/configuration/configuration.interface';
 import { AccountTransferPathsModel } from '@account-transfer/model';
 import { Note } from '@registry-web/shared/model/note';
-import { Observable } from 'rxjs';
-import { selectAccountAllocation } from '@account-management/account/account-details/account.selector';
 
 @Component({
   selector: 'app-account-data',
@@ -39,7 +36,6 @@ export class AccountDataComponent implements OnInit {
   private _account: Account;
   private _isAdmin: boolean;
   private _isReadOnlyAdmin: boolean;
-  private _notesCounter = 0;
 
   @Input()
   set account(account: Account) {
@@ -68,23 +64,13 @@ export class AccountDataComponent implements OnInit {
     return this._isReadOnlyAdmin;
   }
 
-  @Input() set accountNotes(val: Note[]) {
-    this.accountNotesArr = val;
-    this.updateNotesCounter();
-  }
-
-  @Input() set accountHolderNotes(val: Note[]) {
-    this.accountHolderNotesArr = val;
-    this.updateNotesCounter();
-  }
-
   @Input() isSeniorAdmin: boolean;
   @Input() isSeniorOrJuniorAdmin: boolean;
   @Input() isOHAOrAOHAorMOHA: boolean;
   @Input() isKyotoAccountType: boolean;
   @Input() countries: IUkOfficialCountry[];
-  @Input() accountNotesArr: Note[];
-  @Input() accountHolderNotesArr: Note[];
+  @Input() accountNotes: Note[];
+  @Input() accountHolderNotes: Note[];
 
   @Input() accountId: string;
   @Input() sideMenuItems: string[];
@@ -117,8 +103,6 @@ export class AccountDataComponent implements OnInit {
   readonly ArAccessRights = ARAccessRights;
   readonly BannerType = BannerType;
   selectedTab: string;
-  accountAllocation$: Observable<AccountAllocation>;
-  sideMenuItemLabels: Map<string, string> = new Map<string, string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -137,8 +121,6 @@ export class AccountDataComponent implements OnInit {
         ? selectedSideMenu
         : AccountDataComponent.START_ITEM;
     });
-
-    this.accountAllocation$ = this.store.select(selectAccountAllocation);
   }
 
   onSelectMenuItem(currentMenuItem: string): void {
@@ -180,7 +162,7 @@ export class AccountDataComponent implements OnInit {
   goToRequestOperatorUpdate(): void {
     this.router.navigate([
       this.route.snapshot['_routerState'].url +
-        `/${OperatorUpdateWizardPathsModel.BASE_PATH}/${OperatorUpdateWizardPathsModel.CONFIRM_UPDATE}`,
+        `/${OperatorUpdateWizardPathsModel.BASE_PATH}`,
     ]);
   }
 
@@ -199,18 +181,5 @@ export class AccountDataComponent implements OnInit {
 
   includeInBillingClick() {
     this.includeInBilling.emit();
-  }
-
-  updateNotesCounter() {
-    if (this.accountNotesArr && this.accountHolderNotesArr) {
-      this._notesCounter =
-        this.accountNotesArr.length + this.accountHolderNotesArr.length;
-      if (this._notesCounter > 0) {
-        this.sideMenuItemLabels.set(
-          'Notes',
-          'Notes (' + this._notesCounter + ')'
-        );
-      }
-    }
   }
 }

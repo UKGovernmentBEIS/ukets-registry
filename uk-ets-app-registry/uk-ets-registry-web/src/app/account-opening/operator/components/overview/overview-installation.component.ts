@@ -1,9 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {
-  getEntriesValues,
-  Installation,
-  InstallationActivityType,
-} from '@shared/model/account';
+import { Installation, InstallationActivityType } from '@shared/model/account';
 import { OperatorWizardRoutes } from '@account-opening/operator/operator-wizard-properties';
 import { regulatorMap } from '@registry-web/account-management/account-list/account-list.model';
 import { SummaryListItem } from '@shared/summary-list/summary-list.info';
@@ -12,19 +8,11 @@ import { FormatUkDatePipe } from '@shared/pipes';
 @Component({
   selector: 'app-overview-installation',
   template: ` <app-summary-list
-      [class]="'govuk-summary-list--no-border govuk-!-margin-bottom-9'"
-      [summaryListItems]="getInstallationSummaryListItems()"
-      [title]="'Installation details'"
-    >
-      <ng-content></ng-content>
-    </app-summary-list>
-    <app-summary-list
-      [class]="'govuk-summary-list--no-border govuk-!-margin-bottom-9'"
-      [summaryListItems]="getRegulatedActivity()"
-      [title]="'Regulated activity'"
-    >
-      <ng-content></ng-content>
-    </app-summary-list>`,
+    [class]="'govuk-summary-list--no-border govuk-!-margin-bottom-9'"
+    [summaryListItems]="getInstallationSummaryListItems()"
+  >
+    <ng-content></ng-content>
+  </app-summary-list>`,
 })
 export class OverviewInstallationComponent {
   @Input()
@@ -37,7 +25,7 @@ export class OverviewInstallationComponent {
   regulatorChanged: boolean;
 
   @Input()
-  isSeniorOrJuniorAdmin: boolean;
+  isSeniorOrJuniorAdmin: boolean;  
 
   operatorWizardRoutes = OperatorWizardRoutes;
   activityTypes = InstallationActivityType;
@@ -56,6 +44,10 @@ export class OverviewInstallationComponent {
           visuallyHidden: 'installation and permit details',
           url: this.operatorWizardRoutes.INSTALLATION,
         },
+      },
+      {
+        key: { label: 'Installation activity type' },
+        value: { label: this.activityTypes[this.installation.activityType] },
       },
       {
         key: { label: 'Emitter ID' },
@@ -83,35 +75,8 @@ export class OverviewInstallationComponent {
       },
     ];
 
-    return !this.isSeniorOrJuniorAdmin
-      ? summary.filter((next) => next.key.label != 'Emitter ID')
-      : summary;
-  }
-
-  getRegulatedActivity(): SummaryListItem[] {
-    const summary = [
-      {
-        key: {
-          label: 'Regulated activity',
-          class: 'govuk-summary-list__key govuk-body-m',
-        },
-        value: [
-          {
-            label: getEntriesValues(this.installation.activityTypes),
-            class: 'govuk-summary-list__value',
-          },
-        ],
-        action: {
-          label: 'Change',
-          visible: !this.operatorCompleted.valueOf(),
-          visuallyHidden: 'regulated activity',
-          url: this.operatorWizardRoutes.SELECT_REGULATED_ACTIVITY,
-        },
-      },
-    ];
-
-    return !this.isSeniorOrJuniorAdmin
-      ? summary.filter((next) => next.key.label != 'Emitter ID')
-      : summary;
+    return !this.isSeniorOrJuniorAdmin ?
+      summary.filter( next => next.key.label != 'Emitter ID') :
+        summary;  
   }
 }

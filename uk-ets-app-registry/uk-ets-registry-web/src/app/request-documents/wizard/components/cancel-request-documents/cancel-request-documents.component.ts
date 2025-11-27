@@ -24,8 +24,6 @@ export class CancelRequestDocumentsComponent {
         return 'replace Authorised Representative task';
       case RequestDocumentsOrigin.ACCOUNT_HOLDER_UPDATE_DETAILS_TASK:
         return 'account holder update details task';
-      case RequestDocumentsOrigin.CHANGE_ACCOUNT_HOLDER_TASK:
-        return 'change account holder task';
     }
   }
 

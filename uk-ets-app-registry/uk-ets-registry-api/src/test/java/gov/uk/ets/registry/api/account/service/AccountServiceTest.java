@@ -1,7 +1,11 @@
 package gov.uk.ets.registry.api.account.service;
 
 
-import gov.uk.ets.registry.api.account.domain.*;
+import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
+import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
@@ -9,7 +13,6 @@ import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
-import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
 import gov.uk.ets.registry.api.account.repository.InstallationOwnershipRepository;
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
@@ -153,8 +156,6 @@ class AccountServiceTest {
     @Mock
     private AccountOwnershipRepository accountOwnershipRepository;
     @Mock
-    private ActivityTypeRepository activityTypeRepository;
-    @Mock
     private AuthorizedRepresentativeService authorizedRepresentativeService;
     @Mock
     private TaskEventService taskEventService;
@@ -192,7 +193,6 @@ class AccountServiceTest {
             accountDTOFactory,
             authService,
             unitBlockRepository,
-            activityTypeRepository,
             transactionProposalService,
             businessCheckService,
             eventService,
@@ -908,11 +908,7 @@ class AccountServiceTest {
         Installation installation = new Installation();
         installation.setStartYear(2021);
         installation.setInstallationName("Installation Name");
-
-        ActivityType activityType = new ActivityType();
-        activityType.setDescription("PRODUCTION_OF_NITRIC_ACID");
-        activityType.setInstallation(installation);
-        installation.setActivityTypes(Set.of(activityType));
+        installation.setActivityType("PRODUCTION_OF_NITRIC_ACID");
         installation.setPermitIdentifier("12345");
         installation.setId(1L);
 

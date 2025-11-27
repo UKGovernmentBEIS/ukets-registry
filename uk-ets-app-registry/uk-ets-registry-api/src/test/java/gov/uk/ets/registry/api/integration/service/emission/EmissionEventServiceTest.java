@@ -10,6 +10,7 @@ import gov.uk.ets.registry.api.file.upload.emissionstable.messaging.UpdateOfVeri
 import gov.uk.ets.registry.api.file.upload.emissionstable.model.EmissionsEntry;
 import gov.uk.ets.registry.api.file.upload.emissionstable.repository.EmissionsEntryRepository;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
+import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import java.time.Year;
 import java.util.List;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
 
 @ExtendWith(MockitoExtension.class)
 class EmissionEventServiceTest {

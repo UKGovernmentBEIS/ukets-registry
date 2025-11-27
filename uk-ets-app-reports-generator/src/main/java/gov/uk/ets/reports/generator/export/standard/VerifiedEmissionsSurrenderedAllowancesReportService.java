@@ -55,7 +55,7 @@ public class VerifiedEmissionsSurrenderedAllowancesReportService
                 "Installation Name",
                 "Operator ID",
                 "Permit ID or Monitoring Plan ID",
-                "Regulated activity",
+                "Activity Type",
                 "Year",
                 "Entitlement",
                 "Returned Allowances",

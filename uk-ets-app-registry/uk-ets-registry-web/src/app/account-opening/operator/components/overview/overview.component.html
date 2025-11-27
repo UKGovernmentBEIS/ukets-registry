@@ -23,7 +23,7 @@
         [installationToBeTransferred]="installationToBeTransferred"
         [installationTransfer]="operator"
         [operatorCompleted]="operatorCompleted"
-        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"        
       ></app-overview-installation-transfer>
       <app-overview-aircraft-operator
         *ngSwitchCase="type.AIRCRAFT_OPERATOR"
@@ -35,7 +35,7 @@
         *ngSwitchCase="type.MARITIME_OPERATOR"
         [maritimeOperator]="operator"
         [operatorCompleted]="operatorCompleted"
-        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
+        [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"           
       ></app-overview-maritime-operator>
     </ng-container>
     <div class="govuk-form-group">

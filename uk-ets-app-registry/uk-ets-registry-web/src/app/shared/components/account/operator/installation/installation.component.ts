@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
-  getEntriesValues,
   Installation,
   InstallationActivityType,
 } from '../../../../model/account/operator';
@@ -19,7 +18,7 @@ export class InstallationComponent {
   hasOperatorUpdatePendingApproval: boolean;
   @Input()
   canRequestAccountTransfer: boolean;
-  @Input()
+  @Input() 
   isSeniorOrJuniorAdmin: boolean;
 
   @Output()
@@ -38,25 +37,23 @@ export class InstallationComponent {
     this.requestTransferAccountEmitter.emit();
   }
 
-  get summaryListLines() {
+  get summaryListLines(){
     const lines = {
       'Installation name': this.installation.name,
       'Installation ID': this.installation.identifier,
-      'Emitter ID': this.installation.emitterId
-        ? this.installation.emitterId
-        : '',
+      'Installation activity type': InstallationActivityType[this.installation.activityType],
+      'Emitter ID': this.installation.emitterId ? this.installation.emitterId : '',
       'Permit ID': this.installation.permit ? this.installation.permit.id : '',
       Regulator: regulatorMap[this.installation.regulator],
       'First year of verified emission submission': this.installation.firstYear,
-      'Last year of verified emission submission': this.installation.lastYear,
-      'Regulated activity': getEntriesValues(this.installation.activityTypes),
-    };
+      'Last year of verified emission submission': this.installation.lastYear
+    }
 
-    if (!this.isSeniorOrJuniorAdmin) {
+    if(!this.isSeniorOrJuniorAdmin){
       const { ['Emitter ID']: emitterId, ...updatedLines } = lines;
       return updatedLines;
     }
 
     return lines;
-  }
+  }  
 }

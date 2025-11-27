@@ -4,8 +4,10 @@ import { AccountHolderContact } from '@shared/model/account';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ContactType } from '@shared/model/account-holder-contact-type';
 import { UkRegistryValidators } from '@shared/validation';
+import { selectIsOHAOrAOHA } from '@account-management/account/account-details/account.selector';
 import { Store } from '@ngrx/store';
 import { take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { selectIsMOHA } from '@account-opening/account-opening.selector';
 
 @Component({
@@ -16,12 +18,13 @@ export class AccountHolderContactDetailsComponent
   extends UkFormComponent
   implements OnInit
 {
-  @Input() caption: string;
   @Input() isAHUpdateWizard = false;
   @Input() useUpdateLabel = true;
   @Input() accountHolderContact: AccountHolderContact;
   @Input() contactType: string;
   @Output() readonly outputUser = new EventEmitter<AccountHolderContact>();
+
+  title: string;
 
   isMOHA: boolean;
 
@@ -88,21 +91,12 @@ export class AccountHolderContactDetailsComponent
     };
   }
 
-  getCaption(): string {
-    if (this.caption) {
-      return this.caption;
-    }
-    if (this.isAHUpdateWizard) {
-      return 'Request to update the account holder';
-    }
-    return `Add the ${this.getContactLabel()}`;
-  }
-
-  getTitle(): string {
+  getSubtitle(): string {
     if (this.isAHUpdateWizard && this.useUpdateLabel) {
       return `Update the ${this.getContactLabel()} details`;
+    } else {
+      return `Add the ${this.getContactLabel()} details`;
     }
-    return `Add the ${this.getContactLabel()} details`;
   }
 
   protected doSubmit() {

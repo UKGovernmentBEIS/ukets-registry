@@ -1,27 +1,23 @@
 package gov.uk.ets.registry.api.integration.service.account;
 
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
-import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.common.CountryMap;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
+import gov.uk.ets.registry.api.integration.message.AccountDetailsMessage;
+import gov.uk.ets.registry.api.integration.message.AccountHolderMessage;
+import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.netz.integration.model.account.AccountDetailsMessage;
-import uk.gov.netz.integration.model.account.AccountHolderMessage;
-import uk.gov.netz.integration.model.account.AccountOpeningEvent;
-import uk.gov.netz.integration.model.error.IntegrationEventError;
-import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @Component
 @RequiredArgsConstructor
@@ -46,22 +42,21 @@ public class AccountEventValidator {
                 accountService::installationPermitIdExists, IntegrationEventError.ERROR_0105, errorDetails);
 
             validateMandatoryField(accountDetails.getInstallationName(), "Installation Name", 256, errorDetails);
-
-            Set<String> installationActivityTypes = accountDetails.getInstallationActivityTypes();
-            if (installationActivityTypes == null || installationActivityTypes.isEmpty()) {
-                errorDetails.add(new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0103, "Installation Activity Types"));
-            } else if (!Arrays.stream(InstallationActivityType.values()).map(Enum::name).collect(Collectors.toSet()).containsAll(installationActivityTypes)) {
-                errorDetails.add(new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0112, "Installation Activity Types"));
-            }
+            validateMandatoryField(accountDetails.getInstallationActivityType(), "Installation Activity Type", errorDetails);
         }
 
         if (OperatorType.AIRCRAFT_OPERATOR == operatorType) {
-            validateMonitoringPlanId(accountDetails.getMonitoringPlanId(), errorDetails);
+            validateMandatoryField(accountDetails.getMonitoringPlanId(), "Monitoring Plan ID", 256,
+                accountService::aircraftMonitoringPlanIdExists, IntegrationEventError.ERROR_0105, errorDetails);
         }
 
         if (OperatorType.MARITIME_OPERATOR == operatorType) {
             // Monitoring plan id is not mandatory
-            validateMonitoringPlanId(accountDetails.getMonitoringPlanId(), errorDetails);
+            validateLength(accountDetails.getMonitoringPlanId(), "Monitoring Plan ID", 256, errorDetails);
+            Optional.ofNullable(accountDetails.getMonitoringPlanId())
+                .filter(accountService::maritimeMonitoringPlanIdExists)
+                .ifPresent(monitoringPlanId ->
+                    errorDetails.add(new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0105, monitoringPlanId)));
             validateMandatoryField(accountDetails.getCompanyImoNumber(), "Company IMO Number", 256,
                 accountService::maritimeImoExists, IntegrationEventError.ERROR_0110, errorDetails);
 
@@ -116,14 +111,6 @@ public class AccountEventValidator {
         }
 
         return errorDetails;
-    }
-
-    private void validateMonitoringPlanId(String monitoringPlanId, List<IntegrationEventErrorDetails> errorDetails) {
-        validateLength(monitoringPlanId, "Monitoring Plan ID", 256, errorDetails);
-        Optional.ofNullable(monitoringPlanId)
-            .filter(accountService::maritimeMonitoringPlanIdExists)
-            .ifPresent(id ->
-                errorDetails.add(new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0105, id)));
     }
 
     private <T> void validateMandatoryField(T value,

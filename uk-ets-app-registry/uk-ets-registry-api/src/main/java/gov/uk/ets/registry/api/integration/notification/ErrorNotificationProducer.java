@@ -2,6 +2,8 @@ package gov.uk.ets.registry.api.integration.notification;
 
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
+import gov.uk.ets.registry.api.integration.error.ContactPoint;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
 import gov.uk.ets.registry.api.integration.service.IntegrationHeadersUtil;
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotification;
@@ -15,8 +17,6 @@ import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.netz.integration.model.error.ContactPoint;
-import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @Component
 @RequiredArgsConstructor

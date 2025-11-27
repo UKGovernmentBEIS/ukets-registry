@@ -31,12 +31,11 @@ public class UkGovPaymentIntegrationService {
     	
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost post = new HttpPost(paymentProperties.getApiUrl());
-
-            post.setHeader("Content-Type", "application/json");
+            post.setHeader("Content-Type", "application/json; charset=UTF-8");
             post.setHeader("Authorization", "Bearer " + paymentProperties.getApiKey());
 
             String jsonBody = objectMapper.writeValueAsString(paymentDto);
-            post.setEntity(new StringEntity(jsonBody));
+            post.setEntity(new StringEntity(jsonBody,"UTF-8"));
 
             try (CloseableHttpResponse response = httpClient.execute(post)) {
                 int statusCode = response.getStatusLine().getStatusCode();

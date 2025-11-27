@@ -349,12 +349,6 @@
         *ngSwitchCase="requestTypes.USER_DEACTIVATION_REQUEST"
         [userDeactivationTaskDetails]="taskDetails"
       ></app-user-deactivation-task-details>
-
-      <app-change-account-holder-task-details
-        *ngSwitchCase="requestTypes.ACCOUNT_HOLDER_CHANGE"
-        [taskDetails]="taskDetails"
-        (requestDocumentEmitter)="onAccountHolderOrUserRequestDocuments($event)"
-      />
     </ng-container>
     <app-back-to-top></app-back-to-top>
   </div>

@@ -11,66 +11,60 @@ import {
 import { selectAccount } from '@account-management/account/account-details/account.selector';
 import { ContactType } from '@shared/model/account-holder-contact-type';
 import { FormRadioOption } from '@shared/form-controls/uk-radio-input/uk-radio.model';
-import * as fromAuth from './../../../../auth/auth.selector';
 
 const selectAccountHolderDetailsWizardState =
   createFeatureSelector<AccountHolderDetailsWizardState>(
     accountHolderDetailsWizardFeatureKey
   );
 
-export const selectUpdateTypes = createSelector(
-  selectAccount,
-  fromAuth.isAuthorizedRepresentative,
-  (account, isAuthorizedRepresentative) => {
-    const options: FormRadioOption[] = [];
-    if (!isAuthorizedRepresentative) {
-      options.push({
-        label: AccountHolderDetailsTypeMap.get(
-          AccountHolderDetailsType.ACCOUNT_HOLDER_UPDATE_DETAILS
-        ),
-        value: AccountHolderDetailsType.ACCOUNT_HOLDER_UPDATE_DETAILS,
-        enabled: true,
-      });
-    }
-    options.push({
+export const selectUpdateTypes = createSelector(selectAccount, (account) => {
+  const options: FormRadioOption[] = [
+    {
+      label: AccountHolderDetailsTypeMap.get(
+        AccountHolderDetailsType.ACCOUNT_HOLDER_UPDATE_DETAILS
+      ),
+      value: AccountHolderDetailsType.ACCOUNT_HOLDER_UPDATE_DETAILS,
+      enabled: true,
+    },
+    {
       label: AccountHolderDetailsTypeMap.get(
         AccountHolderDetailsType.ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS
       ),
       value: AccountHolderDetailsType.ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS,
       enabled: true,
+    },
+  ];
+  if (account?.accountHolderContactInfo?.alternativeContact) {
+    options.push({
+      label: AccountHolderDetailsTypeMap.get(
+        AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE
+      ),
+      value:
+        AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE,
+      enabled: true,
     });
-    if (account?.accountHolderContactInfo?.alternativeContact) {
-      options.push({
-        label: AccountHolderDetailsTypeMap.get(
-          AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE
-        ),
-        value:
-          AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE,
-        enabled: true,
-      });
-      options.push({
-        label: AccountHolderDetailsTypeMap.get(
-          AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE
-        ),
-        value:
-          AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE,
-        enabled: true,
-      });
-    } else {
-      options.push({
-        label: AccountHolderDetailsTypeMap.get(
-          AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD
-        ),
-        value:
-          AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD,
-        enabled: true,
-      });
-    }
-    return options;
+    options.push({
+      label: AccountHolderDetailsTypeMap.get(
+        AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE
+      ),
+      value:
+        AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE,
+      enabled: true,
+    });
+  } else {
+    options.push({
+      label: AccountHolderDetailsTypeMap.get(
+        AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD
+      ),
+      value:
+        AccountHolderDetailsType.ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD,
+      enabled: true,
+    });
   }
-);
+  return options;
+});
 
-export const selectCalculateGoBackPathFromCheckUpdateRequest = createSelector(
+export const calculateGoBackPathFromCheckUpdateRequest = createSelector(
   selectAccountHolderDetailsWizardState,
   (state) => {
     switch (state.updateType) {

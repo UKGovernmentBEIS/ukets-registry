@@ -12,7 +12,6 @@ export enum OperatorUpdateActionTypes {
   FETCH_OPERATOR_INFO = '[Operator Update Wizard] Fetch current operator info',
   SET_OPERATOR_INFO = '[Operator Update Wizard] Set current operator info',
   SET_NEW_OPERATOR_INFO = '[Operator Update Wizard] Set new operator info',
-  SET_UPDATE_OPERATOR_INFO = '[Operator Update Wizard] Set updated operator info',
   CLEAR_OPERATOR_UPDATE_REQUEST = '[Operator Update Wizard] Clear Operator update request',
   CANCEL_OPERATOR_UPDATE_REQUEST = '[Operator Update Wizard] Cancel Operator update request',
   NAVIGATE_TO = '[Operator Update Wizard] Navigate To',
@@ -24,7 +23,6 @@ export enum OperatorUpdateActionTypes {
   FETCH_EXISTS_MARITIME_IMO = '[Operator Update Wizard] - Check if exists Monitoring Plan and IMO',
   FETCH_EXISTS_MARITIME_IMO_SUCCESS = '[Operator Update Wizard] - Check if exists Monitoring Plan and IMO success',
   FETCH_EXISTS_MARITIME_IMO_FAILURE = '[Operator Update Wizard] - Check if exists Monitoring Plan and IMO failure',
-  SUBMIT_UPDATE_ACTIVITY_TYPES_SUCCESS = '[Operator Update Wizard] - Update activity types success',
 }
 
 export const navigateTo = createAction(
@@ -44,11 +42,6 @@ export const setCurrentOperatorInfoSuccess = createAction(
 
 export const setNewOperatorInfoSuccess = createAction(
   OperatorUpdateActionTypes.SET_NEW_OPERATOR_INFO,
-  props<{ operator: Operator }>()
-);
-
-export const setUpdateOperatorInfoSuccess = createAction(
-  OperatorUpdateActionTypes.SET_UPDATE_OPERATOR_INFO,
   props<{ operator: Operator }>()
 );
 
@@ -74,11 +67,6 @@ export const submitUpdateRequest = createAction(
 
 export const submitUpdateRequestSuccess = createAction(
   OperatorUpdateActionTypes.SUBMIT_UPDATE_REQUEST_SUCCESS,
-  props<{ requestId: string }>()
-);
-
-export const submitUpdateActivityTypesSuccess = createAction(
-  OperatorUpdateActionTypes.SUBMIT_UPDATE_ACTIVITY_TYPES_SUCCESS,
   props<{ requestId: string }>()
 );
 

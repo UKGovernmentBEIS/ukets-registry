@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { SharedModule } from '@shared/shared.module';
-import { AccountHolderSharedModule } from '@registry-web/account-shared/account-holder-shared.module';
+import { AccountSharedModule } from '@account-shared/account-shared.module';
 import { AccountHolderModule } from '@account-opening/account-holder/account-holder.module';
 import {
   IndividualFullNamePipe,
@@ -29,12 +29,9 @@ import {
   ContactWorkDetailsContainerComponent,
   CancelContainerComponent,
   RequestSubmittedContainerComponent,
-  DeleteOrphanAccountHolderContainerComponent,
-  DeleteOrphanAccountHolderComponent,
 } from '@change-account-holder-wizard/components';
-import { ChangeAccountHolderWizardEffects } from '@change-account-holder-wizard/store/effects';
+import { ChangeAccountHolderWizardNavigationEffects } from '@change-account-holder-wizard/store/effects';
 import * as fromChangeAccountHolderWizard from '@change-account-holder-wizard/store/reducers';
-import { DeleteOrphanAccountHolderOverviewComponent } from '@change-account-holder-wizard/components/delete-orphan-account-holder-overview';
 
 @NgModule({
   declarations: [
@@ -49,8 +46,6 @@ import { DeleteOrphanAccountHolderOverviewComponent } from '@change-account-hold
     ContactWorkDetailsContainerComponent,
     CancelContainerComponent,
     RequestSubmittedContainerComponent,
-    DeleteOrphanAccountHolderContainerComponent,
-    DeleteOrphanAccountHolderComponent,
   ],
   imports: [
     CommonModule,
@@ -61,10 +56,9 @@ import { DeleteOrphanAccountHolderOverviewComponent } from '@change-account-hold
       fromChangeAccountHolderWizard.changeAccountHolderFeatureKey,
       fromChangeAccountHolderWizard.reducer
     ),
-    EffectsModule.forFeature([ChangeAccountHolderWizardEffects]),
+    EffectsModule.forFeature([ChangeAccountHolderWizardNavigationEffects]),
     AccountHolderModule,
-    AccountHolderSharedModule,
-    DeleteOrphanAccountHolderOverviewComponent,
+    AccountSharedModule,
   ],
   providers: [
     UpdateTypesResolver,

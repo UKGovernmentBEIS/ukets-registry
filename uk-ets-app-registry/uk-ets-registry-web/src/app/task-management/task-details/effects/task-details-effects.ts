@@ -20,12 +20,10 @@ import { Observable, of, throwError } from 'rxjs';
 import { ErrorDetail } from '@shared/error-summary';
 import { canGoBack, errors } from '@registry-web/shared/shared.action';
 import {
-  AccountHolderChangeTaskDetails,
   ActionError,
   apiErrorToBusinessError,
   REQUEST_TYPE_VALUES,
   RequestedDocumentUploadTaskDetails,
-  RequestType,
   TaskActionErrorResponse,
   TaskCompleteResponse,
   TaskDetails,
@@ -83,7 +81,6 @@ import {
 } from '../actions/task-details-navigation.actions';
 import { TransactionType } from '@registry-web/shared/model/transaction';
 import { RequestPaymentService } from '@request-payment/services';
-import { AccountHolderChangeService } from '@registry-web/account-management/account/change-account-holder-wizard/service';
 
 @Injectable()
 export class TaskDetailsEffects {
@@ -96,8 +93,7 @@ export class TaskDetailsEffects {
     private submitDocumentService: SubmitDocumentService,
     private userProfileService: UserProfileService,
     private accountApiService: AccountApiService,
-    private requestPaymentService: RequestPaymentService,
-    private accountHolderChangeService: AccountHolderChangeService
+    private requestPaymentService: RequestPaymentService
   ) {}
 
   prepareNavigationToTask$ = createEffect(() => {
@@ -156,40 +152,12 @@ export class TaskDetailsEffects {
     );
   }
 
-  /**
-   * Conditionally fetches additional task data.
-   *
-   * @param task: TaskDetails
-   * @returns Observable<TaskDetails>
-   */
-  private fetchAdditionalTaskDetailsData(
-    task: TaskDetails
-  ): Observable<TaskDetails> {
-    if (task.taskType === RequestType.ACCOUNT_HOLDER_CHANGE) {
-      const taskDetails = task as AccountHolderChangeTaskDetails;
-      return this.accountHolderChangeService
-        .getAccountHolderOrphan(
-          taskDetails.currentAccountHolder.id,
-          taskDetails.accountNumber
-        )
-        .pipe(
-          map((isAccountHolderOrphan) => ({
-            ...taskDetails,
-            isAccountHolderOrphan,
-          }))
-        );
-    }
-
-    return of(task);
-  }
-
   fetchTask$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TaskDetailsActions.fetchTask),
       switchMap((action: { taskId: string }) =>
         this.taskService.fetchOneTask(action.taskId).pipe(
           mergeMap((task) => this.addOperatorToTask(task)),
-          mergeMap((task) => this.fetchAdditionalTaskDetailsData(task)),
           map((result: TaskDetails) =>
             TaskDetailsActions.loadTask({ taskDetails: result })
           ),
@@ -205,7 +173,6 @@ export class TaskDetailsEffects {
       switchMap((action: { taskId: string }) =>
         this.taskService.fetchOneTask(action.taskId).pipe(
           mergeMap((task) => this.addOperatorToTask(task)),
-          mergeMap((task) => this.fetchAdditionalTaskDetailsData(task)),
           map((result) =>
             TaskDetailsActions.loadTaskFromListSuccess({ taskDetails: result })
           ),

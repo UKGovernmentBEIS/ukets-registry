@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import {
-  getEntriesValues,
   Installation,
   InstallationActivityType,
   InstallationTransfer,
@@ -65,6 +64,13 @@ export class OverviewInstallationTransferComponent {
         value: { label: this.installationToBeTransferred.name },
       },
       {
+        key: { label: 'Installation activity type' },
+        value: {
+          label:
+            this.activityTypes[this.installationToBeTransferred.activityType],
+        },
+      },
+      {
         key: { label: 'Emitter ID' },
         value: { label: this.installationToBeTransferred.emitterId },
       },
@@ -87,19 +93,11 @@ export class OverviewInstallationTransferComponent {
         key: { label: 'Last year of verified emission submission' },
         value: { label: this.installationToBeTransferred.lastYear },
       },
-      {
-        key: { label: 'Regulated activity' },
-        value: {
-          label: getEntriesValues(
-            this.installationToBeTransferred.activityTypes
-          ),
-        },
-      },
     ];
 
-    return !this.isSeniorOrJuniorAdmin
-      ? summary.filter((next) => next.key.label != 'Emitter ID')
-      : summary;
+    return !this.isSeniorOrJuniorAdmin ?
+      summary.filter( next => next.key.label != 'Emitter ID') :
+        summary;
   }
 
   getNewInstallationDetails(): SummaryListItem[] {
@@ -142,11 +140,11 @@ export class OverviewInstallationTransferComponent {
           visuallyHidden: 'installation and permit details',
           url: this.operatorWizardRoutes.INSTALLATION,
         },
-      },
+      }
     ];
 
-    return !this.isSeniorOrJuniorAdmin
-      ? summary.filter((next) => next.key.label != 'New emitter ID')
-      : summary;
+    return !this.isSeniorOrJuniorAdmin ?
+      summary.filter( next => next.key.label != 'New emitter ID') :
+        summary;
   }
 }

@@ -80,6 +80,9 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
                  .on(getAccountHolderNameCondition(filter.getAccountHolderName())) :
             query.leftJoin(account.accountHolder, holder);
 
+        BooleanExpression permitOrMonitoringPlanExpr = null;
+        BooleanExpression complianceExpr = null;
+
         if (filter.getRegulatorType() != null ||
             filter.getPermitOrMonitoringPlanIdentifier() != null ||
             filter.getAllocationClassification() != null ||
@@ -108,15 +111,10 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
                 query.leftJoin(aircraft).on(aircraft.id.eq(compliantEntity.id));
                 query.leftJoin(maritime).on(maritime.id.eq(compliantEntity.id));
 
-                builder.notNullAnd(
-                        id -> getPermitOrMonitoringPlanIdCondition(id, installation, aircraft, maritime),
-                        filter.getPermitOrMonitoringPlanIdentifier()
-                );
+                permitOrMonitoringPlanExpr = getPermitOrMonitoringPlanIdCondition(filter.getPermitOrMonitoringPlanIdentifier(),
+                        installation, aircraft, maritime);
             }
-
-            query = query.on(builder.build());
-
-
+            complianceExpr = builder.build();
 
         } else {
             query = query.leftJoin(account.compliantEntity, compliantEntity);
@@ -146,6 +144,8 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
             .notNullAnd(this::getAccountTypeCondition, filter.getAccountTypes())
             .notNullAnd(account.complianceStatus::eq, filter.getComplianceStatus())
             .notNullAnd(this::getExcludedCondition, filter.getExcludedForYear())
+            .notNullAnd(expr -> expr, complianceExpr)
+            .notNullAnd(expr -> expr, permitOrMonitoringPlanExpr)
             .build());
     }
 

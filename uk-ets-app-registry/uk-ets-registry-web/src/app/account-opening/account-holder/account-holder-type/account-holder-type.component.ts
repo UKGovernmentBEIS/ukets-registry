@@ -15,7 +15,6 @@ import { UkValidationMessageHandler } from '@shared/validation';
   templateUrl: './account-holder-type.component.html',
 })
 export class AccountHolderTypeComponent implements OnInit {
-  @Input({ required: true }) caption: string;
   @Input() accountHolderType: AccountHolderType;
   @Output()
   readonly selectedAccountHolderType = new EventEmitter<AccountHolderType>();
@@ -34,7 +33,7 @@ export class AccountHolderTypeComponent implements OnInit {
   ngOnInit() {
     this.formRadioGroupInfo = {
       radioGroupHeading: 'Choose the account holder',
-      radioGroupHeadingCaption: this.caption,
+      radioGroupHeadingCaption: 'Add the account holder',
       radioGroupHint:
         'The account holder is the organisation or individual responsible for operating the account',
       key: 'accountHolderType',

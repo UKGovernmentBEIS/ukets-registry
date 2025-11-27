@@ -92,16 +92,9 @@ export class UpdateAllocationStatusFormComponent extends UkFormComponent {
   protected getValidationMessages(): {
     [key: string]: { [key: string]: string };
   } {
-    let errorMsg = 'You should change the withhold status to continue.';
-    if (
-      this.accountAllocationStatus &&
-      Object.keys(this.accountAllocationStatus).length === 0
-    ) {
-      errorMsg = 'There are no Allocation entries to display.';
-    }
     return {
       status: {
-        changeRequired: errorMsg,
+        changeRequired: 'You should change the allocation status to continue.',
       },
       justification: {
         required: 'Explain why you are changing the status.',

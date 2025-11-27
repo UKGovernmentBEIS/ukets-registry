@@ -1,14 +1,15 @@
 package gov.uk.ets.registry.api.accountholder.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeAction;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeActionType;
+import gov.uk.ets.registry.api.account.shared.InstallationAndAccountTransferError;
+import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDTO;
@@ -16,10 +17,10 @@ import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdat
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.model.services.PersistenceService;
-import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
+import gov.uk.ets.registry.api.tal.domain.types.TrustedAccountStatus;
 import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.domain.Task;
-import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
@@ -28,16 +29,18 @@ import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
+
+import java.beans.FeatureDescriptor;
+import java.util.*;
+import java.util.stream.Stream;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.beans.FeatureDescriptor;
-import java.util.Date;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -46,12 +49,13 @@ public class AccountHolderUpdateService {
     private final UserService userService;
     private final AccountService accountService;
     private final AccountRepository accountRepository;
+    private final TaskRepository taskRepository;
+    private final AccountHolderRepository holderRepository;
     private final PersistenceService persistenceService;
     private final TaskEventService taskEventService;
     private final Mapper mapper;
-    private final AccountHolderService accountHolderService;
-    private final EventService eventService;
-    private final AccountHolderChangeValidationService accountHolderChangeValidationService;
+    private final TrustedAccountRepository trustedAccountRepository;
+    private final AuthorizedRepresentativeService authorizedRepresentativeService;
 
     /**
      * Creates a task for the Account holder details update details action.
@@ -63,68 +67,39 @@ public class AccountHolderUpdateService {
     @Transactional
     @EmitsGroupNotifications(GroupNotificationType.ACCOUNT_UPDATE_PROPOSAL)
     public Long submitAccountHolderDetailsUpdateRequest(AccountHolderDetailsUpdateDTO dto, Long accountIdentifier) {
-        Task task = generateTask(dto, accountIdentifier);
+        Task task =  generateTask(dto, accountIdentifier);
         return task.getRequestId();
     }
 
     @Transactional
-    public Long accountHolderChange(AccountHolderChangeDTO accountHolderChangeDTO) {
-        accountHolderChangeValidationService
-                .validateAccountHolderChangeRequestForAccountIdentifier(accountHolderChangeDTO.getAccountIdentifier(),
-                        accountHolderChangeDTO.getAcquiringAccountHolder().getId(),
-                        AccountHolderChangeActionType.ACCOUNT_HOLDER_CHANGE_TO_EXISTING_HOLDER
-                                .equals(accountHolderChangeDTO.getAccountHolderChangeActionType()),
-                        accountHolderChangeDTO.getAccountHolderDelete());
-        Task task = generateAccountHolderChangeTask(accountHolderChangeDTO);
-        return task.getRequestId();
-    }
+    //@EmitsGroupNotifications(GroupNotificationType.ACCOUNT_UPDATE_PROPOSAL)
+    public Boolean submitChangeAccountHolderRequest(AccountHolderChangeDTO accountHolderChangeDTO) {
+        Long identifier = accountHolderChangeDTO.getAccountIdentifier();
+        AccountHolderDTO inputAccountHolderDTO = accountHolderChangeDTO.getAcquiringAccountHolder();
+        AccountHolderRepresentativeDTO holderUpdatedValues = accountHolderChangeDTO.getAcquiringAccountHolderContactInfo();
 
-    private Task generateAccountHolderChangeTask(AccountHolderChangeDTO accountHolderChangeDTO) {
-        Task task = new Task();
-        task.setRequestId(persistenceService.getNextBusinessIdentifier(Task.class));
-        Account account = retrieveAccountByIdentifier(accountHolderChangeDTO.getAccountIdentifier());
-        task.setDifference(mapper.convertToJson(toAccountHolderChangeAction(
-                accountHolderChangeDTO)));
-        task.setType(RequestType.ACCOUNT_HOLDER_CHANGE);
+        // validate Business Rules
+        Account account = retrieveAccountByIdentifier(identifier);
+        validateHasAccountSuspendedAR(identifier);
+        validatePendingForApprovalTrustedAccount(identifier);
 
-        AccountHolderDTO currentAccountHolder = accountHolderService.getAccountHolder(account.getAccountHolder().getIdentifier());
-        task.setBefore(mapper.convertToJson(currentAccountHolder));
+        validateNotTheSameAccountHolder(account, inputAccountHolderDTO);
+        validateOpenTasksForAccountsUnderTheSameAccountHolder(account.getId());
+        validateOpenTasksForAccounts(account.getId());
 
-        User currentUser = userService.getCurrentUser();
-        task.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
-        task.setInitiatedBy(currentUser);
-        task.setInitiatedDate(new Date());
+        // update the AccountHolder details
+        AccountHolder accountHolderEntity = null;
+        if (Objects.nonNull(inputAccountHolderDTO.getId())) {
+            accountHolderEntity = holderRepository.getAccountHolder(inputAccountHolderDTO.getId());
+        } else {
+            accountHolderEntity = accountService.createHolder(inputAccountHolderDTO);
+            accountService.insertContact(accountHolderEntity, holderUpdatedValues, true);
+        }
 
-        taskEventService.createAndPublishTaskAndAccountRequestEvent(task, currentUser.getUrid());
-
-        task.setAccount(account);
-
+        // bind the AccountHolder to the Current Account
+        account.setAccountHolder(accountHolderEntity);
         persistenceService.save(account);
-        persistenceService.save(task);
-
-        publishAccountEvent(accountHolderChangeDTO, task, account, currentUser);
-
-        return task;
-    }
-
-    private AccountHolderChangeAction toAccountHolderChangeAction(
-            AccountHolderChangeDTO accountHolderChangeDTO) {
-        AccountHolderChangeAction action = new AccountHolderChangeAction();
-        action.setType(accountHolderChangeDTO.getAccountHolderChangeActionType());
-        action.setAccountHolderDTO(accountHolderChangeDTO.getAcquiringAccountHolder());
-        action.setAccountHolderContactInfo(accountHolderChangeDTO.getAcquiringAccountHolderContactInfo());
-        action.setAccountHolderDelete(accountHolderChangeDTO.getAccountHolderDelete());
-        return action;
-    }
-
-    private void publishAccountEvent(AccountHolderChangeDTO dto, Task task, Account account, User currentUser) {
-        String oldHolderName = account.getAccountHolder().actualName();
-        String newHolderName = dto.getAcquiringAccountHolder().actualName();
-        String comment = String.format("From ‘%s’ to ‘%s’", oldHolderName, newHolderName);
-        String what = "Request to change account holder to another account holder.";
-
-        eventService.createAndPublishEvent(task.getAccount().getIdentifier().toString(), currentUser.getUrid(), comment,
-                EventType.ACCOUNT_TASK_REQUESTED, what);
+        return true;
     }
 
     /**
@@ -145,10 +120,9 @@ public class AccountHolderUpdateService {
 
     /**
      * Generates the {@link Task}
-     *
      * @param dto               The account holder update action
      * @param accountIdentifier The account identifier
-     * @return The generated {@link Task}
+     * @return                  The generated {@link Task}
      */
     private Task generateTask(Object dto, Long accountIdentifier) {
         Task task = new Task();
@@ -201,10 +175,75 @@ public class AccountHolderUpdateService {
                 .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
                 .toArray(String[]::new);
     }
-
+    
     private Account retrieveAccountByIdentifier(Long accountIdentifier) {
         return accountRepository.findByIdentifier(accountIdentifier)
                 .orElseThrow(() -> AccountActionException.create(
                         AccountActionError.build("You cannot change the AccountHolder - Missing account.")));
+    }
+
+    /**
+     * Transfer-BR8 An account opening request with installation transfer cannot be
+     * submitted if there are outstanding updates (pending or delayed) for the AH of
+     * old (existing) account of the installation originating from the same account.
+     * More specifically, if any of the following tasks is outstanding (pending or
+     * delayed) for the AH of the old (existing account), the account opening with
+     * installation transfer cannot be triggered:
+     * <p>
+     * ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS ACCOUNT_HOLDER_UPDATE_DETAILS
+     * AH_REQUESTED_DOCUMENT_UPLOAD
+     */
+    private void validateOpenTasksForAccountsUnderTheSameAccountHolder(Long accountId) {
+        Long openTasksForAccountsUnderTheSameAccountHolderCount = taskRepository.countPendingTasksByAccountIdInAndType(
+                List.of(accountId),
+                AccountHolderChangeRules.changeAccountHolderInvalidPendingTasks()
+            );
+
+        if (openTasksForAccountsUnderTheSameAccountHolderCount > 0) {
+            throw AccountActionException.create(AccountActionError
+                    .build(InstallationAndAccountTransferError.OUTSTANDING_TASKS_EXIST_FOR_THE_OLD_AH.getMessage()));
+        }
+    }
+
+    private void validateOpenTasksForAccounts(Long accountId) {
+        List<RequestType> invalidRequests = new java.util.ArrayList<>(RequestType.getARUpdateTasks());
+        invalidRequests.addAll(
+                AccountHolderChangeRules.changeAccountHolderInvalidRequestTypes()
+        );
+        Long openTasksForAccountsUnderTheSameAccountHolderCount = taskRepository.countPendingTasksByAccountIdInAndType(
+                List.of(accountId), invalidRequests);
+
+        if (openTasksForAccountsUnderTheSameAccountHolderCount > 0) {
+            throw AccountActionException.create(AccountActionError
+                    .build("You cannot change the AccountHolder if there are pending update Requests"));
+        }
+    }
+
+    private void validateNotTheSameAccountHolder(Account account, @NotNull AccountHolderDTO accountHolder) {
+        boolean hasEqualIds = account.getAccountHolder().getId() != null
+                && account.getAccountHolder().getId().equals(accountHolder.getId());
+
+        boolean hasEqualIdentifiers = Objects.nonNull(account.getAccountHolder().getIdentifier()) &&
+                account.getAccountHolder().getIdentifier().equals(accountHolder.getId());
+
+        if(hasEqualIds || hasEqualIdentifiers) {
+            throw AccountActionException.create(AccountActionError
+                    .build("You cannot change the account holder to the same one"));
+        }
+    }
+
+    private void validateHasAccountSuspendedAR(Long identifier) {
+        if(authorizedRepresentativeService.hasSuspendedAR(identifier)) {
+            throw AccountActionException.create(AccountActionError
+                    .build("You try to change account holder when suspended account representative request exists"));
+        }
+    }
+
+    private void validatePendingForApprovalTrustedAccount(Long identifier) {
+        List<TrustedAccount> trustedAccounts = trustedAccountRepository.findAllByAccountIdentifierAndStatusIn(identifier, List.of(TrustedAccountStatus.PENDING_ACTIVATION));
+        if(!trustedAccounts.isEmpty()) {
+            throw AccountActionException.create(AccountActionError
+                    .build("You try to change account holder when trusted account change exists"));
+        }
     }
 }

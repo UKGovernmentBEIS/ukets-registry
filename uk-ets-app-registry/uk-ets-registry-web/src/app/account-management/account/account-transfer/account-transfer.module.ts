@@ -23,7 +23,7 @@ import { AcquiringOrganisationDetailsContainerComponent } from '@account-transfe
 import { AcquiringOrganisationDetailsAddressContainerComponent } from '@account-transfer/components/acquiring-organisation-details-address/acquiring-organisation-details-address-container.component';
 import { AcquiringPrimaryContactDetailsContainerComponent } from '@account-transfer/components/acquiring-primary-contact-details/acquiring-primary-contact-details-container.component';
 import { AcquiringPrimaryContactWorkDetailsContainerComponent } from '@account-transfer/components/acquiring-primary-contact-work-details/acquiring-primary-contact-work-details-container.component';
-import { AccountHolderSharedModule } from '@registry-web/account-shared/account-holder-shared.module';
+import { AccountSharedModule } from '@registry-web/account-shared/account-shared.module';
 import { AccountTransferRequestSubmittedComponent } from '@account-transfer/components/account-transfer-request-submitted';
 
 @NgModule({
@@ -47,7 +47,7 @@ import { AccountTransferRequestSubmittedComponent } from '@account-transfer/comp
     NgbTypeaheadModule,
     ReactiveFormsModule,
     AccountTransferRoutingModule,
-    AccountHolderSharedModule,
+    AccountSharedModule,
     StoreModule.forFeature(
       fromAccountTransfer.accountTransferFeatureKey,
       fromAccountTransfer.reducer

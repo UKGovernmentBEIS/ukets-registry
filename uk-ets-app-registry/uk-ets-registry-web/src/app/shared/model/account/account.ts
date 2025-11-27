@@ -7,10 +7,6 @@ import { TrustedAccountListRules } from './trusted-account-list-rules';
 import { AccountType } from './account-type.enum';
 import { TrustedAccountList } from '@shared/model/account/trusted-account';
 import { ArSubmittedUpdateRequest } from '@shared/model/account/ar-submitted-update-request';
-import {
-  MetsContact,
-  RegistryContact,
-} from '@registry-web/shared/model/account/account-contacts.interface';
 
 export interface Account {
   identifier: number;
@@ -33,6 +29,4 @@ export interface Account {
   addedARs: number;
   removedARs: number;
   accountDetailsSameBillingAddress?: boolean;
-  metsContacts?: MetsContact[];
-  registryContacts?: RegistryContact[];
 }

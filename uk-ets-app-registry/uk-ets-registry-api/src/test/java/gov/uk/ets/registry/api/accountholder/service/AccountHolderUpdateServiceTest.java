@@ -2,18 +2,28 @@ package gov.uk.ets.registry.api.accountholder.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
+import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
+import gov.uk.ets.registry.api.account.web.model.DateInfo;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeActionType;
+import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDiffDTO;
+import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.model.services.PersistenceService;
-import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.common.model.types.Status;
+import gov.uk.ets.registry.api.common.view.AddressDTO;
+import gov.uk.ets.registry.api.common.view.EmailAddressDTO;
+import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
+import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
@@ -21,6 +31,7 @@ import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,22 +43,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 
@@ -65,25 +73,26 @@ class AccountHolderUpdateServiceTest {
     @Mock
     private TaskRepository taskRepository;
     @Mock
+    private AccountHolderRepository holderRepository;
+    @Mock
     private  PersistenceService persistenceService;
     @Mock
     private TaskEventService taskEventService;
     @Mock
     private Mapper mapper;
     @Mock
-    private EventService eventService;
+    private TrustedAccountRepository trustedAccountRepository;
     @Mock
-    private AccountHolderChangeValidationService accountHolderChangeValidationService;
+    private AuthorizedRepresentativeService authorizedRepresentativeService;
 
     private AccountHolderUpdateService accountHolderUpdateService;
 
     @BeforeEach
-    void setup() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
         accountHolderUpdateService = new AccountHolderUpdateService(userService,
-            accountService, accountRepository,
-            persistenceService, taskEventService, mapper,
-            accountHolderService, eventService, accountHolderChangeValidationService);
+            accountService, accountRepository, taskRepository, holderRepository,
+            persistenceService, taskEventService, mapper, trustedAccountRepository, authorizedRepresentativeService);
     }
 
     @DisplayName("Test submit account holder update request")
@@ -127,80 +136,203 @@ class AccountHolderUpdateServiceTest {
         }
     }
 
+    @DisplayName("Test submit account holder change request must be success")
     @Test
-    void accountHolderChange_successful() {
-        // Arrange
-        Account account = new Account();
-        account.setIdentifier(123L);
-        AccountHolder currentHolder = new AccountHolder();
-        account.setAccountHolder(currentHolder);
-
-        User user = new User();
-        user.setUrid("user123");
-
-        AccountHolderDTO acquiringHolder = new AccountHolderDTO();
-        DetailsDTO details = new DetailsDTO();
-        details.setName("New Holder Name");
-        acquiringHolder.setId(999L);
-        acquiringHolder.setDetails(details);
-
+    void submitChangeAccountHolderRequest_createsNewHolder_success() {
+        Long accountId = 123L;
         AccountHolderChangeDTO dto = new AccountHolderChangeDTO();
-        dto.setAccountIdentifier(123L);
-        dto.setAcquiringAccountHolder(acquiringHolder);
-        dto.setAccountHolderChangeActionType(AccountHolderChangeActionType.ACCOUNT_HOLDER_CHANGE_TO_EXISTING_HOLDER);
-        dto.setAccountHolderDelete(false);
+        dto.setAccountIdentifier(accountId);
+        dto.setAcquiringAccountHolder(new AccountHolderDTO()); // No ID → new
+        dto.setAcquiringAccountHolderContactInfo(new AccountHolderRepresentativeDTO());
 
-        when(accountRepository.findByIdentifier(123L)).thenReturn(Optional.of(account));
-        when(persistenceService.getNextBusinessIdentifier(Task.class)).thenReturn(456L);
-        when(userService.getCurrentUser()).thenReturn(user);
-        when(accountHolderService.getAccountHolder(anyLong())).thenReturn(acquiringHolder);
-        when(mapper.convertToJson(any())).thenReturn("{}");
-        when(persistenceService.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        Account account = new Account();
+        account.setId(accountId);
+        account.setAccountHolder(new AccountHolder());
+        when(accountRepository.findByIdentifier(accountId)).thenReturn(Optional.of(account));
+        when(taskRepository.countPendingTasksByAccountIdInAndType(anyList(), any())).thenReturn(0L); // No invalid tasks
 
-        doNothing().when(accountHolderChangeValidationService)
-                .validateAccountHolderChangeRequestForAccountIdentifier(anyLong(), anyLong(), anyBoolean(), anyBoolean());
-        doNothing().when(taskEventService).createAndPublishTaskAndAccountRequestEvent(any(Task.class), anyString());
+        AccountHolder newHolder = new AccountHolder();
+        newHolder.setId(2025L);
+        when(accountService.createHolder(any())).thenReturn(newHolder);
 
-        // Act
-        Long result = accountHolderUpdateService.accountHolderChange(dto);
+        Boolean result = accountHolderUpdateService.submitChangeAccountHolderRequest(dto);
 
-        // Assert
-        assertThat(result).isEqualTo(456L);
-
-        verify(accountHolderChangeValidationService).validateAccountHolderChangeRequestForAccountIdentifier(
-                eq(123L), eq(999L), eq(true), eq(false)
-        );
-        verify(accountRepository).findByIdentifier(123L);
-        verify(mapper, atLeastOnce()).convertToJson(any());
-        verify(taskEventService).createAndPublishTaskAndAccountRequestEvent(any(Task.class), eq("user123"));
-        verify(eventService).createAndPublishEvent(eq("123"), eq("user123"), anyString(), any(), anyString());
-        verify(persistenceService, atLeast(1)).save(any());
+        assertTrue(result);
+        verify(accountService).insertContact(eq(newHolder), any(), eq(true));
+        verify(persistenceService).save(account);
     }
 
+    @DisplayName("Test submit account holder should fail for the same account holder")
     @Test
-    void accountHolderChange_shouldThrowException_whenAccountNotFound() {
-        // Arrange
-        AccountHolderDTO acquiringHolder = new AccountHolderDTO();
-        acquiringHolder.setId(999L);
-
+    void submitChangeAccountHolderRequest_createsNewHolder_fail_forTheSameAccountHolder() {
+        Long accountId = 123L;
         AccountHolderChangeDTO dto = new AccountHolderChangeDTO();
-        dto.setAccountIdentifier(123L);
-        dto.setAcquiringAccountHolder(acquiringHolder);
-        dto.setAccountHolderChangeActionType(AccountHolderChangeActionType.ACCOUNT_HOLDER_CHANGE_TO_EXISTING_HOLDER);
-        dto.setAccountHolderDelete(false);
+        dto.setAccountIdentifier(accountId);
+        dto.setAcquiringAccountHolder(new AccountHolderDTO()); // No ID → new
+        dto.setAcquiringAccountHolderContactInfo(new AccountHolderRepresentativeDTO());
 
-        when(accountRepository.findByIdentifier(123L)).thenReturn(Optional.empty());
+        Account account = new Account();
+        account.setId(accountId);
+        AccountHolder existingAccountHolder = new AccountHolder();
+        existingAccountHolder.setId(1L);
 
-        // Act + Assert
-        AccountActionException exception = assertThrows(AccountActionException.class,
-                () -> accountHolderUpdateService.accountHolderChange(dto));
+        account.setAccountHolder(existingAccountHolder);
+        when(accountRepository.findByIdentifier(accountId)).thenReturn(Optional.of(account));
+        when(taskRepository.countPendingTasksByAccountIdInAndType(anyList(), any())).thenReturn(0L); // No invalid tasks
 
-        assertThat(exception).isNotNull();
-        assertThat(exception.getMessage())
-                .contains("You cannot change the AccountHolder - Missing account");
+        AccountHolder newHolder = new AccountHolder();
+        newHolder.setId(2002L);
+        when(accountService.createHolder(any())).thenReturn(newHolder);
 
-        verify(accountRepository).findByIdentifier(123L);
-        verifyNoInteractions(taskEventService, eventService);
+        Boolean result = accountHolderUpdateService.submitChangeAccountHolderRequest(dto);
+
+        assertTrue(result);
+        verify(accountService).insertContact(eq(newHolder), any(), eq(true));
+        verify(persistenceService).save(account);
+    }
+
+    @DisplayName("Test submit account holder should be failed due to missing account")
+    @Test
+    void submitChangeAccountHolderRequest_throwsWhenAccountMissing() {
+        Long accountId = 123L;
+        AccountHolderChangeDTO dto = new AccountHolderChangeDTO();
+        dto.setAccountIdentifier(accountId);
+        when(accountRepository.findByAccountIdentifierWithCompliantEntity(accountId)).thenReturn(Optional.empty());
+
+        AccountActionException ex = assertThrows(AccountActionException.class, () -> {
+            accountHolderUpdateService.submitChangeAccountHolderRequest(dto);
+        });
+
+        Assertions.assertTrue(ex.getMessage().contains("Missing account"));
+    }
+
+    @DisplayName("Test submit account holder change request should fail when there are pending requests")
+    @Test
+    void submitChangeAccountHolderRequest_throwsOnInvalidTasksForSameAH() {
+        Long accountId = 123L;
+        AccountHolderChangeDTO dto = new AccountHolderChangeDTO();
+        dto.setAccountIdentifier(accountId);
+        dto.setAcquiringAccountHolder(new AccountHolderDTO());
+
+        Account account = new Account();
+        account.setId(accountId);
+        when(accountRepository.findByAccountIdentifierWithCompliantEntity(accountId)).thenReturn(Optional.of(account));
+
+        // First validation: passes
+        when(taskRepository.countPendingTasksByAccountIdInAndType(
+                eq(List.of(accountId)), eq(AccountHolderChangeRules.changeAccountHolderInvalidPendingTasks())
+        )).thenReturn(0L);
+
+        // Second validation: fails
+        when(taskRepository.countPendingTasksByAccountIdInAndType(
+                eq(List.of(accountId)), argThat(argument ->
+                        argument.containsAll(RequestType.getARUpdateTasks()) &&
+                                argument.containsAll(AccountHolderChangeRules.changeAccountHolderInvalidRequestTypes())
+                )
+        )).thenReturn(1L);
+
+        AccountActionException ex = assertThrows(AccountActionException.class, () -> {
+            accountHolderUpdateService.submitChangeAccountHolderRequest(dto);
+        });
+
+        assertTrue(ex.getMessage().contains("You cannot change the AccountHolder"));
+    }
+
+
+    @DisplayName("Test submit account holder change request should fail when there are invalid pending tasks")
+    @Test
+    void submitChangeAccountHolderRequest_throwsOnInvalidTasksForAccount() {
+        Long accountId = 123L;
+        AccountHolderChangeDTO dto = new AccountHolderChangeDTO();
+        dto.setAccountIdentifier(accountId);
+        dto.setAcquiringAccountHolder(new AccountHolderDTO());
+
+        Account account = new Account();
+        account.setId(accountId);
+        AccountHolder existingAccountHolder = new AccountHolder();
+        existingAccountHolder.setId(111L);
+        account.setAccountHolder(existingAccountHolder);
+        when(accountRepository.findByIdentifier(accountId)).thenReturn(Optional.of(account));
+        // First validation OK
+        when(taskRepository.countPendingTasksByAccountIdInAndType(anyList(), any())).thenReturn(0L)
+                .thenReturn(2L); // second validation fails
+
+        AccountActionException ex = assertThrows(AccountActionException.class, () -> {
+            accountHolderUpdateService.submitChangeAccountHolderRequest(dto);
+        });
+
+        assertTrue(ex.getMessage().contains("there are pending update Requests"));
+    }
+
+    private AccountHolderDTO getCurrentAccountHolder(AccountHolderType type){
+        AccountHolderDTO currentAccountHolder = new AccountHolderDTO();
+        currentAccountHolder.setId(10000L);
+        currentAccountHolder.setStatus(Status.ACTIVE);
+        currentAccountHolder.setType(type);
+
+        EmailAddressDTO emailDto = new EmailAddressDTO();
+        emailDto.setEmailAddress("existing@gmail.com");
+        emailDto.setEmailAddressConfirmation("existing@gmail.com");
+        currentAccountHolder.setEmailAddress(emailDto);
+
+        PhoneNumberDTO phoneDto = new PhoneNumberDTO();
+        phoneDto.setPhoneNumber1("07956111222");
+        phoneDto.setPhoneNumber2("07956222333");
+        phoneDto.setCountryCode1("44");
+        phoneDto.setCountryCode2("44");
+        currentAccountHolder.setPhoneNumber(phoneDto);
+
+        DetailsDTO details = new DetailsDTO();
+        if(type == AccountHolderType.INDIVIDUAL){
+            details.setFirstName("Existing");
+            details.setLastName("Individual");
+            details.setBirthDateInfo(DateInfo.of(Date.valueOf("1980-10-10")));
+            details.setBirthYear(1980);
+            details.setBirthCountry("UK");
+        } else if(type == AccountHolderType.ORGANISATION){
+            details.setName("Existing Organisation");
+            details.setRegistrationNumber("1234556");
+            details.setRegNumTypeRadio(0);
+        }
+        currentAccountHolder.setDetails(details);
+
+        AddressDTO addressDto = new AddressDTO();
+        addressDto.setLine1("1 Existing Street");
+        addressDto.setCity("Manchester");
+        addressDto.setCountry("United Kingdom");
+        addressDto.setPostCode("M9 RTH");
+        currentAccountHolder.setAddress(addressDto);
+
+        return currentAccountHolder;
+    }
+
+    private AccountHolderRepresentativeDTO getAccountHolderDetailsUpdateDTO(){
+        AccountHolderRepresentativeDTO dto = new AccountHolderRepresentativeDTO();
+
+        AccountHolderDetailsUpdateDiffDTO accountHolderDiff = new AccountHolderDetailsUpdateDiffDTO();
+        LegalRepresentativeDetailsDTO legalRepresentativeDetailsDTO = new LegalRepresentativeDetailsDTO();
+        legalRepresentativeDetailsDTO.setFirstName("New");
+        legalRepresentativeDetailsDTO.setLastName("Individual");
+        legalRepresentativeDetailsDTO.setBirthDateInfo(DateInfo.of(Date.valueOf("1990-10-10")));
+
+        AddressDTO newAHAddressDto = new AddressDTO();
+        newAHAddressDto.setLine1("12 Test Street");
+        newAHAddressDto.setCity("London");
+        newAHAddressDto.setCountry("United Kingdom");
+        newAHAddressDto.setPostCode("NW9 RTH");
+        dto.setAddress(newAHAddressDto);
+
+        PhoneNumberDTO newAHPhoneDto = new PhoneNumberDTO();
+        newAHPhoneDto.setPhoneNumber1("07956111222");
+        newAHPhoneDto.setCountryCode1("44");
+        dto.setPhoneNumber(newAHPhoneDto);
+
+        EmailAddressDTO newAHEmail = new EmailAddressDTO();
+        newAHEmail.setEmailAddress("new-account-holder@gmail.com");
+        newAHEmail.setEmailAddressConfirmation("new-account-holder@gmail.com");
+        dto.setEmailAddress(newAHEmail);
+
+        return dto;
     }
 
     static Stream<Arguments> getArguments() {

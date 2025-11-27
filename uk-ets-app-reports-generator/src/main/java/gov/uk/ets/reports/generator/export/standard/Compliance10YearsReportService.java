@@ -57,7 +57,7 @@ public class Compliance10YearsReportService implements ReportTypeService<Complia
                 "Account type",
                 "Installation name",
                 "Operator ID",
-                "Regulated activity",
+                "Activity type",
                 "Permit ID/Monitoring plan ID",
                 "FYVE",
                 "LYVE",

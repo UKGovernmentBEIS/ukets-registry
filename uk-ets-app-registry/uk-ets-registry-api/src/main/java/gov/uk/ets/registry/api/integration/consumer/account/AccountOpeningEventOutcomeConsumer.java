@@ -3,6 +3,10 @@ package gov.uk.ets.registry.api.integration.consumer.account;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
+import gov.uk.ets.registry.api.integration.message.AccountDetailsMessage;
+import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
+import gov.uk.ets.registry.api.integration.message.AccountOpeningEventOutcome;
+import gov.uk.ets.registry.api.integration.message.IntegrationEventOutcome;
 import gov.uk.ets.registry.api.integration.notification.ErrorNotificationProducer;
 import gov.uk.ets.registry.api.integration.service.IntegrationHeadersUtil;
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
@@ -20,19 +24,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.netz.integration.model.IntegrationEventOutcome;
-import uk.gov.netz.integration.model.account.AccountDetailsMessage;
-import uk.gov.netz.integration.model.account.AccountOpeningEvent;
-import uk.gov.netz.integration.model.account.AccountOpeningEventOutcome;
 
 @Component
 @Log4j2
 @RequiredArgsConstructor
 @KafkaListener(
     containerFactory = "accountOpeningOutcomeConsumerFactory",
-    topics = {"${kafka.integration.installation.account.opening.response.topic}",
-              "${kafka.integration.aviation.account.opening.response.topic}",
-              "${kafka.integration.maritime.account.opening.response.topic}"}
+    topics = {"${kafka.integration.maritime.account.opening.response.topic}"}
 )
 @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.account.opening.enabled"}, havingValue = "true")
 public class AccountOpeningEventOutcomeConsumer {

@@ -9,6 +9,13 @@ import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.common.test.BaseIntegrationTest;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
+import gov.uk.ets.registry.api.integration.message.AccountDetailsMessage;
+import gov.uk.ets.registry.api.integration.message.AccountHolderMessage;
+import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
+import gov.uk.ets.registry.api.integration.message.AccountOpeningEventOutcome;
+import gov.uk.ets.registry.api.integration.message.IntegrationEventOutcome;
+import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
 import gov.uk.ets.registry.api.integration.service.account.AccountEventValidator;
 import gov.uk.ets.registry.api.notification.EmailNotification;
 import java.time.Duration;
@@ -16,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -30,6 +36,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -40,13 +47,6 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.netz.integration.model.IntegrationEventOutcome;
-import uk.gov.netz.integration.model.account.AccountDetailsMessage;
-import uk.gov.netz.integration.model.account.AccountHolderMessage;
-import uk.gov.netz.integration.model.account.AccountOpeningEvent;
-import uk.gov.netz.integration.model.account.AccountOpeningEventOutcome;
-import uk.gov.netz.integration.model.error.IntegrationEventError;
-import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 
 @TestPropertySource(locations = "/integration-test-application.properties", properties = {
     "kafka.integration.enabled=true"
@@ -54,7 +54,6 @@ import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
 
     private static final String ACCOUNT_OPENING_INSTALLATION_TOPIC = "installation-account-created-request-topic";
-    private static final String ACCOUNT_OPENING_AVIATION_TOPIC = "aviation-account-created-request-topic";
     private static final String ACCOUNT_OPENING_MARITIME_TOPIC = "maritime-account-created-request-topic";
 
     @Autowired
@@ -65,8 +64,8 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
 
     private KafkaTemplate<String, AccountOpeningEvent> kafkaTemplate;
 
-    private Consumer<String, AccountOpeningEventOutcome> installationResponseConsumer;
-    private Consumer<String, AccountOpeningEventOutcome> aviationResponseConsumer;
+    private Consumer<String, AccountOpeningEventOutcome> responseConsumer;
+
     private Consumer<String, AccountOpeningEventOutcome> maritimeResponseConsumer;
 
     private Consumer<String, EmailNotification> emailConsumer;
@@ -86,13 +85,9 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
 
         // Setup kafka consumers
         JsonDeserializer<AccountOpeningEventOutcome> deserializer = new JsonDeserializer<>(AccountOpeningEventOutcome.class);
-        installationResponseConsumer = new DefaultKafkaConsumerFactory<>(
-            consumerConfigs("installation-response-group"), new StringDeserializer(), deserializer).createConsumer();
-        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(installationResponseConsumer, "installation-account-created-response-topic");
-
-        aviationResponseConsumer = new DefaultKafkaConsumerFactory<>(
-                consumerConfigs("aviation-response-group"), new StringDeserializer(), deserializer).createConsumer();
-        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(aviationResponseConsumer, "aviation-account-created-response-topic");
+        responseConsumer = new DefaultKafkaConsumerFactory<>(
+            consumerConfigs("response-group"), new StringDeserializer(), deserializer).createConsumer();
+        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(responseConsumer, "installation-account-created-response-topic");
 
         maritimeResponseConsumer = new DefaultKafkaConsumerFactory<>(
             consumerConfigs("maritime-response-group"), new StringDeserializer(), deserializer).createConsumer();
@@ -131,8 +126,7 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
 
     @AfterEach
     protected void cleanUp() {
-        installationResponseConsumer.commitSync();
-        aviationResponseConsumer.commitSync();
+        responseConsumer.commitSync();
         maritimeResponseConsumer.commitSync();
         emailConsumer.commitSync();
         setOperatorConsumer.commitSync();
@@ -141,8 +135,7 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
 
     @AfterAll
     protected void tearDown() {
-        installationResponseConsumer.close();
-        aviationResponseConsumer.close();
+        responseConsumer.close();
         maritimeResponseConsumer.close();
         dltConsumer.close();
         emailConsumer.close();
@@ -150,6 +143,7 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
         super.tearDown();
     }
 
+    @Disabled // Until we start consuming messages from installation topic
     @Test
     void testAccountOpeningInstallationEvent() {
         // given
@@ -157,9 +151,9 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
         AccountDetailsMessage accountDetailsMessage = new AccountDetailsMessage();
         accountDetailsMessage.setAccountName("account name");
         accountDetailsMessage.setInstallationName("Installation name");
-        accountDetailsMessage.setEmitterId("3214567");
-        accountDetailsMessage.setPermitId("3214567");
-        accountDetailsMessage.setInstallationActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name()));
+        accountDetailsMessage.setEmitterId("321456");
+        accountDetailsMessage.setPermitId("321456");
+        accountDetailsMessage.setInstallationActivityType(InstallationActivityType.MANUFACTURE_OF_CERAMICS.name());
         accountDetailsMessage.setRegulator("EA");
         accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
         event.setAccountDetails(accountDetailsMessage);
@@ -183,7 +177,7 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
 
         // then
         ConsumerRecords<String, AccountOpeningEventOutcome>
-            records = KafkaTestUtils.getRecords(installationResponseConsumer, Duration.ofMillis(10000), 1);
+            records = KafkaTestUtils.getRecords(responseConsumer, Duration.ofMillis(10000), 1);
         assertThat(records.count()).isEqualTo(1);
         ConsumerRecord<String, AccountOpeningEventOutcome> record = records.iterator().next();
         assertThat(record.headers().lastHeader("Correlation-Id").value()).isEqualTo("correlationId".getBytes());
@@ -196,52 +190,6 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
         assertThat(emailRecords.count()).isEqualTo(1);
         assertThat(emailRecords.iterator().next().value().getSubject())
             .contains("A new account", "has been created");
-    }
-
-    @Test
-    void testAccountOpeningAircraftOperatorEvent() {
-        // given
-        AccountOpeningEvent event = new AccountOpeningEvent();
-        AccountDetailsMessage accountDetailsMessage = new AccountDetailsMessage();
-        accountDetailsMessage.setAccountName("account name");
-        accountDetailsMessage.setMonitoringPlanId("monitoringPlanId");
-        accountDetailsMessage.setEmitterId("32145678");
-        accountDetailsMessage.setRegulator("EA");
-        accountDetailsMessage.setFirstYearOfVerifiedEmissions(2024);
-        event.setAccountDetails(accountDetailsMessage);
-
-        AccountHolderMessage accountHolderMessage = new AccountHolderMessage();
-        accountHolderMessage.setAccountHolderType("ORGANISATION");
-        accountHolderMessage.setName("account holder name");
-        accountHolderMessage.setAddressLine1("address");
-        accountHolderMessage.setTownOrCity("town");
-        accountHolderMessage.setCountry("GR");
-        accountHolderMessage.setCrnNotExist(false);
-        accountHolderMessage.setCompanyRegistrationNumber("Registration Number");
-        event.setAccountHolder(accountHolderMessage);
-
-        RecordHeader recordHeader = new RecordHeader("Correlation-Id", "correlationId".getBytes());
-        ProducerRecord<String, AccountOpeningEvent> providedEvent =
-                new ProducerRecord<>(ACCOUNT_OPENING_AVIATION_TOPIC, null, null, "123456", event, List.of(recordHeader));
-
-        // when
-        kafkaTemplate.send(providedEvent);
-
-        // then
-        ConsumerRecords<String, AccountOpeningEventOutcome>
-                records = KafkaTestUtils.getRecords(aviationResponseConsumer, Duration.ofMillis(10000), 1);
-        assertThat(records.count()).isEqualTo(1);
-        ConsumerRecord<String, AccountOpeningEventOutcome> record = records.iterator().next();
-        assertThat(record.headers().lastHeader("Correlation-Id").value()).isEqualTo("correlationId".getBytes());
-        AccountOpeningEventOutcome response = record.value();
-        assertThat(response.getOutcome()).isEqualTo(IntegrationEventOutcome.SUCCESS);
-        assertThat(response.getErrors()).isEmpty();
-
-        ConsumerRecords<String, EmailNotification>
-                emailRecords = KafkaTestUtils.getRecords(emailConsumer, Duration.ofMillis(10000), 1);
-        assertThat(emailRecords.count()).isEqualTo(1);
-        assertThat(emailRecords.iterator().next().value().getSubject())
-                .contains("A new account", "has been created");
     }
 
     @Test

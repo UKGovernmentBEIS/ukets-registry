@@ -4,9 +4,8 @@ import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELAT
 
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
+import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
-
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,18 +15,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 
 @Log4j2
 @Service
 @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.set.operator.enabled"}, havingValue = "true")
 @RequiredArgsConstructor
 public class KafkaOperatorEventService implements OperatorEventService {
-
-    private static final List<String> SUPPORTED_ACCOUNT_TYPES = List.of(
-            AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.name(),
-            AccountType.OPERATOR_HOLDING_ACCOUNT.name(),
-            AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.name());
 
     @Value("${kafka.integration.installation.set.operator.request.topic}")
     private String installationSetOperatorRequestTopic;
@@ -46,7 +39,8 @@ public class KafkaOperatorEventService implements OperatorEventService {
     @Override
     public void updateOperator(CompliantEntity operator, String accountType, String correlationId) {
 
-        if (!SUPPORTED_ACCOUNT_TYPES.contains(accountType)) {
+        // todo: remove this check when the integration with METS is in place.
+        if (!AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.name().equals(accountType)) {
             return;
         }
 

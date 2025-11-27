@@ -19,7 +19,6 @@ import {
   UpdatePrimaryContactDetailsContainerComponent,
   UpdatePrimaryContactWorkDetailsContainerComponent,
 } from '@account-management/account/account-holder-details-wizard/components';
-import { UpdateDetailsWarningComponent } from '@shared/components/account/operator/update-details-warning/update-details-warning.component';
 
 const routes: Routes = [
   {
@@ -39,11 +38,6 @@ const routes: Routes = [
     component: UpdateAccountHolderDetailsContainerComponent,
   },
   {
-    path: AccountHolderDetailsWizardPathsModel.CONFIRM_UPDATE,
-    canLoad: [LoginGuard],
-    component: UpdateDetailsWarningComponent,
-  },
-  {
     path: AccountHolderDetailsWizardPathsModel.UPDATE_AH_ADDRESS,
     canLoad: [LoginGuard],
     component: UpdateAccountHolderDetailsAddressContainerComponent,
@@ -59,12 +53,14 @@ const routes: Routes = [
     component: UpdatePrimaryContactWorkDetailsContainerComponent,
   },
   {
-    path: AccountHolderDetailsWizardPathsModel.UPDATE_ALTERNATIVE_PRIMARY_CONTACT,
+    path:
+      AccountHolderDetailsWizardPathsModel.UPDATE_ALTERNATIVE_PRIMARY_CONTACT,
     canLoad: [LoginGuard],
     component: UpdateAlternativePrimaryContactDetailsContainerComponent,
   },
   {
-    path: AccountHolderDetailsWizardPathsModel.UPDATE_ALTERNATIVE_PRIMARY_CONTACT_WORK,
+    path:
+      AccountHolderDetailsWizardPathsModel.UPDATE_ALTERNATIVE_PRIMARY_CONTACT_WORK,
     canLoad: [LoginGuard],
     component: UpdateAlternativePrimaryContactWorkDetailsContainerComponent,
   },

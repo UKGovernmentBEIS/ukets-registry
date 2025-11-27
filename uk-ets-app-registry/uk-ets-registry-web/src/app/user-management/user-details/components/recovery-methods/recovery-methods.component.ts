@@ -15,7 +15,6 @@ import { KeycloakUser } from '@shared/user/keycloak-user';
 export class RecoveryMethodsComponent {
   @Input() user: KeycloakUser;
   @Input() initiatorUrid: string;
-  @Input() showHint = false;
 
   @Output() readonly initUpdateRecoveryEmail = new EventEmitter<void>();
   @Output() readonly initRemoveRecoveryEmail = new EventEmitter<void>();

@@ -196,7 +196,7 @@ class AccountOpeningPdfGeneratorTest {
                 "    \"name\": \"Haris Subtask\",\n" +
                 "    \"regulator\": \"DAERA\",\n" +
                 "    \"firstYear\": 2021,\n" +
-                "    \"activityTypes\": [\"STORAGE_OF_GREENHOUSE_GASES_UNDER_DIRECTIVE_2009_31_EC\"],\n" +
+                "    \"activityType\": \"STORAGE_OF_GREENHOUSE_GASES_UNDER_DIRECTIVE_2009_31_EC\",\n" +
                 "    \"permit\": { \"id\": \"123456789102255\" }\n" +
                 "  },\n" +
                 "  \"authorisedRepresentatives\": [\n" +

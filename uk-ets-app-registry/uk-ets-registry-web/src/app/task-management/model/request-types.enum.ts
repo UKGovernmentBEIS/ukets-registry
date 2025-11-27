@@ -125,11 +125,6 @@ export enum RequestType {
    * Request for payment.
    */
   PAYMENT_REQUEST = 'PAYMENT_REQUEST',
-
-  /**
-   * ACCOUNT_HOLDER_CHANGE
-   */
-  ACCOUNT_HOLDER_CHANGE = 'ACCOUNT_HOLDER_CHANGE',
 }
 
 interface RequestTypeValues {
@@ -519,17 +514,6 @@ export const REQUEST_TYPE_VALUES: Record<RequestType, RequestTypeValues> = {
     approvalText: 'Explain why you are approving this request',
     rejectionText: 'Why are you rejecting this request ?',
     confirmationText: 'Check the update request',
-    goToConfirmationPageAfterCompletion: false,
-    requiresOtpVerificationOnApproval: false,
-    completeOnly: false,
-  },
-  ACCOUNT_HOLDER_CHANGE: {
-    label: 'Change account holder',
-    headingText: 'request',
-    approvalText: 'Explain why you are approving this request (optional)',
-    rejectionText: 'Why are you rejecting this request?',
-    confirmationText:
-      'Check the request and select either “Approve” or “Reject”',
     goToConfirmationPageAfterCompletion: false,
     requiresOtpVerificationOnApproval: false,
     completeOnly: false,

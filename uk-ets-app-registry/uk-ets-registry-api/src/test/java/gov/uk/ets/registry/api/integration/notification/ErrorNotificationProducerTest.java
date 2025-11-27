@@ -3,6 +3,8 @@ package gov.uk.ets.registry.api.integration.notification;
 import static org.mockito.ArgumentMatchers.any;
 
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
 import gov.uk.ets.registry.api.integration.service.IntegrationHeadersUtil;
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.usernotifications.GroupNotification;
@@ -16,8 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.netz.integration.model.error.IntegrationEventError;
-import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @ExtendWith(MockitoExtension.class)
 class ErrorNotificationProducerTest {

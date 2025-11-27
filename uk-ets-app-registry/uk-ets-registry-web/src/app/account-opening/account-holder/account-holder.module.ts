@@ -19,7 +19,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { AccountOpeningModule } from '../account-opening.module';
 import { NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
-import { AccountHolderSharedModule } from '@registry-web/account-shared/account-holder-shared.module';
+import { AccountSharedModule } from '@registry-web/account-shared/account-shared.module';
 import { AccountHolderService } from './account-holder.service';
 
 @NgModule({
@@ -42,7 +42,7 @@ import { AccountHolderService } from './account-holder.service';
     SharedModule,
     AccountOpeningModule,
     NgbTypeaheadModule,
-    AccountHolderSharedModule,
+    AccountSharedModule,
   ],
   exports: [AccountHolderTypeComponent, AccountHolderSelectionComponent],
 })

@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Inject,
   OnInit,
@@ -7,130 +8,135 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
+import { AuthModel } from '@registry-web/auth/auth.model';
 import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
+import { IUkOfficialCountry } from '@shared/countries/country.interface';
+import { selectAllCountries } from '@shared/shared.selector';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
-import { AccountHolderSelectionType } from '@shared/model/account';
+import {
+  AccountHolder,
+  AccountHolderSelectionType,
+} from '@shared/model/account';
 import { canGoBack, errors } from '@shared/shared.action';
+import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ChangeAccountHolderWizardActions } from '@change-account-holder-wizard/store/actions';
-import {
-  CHANGE_ACCOUNT_HOLDER_BASE_PATH,
-  ChangeAccountHolderWizardPaths,
-} from '@change-account-holder-wizard/model';
+import { ChangeAccountHolderWizardPathsModel } from '@change-account-holder-wizard/model';
 import {
   selectAccountHolderList,
   selectChangeAccountHolderSelectionType,
-  selectAcquiringAccountHolderType,
-  selectReturnToOverview,
-  selectAcquiringAccountHolder,
-} from '@change-account-holder-wizard/store/selectors';
-import { ChangeAccountHolderTaskMap } from '@change-account-holder-wizard/change-account-holder.task-map';
+  selectChangeAccountHolderType,
+  selectCurrentAccountHolder,
+} from '@change-account-holder-wizard/store/reducers';
 
 @Component({
   selector: 'app-change-account-holder-selection-container',
   template: `
     <app-account-holder-selection
-      [caption]="map.CAPTION"
-      [accountHolder]="acquiringAccountHolder$ | async"
+      [accountHolder]="accountHolder$ | async"
       [accountHolderList]="accountHolderList$ | async"
-      [accountHolderType]="accountHolderType$ | async"
+      [accountHolderType]="changeAccountHolderType$ | async"
       [accountHolderSelectionType]="accountHolderSelectionType$ | async"
       [loggedinUser]="loggedinUser$ | async"
       [searchByNameRequestUrl]="searchByNameRequestUrl"
       (errorDetails)="onError($event)"
       (output)="onContinue($event)"
-    />
-    <app-cancel-request-link (goToCancelScreen)="onCancel()" />
+    ></app-account-holder-selection>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeAccountHolderSelectionContainerComponent implements OnInit {
-  private readonly returnToOverview$ = this.store.select(
-    selectReturnToOverview
-  );
+  readonly previousRoute = ChangeAccountHolderWizardPathsModel.BASE_PATH;
 
-  readonly searchByNameRequestUrl =
-    this.ukEtsRegistryApiBaseUrl + '/account-holder.get.by-name-or-identifier';
-
-  readonly accountHolderSelectionType$ = this.store.select(
-    selectChangeAccountHolderSelectionType
-  );
-  readonly loggedinUser$ = this.store.select(selectLoggedInUser);
-  readonly accountHolderType$ = this.store.select(
-    selectAcquiringAccountHolderType
-  );
-  readonly accountHolderList$ = this.store.select(selectAccountHolderList);
-  readonly acquiringAccountHolder$ = this.store.select(
-    selectAcquiringAccountHolder
-  );
-  readonly map = ChangeAccountHolderTaskMap;
+  searchByNameRequestUrl: string;
+  accountHolder$: Observable<AccountHolder>;
+  accountHolderList$: Observable<AccountHolder[]>;
+  changeAccountHolderType$: Observable<string>;
+  accountHolderCompleted$: Observable<boolean>;
+  accountHolderSelectionType$: Observable<AccountHolderSelectionType>;
+  loggedinUser$: Observable<AuthModel>;
+  countries$: Observable<IUkOfficialCountry[]>;
 
   constructor(
     @Inject(UK_ETS_REGISTRY_API_BASE_URL)
     private ukEtsRegistryApiBaseUrl: string,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
+    private _router: Router,
+    private route: ActivatedRoute,
+    private cdref: ChangeDetectorRef,
     private store: Store
   ) {}
 
   ngOnInit() {
-    this.returnToOverview$.pipe(take(1)).subscribe((returnToOverview) => {
-      this.store.dispatch(
-        canGoBack({
-          goBackRoute: `/account/${this.activatedRoute.snapshot.paramMap.get('accountId')}/${CHANGE_ACCOUNT_HOLDER_BASE_PATH}/${
-            returnToOverview
-              ? ChangeAccountHolderWizardPaths.OVERVIEW
-              : ChangeAccountHolderWizardPaths.SELECT_TYPE
-          }`,
-          extras: { skipLocationChange: true },
-        })
-      );
-    });
+    this.store.dispatch(
+      canGoBack({
+        goBackRoute: `/account/${this.route.snapshot.paramMap.get(
+          'accountId'
+        )}/${ChangeAccountHolderWizardPathsModel.BASE_PATH}`,
+      })
+    );
 
-    this.accountHolderType$.pipe(take(1)).subscribe((accountHolderType) => {
-      this.store.dispatch(
-        ChangeAccountHolderWizardActions.FETCH_ACCOUNT_HOLDER_LIST({
-          holderType: accountHolderType,
-        })
-      );
-    });
+    this.searchByNameRequestUrl =
+      this.ukEtsRegistryApiBaseUrl +
+      '/account-holder.get.by-name-or-identifier';
+
+    this.accountHolderSelectionType$ = this.store.select(
+      selectChangeAccountHolderSelectionType
+    );
+
+    this.loggedinUser$ = this.store.select(selectLoggedInUser);
+
+    // this.accountHolderCompleted$ = this.store.select(
+    //   selectAccountHolderWizardCompleted
+    // );
+
+    this.changeAccountHolderType$ = this.store.select(
+      selectChangeAccountHolderType
+    );
+
+    this.accountHolderList$ = this.store.select(selectAccountHolderList);
+    this.accountHolder$ = this.store.select(selectCurrentAccountHolder);
+    this.countries$ = this.store.select(selectAllCountries);
+
+    this.changeAccountHolderType$
+      .pipe(take(1))
+      .subscribe((changeAccountHolderType) => {
+        if (!changeAccountHolderType) {
+          this._router.navigate([this.previousRoute], {
+            skipLocationChange: true,
+          });
+        }
+        this.loggedinUser$.pipe(take(1)).subscribe((loggedInUser) => {
+          this.store.dispatch(
+            ChangeAccountHolderWizardActions.fetchAccountHolderList({
+              holderType: changeAccountHolderType,
+            })
+          );
+        });
+      });
   }
 
   onError(value: ErrorDetail[]) {
-    const summary: ErrorSummary = { errors: value };
+    const summary: ErrorSummary = {
+      errors: value,
+    };
     this.store.dispatch(errors({ errorSummary: summary }));
   }
 
-  onContinue({
-    selectedIdFromSearch,
-    selectedIdFromList,
-    accountHolderSelectionType,
-  }) {
-    let accountHolderId = null;
-
-    if (accountHolderSelectionType === AccountHolderSelectionType.FROM_LIST) {
-      accountHolderId = selectedIdFromList;
-    } else if (
-      accountHolderSelectionType === AccountHolderSelectionType.FROM_SEARCH
-    ) {
-      accountHolderId = selectedIdFromSearch;
-    }
-
+  onContinue(value: any) {
     this.store.dispatch(
-      ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_SELECTION_TYPE({
-        selectionType: accountHolderSelectionType,
-        id: accountHolderId,
+      ChangeAccountHolderWizardActions.setAccountHolderSelectionType({
+        selectionType: value.accountHolderSelectionType,
+        id:
+          value.accountHolderSelectionType ===
+          AccountHolderSelectionType.FROM_LIST
+            ? value.selectedIdFromList
+            : value.selectedIdFromSearch,
       })
     );
-    if (accountHolderSelectionType === AccountHolderSelectionType.NEW) {
+    if (value.accountHolderSelectionType === AccountHolderSelectionType.NEW) {
       this.store.dispatch(
-        ChangeAccountHolderWizardActions.CLEAN_ACCOUNT_HOLDER_LIST()
+        ChangeAccountHolderWizardActions.cleanAccountHolderList()
       );
     }
-  }
-
-  onCancel() {
-    const route = this.router.url;
-    this.store.dispatch(ChangeAccountHolderWizardActions.CANCEL({ route }));
   }
 }

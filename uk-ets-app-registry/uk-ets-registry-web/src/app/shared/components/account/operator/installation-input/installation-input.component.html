@@ -30,6 +30,13 @@
           [validationErrorMessage]="validationErrorMessage.name"
           controlName="name"
         ></app-form-control-text>
+        <app-form-control-select
+          controlName="activityType"
+          [placeHolder]="'Please select'"
+          [validationErrorMessage]="validationErrorMessage.activityType"
+          [options]="activityTypeOptions()"
+          [label]="'Installation activity type'"
+        ></app-form-control-select>
         <app-form-control-text
           *ngIf="isSeniorOrJuniorAdmin"
           [label]="'Emitter ID'"

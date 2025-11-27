@@ -21,7 +21,6 @@ import gov.uk.ets.registry.api.compliance.messaging.events.outgoing.GetCurrentDy
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTaskService;
-import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.messaging.UktlAccountNotifyMessageService;
 import gov.uk.ets.registry.api.messaging.domain.AccountNotification;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
@@ -80,8 +79,6 @@ public class AccountOpeningWithInstallationTransferTaskService
     private final AccountCreationService accountCreationService;
     
     private final RequestedDocsTaskService requestedDocsTaskService;
-
-    private final OperatorEventService operatorEventService;
 
     @Override
     public UploadedFile getRequestedTaskFile(TaskFileDownloadInfoDTO infoDTO) {
@@ -147,7 +144,7 @@ public class AccountOpeningWithInstallationTransferTaskService
 
         //Transfer-BR4
         if(!taskDTO.getAccount().getOperator().getPermit().getPermitIdUnchanged()) {
-            accountService.validatePermitId(taskDTO.getAccount().getOperator().getPermit().getId());
+            accountService.installationPermitIdExists(taskDTO.getAccount().getOperator().getPermit().getId());
         }
 
         Account newAccount = accountCreationService.createAccountFromTask(taskDTO);
@@ -158,8 +155,6 @@ public class AccountOpeningWithInstallationTransferTaskService
         accountAccessService.createAccountAccess(newAccount, UserRole.getRolesForRoleBasedAccess(),
                                                  AccountAccessRight.ROLE_BASED);
         sendAccountNotification(oldAccount.get(), newAccount, taskDTO.getCompletedDate());
-
-        operatorEventService.updateOperator(newAccount.getCompliantEntity(), newAccount.getRegistryAccountType().name());
         return defaultResponseBuilder(taskDTO).build();
     }
 

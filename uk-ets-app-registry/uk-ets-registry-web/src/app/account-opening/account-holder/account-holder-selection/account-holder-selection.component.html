@@ -16,7 +16,7 @@
         >
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-xl">{{ caption }}</span>
+              <span class="govuk-caption-xl">Add the account holder</span>
               Add the {{ accountHolderTypeText }}
             </h1>
           </legend>
@@ -83,10 +83,10 @@
               >
                 <option [value]="null">Please select</option>
                 <option
-                  *ngFor="let accountHolderItem of accountHolderList"
-                  [value]="accountHolderItem.id"
+                  *ngFor="let accountHolder of accountHolderList"
+                  [value]="accountHolder.id"
                 >
-                  {{ accountHolderItem | formatAccountHolderResult }}
+                  {{ accountHolder | formatAccountHolderResult }}
                 </option>
               </select>
             </div>
@@ -157,7 +157,7 @@
                 [url]="searchByNameRequestUrl"
                 [params]="requestParams"
                 searchKey="name"
-                [resultTemplate]="accountHolderTpl"
+                [resultTemplate]="accountHolder"
                 [inputFormatter]="accountHolderResultFormatter"
                 placeHolder="Search by name or ID"
                 (resultItem)="onSelectFromSearch($event)"
@@ -176,7 +176,7 @@
       </button>
     </form>
   </div>
-  <ng-template #accountHolderTpl let-r="result" let-t="term">
+  <ng-template #accountHolder let-r="result" let-t="term">
     <ngb-highlight
       [result]="r | formatTypeAheadAccountHolderResult"
       [term]="t"

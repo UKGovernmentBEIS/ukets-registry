@@ -43,8 +43,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.collections.CollectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -444,7 +442,7 @@ public class AccountOpeningPdfGenerator {
         if (isInstallation) {
 
             addRow(table, "Installation name", accountDTO.getOperator().getName(), null);
-            addRow(table, "Installation activity type", getActivityTypes(accountDTO.getOperator()), null);
+            addRow(table, "Installation activity type", getActivityTypeLabel(accountDTO.getOperator().getActivityType().name()), null);
             addRow(table, "Permit ID", accountDTO.getOperator().getPermit().getId(), null);
             addRow(table, "Regulator", accountDTO.getOperator().getRegulator().name(),
                     isRegulatorChanged
@@ -470,7 +468,9 @@ public class AccountOpeningPdfGenerator {
             addRowSeparator(table, 1);
             addRow(table, "Installation ID", Long.toString(accountDTO.getOperator().getIdentifier()), null);
             addRow(table, "Installation name", accountDTO.getOperator().getName(), null);
-            addRow(table, "Installation activity type", getActivityTypes(accountDTO.getInstallationToBeTransferred()), null);
+            addRow(table, "Installation activity type", accountDTO.getInstallationToBeTransferred().getActivityType() != null
+                    ? getActivityTypeLabel(accountDTO.getInstallationToBeTransferred().getActivityType().name())
+                    : "", null);
             addRow(table, "Permit ID", accountDTO.getInstallationToBeTransferred().getPermit().getId(), null);
             addRow(table, "Regulator", accountDTO.getInstallationToBeTransferred().getRegulator().name(),
                     isRegulatorChanged
@@ -492,16 +492,6 @@ public class AccountOpeningPdfGenerator {
         addRowSeparator(table, 2);
 
         document.add(table);
-    }
-
-    private String getActivityTypes(OperatorDTO operatorDTO) {
-        if (CollectionUtils.isEmpty(operatorDTO.getActivityTypes())) {
-            return operatorDTO.getActivityType().name();
-        }
-        return operatorDTO.getActivityTypes().stream()
-                    .map(Enum::name)
-                    .map(this::getActivityTypeLabel)
-                    .collect(Collectors.joining(";"));
     }
 
     public void createAuthorisedRepresentativesSection(Document document, AccountDTO accountDTO) {

@@ -7,8 +7,10 @@ import { IUkOfficialCountry } from '@shared/countries/country.interface';
 })
 export class CountryNamePipe implements PipeTransform {
   transform(countryCode: string, countries: IUkOfficialCountry[]): string {
-    return countryCode && countries
-      ? countries.find((country) => country.key === countryCode)?.item[0]?.name
-      : null;
+    if (!countryCode || !countries) {
+      return null;
+    }
+    const countryObj = countries.filter((f) => f.key === countryCode);
+    return countryObj[0].item[0].name;
   }
 }

@@ -90,7 +90,7 @@ export class AccountHolderDetailsWizardNavigationEffects {
         let path = '';
         switch (action.updateType) {
           case AccountHolderDetailsType.ACCOUNT_HOLDER_UPDATE_DETAILS:
-            path = AccountHolderDetailsWizardPathsModel.CONFIRM_UPDATE;
+            path = AccountHolderDetailsWizardPathsModel.UPDATE_ACCOUNT_HOLDER;
             break;
           case AccountHolderDetailsType.ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS:
             path = AccountHolderDetailsWizardPathsModel.UPDATE_PRIMARY_CONTACT;

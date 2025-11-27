@@ -1,30 +1,16 @@
-import { Component, computed, input } from '@angular/core';
-import {
-  AccountHolder,
-  AccountHolderType,
-  Individual,
-  IndividualDetails,
-  Organisation,
-  OrganisationDetails,
-} from '@shared/model/account';
+import { Component, Input } from '@angular/core';
+import { AccountHolder, AccountHolderType } from '@shared/model/account';
 
 @Component({
   selector: 'app-account-holder-short-overview',
   templateUrl: './account-holder-short-overview.component.html',
+  styles: ``,
 })
 export class AccountHolderShortOverviewComponent {
-  readonly accountHolder = input.required<AccountHolder>();
-  readonly headingCaption = input.required<string>();
-  readonly warningMessage = input.required<string>();
+  @Input()
+  heading: string;
+  @Input()
+  accountHolder: AccountHolder;
 
-  readonly organisationDetails = computed<OrganisationDetails>(() =>
-    this.accountHolder()?.type === AccountHolderType.ORGANISATION
-      ? (this.accountHolder() as Organisation).details
-      : null
-  );
-  readonly individualDetails = computed<IndividualDetails>(() =>
-    this.accountHolder()?.type === AccountHolderType.INDIVIDUAL
-      ? (this.accountHolder() as Individual).details
-      : null
-  );
+  accountHolderTypes = AccountHolderType;
 }

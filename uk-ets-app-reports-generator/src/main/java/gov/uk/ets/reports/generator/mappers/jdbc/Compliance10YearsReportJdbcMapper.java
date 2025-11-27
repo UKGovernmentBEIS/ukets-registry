@@ -43,7 +43,7 @@ public class Compliance10YearsReportJdbcMapper
 
     private static final String ACTIVITY_TYPE_COLUMN =
         "case\n" +
-            "   when a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' then (select STRING_AGG(description, '; ') as activity_type from activity_type at where at.compliant_entity_id = ce.id group by compliant_entity_id)\n" +
+            "   when a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' then (select activity_type from installation i where i.compliant_entity_id = ce.id)\n" +
             "   else ''\n" +
             "end";
 

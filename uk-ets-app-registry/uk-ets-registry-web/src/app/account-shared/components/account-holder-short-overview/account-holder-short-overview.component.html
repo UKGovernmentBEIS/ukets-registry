@@ -2,45 +2,41 @@
   <div class="govuk-grid-column-full">
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
-        <h2 class="govuk-heading-l govuk-!-margin-bottom-3">
-          {{ headingCaption() }}
-        </h2>
+        <h2 class="govuk-summary-list__key">{{ heading }}</h2>
       </div>
     </dl>
 
-    @if (warningMessage()) {
-      <div class="govuk-warning-text">
-        <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
-        <strong class="govuk-warning-text__text">
-          <span class="govuk-visually-hidden">Warning</span>
-          {{ warningMessage() }}
-        </strong>
-      </div>
-    }
-
-    <dl
-      class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+    <!-- Case of account holder individual -->
+    <ng-container
+      *ngIf="
+        accountHolder && accountHolder.type === accountHolderTypes.INDIVIDUAL
+      "
     >
-      @if (individualDetails()) {
-        <!-- Case of AccountHolderType.INDIVIDUAL -->
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+        *ngIf="accountHolder.details"
+      >
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">First and middle names</dt>
           <dd class="govuk-summary-list__value">
-            {{ individualDetails() | individualFirstAndMiddleNames }}
+            {{
+              (accountHolder | individual).details
+                | individualFirstAndMiddleNames
+            }}
           </dd>
         </div>
 
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Last name</dt>
           <dd class="govuk-summary-list__value">
-            {{ individualDetails().lastName }}
+            {{ (accountHolder | individual).details.lastName }}
           </dd>
         </div>
 
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Country of birth</dt>
           <dd class="govuk-summary-list__value">
-            {{ individualDetails().countryOfBirth }}
+            {{ (accountHolder | individual).details.countryOfBirth }}
           </dd>
         </div>
 
@@ -50,47 +46,48 @@
           </dt>
           <dd class="govuk-summary-list__value">Yes</dd>
         </div>
-      } @else if (organisationDetails()) {
-        <!-- Case of AccountHolderType.ORGANISATION -->
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Name</dt>
-          <dd class="govuk-summary-list__value">
-            {{ organisationDetails().name }}
-          </dd>
-        </div>
-        @if (organisationDetails().registrationNumber) {
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Registration number</dt>
-            <dd class="govuk-summary-list__value">
-              {{ organisationDetails().registrationNumber }}
-            </dd>
-          </div>
-        }
-        @if (organisationDetails().noRegistrationNumJustification) {
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              Reason for not providing a registration number
-            </dt>
-            <dd class="govuk-summary-list__value">
-              {{ organisationDetails().noRegistrationNumJustification }}
-            </dd>
-          </div>
-        }
-      } @else {
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Name</dt>
-          <dd class="govuk-summary-list__value">
-            {{ accountHolder().details.name }}
-          </dd>
-        </div>
-      }
+      </dl>
+    </ng-container>
 
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Account Holder ID</dt>
-        <dd class="govuk-summary-list__value">
-          {{ accountHolder().id }}
-        </dd>
-      </div>
-    </dl>
+    <!-- Case of account holder organisation -->
+    <ng-container
+      *ngIf="
+        accountHolder && accountHolder.type === accountHolderTypes.ORGANISATION
+      "
+    >
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
+        *ngIf="accountHolder.details"
+      >
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Name</dt>
+          <dd class="govuk-summary-list__value">
+            {{ accountHolder.details.name }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Registration number</dt>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="(accountHolder | organisation).details.registrationNumber"
+          >
+            {{ (accountHolder | organisation).details.registrationNumber }}
+          </dd>
+          <dd
+            class="govuk-summary-list__value"
+            *ngIf="
+              (accountHolder | organisation).details
+                .noRegistrationNumJustification
+            "
+          >
+            No registration number <br />
+            {{
+              (accountHolder | organisation).details
+                .noRegistrationNumJustification
+            }}
+          </dd>
+        </div>
+      </dl>
+    </ng-container>
   </div>
 </div>

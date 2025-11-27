@@ -4,5 +4,4 @@ export enum OperatorWizardRoutes {
   AIRCRAFT_OPERATOR = '/account-opening/operator/aircraft-operator',
   MARITIME_OPERATOR = '/account-opening/operator/maritime-operator',
   OVERVIEW = '/account-opening/operator/operator-overview',
-  SELECT_REGULATED_ACTIVITY = '/account-opening/operator/select-activity',
 }

@@ -172,9 +172,9 @@ export class PersonalDetailsComponent
 
   getKnownAsHintText(): string {
     if (this.isRequestFromAdmin && !this.isMyProfilePage) {
-      return 'If they use a different name, enter the full know-as name, including last name. For example, if their name is Joseph Frederick Smith but everyone knows them as Fred Smith, please enter Fred Smith in this field.';
+      return 'If they use a different name, enter that name in full. This name will be displayed to everyone else in the registry.';
     } else {
-      return 'If you use a different name, enter the full know-as name, including last name. For example, if your name is Joseph Frederick Smith but everyone knows you as Fred Smith, please enter Fred Smith in this field.';
+      return 'If you use a different name, enter that name in full. This name will be displayed to everyone else in the registry.';
     }
   }
 }

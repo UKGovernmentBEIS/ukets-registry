@@ -1,17 +1,11 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div class="govuk-form-group">
-      <div appScreenReaderPageAnnounce [pageTitle]="getTitle()"></div>
-      <div class="govuk-fieldset">
-        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">
-            <span class="govuk-caption-xl">
-              {{ getCaption() }}
-            </span>
-            {{ getTitle() }}
-          </h1>
-        </div>
-      </div>
+      <app-sub-wizard-title
+        [contactType]="contactType"
+        [isAHUpdateWizard]="isAHUpdateWizard"
+        [subTitle]="getSubtitle()"
+      />
       <p class="govuk-body">We'll use this information to contact them</p>
     </div>
   </div>

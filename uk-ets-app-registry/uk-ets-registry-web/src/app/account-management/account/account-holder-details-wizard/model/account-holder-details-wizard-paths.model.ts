@@ -11,7 +11,6 @@ export enum AccountHolderDetailsWizardPathsModel {
   CHECK_UPDATE_REQUEST = 'check-update-request',
   CANCEL_UPDATE_REQUEST = 'cancel',
   REQUEST_SUBMITTED = 'request-submitted',
-  CONFIRM_UPDATE = 'confirm-update-holder',
 }
 
 export const AccountHolderDetailsWizardPathsMap = new Map<
@@ -30,7 +29,6 @@ export const AccountHolderDetailsWizardPathsMap = new Map<
     'update-account-holder',
     AccountHolderDetailsWizardPathsModel.UPDATE_ACCOUNT_HOLDER,
   ],
-  ['confirm-update', AccountHolderDetailsWizardPathsModel.CONFIRM_UPDATE],
   [
     'change-account-holder',
     AccountHolderDetailsWizardPathsModel.CHANGE_ACCOUNT_HOLDER,

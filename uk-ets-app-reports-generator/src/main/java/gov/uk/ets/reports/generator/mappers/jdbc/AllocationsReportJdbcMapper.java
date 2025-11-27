@@ -40,10 +40,9 @@ public class AllocationsReportJdbcMapper implements ReportDataMapper<Allocations
 
     private static final String ACTIVITY_TYPE_COLUMN =
         "case\n" +
-        "    when a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' then (select STRING_AGG(description, '; ') as activity_type\n" +
-        "                                                                    from activity_type at\n" +
-        "                                                                    where at.compliant_entity_id = ce.id" +
-        "                                                                    group by compliant_entity_id)\n" +
+        "    when a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' then (select activity_type\n" +
+        "                                                                    from installation i\n" +
+        "                                                                    where i.compliant_entity_id = ce.id)\n" +
         "    else 'AIRCRAFT_OPERATOR'";
 
     /**

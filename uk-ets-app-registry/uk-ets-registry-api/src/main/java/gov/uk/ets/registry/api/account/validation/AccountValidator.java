@@ -5,6 +5,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
+import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
@@ -222,8 +223,12 @@ public class AccountValidator {
             errors.add(new Violation("account.operator.activityType.empty", "Operator activity type is required"));
         }
         validateRegulator(errors, operator);
-        if (CollectionUtils.isEmpty(operator.getActivityTypes()) && operator.getActivityType() == null) {
+        if (operator.getActivityType() == null) {
             errors.add(new Violation("account.operator.activityType.empty", "Operator activity type is required"));
+        } else if (!EnumUtils
+            .isValidEnum(InstallationActivityType.class, operator.getActivityType().name())) {
+            errors.add(new Violation("account.operator.activityType.invalid",
+                "The account operator activity type is invalid"));
         }
 
         validatePermitId(errors, operator.getPermit());

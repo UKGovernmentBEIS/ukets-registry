@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
+import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 
 @ExtendWith(MockitoExtension.class)
 class OperatorEventServiceTest {

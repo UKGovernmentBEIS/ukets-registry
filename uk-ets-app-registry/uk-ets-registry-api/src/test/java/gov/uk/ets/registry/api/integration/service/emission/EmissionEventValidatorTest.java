@@ -9,6 +9,8 @@ import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
 import gov.uk.ets.registry.api.compliance.domain.ExcludeEmissionsEntry;
 import gov.uk.ets.registry.api.compliance.repository.ExcludeEmissionsRepository;
 import gov.uk.ets.registry.api.file.upload.emissionstable.model.SubmitEmissionsValidityInfo;
+import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
+import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import java.time.Year;
 import java.util.Date;
@@ -26,8 +28,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
-import uk.gov.netz.integration.model.error.IntegrationEventError;
 
 @ExtendWith(MockitoExtension.class)
 class EmissionEventValidatorTest {

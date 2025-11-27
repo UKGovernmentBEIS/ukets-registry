@@ -81,7 +81,6 @@
     <include file="changelogs/v5.3.1/changelog_v5_3_1.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.7.0/changelog_v5_7_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.12.0/changelog_v5_12_0.xml" relativeToChangelogFile="true"/>
-    <include file="changelogs/v5.16.0/changelog_v5_16_0.xml" relativeToChangelogFile="true"/>
     <!-- Include here new files -->
 
     <!-- This changeSet should be executed at the end-->

@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   CompleteTaskFormInfo,
   REQUEST_TYPE_VALUES,
-  RequestType,
   TaskDetails,
   TaskOutcome,
 } from '@task-management/model';
@@ -13,7 +12,6 @@ import { Store } from '@ngrx/store';
 import * as fromAuth from '@registry-web/auth/auth.selector';
 import { mergeMap } from 'rxjs/operators';
 import { ErrorSummary } from '@shared/error-summary';
-import { isNil } from '@registry-web/shared/shared.util';
 
 @Component({
   selector: 'app-complete-task',
@@ -92,14 +90,6 @@ export class CompleteTaskComponent implements OnInit {
       this.taskDetails.taskType === 'PAYMENT_REQUEST' &&
       this.taskDetails.paymentMethod === 'BACS'
     );
-  }
-
-  showOrphanAccountHolderDeletePossibleWarning(): boolean {
-    return this.taskOutcome === TaskOutcome.APPROVED &&
-      this.taskDetails.taskType === RequestType.ACCOUNT_HOLDER_CHANGE
-      ? isNil(this.taskDetails.action.accountHolderDelete) &&
-          this.taskDetails.isAccountHolderOrphan
-      : false;
   }
 
   containsErrorFile(): boolean {

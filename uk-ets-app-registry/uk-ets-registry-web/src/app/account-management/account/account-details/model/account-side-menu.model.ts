@@ -13,14 +13,12 @@ export enum MenuItemEnum {
   EMISSIONS_SURRENDERS = 'Emissions and Surrenders',
   NOTES = 'Notes',
   MARITIME_OPERATOR_DETAILS = 'Maritime operator details',
-  CONTACTS = 'Contacts',
 }
 
 export const NO_OPERATOR_ITEMS = [
   MenuItemEnum.OVERVIEW,
   MenuItemEnum.ACCOUNT_DETAILS,
   MenuItemEnum.ACCOUNT_HOLDER,
-  MenuItemEnum.CONTACTS,
   MenuItemEnum.ARS,
   MenuItemEnum.HISTORY_AND_COMMENTS,
   MenuItemEnum.HOLDINGS,
@@ -35,7 +33,6 @@ export const OHAI_ITEMS = [
   MenuItemEnum.ACCOUNT_HOLDER,
   MenuItemEnum.INSTALLATION_DETAILS,
   MenuItemEnum.ALLOCATION,
-  MenuItemEnum.CONTACTS,
   MenuItemEnum.ARS,
   MenuItemEnum.EMISSIONS_SURRENDERS,
   MenuItemEnum.HISTORY_AND_COMMENTS,
@@ -51,7 +48,6 @@ export const AOHA_ITEMS = [
   MenuItemEnum.ACCOUNT_HOLDER,
   MenuItemEnum.AIRCRAFT_OPERATOR_DETAILS,
   MenuItemEnum.ALLOCATION,
-  MenuItemEnum.CONTACTS,
   MenuItemEnum.ARS,
   MenuItemEnum.EMISSIONS_SURRENDERS,
   MenuItemEnum.HISTORY_AND_COMMENTS,
@@ -66,7 +62,6 @@ export const MOHA_ITEMS = [
   MenuItemEnum.ACCOUNT_DETAILS,
   MenuItemEnum.ACCOUNT_HOLDER,
   MenuItemEnum.MARITIME_OPERATOR_DETAILS,
-  MenuItemEnum.CONTACTS,
   MenuItemEnum.ARS,
   MenuItemEnum.EMISSIONS_SURRENDERS,
   MenuItemEnum.HISTORY_AND_COMMENTS,

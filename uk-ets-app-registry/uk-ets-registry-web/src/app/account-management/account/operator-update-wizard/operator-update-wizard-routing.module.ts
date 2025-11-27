@@ -7,8 +7,6 @@ import { OperatorUpdateWizardPathsModel } from '@operator-update/model/operator-
 import { CheckUpdateRequestContainerComponent } from '@operator-update/components/check-update-request';
 import { CancelUpdateRequestContainerComponent } from '@operator-update/components/cancel-update-request';
 import { RequestSubmittedContainerComponent } from '@operator-update/components/request-submitted';
-import { OperatorActivityTypeUpdateContainerComponent } from '@operator-update/components/operator-update/operator-activity-type-update-container.component';
-import { UpdateDetailsWarningComponent } from '@shared/components/account/operator/update-details-warning/update-details-warning.component';
 
 const routes: Routes = [
   {
@@ -38,18 +36,6 @@ const routes: Routes = [
     canLoad: [LoginGuard],
     canActivate: [LoginGuard],
     component: RequestSubmittedContainerComponent,
-  },
-  {
-    path: OperatorUpdateWizardPathsModel.SELECT_REGULATED_ACTIVITY,
-    canLoad: [LoginGuard],
-    canActivate: [LoginGuard],
-    component: OperatorActivityTypeUpdateContainerComponent,
-  },
-  {
-    path: OperatorUpdateWizardPathsModel.CONFIRM_UPDATE,
-    canLoad: [LoginGuard],
-    canActivate: [LoginGuard],
-    component: UpdateDetailsWarningComponent,
   },
 ];
 

@@ -58,7 +58,7 @@
   "accountType": "OPERATOR_HOLDING_ACCOUNT",
   "authorisedRepresentatives": [],
   "operator": {
-    "activityTypes": ["COMBUSTION_OF_FUELS"],
+    "activityType": "COMBUSTION_OF_FUELS",
     "firstYear": "2022",
     "lastYear": null,
     "name": "name of installation",

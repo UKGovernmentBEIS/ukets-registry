@@ -346,6 +346,7 @@ export class AccountOpeningEffects {
         ofType(
           AccountOpeningOperatorActions.fetchExistsMonitoringPlanSuccess,
           AccountOpeningOperatorActions.fetchExistsMonitoringPlanAndImoSuccess,
+          AccountOpeningOperatorActions.fetchExistsInstallationPermitIdSuccess,
           AccountOpeningOperatorActions.validateInstallationTransferSuccess
         ),
         tap((action) => {
@@ -439,12 +440,7 @@ export class AccountOpeningEffects {
         AccountOpeningOperatorActions.setOperator({
           operator: action.installation,
         })
-      ),
-      tap((action) => {
-        this.router.navigate([OperatorWizardRoutes.SELECT_REGULATED_ACTIVITY], {
-          skipLocationChange: true,
-        });
-      })
+      )
     );
   });
 

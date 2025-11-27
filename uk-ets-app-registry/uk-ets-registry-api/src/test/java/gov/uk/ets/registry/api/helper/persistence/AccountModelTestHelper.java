@@ -1,7 +1,13 @@
 package gov.uk.ets.registry.api.helper.persistence;
 
 import com.querydsl.jpa.impl.JPAQuery;
-import gov.uk.ets.registry.api.account.domain.*;
+import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
+import gov.uk.ets.registry.api.account.domain.AircraftOperator;
+import gov.uk.ets.registry.api.account.domain.Installation;
+import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
@@ -138,13 +144,8 @@ public class AccountModelTestHelper {
         installation.setIdentifier(command.identifier);
         installation.setRegulator(command.regulatorType);
         installation.setPermitIdentifier(command.permitId);
+        installation.setActivityType(command.getActivityType());
         entityManager.persist(installation);
-
-        ActivityType activityType = new ActivityType();
-        activityType.setDescription(command.getActivityType());
-        activityType.setInstallation(installation);
-        entityManager.persist(activityType);
-
         command.account.setCompliantEntity(installation);
         entityManager.persist(command.account);
         return command.account;
