@@ -7,7 +7,7 @@ import {
   selectOperator,
 } from '@account-management/account/operator-update-wizard/reducers';
 import { Observable } from 'rxjs';
-import { Operator } from '@shared/model/account';
+import { Operator, OperatorType } from '@shared/model/account';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { OperatorUpdate } from '@operator-update/model/operator-update';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@operator-update/actions/operator-update.actions';
 import { OperatorUpdateWizardPathsModel } from '@operator-update/model/operator-update-wizard-paths.model';
 import { OperatorUpdateActions } from '@operator-update/actions';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-check-update-request-container',
@@ -51,6 +52,22 @@ export class CheckUpdateRequestContainerComponent implements OnInit {
     );
     this.newOperatorInfo$ = this.store.select(selectOperator);
     this.currentOperatorInfo$ = this.store.select(selectCurrentOperatorInfo);
+
+    this.currentOperatorInfo$.pipe(take(1)).subscribe((operator) => {
+      if (
+        operator?.type === OperatorType.INSTALLATION_TRANSFER ||
+        operator?.type === OperatorType.INSTALLATION
+      ) {
+        this.store.dispatch(
+          canGoBack({
+            goBackRoute: `/account/${this.route.snapshot.paramMap.get(
+              'accountId'
+            )}/${OperatorUpdateWizardPathsModel.BASE_PATH}/${OperatorUpdateWizardPathsModel.SELECT_REGULATED_ACTIVITY}`,
+            extras: { skipLocationChange: true },
+          })
+        );
+      }
+    });
   }
 
   onCancel() {

@@ -30,8 +30,12 @@ import { EditBillingDetailsContainerComponent } from './account-details/details/
 import { ExcludeBillingContainerComponent } from './account-details/details/exclude-billing-container.component';
 import { CancelExcludeBillingContainerComponent } from './account-details/details/cancel-exclude-billing-container.component';
 import { ExcludeBillingSucessContainerComponent } from './account-details/details/exclude-billing-success-container.component';
-import { ChangeAccountHolderWizardPathsModel } from '@change-account-holder-wizard/model';
-import { clearChangeAccountHolderRequestGuard } from '@change-account-holder-wizard/guards';
+import { CHANGE_ACCOUNT_HOLDER_BASE_PATH } from '@change-account-holder-wizard/model';
+import {
+  canActivateChangeAccountHolder,
+  clearChangeAccountHolderRequestGuard,
+  IsAccountHolderOrphanResolver,
+} from '@registry-web/account-management/account/change-account-holder-wizard/guards-and-resolvers';
 
 const routes: Routes = [
   {
@@ -123,8 +127,10 @@ const routes: Routes = [
           ).then((m) => m.AccountHolderDetailsWizardModule),
       },
       {
-        path: ':accountId/' + ChangeAccountHolderWizardPathsModel.BASE_PATH,
+        path: ':accountId/' + CHANGE_ACCOUNT_HOLDER_BASE_PATH,
         canDeactivate: [clearChangeAccountHolderRequestGuard],
+        canActivate: [canActivateChangeAccountHolder],
+        resolve: { isAccountHolderOrphan: IsAccountHolderOrphanResolver },
         loadChildren: () =>
           import(
             './change-account-holder-wizard/change-account-holder-wizard.module'

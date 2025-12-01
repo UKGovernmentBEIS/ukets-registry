@@ -16,22 +16,17 @@ describe('InstallationComponent', () => {
   let component: InstallationComponent;
   let fixture: ComponentFixture<InstallationComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
-        declarations: [
-          InstallationComponent,
-          SummaryListComponent,
-          FormatUkDatePipe,
-        ],
-        providers: [
-          { provide: APP_BASE_HREF, useValue: '/' },
-          FormatUkDatePipe,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
+      declarations: [
+        InstallationComponent,
+        SummaryListComponent,
+        FormatUkDatePipe,
+      ],
+      providers: [{ provide: APP_BASE_HREF, useValue: '/' }, FormatUkDatePipe],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(InstallationComponent);
@@ -46,17 +41,17 @@ describe('InstallationComponent', () => {
       firstYear: '2021',
       lastYear: '2022',
       name: 'Name',
-      activityType: InstallationActivityType.MANUFACTURE_OF_CERAMICS,
+      activityTypes: [InstallationActivityType.MANUFACTURE_OF_CERAMICS],
       permit: {
         id: '1',
         date: null,
       },
-      emitterId:'35675656767HT',
+      emitterId: '35675656767HT',
     } as Installation;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  test('should create', () => {
     expect(component).toBeTruthy();
   });
 });

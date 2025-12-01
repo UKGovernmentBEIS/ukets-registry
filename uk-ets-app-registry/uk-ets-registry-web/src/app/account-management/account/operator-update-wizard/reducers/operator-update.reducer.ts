@@ -32,6 +32,12 @@ const talOperatorUpdateReducer = createReducer(
     }
   ),
   mutableOn(
+    OperatorUpdateActions.setUpdateOperatorInfoSuccess,
+    (state, { operator }) => {
+      state.newOperator = operator;
+    }
+  ),
+  mutableOn(
     OperatorUpdateActions.submitUpdateRequestSuccess,
     (state, { requestId }) => {
       state.submittedRequestIdentifier = requestId;

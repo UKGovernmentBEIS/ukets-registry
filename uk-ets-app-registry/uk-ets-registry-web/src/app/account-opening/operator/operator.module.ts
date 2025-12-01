@@ -20,6 +20,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { FormatUkDatePipe } from '@shared/pipes';
 import { OverviewMaritimeOperatorComponent } from '@account-opening/operator/components/overview/overview-maritime-operator.component';
+import { InstallationActivityTypeSelectorContainerComponent } from '@account-opening/operator/components/installation/installation-activity-type-selector-container.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { OverviewMaritimeOperatorComponent } from '@account-opening/operator/com
     IsItAnInstallationTransferComponent,
     InstallationTransferInputComponent,
     IsItAnInstallationTransferContainerComponent,
+    InstallationActivityTypeSelectorContainerComponent,
     OverviewComponent,
     OverviewContainerComponent,
     OverviewInstallationComponent,

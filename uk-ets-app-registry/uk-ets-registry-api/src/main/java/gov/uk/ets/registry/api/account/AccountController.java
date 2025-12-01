@@ -427,7 +427,8 @@ public class AccountController {
     @Deprecated(forRemoval = true)
     @GetMapping(path = "accounts.get.installation-permit-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean installationPermitIdExists(@RequestParam String installationPermitId) {
-        return accountService.installationPermitIdExists(installationPermitId);
+        accountService.validatePermitId(installationPermitId);
+        return false;
     }
 
     /**

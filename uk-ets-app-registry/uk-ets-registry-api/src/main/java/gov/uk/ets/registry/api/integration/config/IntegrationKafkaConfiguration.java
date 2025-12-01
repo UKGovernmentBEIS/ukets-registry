@@ -1,11 +1,5 @@
 package gov.uk.ets.registry.api.integration.config;
 
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEventOutcome;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEventOutcome;
-import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.OperatorUpdateEventOutcome;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,6 +37,12 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
+import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.account.AccountOpeningEventOutcome;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEventOutcome;
+import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
+import uk.gov.netz.integration.model.operator.OperatorUpdateEventOutcome;
 
 @Configuration
 @Log4j2
@@ -117,6 +117,7 @@ public class IntegrationKafkaConfiguration {
     @Value("${kafka.integration.sasl.client.callback.handler.class}")
     private String integrationKafkaSaslClientCallbackHandlerClass;
 
+    @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.installation.emissions.enabled"}, havingValue = "true")
     @Bean("installationEmissionsConsumerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEvent> installationKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEvent> factory =
@@ -127,6 +128,7 @@ public class IntegrationKafkaConfiguration {
         return factory;
     }
 
+    @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.aviation.emissions.enabled"}, havingValue = "true")
     @Bean("aviationEmissionsConsumerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEvent> aviationKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEvent> factory =
@@ -188,6 +190,7 @@ public class IntegrationKafkaConfiguration {
         return factory;
     }
 
+    @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.aviation.emissions.enabled"}, havingValue = "true")
     @Bean("aviationEmissionsOutcomeKafkaTemplate")
     public KafkaTemplate<String, AccountEmissionsUpdateEventOutcome> aviationEmissionsOutcomeKafkaTemplate() {
         return getKafkaTemplate(aviationEmissionsResponseTransactionalId, aviationEmissionsResponseTopic);
@@ -197,8 +200,9 @@ public class IntegrationKafkaConfiguration {
     @Bean("maritimeEmissionsOutcomeKafkaTemplate")
     public KafkaTemplate<String, AccountEmissionsUpdateEventOutcome> maritimeEmissionsOutcomeKafkaTemplate() {
         return getKafkaTemplate(maritimeEmissionsResponseTransactionalId, maritimeEmissionsResponseTopic);
-    }    
-    
+    }
+
+    @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.installation.emissions.enabled"}, havingValue = "true")
     @Bean("installationEmissionsOutcomeKafkaTemplate")
     public KafkaTemplate<String, AccountEmissionsUpdateEventOutcome> installationEmissionsOutcomeKafkaTemplate() {
         return getKafkaTemplate(installationEmissionsResponseTransactionalId, installationEmissionsResponseTopic);

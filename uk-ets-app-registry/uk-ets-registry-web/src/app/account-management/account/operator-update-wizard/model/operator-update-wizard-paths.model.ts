@@ -3,4 +3,6 @@ export enum OperatorUpdateWizardPathsModel {
   REQUEST_SUBMITTED = 'request-submitted',
   CANCEL_UPDATE_REQUEST = 'cancel',
   CHECK_UPDATE_REQUEST = 'check-update-request',
+  SELECT_REGULATED_ACTIVITY = 'select-activity',
+  CONFIRM_UPDATE = 'confirm-update-operator',
 }

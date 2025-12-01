@@ -71,6 +71,12 @@ import { NotesEffect } from '@registry-web/account-management/account/account-de
 import * as fromAccountNotes from '@registry-web/account-management/account/account-details/notes/store/account-notes.reducer';
 import { AccountNotesComponent } from './account-details/notes/account-notes.component';
 import { MaritimeOperatorComponent } from './account-details/operator/maritime-operator/maritime-operator.component';
+import { AccountContactsComponent } from '@registry-web/account-management/account/account-details/account-contacts/account-contacts.component';
+import {
+  MetsContactTypePipe,
+  MetsContactOperatorTypePipe,
+  RegistryContactTypePipe,
+} from '@registry-web/shared/pipes';
 
 @NgModule({
   declarations: [
@@ -115,6 +121,7 @@ import { MaritimeOperatorComponent } from './account-details/operator/maritime-o
     CanRequestUpdatePipe,
     ZeroAmountToDashPipe,
     NullAmountToDashPipe,
+    AccountContactsComponent,
   ],
   imports: [
     AccountRoutingModule,
@@ -144,6 +151,9 @@ import { MaritimeOperatorComponent } from './account-details/operator/maritime-o
     TransactionProposalModule,
     RequestDocumentsModule,
     TransactionDetailsModule,
+    MetsContactTypePipe,
+    MetsContactOperatorTypePipe,
+    RegistryContactTypePipe,
   ],
   providers: [
     AccountApiService,

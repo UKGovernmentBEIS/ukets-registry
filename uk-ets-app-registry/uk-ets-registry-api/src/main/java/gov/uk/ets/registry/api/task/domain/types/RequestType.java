@@ -103,6 +103,11 @@ public enum RequestType {
     ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE,
     ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE,
     ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD,
+
+    /**
+     * Request to change an account holder.
+     */
+    ACCOUNT_HOLDER_CHANGE,
     /**
      * Request type of email change.
      */

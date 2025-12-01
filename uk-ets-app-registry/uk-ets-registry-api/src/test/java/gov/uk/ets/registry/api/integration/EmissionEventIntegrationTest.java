@@ -8,8 +8,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.repository.InstallationRepository;
 import gov.uk.ets.registry.api.common.model.types.Status;
 import gov.uk.ets.registry.api.common.test.BaseIntegrationTest;
@@ -18,9 +20,6 @@ import gov.uk.ets.registry.api.compliance.messaging.outbox.ComplianceOutbox;
 import gov.uk.ets.registry.api.compliance.messaging.outbox.ComplianceOutboxRepository;
 import gov.uk.ets.registry.api.compliance.messaging.outbox.ComplianceOutboxStatus;
 import gov.uk.ets.registry.api.file.upload.emissionstable.messaging.UpdateOfVerifiedEmissionsEvent;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEventOutcome;
-import gov.uk.ets.registry.api.integration.message.IntegrationEventOutcome;
 import gov.uk.ets.registry.api.integration.service.emission.EmissionEventValidator;
 import gov.uk.ets.registry.api.notification.EmailNotification;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
@@ -54,9 +53,12 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.netz.integration.model.IntegrationEventOutcome;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEventOutcome;
 
 @TestPropertySource(locations = "/integration-test-application.properties", properties = {
-    "kafka.integration.enabled=true"
+    "kafka.integration.enabled=true", "kafka.integration.emissions.enabled=true"
 })
 class EmissionEventIntegrationTest extends BaseIntegrationTest {
 
@@ -67,6 +69,8 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
     private ComplianceOutboxRepository repository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private ActivityTypeRepository activityTypeRepository;
     @Autowired
     private InstallationRepository installationRepository;
 
@@ -83,6 +87,7 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
     private Consumer<String, AccountEmissionsUpdateEventOutcome> responseConsumer;
     private Consumer<String, EmailNotification> emailConsumer;
     private Installation installation;
+    private ActivityType activityType;
     private Account account;
 
     @BeforeAll
@@ -146,11 +151,16 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
         installation = new Installation();
         installation.setIdentifier(123456L);
         installation.setStartYear(2021);
-        installation.setActivityType("test");
         installation.setPermitIdentifier("123");
         installation.setAccount(account);
 
         installationRepository.saveAndFlush(installation);
+
+        activityType = new ActivityType();
+        activityType.setDescription("PRODUCTION_OF_NITRIC_ACID");
+        activityType.setInstallation(installation);
+        activityTypeRepository.saveAndFlush(activityType);
+
         account.setCompliantEntity(installation);
         accountRepository.saveAndFlush(account);
     }
@@ -162,6 +172,7 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
         emailConsumer.commitSync();
         account.setCompliantEntity(null);
         accountRepository.saveAndFlush(account);
+        activityTypeRepository.delete(activityType);
         installationRepository.delete(installation);
         accountRepository.delete(account);
         repository.deleteAll();

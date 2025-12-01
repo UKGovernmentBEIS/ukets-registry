@@ -12,3 +12,4 @@ export * from './user-defined-account.parts';
 export * from './account-holding';
 export * from './ar-submitted-update-request';
 export * from './account-allocation';
+export * from './account-contacts.interface';

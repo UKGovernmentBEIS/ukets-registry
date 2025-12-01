@@ -13,6 +13,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountHolderContactInfoDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderFileDTO;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderService;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderUpdateService;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderTypeAheadSearchResultDTO;
@@ -23,7 +24,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.*;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.rules.CannotApplyDuplicateAccountHolderUpdateAlternativePrimaryContactDetailsOnAccount;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.rules.CannotApplyDuplicateAccountHolderUpdateDetailsOnAccount;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.holder.rules.CannotApplyDuplicateAccountHolderUpdatePrimaryContactDetailsOnAccount;
-
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.PendingTALRequestsRule;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,20 +143,20 @@ public class AccountHolderController {
         return new ResponseEntity<>(taskRequestId, HttpStatus.OK);
     }
 
-//    @Protected({
-//        ReadOnlyAdministratorsCannotSubmitRequest.class,
-//        RegistryAdministratorsCanSubmitUpdateWhenAccountHasSpecificStatus.class,
-//        SeniorOrJuniorAdministratorRule.class,
-//        PendingTALRequestsRule.class,
-//        AdminsWithAccountAccessRule.class,
-//    })
-//    @PostMapping(path = "change-account-holder.perform", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<Boolean> changeAccountHolderPerform(@RequestBody @Valid AccountHolderChangeDTO accountHolderChangeDTO,
-//            												  @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam Long accountIdentifier) {
-//        Boolean updated =
-//            accountHolderUpdateService.submitChangeAccountHolderRequest(accountHolderChangeDTO);
-//        return new ResponseEntity<>(updated, HttpStatus.OK);
-//    }
+   @Protected({
+       ReadOnlyAdministratorsCannotSubmitRequest.class,
+       RegistryAdministratorsCanSubmitUpdateWhenAccountHasSpecificStatus.class,
+       SeniorOrJuniorAdministratorRule.class,
+       PendingTALRequestsRule.class,
+       AdminsWithAccountAccessRule.class,
+   })
+   @PostMapping(path = "change-account-holder.perform", consumes = MediaType.APPLICATION_JSON_VALUE)
+   public ResponseEntity<Long> changeAccountHolderPerform(@RequestBody @Valid AccountHolderChangeDTO accountHolderChangeDTO,
+           												  @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam Long accountIdentifier) {
+       Long requestId =
+           accountHolderUpdateService.accountHolderChange(accountHolderChangeDTO);
+       return new ResponseEntity<>(requestId, HttpStatus.OK);
+   }
 
     /**
      * Creates a task for the Account holder primary contact details update.
@@ -312,5 +313,23 @@ public class AccountHolderController {
             ContentDisposition.builder("attachment").filename(file.getFileName())
                 .build().toString());
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
+    }
+
+    /**
+     * Checks if the account holder has other accounts than the specified.
+     *
+     * @param accountHolderIdentifier The account holder identifier
+     * @param accountIdentifier The account identifier
+     * @return if the account holder has other accounts except the specified one (is orphan).
+     */
+    @GetMapping(path = "account-holder.orphan", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> isAccountHolderOrphan(
+            @RuleInput(RuleInputType.ACCOUNT_HOLDER_ID)
+            @RequestParam
+            @MDCParam(ACCOUNT_HOLDER_ID) Long accountHolderIdentifier,
+            @RuleInput(RuleInputType.ACCOUNT_ID)
+            @RequestParam Long accountIdentifier) {
+        Boolean isOrphan = accountHolderService.isOrphanedAccountHolder(accountHolderIdentifier, accountIdentifier);
+        return ResponseEntity.ok(isOrphan);
     }
 }

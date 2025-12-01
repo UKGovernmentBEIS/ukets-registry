@@ -38,6 +38,7 @@ export class UkRichTextEditorComponent
   @Input() moreInfo: string;
   // When true, it enables bold, italic and underline toolbar buttons
   @Input() showFormattingButtons: boolean;
+  @Input() maxlength = 256;
 
   // NOTE: according to the docs it should be possible to configure this globally,
   // but it did not work.

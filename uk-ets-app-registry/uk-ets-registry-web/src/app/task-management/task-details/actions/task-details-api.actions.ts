@@ -62,6 +62,6 @@ export const fetchPaymentViaWebLinkCompleteResponseWithExternalService =
 
 export const fetchPaymentViaWebLinkCompleteResponseWithExternalServiceSuccess =
   createAction(
-    '[Task API] Fetch Payment via WebLink  Complete Response With External Service Success',
+    '[Task API] Fetch Payment via WebLink Complete Response With External Service Success',
     props<{ taskCompleteResponse: PaymentCompleteResponse }>()
   );

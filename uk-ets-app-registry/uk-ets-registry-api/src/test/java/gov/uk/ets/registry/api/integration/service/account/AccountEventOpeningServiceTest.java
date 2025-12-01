@@ -16,11 +16,6 @@ import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.accountaccess.service.AccountAccessService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
-import gov.uk.ets.registry.api.integration.message.AccountDetailsMessage;
-import gov.uk.ets.registry.api.integration.message.AccountHolderMessage;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
 import gov.uk.ets.registry.api.integration.service.IntegrationHeadersUtil;
 import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.messaging.UktlAccountNotifyMessageService;
@@ -36,6 +31,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.netz.integration.model.account.AccountDetailsMessage;
+import uk.gov.netz.integration.model.account.AccountHolderMessage;
+import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.error.IntegrationEventError;
+import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
 @ExtendWith(MockitoExtension.class)
 class AccountEventOpeningServiceTest {

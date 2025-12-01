@@ -5,6 +5,7 @@ import gov.uk.ets.registry.api.common.mail.MailConfiguration;
 import gov.uk.ets.registry.api.file.upload.allocationtable.notification.UploadAllocationTableEmailNotification;
 import gov.uk.ets.registry.api.notification.*;
 import gov.uk.ets.registry.api.notification.integration.AccountOpeningSuccessOutcomeNotification;
+import gov.uk.ets.registry.api.notification.integration.IntegrationDisabledNotification;
 import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotification;
 import gov.uk.ets.registry.api.user.profile.domain.EmergencyOtpChangeRequestedNotification;
 import gov.uk.ets.registry.api.user.profile.domain.EmergencyOtpChangeTaskApprovedNotification;
@@ -172,6 +173,9 @@ public class EmailGeneratorSelector {
             case INTEGRATION_ACCOUNT_OPENING_SUCCESS_OUTCOME:
                 return new IntegrationAccountOpeningSuccessOutcomeEmailGenerator(notificationProperties.getIntegrationAccountOpening(),
                     (AccountOpeningSuccessOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case INTEGRATION_POINT_DISABLED:
+                return new IntegrationDisabledEmailGenerator(
+                    (IntegrationDisabledNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             case PAYMENT_REQUEST:
                 return new PaymentRequestEmailGenerator(notificationProperties.getRequestPayment(),
                     (PaymentRequestGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration); 

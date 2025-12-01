@@ -9,6 +9,7 @@ export class SubWizardTitleComponent implements OnInit {
   @Input() subTitle: string;
   @Input() contactType: string;
   @Input() isAHUpdateWizard = false;
+
   title: string;
 
   ngOnInit() {

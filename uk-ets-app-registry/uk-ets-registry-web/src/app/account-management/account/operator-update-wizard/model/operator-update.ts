@@ -8,7 +8,7 @@ import {
 export interface OperatorUpdate {
   type: OperatorType;
   name?: string;
-  activityType?: InstallationActivityType;
+  activityTypes?: InstallationActivityType[];
   permit?: {
     id: string;
     date: UkDate;
@@ -17,7 +17,7 @@ export interface OperatorUpdate {
   monitoringPlan?: {
     id: string;
   };
-  imo?:string,
+  imo?: string;
   regulator?: Regulator;
   changedRegulator?: Regulator;
   firstYear?: string;

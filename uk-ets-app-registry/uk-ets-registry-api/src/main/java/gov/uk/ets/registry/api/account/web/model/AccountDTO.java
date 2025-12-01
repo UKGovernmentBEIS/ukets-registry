@@ -2,10 +2,14 @@ package gov.uk.ets.registry.api.account.web.model;
 
 import gov.uk.ets.commons.logging.MDCParam;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.RegistryContactDTO;
 import gov.uk.ets.registry.api.ar.service.dto.ARUpdateActionDTO;
 import gov.uk.ets.registry.api.transaction.domain.data.TrustedAccountListRulesDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
+
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -161,4 +165,14 @@ public class AccountDTO {
      * ARs removed since account opening.
      */
     private Integer removedARs;
+
+    /**
+     * METS Contacts of the account
+     */
+    private List<MetsContactDTO> metsContacts = new ArrayList<>();
+
+    /**
+     * Registry Contacts of the account
+     */
+    private List<RegistryContactDTO> registryContacts = new ArrayList<>();
 }

@@ -41,7 +41,7 @@ public class AccountsNoARsJdbcMapper
             "       a.opening_date                                                          as opening_date,\n" +
             "       case when i.compliant_entity_id IS NOT NULL then ce.identifier end      as installation_id,\n" +
             "       i.installation_name                                                     as installation_name,\n" +
-            "       i.activity_type                                                         as installation_activity,\n" +
+            "       at.activity_type                                                        as installation_activity,\n" +
             "       i.permit_identifier                                                     as installation_permit_id,\n" +
             "       case when ao.compliant_entity_id IS NOT NULL then ce.identifier end     as aircraft_operator_id,\n" +
             "       ao.monitoring_plan_identifier                                           as aircraft_monitoring_plan_id,\n" +
@@ -56,6 +56,9 @@ public class AccountsNoARsJdbcMapper
             "         inner join account_holder ah on a.account_holder_id = ah.id\n" +
             "         left join compliant_entity ce on a.compliant_entity_id = ce.id\n" +
             "         left join installation i on ce.id = i.compliant_entity_id\n" +
+            "         left join lateral (\n" +
+            "           select compliant_entity_id, STRING_AGG(description, '; ') as activity_type from activity_type group by compliant_entity_id\n" +
+            "         ) at on i.compliant_entity_id = at.compliant_entity_id \n" +
             "         left join aircraft_operator ao on ce.id = ao.compliant_entity_id\n" +
             "         left join maritime_operator mo on ce.id = mo.compliant_entity_id\n" +
             "where not exists(\n" +

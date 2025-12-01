@@ -117,7 +117,7 @@ public class VerifiedEmissionsSurrenderedAllowancesReportJdbcMapper implements
         "                i.installation_name                            as installation_name,\n" +
         "                ce.identifier                                  as entity_identifier,\n" +
         "                " + PERMIT_ID_OR_MONITORING_PLAN_ID_COLUMN + " as permit_identifier,\n" +
-        "                i.activity_type                                as activity_type,\n" +
+        "                at.activity_type                                as activity_type,\n" +
         "                COALESCE(sum(ae.entitlement), 0)               as entitlement,\n" +
         "                COALESCE(sum(ae.returned), 0)                  as returned,\n" +
         "                COALESCE(sum(ae.reversed), 0)                  as reversed,\n" +
@@ -131,13 +131,16 @@ public class VerifiedEmissionsSurrenderedAllowancesReportJdbcMapper implements
         "                  inner join account acc on ce.id = compliant_entity_id\n" +
         "                  left join account_holder ah on acc.account_holder_id = ah.id\n" +
         "                  left join installation i on ce.id = i.compliant_entity_id\n" +
+        "                  left join lateral (\n" +
+        "                    select compliant_entity_id, STRING_AGG(description, '; ') as activity_type from activity_type group by compliant_entity_id\n" +
+        "                  ) at on i.compliant_entity_id = at.compliant_entity_id \n" +
         "                  left join aircraft_operator ao on ce.id = ao.compliant_entity_id\n" +
         "                  left join maritime_operator mo on ce.id = mo.compliant_entity_id\n" +
         "                  left join allocation_entry ae on ce.id = ae.compliant_entity_id and ae.allocation_year_id = (select id from allocation_year where year = years.year)\n" +
         "                  left join (" + MOST_RECENT_EMISSIONS_ROWS + ") ee on ee.compliant_entity_id = ce.identifier and ee.year = years.year\n" +
         "                  left join exclude_emissions_entry eee on eee.compliant_entity_id = ce.identifier and eee.year = years.year and ee.compliant_entity_id = eee.compliant_entity_id\n" +
         "                  left join static_compliance_status scs on scs.compliant_entity_id = ce.id and scs.year = years.year and scs.year = years.year\n" +
-        "         group by years.year, ce.id, acc.id, ah.id, i.installation_name, i.activity_type, i.permit_identifier, ao.monitoring_plan_identifier, mo.maritime_monitoring_plan_identifier, ee.id, eee.id, scs.id\n" +
+        "         group by years.year, ce.id, acc.id, ah.id, i.installation_name, at.activity_type, i.permit_identifier, ao.monitoring_plan_identifier, mo.maritime_monitoring_plan_identifier, ee.id, eee.id, scs.id\n" +
         "     ) account_data\n" +
         "     left join (" + SURRENDER_ALLOWANCES_TX_ROWS + ") tx_surrender ON tx_surrender.year = account_data.year\n" +
         "     and tx_surrender.id in (" + OLD_INSTALLATION_ACCOUNTS_UNION_AOHA_MOHA + ")\n" +

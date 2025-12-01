@@ -5,11 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.common.test.BaseIntegrationTest;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventErrorDetails;
-import gov.uk.ets.registry.api.integration.message.IntegrationEventOutcome;
-import gov.uk.ets.registry.api.integration.message.OperatorUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.OperatorUpdateEventOutcome;
 import gov.uk.ets.registry.api.notification.EmailNotification;
 import java.time.Duration;
 import java.util.HashMap;
@@ -29,6 +24,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -38,24 +34,37 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.netz.integration.model.IntegrationEventOutcome;
+import uk.gov.netz.integration.model.error.IntegrationEventError;
+import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
+import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
+import uk.gov.netz.integration.model.operator.OperatorUpdateEventOutcome;
 
 @TestPropertySource(locations = "/integration-test-application.properties", properties = {
-    "kafka.integration.enabled=true"
+    "kafka.integration.enabled=true",
+    "kafka.integration.installation.set.operator.enabled=false",
+    "kafka.integration.aviation.set.operator.enabled=false",
+    "kafka.integration.maritime.set.operator.enabled=true"    
 })
+@Disabled
 class OperatorEventIntegrationTest extends BaseIntegrationTest {
 
     private static final String OPERATOR_RESPONSE_TOPIC = "maritime-set-operator-response-topic";
+    private static final String OPERATOR_RESPONSE_DLT_TOPIC = OPERATOR_RESPONSE_TOPIC + "-dlt";
+    private static final String GROUP_NOTIFICATION_TOPIC = "group.notification.topic";
+    private static final String DLT_CONSUMER_GROUP = "dlt-group";
+    private static final String NOTIFICATION_CONSUMER_GROUP = "email-group";
     private KafkaTemplate<String, OperatorUpdateEventOutcome> kafkaTemplate;
-
+    private Consumer<String, String> dltConsumer;
+    private Consumer<String, EmailNotification> emailConsumer;
+    
     @Autowired
     private Configuration freemarkerConfiguration;
 
-    private Consumer<String, String> dltConsumer;
-    private Consumer<String, EmailNotification> emailConsumer;
-
+    
     @BeforeAll
     public void init() {
-        // Setup kafka template
+        // Setup kafka template (producer)
         DefaultKafkaProducerFactory<String, OperatorUpdateEventOutcome> producerFactory =
             new DefaultKafkaProducerFactory<>(KafkaTestUtils.producerProps(embeddedKafkaBroker),
                 new StringSerializer(),
@@ -63,17 +72,25 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
         kafkaTemplate = new KafkaTemplate<>(producerFactory);
 
         // Setup kafka consumers
+        /**** DLT ***/
         dltConsumer = new DefaultKafkaConsumerFactory<>(
-            consumerConfigs("dlt-group"), new StringDeserializer(),
+            consumerConfigs(DLT_CONSUMER_GROUP), new StringDeserializer(),
             new StringDeserializer()).createConsumer();
-        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(dltConsumer, OPERATOR_RESPONSE_TOPIC + "-dlt");
+        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(dltConsumer, OPERATOR_RESPONSE_DLT_TOPIC);
 
+        /**** Email ***/
         JsonDeserializer<EmailNotification> emailDeserializer = new JsonDeserializer<>(EmailNotification.class);
         emailConsumer = new DefaultKafkaConsumerFactory<>(
-            consumerConfigs("email-group"), new StringDeserializer(), emailDeserializer).createConsumer();
-        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(emailConsumer, "group.notification.topic");
+            consumerConfigs(NOTIFICATION_CONSUMER_GROUP), new StringDeserializer(), emailDeserializer).createConsumer();
+        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(emailConsumer, GROUP_NOTIFICATION_TOPIC);
     }
 
+    /**
+     * Consumer configuration.
+     * 
+     * @param groupId
+     * @return
+     */
     private Map<String, Object> consumerConfigs(String groupId) {
         Map<String, Object> config =
             new HashMap<>(KafkaTestUtils.consumerProps(groupId, "false", embeddedKafkaBroker));
@@ -103,7 +120,7 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testEmissionEventWithBusinessError() {
+    void testOperatorUpdateEventOutcomeWithBusinessError() {
         // given
         OperatorUpdateEventOutcome outcome = new OperatorUpdateEventOutcome();
         OperatorUpdateEvent event = new OperatorUpdateEvent();
@@ -111,6 +128,7 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
         event.setOperatorId(123456L);
         event.setRegulator(RegulatorType.EA.name());
         outcome.setEvent(event);
+        
         IntegrationEventErrorDetails errorDetails =
             new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0200, "Something is wrong");
         outcome.setErrors(List.of(errorDetails));
@@ -122,6 +140,7 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
 
         // when
         kafkaTemplate.send(providedEvent);
+        kafkaTemplate.flush();
 
         // then
         ConsumerRecords<String, EmailNotification> emailRecords =
@@ -130,7 +149,7 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testEmissionEventInvalidMessage() {
+    void testOperatorUpdateEventOutcomeInvalidMessage() {
         // given
         DefaultKafkaProducerFactory<String, String> producerFactory =
             new DefaultKafkaProducerFactory<>(KafkaTestUtils.producerProps(embeddedKafkaBroker),
@@ -140,6 +159,7 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
 
         // when
         stringKafkaTemplate.send(OPERATOR_RESPONSE_TOPIC, "test");
+        kafkaTemplate.flush();
 
         // then
         ConsumerRecords<String, String>

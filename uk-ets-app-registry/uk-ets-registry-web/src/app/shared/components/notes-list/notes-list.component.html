@@ -25,8 +25,15 @@
             >{{ note.userName }}</a
           >
         </td>
-        <td class="govuk-table__cell break-word">
-          <app-read-more>{{ note.description }}</app-read-more>
+        <td
+          class="govuk-table__cell break-word ql-editor white-space-preserved no_left_padding"
+        >
+          <app-read-more
+            ><div
+              class="ql-editor white-space-preserved"
+              [innerHTML]="note.description"
+            ></div
+          ></app-read-more>
         </td>
         <td class="govuk-table__cell" *ngIf="isSeniorAdmin">
           <a

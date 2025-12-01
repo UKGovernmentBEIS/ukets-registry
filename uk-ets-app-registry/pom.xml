@@ -71,6 +71,8 @@
         <springdoc.openapi.ui.version>2.8.13</springdoc.openapi.ui.version>
         <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
         <uk-ets-lib-commons-reporting.version>0.0.1-SNAPSHOT</uk-ets-lib-commons-reporting.version>
+        <uk-netz-common-integration-model.version>1.6.0-SNAPSHOT</uk-netz-common-integration-model.version>
+        <aws-msk-iam-auth.version>2.2.0</aws-msk-iam-auth.version>
         <querydsl.version>5.0.0</querydsl.version>
         <hypersistence.utils.hibernate.version>3.6.1</hypersistence.utils.hibernate.version>
         <jsoup.version>1.14.3</jsoup.version>

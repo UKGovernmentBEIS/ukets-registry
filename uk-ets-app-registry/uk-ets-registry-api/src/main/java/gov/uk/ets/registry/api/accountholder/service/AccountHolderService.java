@@ -172,4 +172,12 @@ public class AccountHolderService {
             urId, holderFile.getUploadedFile().getFileName(),
             EventType.ACCOUNT_HOLDER_DELETE_SUBMITTED_DOCUMENT, "Account Holder documentation deleted");
     }
+
+    @Transactional(readOnly = true)
+    public Boolean isOrphanedAccountHolder(Long accountHolderIdentifier, Long accountIdentifier) {
+        return Optional.ofNullable(holderRepository.getAccountHolder(accountHolderIdentifier)).map(accountHolder ->
+                        accountHolder.getAccounts().stream()
+                                .noneMatch(account -> !account.getIdentifier().equals(accountIdentifier)))
+                .orElse(true);
+    }
 }

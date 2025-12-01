@@ -1,9 +1,11 @@
 package gov.uk.ets.registry.api.compliance.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.repository.InstallationRepository;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.common.model.types.Status;
@@ -23,6 +25,7 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +41,8 @@ class ComplianceIncomingEventsHandlerIntegrationTest {
     private AccountRepository accountRepository;
     @Autowired
     private InstallationRepository installationRepository;
+    @Autowired
+    private ActivityTypeRepository activityTypeRepository;
     @Autowired
     private StaticComplianceStatusRepository staticComplianceStatusRepository;
     @Autowired
@@ -69,11 +74,15 @@ class ComplianceIncomingEventsHandlerIntegrationTest {
         installation = new Installation();
         installation.setIdentifier(TEST_INSTALLATION_IDENTIFIER);
         installation.setStartYear(2021);
-        installation.setActivityType("test");
         installation.setPermitIdentifier("123");
         installation.setAccount(account);
 
         installationRepository.saveAndFlush(installation);
+        ActivityType activityType = new ActivityType();
+        activityType.setDescription("COMBUSTION_OF_FUELS");
+        activityType.setInstallation(installation);
+        installation.setActivityTypes(Set.of(activityType));
+        activityTypeRepository.saveAndFlush(activityType);
         account.setCompliantEntity(installation);
         accountRepository.saveAndFlush(account);
 

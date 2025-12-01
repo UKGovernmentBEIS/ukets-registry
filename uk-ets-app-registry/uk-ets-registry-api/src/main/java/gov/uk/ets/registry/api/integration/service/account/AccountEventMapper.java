@@ -17,12 +17,14 @@ import gov.uk.ets.registry.api.account.web.model.PermitDTO;
 import gov.uk.ets.registry.api.common.view.AddressDTO;
 import gov.uk.ets.registry.api.common.view.EmailAddressDTO;
 import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
-import gov.uk.ets.registry.api.integration.message.AccountDetailsMessage;
-import gov.uk.ets.registry.api.integration.message.AccountHolderMessage;
-import gov.uk.ets.registry.api.integration.message.AccountOpeningEvent;
 import gov.uk.ets.registry.api.transaction.domain.data.TrustedAccountListRulesDTO;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import uk.gov.netz.integration.model.account.AccountDetailsMessage;
+import uk.gov.netz.integration.model.account.AccountHolderMessage;
+import uk.gov.netz.integration.model.account.AccountOpeningEvent;
 
 @Log4j2
 @Component
@@ -45,7 +47,12 @@ public class AccountEventMapper {
         operatorDTO.setEmitterId(accountDetailsMessage.getEmitterId());
         if (operatorType == OperatorType.INSTALLATION) {
             accountDTO.setAccountType("OPERATOR_HOLDING_ACCOUNT");
-            operatorDTO.setActivityType(InstallationActivityType.valueOf(accountDetailsMessage.getInstallationActivityType()));
+            Set<InstallationActivityType> activityTypes = accountDetailsMessage.
+                    getInstallationActivityTypes().
+                    stream().
+                    map(InstallationActivityType::valueOf).
+                    collect(Collectors.toSet());
+            operatorDTO.setActivityTypes(activityTypes);
             operatorDTO.setName(accountDetailsMessage.getInstallationName());
             PermitDTO permitDTO = new PermitDTO();
             permitDTO.setId(accountDetailsMessage.getPermitId());
@@ -53,22 +60,11 @@ public class AccountEventMapper {
         }
         if (operatorType == OperatorType.AIRCRAFT_OPERATOR) {
             accountDTO.setAccountType("AIRCRAFT_OPERATOR_HOLDING_ACCOUNT");
-            MonitoringPlanDTO monitoringPlanDTO = new MonitoringPlanDTO();
-            monitoringPlanDTO.setId(accountDetailsMessage.getMonitoringPlanId());
-            operatorDTO.setMonitoringPlan(monitoringPlanDTO);
+            setupMonitoringPlan(accountDetailsMessage, operatorDTO);
         }
         if (operatorType == OperatorType.MARITIME_OPERATOR) {
             accountDTO.setAccountType("MARITIME_OPERATOR_HOLDING_ACCOUNT");
-
-            MonitoringPlanDTO monitoringPlanDTO = new MonitoringPlanDTO();
-            if (accountDetailsMessage.getMonitoringPlanId() == null) {
-                log.info("Monitoring Plan Id was not provided in the message. Setting emitterId in it's place.");
-                monitoringPlanDTO.setId(accountDetailsMessage.getEmitterId());
-            } else {
-                monitoringPlanDTO.setId(accountDetailsMessage.getMonitoringPlanId());
-            }
-            operatorDTO.setMonitoringPlan(monitoringPlanDTO);
-
+            setupMonitoringPlan(accountDetailsMessage, operatorDTO);
             operatorDTO.setImo(accountDetailsMessage.getCompanyImoNumber());
         }
         accountDTO.setOperator(operatorDTO);
@@ -120,6 +116,17 @@ public class AccountEventMapper {
         accountDTO.setTrustedAccountListRules(defaultTrustedAccountListRules());
 
         return accountDTO;
+    }
+
+    private void setupMonitoringPlan(AccountDetailsMessage accountDetailsMessage, OperatorDTO operatorDTO) {
+        MonitoringPlanDTO monitoringPlanDTO = new MonitoringPlanDTO();
+        if (accountDetailsMessage.getMonitoringPlanId() == null) {
+            log.info("Monitoring Plan Id was not provided in the message. Setting emitterId in it's place.");
+            monitoringPlanDTO.setId(accountDetailsMessage.getEmitterId());
+        } else {
+            monitoringPlanDTO.setId(accountDetailsMessage.getMonitoringPlanId());
+        }
+        operatorDTO.setMonitoringPlan(monitoringPlanDTO);
     }
 
     private AccountHolderContactInfoDTO defaultPrimaryContact(AddressDTO addressDTO) {

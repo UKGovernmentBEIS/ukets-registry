@@ -16,9 +16,19 @@ public enum InstallationActivityType {
     COMBUSTION_OF_FUELS,
 
     /**
+     * The upstream GHG Removal.
+     */
+    UPSTREAM,
+
+    /**
      * The refining of mineral oil.
      */
     REFINING_OF_MINERAL_OIL,
+
+    /**
+     * The waste.
+     */
+    WASTE,
 
     /**
      * The production of coke.

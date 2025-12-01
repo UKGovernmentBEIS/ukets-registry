@@ -375,7 +375,6 @@ public class AccountRepositoryTest {
 
     private Installation getInstallation(String permitId) {
         Installation installation = new Installation();
-        installation.setActivityType("An activity");
         installation.setChangedRegulator(RegulatorType.OPRED);
         installation.setIdentifier(1111L);
         installation.setInstallationName("An installation name.");

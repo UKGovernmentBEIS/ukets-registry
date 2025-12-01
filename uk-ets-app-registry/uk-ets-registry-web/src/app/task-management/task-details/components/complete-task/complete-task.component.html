@@ -52,6 +52,25 @@
           : 'Complete task'
     }}
   </h1>
+
+  <div
+    *ngIf="showOrphanAccountHolderDeletePossibleWarning()"
+    class="govuk-grid-row"
+  >
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-warning-text">
+        <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          Approving this task will not delete the 'From Account Holder' record.
+          Since the initiation of this task, it has become possible to perform a
+          deletion. If you wish to do this, please reject this task and then
+          initiate a new 'Change Account Holder' task.
+        </strong>
+      </div>
+    </div>
+  </div>
+
   <app-form-control-text
     *ngIf="amountPaidRequired()"
     controlName="amountPaid"

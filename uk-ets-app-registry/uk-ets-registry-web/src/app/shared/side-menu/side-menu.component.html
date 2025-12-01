@@ -8,7 +8,7 @@
           [routerLink]="[]"
           (click)="selectedItem = menuItem; selectItem.emit(menuItem)"
         >
-          {{ menuItem }}
+          {{ labels.has(menuItem) ? labels.get(menuItem) : menuItem }}
         </a>
       </li>
     </ul>

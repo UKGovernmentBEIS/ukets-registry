@@ -30,10 +30,11 @@ class AccountHolderChangeDTOTest {
 
         Set<ConstraintViolation<AccountHolderChangeDTO>> violations = validator.validate(dto);
 
-        assertEquals(3, violations.size());
+        assertEquals(4, violations.size());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("accountIdentifier")));
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("acquiringAccountHolder")));
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("acquiringAccountHolderContactInfo")));
+        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("accountHolderChangeActionType")));
     }
 
     @Test
@@ -42,6 +43,7 @@ class AccountHolderChangeDTOTest {
         dto.setAccountIdentifier(123L);
         dto.setAcquiringAccountHolder(new AccountHolderDTO());
         dto.setAcquiringAccountHolderContactInfo(new AccountHolderRepresentativeDTO());
+        dto.setAccountHolderChangeActionType(AccountHolderChangeActionType.ACCOUNT_HOLDER_CHANGE_TO_CREATED_HOLDER);
 
         Set<ConstraintViolation<AccountHolderChangeDTO>> violations = validator.validate(dto);
 

@@ -2,9 +2,6 @@ package gov.uk.ets.registry.api.integration.consumer.emission;
 
 import gov.uk.ets.registry.api.integration.consumer.KafkaMessageUtil;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEventOutcome;
 import gov.uk.ets.registry.api.integration.service.emission.EmissionEventService;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +14,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEventOutcome;
+import uk.gov.netz.integration.model.error.IntegrationEventError;
 
 @Service
 @Log4j2
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
     containerFactory = "installationEmissionsConsumerFactory",
     topics = "installation-account-emissions-updated-request-topic"
 )
-@ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled"}, havingValue = "true")
+@ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.installation.emissions.enabled"}, havingValue = "true")
 public class InstallationEmissionEventConsumer {
 
     private final EmissionEventService emissionEventService;

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ErrorDetail, ErrorSummary } from '@registry-web/shared/error-summary';
 import { Note } from '@registry-web/shared/model';
@@ -23,6 +23,9 @@ export class AccountNotesComponent {
   @Input()
   accountFullId: string;
 
+  @Output()
+  noteDeleted = new EventEmitter();
+
   constructor(private store: Store) {}
 
   addNote() {
@@ -36,6 +39,7 @@ export class AccountNotesComponent {
 
   deleteNote(noteId: string) {
     this.store.dispatch(NotesActions.navigateDeleteNote({ noteId }));
+    this.noteDeleted.emit();
   }
 
   onError(details: ErrorDetail[]) {

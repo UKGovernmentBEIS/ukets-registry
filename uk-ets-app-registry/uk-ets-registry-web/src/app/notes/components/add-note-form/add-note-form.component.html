@@ -3,14 +3,14 @@
     <span class="govuk-caption-xl">Add note</span>
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-20">Add notes</h1>
     <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
-      <app-form-comment-area
-        controlName="noteDescription"
-        [maxlength]="1024"
-        [rows]="6"
-        [validationErrorMessage]="validationErrorMessage.noteDescription"
+      <app-uk-rich-text-editor
         [label]="'Notes'"
-      >
-      </app-form-comment-area>
+        [labelTitleBold]="true"
+        [showFormattingButtons]="true"
+        [maxlength]="256"
+        controlName="noteDescription"
+        [validationErrorMessage]="validationErrorMessage.noteDescription"
+      ></app-uk-rich-text-editor>
       <button
         class="govuk-button"
         data-module="govuk-button"

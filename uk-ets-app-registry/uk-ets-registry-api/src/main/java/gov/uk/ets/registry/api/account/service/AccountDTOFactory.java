@@ -2,6 +2,7 @@ package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.MetsAccountContact;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
@@ -11,19 +12,23 @@ import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.SalesContact;
 import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.repository.AccountContactRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderContactInfoDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.RegistryContactDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.Scope;
 import gov.uk.ets.registry.api.common.ConversionService;
-import gov.uk.ets.registry.api.common.model.entities.Contact;
+import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.transaction.domain.data.TrustedAccountListRulesDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
@@ -32,16 +37,18 @@ import gov.uk.ets.registry.api.user.UserConversionService;
 import gov.uk.ets.registry.api.user.UserDTO;
 import gov.uk.ets.registry.api.user.domain.UserWorkContact;
 import gov.uk.ets.registry.api.user.service.UserService;
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import org.hibernate.Hibernate;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
@@ -62,6 +69,8 @@ public class AccountDTOFactory {
     private final AccountAccessRepository accountAccessRepository;
 
     private final AuthorizationService authorizationService;
+
+    private final AccountContactRepository accountContactRepository;
 
     @Transactional(readOnly = true)
     public AccountDTO create(Account account) {
@@ -85,9 +94,9 @@ public class AccountDTOFactory {
         }
         AccountDTO accountDTO = new AccountDTO();
         accountDTO
-            .setAccountType(account.getRegistryAccountType() != RegistryAccountType.NONE ?
-                account.getRegistryAccountType().name() :
-                account.getKyotoAccountType().name());
+                .setAccountType(account.getRegistryAccountType() != RegistryAccountType.NONE ?
+                        account.getRegistryAccountType().name() :
+                        account.getKyotoAccountType().name());
         accountDTO.setIdentifier(account.getIdentifier());
         setupTrustedAccountListRulesDTO(accountDTO, account);
         setupAccountDetailsDTO(accountDTO, account);
@@ -109,15 +118,77 @@ public class AccountDTOFactory {
         Map<RequestType, Integer> arTransitions = authorizedRepresentativeService.calculateCounters(account.getIdentifier());
         accountDTO.setAddedARs(arTransitions.getOrDefault(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST, 0));
         accountDTO.setRemovedARs(arTransitions.getOrDefault(RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST, 0));
+        setUpAccountContacts(accountDTO, account);
 
         return accountDTO;
+    }
+
+    private void setUpAccountContacts(AccountDTO accountDTO, Account account) {
+
+        final List<MetsAccountContact> metsAccountContacts = accountContactRepository.findByAccountIdentifier(account.getIdentifier());
+        accountDTO.setMetsContacts(metsAccountContacts.stream()
+                .map(this::createMetsContact)
+                .toList());
+        accountDTO.setRegistryContacts(createRegistryContacts(accountDTO));
+
+    }
+
+    private List<RegistryContactDTO> createRegistryContacts(AccountDTO accountDTO) {
+        Optional<AccountHolderRepresentativeDTO> primary = Optional.ofNullable(accountDTO.getAccountHolderContactInfo().getPrimaryContact());
+        Optional<AccountHolderRepresentativeDTO> alternative =
+                Optional.ofNullable(accountDTO.getAccountHolderContactInfo().getAlternativeContact());
+
+        List<RegistryContactDTO> contacts = new ArrayList<>();
+
+        primary.filter(this::isNotHelpdeskEmail)
+                .map(c -> buildRegistryContact(c, AccountContactType.PRIMARY))
+                .ifPresent(contacts::add);
+
+        alternative.filter(this::isNotHelpdeskEmail)
+                .map(c -> buildRegistryContact(c, AccountContactType.ALTERNATIVE))
+                .ifPresent(contacts::add);
+
+        return contacts;
+    }
+
+    private RegistryContactDTO buildRegistryContact(AccountHolderRepresentativeDTO contact, AccountContactType type) {
+        return RegistryContactDTO.builder()
+                .fullName(contact.getDetails().getFirstName() + " " + contact.getDetails().getLastName())
+                .email(contact.getEmailAddress().getEmailAddress())
+                .phoneNumber(contact.getPhoneNumber())
+                .contactType(type)
+              //  .invitedOn() //TODO fill invited on when invitation is implemented
+                .build();
+    }
+
+    private boolean isNotHelpdeskEmail(AccountHolderRepresentativeDTO contact) {
+        return !StringUtils.equalsIgnoreCase(
+                contact.getEmailAddress().getEmailAddress(),
+                "etregistryhelp@environment-agency.gov.uk"
+        );
+    }
+
+    private MetsContactDTO createMetsContact(MetsAccountContact metsAccountContact) {
+        PhoneNumberDTO phoneNumber = new PhoneNumberDTO();
+        phoneNumber.setCountryCode1(metsAccountContact.getCountryCode1());
+        phoneNumber.setPhoneNumber1(metsAccountContact.getPhoneNumber1());
+        phoneNumber.setCountryCode2(metsAccountContact.getCountryCode2());
+        phoneNumber.setPhoneNumber2(metsAccountContact.getPhoneNumber2());
+        return MetsContactDTO.builder()
+                .fullName(metsAccountContact.getName())
+                .email(metsAccountContact.getEmailAddress())
+                .phoneNumber(phoneNumber)
+                .contactTypes(metsAccountContact.getContactTypes())
+                .operatorType(metsAccountContact.getOperatorType())
+                .invitedOn(metsAccountContact.getInvitedOn())
+                .build();
     }
 
     /**
      * Set transaction rules to the AccountDTO object.
      *
      * @param accountDTO the AccountDTO object.
-     * @param account the account.
+     * @param account    the account.
      */
     public void setupTrustedAccountListRulesDTO(AccountDTO accountDTO, Account account) {
         TrustedAccountListRulesDTO trustedAccountListRulesDTO = new TrustedAccountListRulesDTO();
@@ -137,17 +208,17 @@ public class AccountDTOFactory {
         accountDetailsDTO.setOpeningDate(account.getOpeningDate());
         accountDetailsDTO.setClosingDate(account.getClosingDate());
         accountDetailsDTO.setClosureReason(account.getClosureReason());
-        if(authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN)) {
-	        accountDetailsDTO.setExcludedFromBilling(account.isExcludedFromBilling());
-	        accountDetailsDTO.setExcludedFromBillingRemarks(account.getExcludedFromBillingRemarks());
+        if (authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN)) {
+            accountDetailsDTO.setExcludedFromBilling(account.isExcludedFromBilling());
+            accountDetailsDTO.setExcludedFromBillingRemarks(account.getExcludedFromBillingRemarks());
         }
         setupAccountHolderDTO(accountDTO, accountDetailsDTO, account);
         setupSalesContactDetailsDTO(accountDetailsDTO, account);
         Optional.ofNullable(account.getContact()).ifPresent(
-            contact -> {
-                accountDetailsDTO.setAddress(conversionService.getAddressFromContact(contact));
-                accountDetailsDTO.setBillingContactDetails(conversionService.getBillingDetailsFromContact(contact));
-            });
+                contact -> {
+                    accountDetailsDTO.setAddress(conversionService.getAddressFromContact(contact));
+                    accountDetailsDTO.setBillingContactDetails(conversionService.getBillingDetailsFromContact(contact));
+                });
         accountDTO.setAccountDetails(accountDetailsDTO);
     }
 
@@ -160,21 +231,21 @@ public class AccountDTOFactory {
         accountDTO.setAccountHolder(accountHolderDTO);
 
         List<AccountHolderRepresentative> accountHolderRepresentatives =
-            accountHolderRepresentativeRepository.getAccountHolderRepresentatives(accountHolder.getIdentifier());
+                accountHolderRepresentativeRepository.getAccountHolderRepresentatives(accountHolder.getIdentifier());
 
         AccountHolderContactInfoDTO accountHolderContactInfo = new AccountHolderContactInfoDTO();
         // TODO: In order to support the old data, not exception throws if primary contact is null but it should.
         Optional<AccountHolderRepresentative> primaryContact = accountHolderRepresentatives.stream()
-            .filter(accountHolderRepresentative ->
-                AccountContactType.PRIMARY.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
+                .filter(accountHolderRepresentative ->
+                        AccountContactType.PRIMARY.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
         primaryContact.ifPresent(accountHolderRepresentative -> accountHolderContactInfo
-            .setPrimaryContact(accountConversionService.convert(accountHolderRepresentative)));
+                .setPrimaryContact(accountConversionService.convert(accountHolderRepresentative)));
         // TODO: Some further checks for more than one alternative contacts should be made here.
         Optional<AccountHolderRepresentative> alternativeContact = accountHolderRepresentatives.stream()
-            .filter(accountHolderRepresentative ->
-                AccountContactType.ALTERNATIVE.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
+                .filter(accountHolderRepresentative ->
+                        AccountContactType.ALTERNATIVE.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
         alternativeContact.ifPresent(accountHolderRepresentative -> accountHolderContactInfo
-            .setAlternativeContact(accountConversionService.convert(accountHolderRepresentative)));
+                .setAlternativeContact(accountConversionService.convert(accountHolderRepresentative)));
         accountDTO.setAccountHolderContactInfo(accountHolderContactInfo);
 
         accountDetailsDTO.setAccountHolderName(accountHolder.getName());
@@ -201,23 +272,23 @@ public class AccountDTOFactory {
         List<AuthorisedRepresentativeDTO> authorisedRepresentatives = new ArrayList<>();
 
         Map<String, AccountAccess> userAccess = accountAccessRepository.finARsByAccount_Identifier(account.getIdentifier())
-            .stream()
-            .collect(Collectors.toMap(accountAccess -> accountAccess.getUser().getUrid(), Function.identity()));
+                .stream()
+                .collect(Collectors.toMap(accountAccess -> accountAccess.getUser().getUrid(), Function.identity()));
 
         if (!userAccess.isEmpty()) {
             userService.getUserWorkContacts(userAccess.keySet())
-                .forEach(userWorkContact -> {
-                    AccountAccess accountAccess = userAccess.get(userWorkContact.getUrid());
-                    AuthorisedRepresentativeDTO ar = new AuthorisedRepresentativeDTO();
-                    ar.setRight(accountAccess.getRight());
-                    ar.setState(accountAccess.getState());
-                    UserDTO user = userConversionService.convert(accountAccess.getUser());
-                    ar.setUser(user);
-                    ar.setUrid(user.getUrid());
-                    ContactDTO workContact = convert(userWorkContact);
-                    ar.setContact(workContact);
-                    authorisedRepresentatives.add(ar);
-                });
+                    .forEach(userWorkContact -> {
+                        AccountAccess accountAccess = userAccess.get(userWorkContact.getUrid());
+                        AuthorisedRepresentativeDTO ar = new AuthorisedRepresentativeDTO();
+                        ar.setRight(accountAccess.getRight());
+                        ar.setState(accountAccess.getState());
+                        UserDTO user = userConversionService.convert(accountAccess.getUser());
+                        ar.setUser(user);
+                        ar.setUrid(user.getUrid());
+                        ContactDTO workContact = convert(userWorkContact);
+                        ar.setContact(workContact);
+                        authorisedRepresentatives.add(ar);
+                    });
         }
 
         accountDTO.setAuthorisedRepresentatives(authorisedRepresentatives);
@@ -240,9 +311,9 @@ public class AccountDTOFactory {
         contact.setNoMobilePhoneNumberReason(userWorkContact.getNoMobilePhoneNumberReason());
         return contact;
     }
-    
+
     private void setupSalesContactDetailsDTO(AccountDetailsDTO accountDetailsDTO, Account account) {
-    	SalesContact salesContact = account.getSalesContact();
+        SalesContact salesContact = account.getSalesContact();
         if (salesContact == null) {
             return;
         }

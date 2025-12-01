@@ -374,6 +374,8 @@ public class Task implements Serializable {
                 return "User deactivation request task" + appendText;
             case ACCOUNT_OPENING_INSTALLATION_TRANSFER_REQUEST:
                 return "Open account with installation transfer task" + appendText;
+            case ACCOUNT_HOLDER_CHANGE:
+                return "Account holder change request task" + appendText;
             default:
                 return "";
         }

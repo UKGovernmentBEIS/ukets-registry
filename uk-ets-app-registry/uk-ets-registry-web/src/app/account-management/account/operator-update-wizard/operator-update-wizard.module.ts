@@ -22,10 +22,12 @@ import { CancelUpdateRequestContainerComponent } from '@operator-update/componen
 import { RequestSubmittedContainerComponent } from '@operator-update/components/request-submitted';
 import { AircraftUpdateComponent } from '@operator-update/components/aircraft-update';
 import { MaritimeUpdateComponent } from './components/maritime-update';
+import { OperatorActivityTypeUpdateContainerComponent } from '@operator-update/components/operator-update/operator-activity-type-update-container.component';
 
 @NgModule({
   declarations: [
     OperatorUpdateContainerComponent,
+    OperatorActivityTypeUpdateContainerComponent,
     OperatorUpdateComponent,
     InstallationUpdateComponent,
     CancelUpdateRequestContainerComponent,
@@ -33,7 +35,7 @@ import { MaritimeUpdateComponent } from './components/maritime-update';
     CheckUpdateRequestComponent,
     RequestSubmittedContainerComponent,
     AircraftUpdateComponent,
-    MaritimeUpdateComponent
+    MaritimeUpdateComponent,
   ],
   imports: [
     CommonModule,

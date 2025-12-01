@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnExpression("!${kafka.integration.enabled:false} || !${kafka.integration.set.operator.enabled:false}")
+@ConditionalOnExpression("!${kafka.integration.enabled:false}")
 public class VoidOperatorEventService implements OperatorEventService {
 
     @Override

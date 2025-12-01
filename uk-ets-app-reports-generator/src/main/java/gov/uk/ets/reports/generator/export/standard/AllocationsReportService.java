@@ -84,7 +84,7 @@ public class AllocationsReportService implements ReportTypeService<AllocationsRe
                 "Permit or Monitoring plan",
                 "Operator ID",
                 "Installation name",
-                "Installation activity type",
+                "Installation Regulated activity",
                 "Regulator",
                 "Allocation table",
                 "2021 Withhold status",

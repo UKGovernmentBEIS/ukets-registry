@@ -14,9 +14,11 @@ describe('Change Account Holder reducer', () => {
       beforeSetAccountHolderTypeState.acquiringAccountHolder.type
     ).toBeNull();
 
-    const loadAction = ChangeAccountHolderWizardActions.setAccountHolderType({
-      holderType: AccountHolderType.INDIVIDUAL,
-    });
+    const loadAction = ChangeAccountHolderWizardActions.SET_ACCOUNT_HOLDER_TYPE(
+      {
+        holderType: AccountHolderType.INDIVIDUAL,
+      }
+    );
     const afterSetAccountHolderTypeState = reducer(initialState, loadAction);
     expect(afterSetAccountHolderTypeState.acquiringAccountHolder.type).toEqual(
       AccountHolderType.INDIVIDUAL
@@ -56,7 +58,7 @@ describe('Change Account Holder reducer', () => {
     ).toBeTruthy();
 
     const clearAccountHolderChangeRequestAction =
-      ChangeAccountHolderWizardActions.clearAccountHolderChangeRequest();
+      ChangeAccountHolderWizardActions.CLEAR_ACCOUNT_HOLDER_CHANGE_REQUEST();
     const afterClearAccountHolderChangeRequestState = reducer(
       initialState,
       clearAccountHolderChangeRequestAction

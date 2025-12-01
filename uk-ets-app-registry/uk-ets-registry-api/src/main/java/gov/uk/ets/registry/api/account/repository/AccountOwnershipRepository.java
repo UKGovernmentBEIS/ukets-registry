@@ -11,4 +11,6 @@ public interface AccountOwnershipRepository extends JpaRepository<AccountOwnersh
 
     List<AccountOwnership> findByAccountAndHolderAndStatus(Account account, AccountHolder holder,
                                                            AccountOwnershipStatus status);
+
+    List<AccountOwnership> findByHolderAndStatus(AccountHolder holder, AccountOwnershipStatus status);
 }

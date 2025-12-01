@@ -1,157 +1,130 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import {
-  AccountHolder,
-  AccountHolderContact,
-  AccountHolderType,
-} from '@shared/model/account';
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  OnInit,
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { canGoBack, errors } from '@shared/shared.action';
 import {
   selectCurrentAccountHolder,
   selectAcquiringAccountHolder,
   selectAcquiringAccountHolderContact,
-  selectAcquiringAccountHolderContactAddressCountry,
-  selectChangeAccountHolderWizardCompleted,
-  selectChangeAccountHolderExisting,
-  selectChangeAccountHolderType,
-} from '@change-account-holder-wizard/store/reducers';
+  selectIsExistingAccountHolder,
+  selectAccountHolderDelete,
+  selectIsAccountHolderOrphan,
+} from '@change-account-holder-wizard/store/selectors';
 import { ChangeAccountHolderWizardActions } from '@change-account-holder-wizard/store/actions';
-import { ChangeAccountHolderWizardPathsModel } from '@change-account-holder-wizard/model';
-import { ContactType } from '@shared/model/account-holder-contact-type';
+import {
+  CHANGE_ACCOUNT_HOLDER_BASE_PATH,
+  ChangeAccountHolderWizardPaths,
+} from '@change-account-holder-wizard/model';
+import { combineLatest, take } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeAccountHolderTaskMap } from '../../change-account-holder.task-map';
+import { isNil } from '@registry-web/shared/shared.util';
 
 @Component({
   selector: 'app-change-account-holder-overview-container',
   templateUrl: './change-account-holder-overview-container.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: ``,
 })
 export class ChangeAccountHolderOverviewContainerComponent implements OnInit {
-  accountIdentifier$: Observable<number>;
-  transferringAccountHolder$: Observable<AccountHolder>;
-  acquiringAccountHolder$: Observable<AccountHolder>;
-  acquiringAccountHolderType$: Observable<AccountHolderType>;
-  acquiringAccountHolderContact$: Observable<AccountHolderContact>;
-  acquiringAccountHolderContactAddressCountry$: Observable<string>;
-  accountHolderExisting$: Observable<boolean>;
-  accountHolderCompleted$: Observable<boolean>;
-  primaryType = ContactType.PRIMARY;
+  readonly transferringAccountHolder$ = this.store.select(
+    selectCurrentAccountHolder
+  );
+  readonly acquiringAccountHolder$ = this.store.select(
+    selectAcquiringAccountHolder
+  );
+  readonly acquiringAccountHolderContact$ = this.store.select(
+    selectAcquiringAccountHolderContact
+  );
+  readonly isExistingAccountHolder$ = this.store.select(
+    selectIsExistingAccountHolder
+  );
 
-  individualDetailsRoute: string;
-  organisationDetailsRoute: string;
-  contactDetailsRoute: string;
+  private readonly isAccountHolderOrphan$ = this.store.select(
+    selectIsAccountHolderOrphan
+  );
+  readonly shouldDeleteTransferringAccountHolder = toSignal(
+    this.store.select(selectAccountHolderDelete)
+  );
+  readonly warningMessage = computed<string | null>(() =>
+    this.shouldDeleteTransferringAccountHolder()
+      ? ChangeAccountHolderTaskMap.DELETE_ORPHAN_ACCOUNT_HOLDER_WARNING
+      : null
+  );
+
+  readonly map = ChangeAccountHolderTaskMap;
+  readonly isNil = isNil;
 
   constructor(
-    private store: Store,
-    private route: ActivatedRoute
+    private readonly store: Store,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
-    this.individualDetailsRoute = `/account/${this.route.snapshot.paramMap.get(
-      'accountId'
-    )}/${ChangeAccountHolderWizardPathsModel.BASE_PATH}/${
-      ChangeAccountHolderWizardPathsModel.INDIVIDUAL
-    }`;
+    this.store.dispatch(ChangeAccountHolderWizardActions.INIT_OVERVIEW());
 
-    this.organisationDetailsRoute = `/account/${this.route.snapshot.paramMap.get(
-      'accountId'
-    )}/${ChangeAccountHolderWizardPathsModel.BASE_PATH}/${
-      ChangeAccountHolderWizardPathsModel.ORGANISATION
-    }`;
-
-    this.contactDetailsRoute = `/account/${this.route.snapshot.paramMap.get(
-      'accountId'
-    )}/${ChangeAccountHolderWizardPathsModel.BASE_PATH}/${
-      ChangeAccountHolderWizardPathsModel.PRIMARY_CONTACT
-    }`;
-
-    this.transferringAccountHolder$ = this.store.select(
-      selectCurrentAccountHolder
-    );
-    this.acquiringAccountHolder$ = this.store.select(
-      selectAcquiringAccountHolder
-    );
-    this.acquiringAccountHolderType$ = this.store.select(
-      selectChangeAccountHolderType
-    );
-    this.acquiringAccountHolderContact$ = this.store.select(
-      selectAcquiringAccountHolderContact
-    );
-    this.acquiringAccountHolderContactAddressCountry$ = this.store.select(
-      selectAcquiringAccountHolderContactAddressCountry
-    );
-    this.accountHolderExisting$ = this.store.select(
-      selectChangeAccountHolderExisting
-    );
-    this.accountHolderCompleted$ = this.store.select(
-      selectChangeAccountHolderWizardCompleted
-    );
-
-    this.accountHolderExisting$.subscribe((existing) => {
-      if (existing) {
+    combineLatest([this.isAccountHolderOrphan$, this.isExistingAccountHolder$])
+      .pipe(take(1))
+      .subscribe(([isAccountHolderOrphan, isExisting]) => {
+        const backRoute = isAccountHolderOrphan
+          ? ChangeAccountHolderWizardPaths.DELETE_ORPHAN_ACCOUNT_HOLDER
+          : isExisting
+            ? ChangeAccountHolderWizardPaths.SELECT_EXISTING_OR_ADD_NEW
+            : ChangeAccountHolderWizardPaths.PRIMARY_CONTACT_WORK;
         this.store.dispatch(
           canGoBack({
-            goBackRoute: `/account/${this.route.snapshot.paramMap.get(
+            goBackRoute: `/account/${this.activatedRoute.snapshot.paramMap.get(
               'accountId'
-            )}/${ChangeAccountHolderWizardPathsModel.BASE_PATH}/${
-              ChangeAccountHolderWizardPathsModel.ACCOUNT_HOLDER_SELECTION
-            }`,
+            )}/${CHANGE_ACCOUNT_HOLDER_BASE_PATH}/${backRoute}`,
             extras: { skipLocationChange: true },
           })
         );
-      } else {
-        this.store.dispatch(
-          canGoBack({
-            goBackRoute: `/account/${this.route.snapshot.paramMap.get(
-              'accountId'
-            )}/${ChangeAccountHolderWizardPathsModel.BASE_PATH}/${
-              ChangeAccountHolderWizardPathsModel.PRIMARY_CONTACT_WORK
-            }`,
-            extras: { skipLocationChange: true },
-          })
-        );
-      }
-    });
+      });
   }
 
   onSubmit() {
     this.store.dispatch(
-      ChangeAccountHolderWizardActions.submitChangeAccountHolderRequest()
+      ChangeAccountHolderWizardActions.SUBMIT_CHANGE_ACCOUNT_HOLDER_REQUEST()
     );
   }
 
-  navigateToAccountHolderDetails() {
-    console.log(`Navigating to account holder details.`);
+  navigateToAccountHolderType() {
     this.store.dispatch(
-      ChangeAccountHolderWizardActions.navigateToAccountHolderDetails()
+      ChangeAccountHolderWizardActions.NAVIGATE_TO({
+        step: ChangeAccountHolderWizardPaths.SELECT_TYPE,
+      })
     );
   }
 
-  navigateToContactDetails() {
-    console.log(
-      `Navigating to account holder contact details: ${this.contactDetailsRoute}`
-    );
+  navigateToPrimaryContact() {
     this.store.dispatch(
-      ChangeAccountHolderWizardActions.navigateTo({
-        route: this.contactDetailsRoute,
+      ChangeAccountHolderWizardActions.NAVIGATE_TO({
+        step: ChangeAccountHolderWizardPaths.PRIMARY_CONTACT,
+      })
+    );
+  }
+
+  navigateToDeleteOrphanAccountHolder() {
+    this.store.dispatch(
+      ChangeAccountHolderWizardActions.NAVIGATE_TO({
+        step: ChangeAccountHolderWizardPaths.DELETE_ORPHAN_ACCOUNT_HOLDER,
       })
     );
   }
 
   onCancel() {
-    this.store.dispatch(
-      ChangeAccountHolderWizardActions.cancelClicked({
-        route: this.route.snapshot['_routerState'].url,
-      })
-    );
+    const route = this.router.url;
+    this.store.dispatch(ChangeAccountHolderWizardActions.CANCEL({ route }));
   }
 
   onError(value: ErrorDetail) {
-    const summary: ErrorSummary = {
-      errors: [value],
-    };
+    const summary: ErrorSummary = { errors: [value] };
     this.store.dispatch(errors({ errorSummary: summary }));
   }
 }

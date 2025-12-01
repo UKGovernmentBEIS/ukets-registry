@@ -1,13 +1,12 @@
 package gov.uk.ets.registry.api.account.domain;
 
 import gov.uk.ets.registry.api.common.model.services.converter.StringTrimConverter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 /**
  * Represents an installation.
@@ -25,10 +24,10 @@ public class Installation extends CompliantEntity {
     private static final long serialVersionUID = -7670556513289918396L;
 
     /**
-     * The activity type.
+     * The activity types.
      */
-    @Column(name = "activity_type")
-    private String activityType;
+    @OneToMany(mappedBy = "installation", fetch = FetchType.LAZY)
+    private Set<ActivityType> activityTypes;
 
     /**
      * The installation name.

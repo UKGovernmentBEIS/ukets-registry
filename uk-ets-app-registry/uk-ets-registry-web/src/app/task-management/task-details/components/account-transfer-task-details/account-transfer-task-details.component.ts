@@ -3,8 +3,8 @@ import { AccountTransferTaskDetails } from '@task-management/model';
 import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-documents-origin';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
 import { SummaryListItem } from '@registry-web/shared/summary-list/summary-list.info';
-import { InstallationActivityType } from '@registry-web/shared/model/account';
 import { regulatorMap } from '@registry-web/account-management/account-list/account-list.model';
+import { getEntriesValues } from '@shared/model/account';
 
 @Component({
   selector: 'app-account-transfer-task-details',
@@ -12,10 +12,9 @@ import { regulatorMap } from '@registry-web/account-management/account-list/acco
 })
 export class AccountTransferTaskDetailsComponent implements OnInit {
   @Input() taskDetails: AccountTransferTaskDetails;
-  @Input() isSeniorOrJuniorAdmin: boolean;    
+  @Input() isSeniorOrJuniorAdmin: boolean;
   @Output() readonly requestDocumentEmitter = new EventEmitter();
 
-  activityTypes = InstallationActivityType;
   regulatorMap = regulatorMap;
 
   isCompleted: boolean;
@@ -54,7 +53,7 @@ export class AccountTransferTaskDetailsComponent implements OnInit {
       {
         key: { label: 'Installation ID' },
         value: {
-          label: this.taskDetails.action.installationDetails?.identifier,
+          label: this.taskDetails.action.installationDetails?.identifier + '',
         },
       },
       {
@@ -62,12 +61,11 @@ export class AccountTransferTaskDetailsComponent implements OnInit {
         value: { label: this.taskDetails.action.installationDetails?.name },
       },
       {
-        key: { label: 'Installation activity type' },
+        key: { label: 'Regulated activity' },
         value: {
-          label:
-            this.activityTypes[
-              this.taskDetails.action.installationDetails?.activityType
-            ],
+          label: getEntriesValues(
+            this.taskDetails.action.installationDetails?.activityTypes
+          ),
         },
       },
       {
@@ -104,9 +102,8 @@ export class AccountTransferTaskDetailsComponent implements OnInit {
       },
     ];
 
-
-    return !this.isSeniorOrJuniorAdmin ?
-      summary.filter( next => next.key.label != 'Emitter ID') :
-        summary;     
+    return !this.isSeniorOrJuniorAdmin
+      ? summary.filter((next) => next.key.label != 'Emitter ID')
+      : summary;
   }
 }

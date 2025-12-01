@@ -6,25 +6,23 @@ import { CountryNamePipe } from './country-name.pipe';
 
 @Pipe({
   name: 'countryNameAsync',
-  pure: true,
+  pure: false,
 })
 export class CountryNameAsyncPipe implements PipeTransform {
-  constructor(private store: Store, private countryNamePipe: CountryNamePipe) {}
-
-  private getCountryName$(countryCode): Observable<string> {
-    return this.store
-      .select(selectAllCountries)
-      .pipe(
-        map((countries) =>
-          this.countryNamePipe.transform(countryCode, countries)
-        )
-      );
-  }
+  constructor(
+    private store: Store,
+    private countryNamePipe: CountryNamePipe
+  ) {}
 
   transform(countryCode: string): Observable<string> {
-    if (!countryCode) {
-      return of(null);
-    }
-    return this.getCountryName$(countryCode);
+    return countryCode
+      ? this.store
+          .select(selectAllCountries)
+          .pipe(
+            map((countries) =>
+              this.countryNamePipe.transform(countryCode, countries)
+            )
+          )
+      : of(null);
   }
 }

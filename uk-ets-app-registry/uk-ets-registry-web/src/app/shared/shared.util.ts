@@ -437,3 +437,7 @@ function compareTimeOptions(a: Option, b: Option, notification: Notification) {
   if (isNaN(date_a.getTime()) || isNaN(date_b.getTime())) return 1;
   return new Date(date_a) > new Date(date_b) ? 1 : -1;
 }
+
+export function isNil(value: any): boolean {
+  return value === null || value === undefined;
+}

@@ -12,6 +12,7 @@ import { navigateToTaskDetails } from '@task-details/actions/task-details-naviga
 import { canGoBackToList } from '@shared/shared.action';
 import { SearchMode } from '@shared/resolvers/search.resolver';
 import { IsLoggedInCheck } from '@registry-web/auth/auth.actions';
+import { TaskDetailsActions } from '@task-details/actions';
 
 export const paymentWeblinkConfirmationGuard: CanActivateFn = (
   route,
@@ -47,6 +48,11 @@ export const paymentWeblinkConfirmationGuard: CanActivateFn = (
                 mode: SearchMode.INITIAL_LOAD,
               },
             },
+          })
+        );
+        store.dispatch(
+          TaskDetailsActions.prepareNavigationToTask({
+            taskId: response.requestIdentifier,
           })
         );
         store.dispatch(navigateToTaskDetails({}));

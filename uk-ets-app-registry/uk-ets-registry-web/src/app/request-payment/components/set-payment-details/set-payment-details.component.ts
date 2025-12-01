@@ -1,5 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Validators } from '@angular/forms';
+import {
+  FormControl,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { PaymentDetails } from '@request-payment/model';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
@@ -81,7 +86,13 @@ export class SetPaymentDetailsComponent
       ],
       description: [
         this.description,
-        { validators: Validators.required, updateOn: 'change' },
+        {
+          validators: [
+            Validators.required,
+            this.forbiddenSpecialCharsValidator(),
+          ],
+          updateOn: 'change',
+        },
       ],
     };
   }
@@ -99,7 +110,20 @@ export class SetPaymentDetailsComponent
       },
       description: {
         required: 'Please enter a description.',
+        forbiddenSpecialChars:
+          'Special characters < > " \\ | cannot be used in the description field.',
       },
+    };
+  }
+
+  private forbiddenSpecialCharsValidator(): ValidatorFn {
+    // forbidden characters: < > " \ |
+    const forbiddenRegex = /[<>"\\|]/;
+
+    return (control: FormControl<string>): ValidationErrors | null => {
+      return control.value && forbiddenRegex.test(control.value)
+        ? { forbiddenSpecialChars: true }
+        : null;
     };
   }
 }

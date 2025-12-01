@@ -30,6 +30,7 @@ import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actio
 import { enterRequestPaymentWizard } from '@request-payment/store/actions';
 import { navigateAndLoadPaymentList } from '@registry-web/payment-management/payment-list/store/actions';
 import { navigateToGovUKPayService } from '../../actions/task-details-navigation.actions';
+import { fetchTaskNotes } from '@task-details/components/task-notes/store/task-notes.actions';
 
 @Component({
   selector: 'app-task-details-container',
@@ -101,6 +102,12 @@ export class TaskDetailsContainerComponent implements OnInit {
     this.route.paramMap.subscribe((paramMap) => {
       this.requestId = paramMap.get('requestId');
     });
+
+    this.store.dispatch(
+      fetchTaskNotes({
+        requestId: this.requestId,
+      })
+    );
   }
 
   downloadTemplate(fileDetails: FileDetails) {

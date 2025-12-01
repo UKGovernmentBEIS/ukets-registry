@@ -20,10 +20,7 @@
         </div>
       </div>
       <dl
-        class="
-          govuk-summary-list govuk-summary-list govuk-!-font-weight-bold
-          key
-        "
+        class="govuk-summary-list govuk-summary-list govuk-!-font-weight-bold key"
       >
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__value">Entity type</dt>
@@ -33,7 +30,12 @@
       <dl class="govuk-summary-list govuk-summary-list--no-border">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__value">{{ storedTypeLabel }}</dt>
-          <dd class="govuk-summary-list__value">{{ storedNote }}</dd>
+          <dd class="govuk-summary-list__value">
+            <div
+              class="ql-editor white-space-preserved"
+              [innerHTML]="storedNote"
+            ></div>
+          </dd>
         </div>
       </dl>
     </fieldset>
@@ -59,7 +61,10 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key note-key">Note</dt>
           <dd class="govuk-summary-list__value govuk-!-width-two-thirds">
-            {{ storedNote }}
+            <div
+              class="ql-editor white-space-preserved"
+              [innerHTML]="storedNote"
+            ></div>
           </dd>
           <dd class="govuk-summary-list__value change">
             <a

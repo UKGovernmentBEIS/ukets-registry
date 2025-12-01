@@ -39,6 +39,7 @@ import { take } from 'rxjs/operators';
   selector: 'app-account-holder-selection-container',
   template: `
     <app-account-holder-selection
+      [caption]="'Add the account holder'"
       [accountHolder]="accountHolder$ | async"
       [accountHolderList]="accountHolderList$ | async"
       [accountHolderType]="accountHolderType$ | async"

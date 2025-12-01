@@ -10,6 +10,7 @@ import {
   FormRadioOption,
 } from '@registry-web/shared/form-controls/uk-radio-input/uk-radio.model';
 import { SharedModule } from '@registry-web/shared/shared.module';
+import { NotificationType } from '@notifications/notifications-wizard/model';
 
 @Component({
   standalone: true,
@@ -50,7 +51,7 @@ export class AddNoteFormComponent extends UkFormComponent implements OnInit {
         this.storedNote,
         {
           updateOn: 'change',
-          validators: [Validators.required],
+          validators: [Validators.required, Validators.maxLength(1024)],
         },
       ],
     };
@@ -60,6 +61,7 @@ export class AddNoteFormComponent extends UkFormComponent implements OnInit {
     return {
       noteDescription: {
         required: 'Add note description',
+        maxlength: 'Note description should not exceed 1024 characters',
       },
     };
   }
@@ -71,4 +73,6 @@ export class AddNoteFormComponent extends UkFormComponent implements OnInit {
   onCancel() {
     this.handleCancel.emit(this.formGroup.get('noteDescription').value);
   }
+
+  protected readonly NotificationType = NotificationType;
 }

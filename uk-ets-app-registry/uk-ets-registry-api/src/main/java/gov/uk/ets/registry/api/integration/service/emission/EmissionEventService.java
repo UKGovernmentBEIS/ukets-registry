@@ -10,8 +10,6 @@ import gov.uk.ets.registry.api.file.upload.emissionstable.model.EmissionsEntry;
 import gov.uk.ets.registry.api.file.upload.emissionstable.repository.EmissionsEntryRepository;
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
-import gov.uk.ets.registry.api.integration.error.IntegrationEventError;
-import gov.uk.ets.registry.api.integration.message.AccountEmissionsUpdateEvent;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,6 +23,8 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
+import uk.gov.netz.integration.model.error.IntegrationEventError;
 
 @Log4j2
 @Service

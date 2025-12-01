@@ -5,13 +5,10 @@ import { Component } from '@angular/core';
   template: `<div class="govuk-width-container">
     <div class="govuk-phase-banner">
       <p class="govuk-phase-banner__content">
-        <strong class="govuk-tag govuk-phase-banner__content__tag">
-          beta
-        </strong>
         <span class="govuk-phase-banner__text">
-          This is a new service – your
-          <a class="govuk-link" href="/digital-survey">feedback</a> will help us
-          to improve it.
+          Your
+          <a class="govuk-link" href="/digital-survey">feedback</a> is highly
+          valued in helping to improve this service.
         </span>
       </p>
     </div>
