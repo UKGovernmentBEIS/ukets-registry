@@ -27,7 +27,8 @@ export const isWizardCompleted = (
     state.accountHolderSelectionType === AccountHolderSelectionType.NEW
   );
   const accountHolderContactCompleted = isAccountHolderContactCompleted(
-    state.acquiringAccountHolderContact
+    state.acquiringAccountHolderContact,
+    state.accountHolderSelectionType === AccountHolderSelectionType.NEW
   );
   const accountHolderOrphanStepCompleted =
     state.isAccountHolderOrphan === false ||
@@ -42,9 +43,17 @@ export const isWizardCompleted = (
 
 const isAccountHolderCompleted = (
   accountHolder: AccountHolder,
-  isNew = false
+  isNewAccountHolder: boolean
 ): boolean => {
-  const idCompleted = isNew || !isNil(accountHolder.id);
+  if (!isNewAccountHolder) {
+    return (
+      !isNil(accountHolder.id) &&
+      (accountHolder.type === AccountHolderType.ORGANISATION ||
+        accountHolder.type === AccountHolderType.INDIVIDUAL)
+    );
+  }
+
+  // Checks for new Account Holder
   let detailsCompleted = false;
   const addressCompleted = isAddressCompleted(accountHolder.address);
 
@@ -54,7 +63,7 @@ const isAccountHolderCompleted = (
       !!details?.name &&
       (!!details?.registrationNumber ||
         !!details?.noRegistrationNumJustification);
-    return idCompleted && detailsCompleted && addressCompleted;
+    return detailsCompleted && addressCompleted;
   }
 
   if (accountHolder.type === AccountHolderType.INDIVIDUAL) {
@@ -65,7 +74,6 @@ const isAccountHolderCompleted = (
       !!individual.details?.countryOfBirth;
 
     return (
-      idCompleted &&
       detailsCompleted &&
       addressCompleted &&
       !isNil(individual.phoneNumber) &&
@@ -77,8 +85,14 @@ const isAccountHolderCompleted = (
 };
 
 const isAccountHolderContactCompleted = (
-  contact: AccountHolderContact
+  contact: AccountHolderContact,
+  isNewAccountHolder: boolean
 ): boolean => {
+  if (!isNewAccountHolder) {
+    return true;
+  }
+
+  // Checks for new Account Holder
   const detailsCompleted =
     !!contact.details?.firstName && !!contact.details?.lastName;
   const addressCompleted = isAddressCompleted(contact.address);
