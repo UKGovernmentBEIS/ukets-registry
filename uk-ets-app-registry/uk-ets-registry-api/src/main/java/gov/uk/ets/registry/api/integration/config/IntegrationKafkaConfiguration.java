@@ -60,6 +60,9 @@ public class IntegrationKafkaConfiguration {
     @Value("${kafka.integration.authentication.enabled}")
     private boolean integrationKafkaAuthenticationEnabled;
     
+    @Value("${kafka.integration.auto.offset.reset}")
+    private String autoOffsetReset;
+    
     @Value("${kafka.integration.installation.emissions.consumer.group-id}")
     private String installationEmissionsConsumerGroup;
 
@@ -232,7 +235,9 @@ public class IntegrationKafkaConfiguration {
 
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, integrationKafkaBootstrapAddress);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroup);
-
+        //This is to read messages from partitions that have no committed offset after re-enabling a consumer.
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
+        
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
