@@ -97,7 +97,11 @@ export class OverviewInstallationComponent {
         },
         value: [
           {
-            label: getEntriesValues(this.installation.activityTypes),
+            label: getEntriesValues(
+              this.installation.activityTypes?.length > 0
+                ? this.installation.activityTypes
+                : [this.installation['activityType']]
+            ),
             class: 'govuk-summary-list__value',
           },
         ],

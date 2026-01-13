@@ -1,13 +1,12 @@
 package gov.uk.ets.registry.api.file.upload.adhoc.services;
 
 import gov.uk.ets.registry.api.file.upload.adhoc.services.error.AdHocEmailRecipientsError;
-import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,10 +19,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class AdHocEmailRecipientsValidationService {
 
-    private final UserAdministrationService userAdministrationService;
+    private final EmailValidator emailValidator = new EmailValidator();
 
     public AdhocFileValidationWrapper validateFileContent(InputStream multiPartInputStream) throws IOException {
         final Map<AdHocEmailRecipientsError, Set<Integer>> errorRowsMapping = new LinkedHashMap<>();
@@ -71,8 +69,8 @@ public class AdHocEmailRecipientsValidationService {
         if (!uniqueRows.add(rowContent)) {
             errorRowsMapping.computeIfAbsent(AdHocEmailRecipientsError.DUPLICATE_RECIPIENTS, k -> new LinkedHashSet<>()).add(rowNumber);
         }
-        // Check if email exists in the database
-        if (userAdministrationService.findByEmail(email).isEmpty()) {
+        // Validate the pattern of email
+        if (!emailValidator.isValid(email, null)) {
             errorRowsMapping.computeIfAbsent(AdHocEmailRecipientsError.INVALID_RECIPIENT, k -> new LinkedHashSet<>()).add(rowNumber);
         }
     }
