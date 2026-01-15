@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import static gov.uk.ets.registry.api.payment.service.pdf.PaymentInvoicePdfUtils.*;
 
@@ -24,6 +27,10 @@ public class PdfFormatter {
     private static final int FONT_SIZE = 12;
     public static final float CELL_PADDING = 1f;
     private static final String VALUE_FORMAT = "%s %s";
+
+    private static final String HEADER_DATE_FORMAT = "d MMM yyyy";
+    private static final String HEADER_DATE_INVOICE_LABEL = "Invoice date: ";
+    private static final String HEADER_DATE_RECEIPT_LABEL = "Receipt date: ";
 
     public Paragraph labelWithBoldValue(String label, String value) {
         Phrase phrase = new Phrase();
@@ -94,14 +101,16 @@ public class PdfFormatter {
         return titleCell;
     }
 
-    public PdfPCell rightHeader(Long subTaskId) {
+    public PdfPCell rightHeader(Long subTaskId, boolean isInvoice) {
         Paragraph vat = new Paragraph(VAT_NO, FontFactory.getFont(FontFactory.HELVETICA, 10));
         String paymentRef = subTaskId == null ? NA : "" + subTaskId;
 
         Paragraph subtask = new Paragraph(PAYMENT_REFERENCE + paymentRef, FontFactory.getFont(FontFactory.HELVETICA, 10));
+        Paragraph dateHeaderParagraph = headerDateForReceiptOrInvoice(isInvoice);
         PdfPCell rightCell = new PdfPCell();
         rightCell.addElement(vat);
         rightCell.addElement(subtask);
+        rightCell.addElement(dateHeaderParagraph);
         rightCell.setBorder(Rectangle.NO_BORDER);
         rightCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         rightCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -129,5 +138,17 @@ public class PdfFormatter {
     private PdfPCell prepareCell(PdfPCell cell) {
         cell.setPadding(CELL_PADDING);
         return cell;
+    }
+
+    private Paragraph headerDateForReceiptOrInvoice(boolean isInvoice) {
+        String renderText = (isInvoice ? HEADER_DATE_INVOICE_LABEL : HEADER_DATE_RECEIPT_LABEL) + headerDate();
+        return new Paragraph(
+                    renderText, FontFactory.getFont(FontFactory.HELVETICA, 10));
+    }
+
+    public static String headerDate() {
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(HEADER_DATE_FORMAT, Locale.ENGLISH);
+        return today.format(fmt);
     }
 }

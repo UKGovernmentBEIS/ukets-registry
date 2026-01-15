@@ -67,7 +67,7 @@ class PdfFormatterTest {
 
     @Test
     void rightHeader_shouldHandleNullSubTaskId() {
-        PdfPCell cell = pdfFormatter.rightHeader(null);
+        PdfPCell cell = pdfFormatter.rightHeader(null, false);
         assertTrue(cell.getCompositeElements().stream()
                 .anyMatch(el -> ((Paragraph) el).getContent().contains(PaymentInvoicePdfUtils.NA)));
     }

@@ -96,7 +96,7 @@ public class PaymentFileBuilder {
         headerTable.setWidths(new float[]{4, 4, 4}); // logo | title | right-side
         headerTable.addCell(pdfFormatter.logo());
         headerTable.addCell(pdfFormatter.title(isInvoice));
-        headerTable.addCell(pdfFormatter.rightHeader(subtaskId));
+        headerTable.addCell(pdfFormatter.rightHeader(subtaskId, isInvoice));
         document.add(headerTable);
     }
 
