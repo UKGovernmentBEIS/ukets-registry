@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.ar.service;
 
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.SeniorAdminCanClaimTaskInitiatedByAdminRule;
@@ -38,9 +39,11 @@ public class AuthorisedRepresentativeRemoveTaskService extends AuthorisedReprese
                                                      RequestedDocsTaskService requestedDocsTaskService,
                                                      Mapper mapper,
                                                      TaskARStatusRepository taskARStatusRepository,
-                                                     PaymentTaskAutoCompletionService paymentTaskAutoCompletionService) {
+                                                     PaymentTaskAutoCompletionService paymentTaskAutoCompletionService,
+                                                     AccountClaimService accountClaimService) {
         super(accountService, userConversionService, userAdministrationService, accountAccessRepository, userService,
-            taskRepository, authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper,taskARStatusRepository,paymentTaskAutoCompletionService);
+            taskRepository, authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper,taskARStatusRepository,paymentTaskAutoCompletionService,
+                accountClaimService);
     }
 
     @Override

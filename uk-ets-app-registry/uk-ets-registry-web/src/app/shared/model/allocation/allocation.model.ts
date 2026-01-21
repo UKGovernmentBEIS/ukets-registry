@@ -44,6 +44,5 @@ export enum AllocationCategory {
 
 export const AllocationCategoryLabel = {
   [AllocationCategory.Installation]: 'Installations',
-  [AllocationCategory.AircraftOperator]:
-  'Aviation',
+  [AllocationCategory.AircraftOperator]: 'Aviation',
 };

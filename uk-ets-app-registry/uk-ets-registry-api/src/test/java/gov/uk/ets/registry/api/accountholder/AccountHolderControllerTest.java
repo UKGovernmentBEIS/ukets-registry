@@ -1,12 +1,5 @@
 package gov.uk.ets.registry.api.accountholder;
 
-import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
@@ -14,13 +7,13 @@ import gov.uk.ets.registry.api.account.web.model.AccountHolderFileDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderService;
 import gov.uk.ets.registry.api.accountholder.service.AccountHolderUpdateService;
-import gov.uk.ets.registry.api.accountholder.web.model.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeActionType;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDiffDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDiffDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderTypeAheadSearchResultDTO;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +24,20 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 class AccountHolderControllerTest {
@@ -233,5 +240,23 @@ class AccountHolderControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
+    }
+
+    @Test
+    void testGetByNameOrIdentifierSuccessReponse() throws Exception {
+        final String name = "Your first name";
+        AccountHolderTypeAheadSearchResultDTO holder =
+                new AccountHolderTypeAheadSearchResultDTO(100000002L, "Organisation Name", name, "Your last name",
+                        AccountHolderType.ORGANISATION);
+        List<AccountHolderTypeAheadSearchResultDTO> holders = List.of(holder);
+        Mockito.when(accountHolderService.getAllAccountHoldersByNameAndIdentifier(name, AccountHolderType.ORGANISATION))
+                .thenReturn(holders);
+
+        mockMvc.perform(get("/api-registry/account-holder.get.by-name-or-identifier")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("name", name)
+                        .param("type", AccountHolderType.ORGANISATION.toString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

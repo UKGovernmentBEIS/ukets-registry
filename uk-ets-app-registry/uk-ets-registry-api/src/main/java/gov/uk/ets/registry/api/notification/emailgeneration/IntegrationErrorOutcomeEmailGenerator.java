@@ -18,10 +18,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.account.AccountUpdatingEvent;
 import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
 import uk.gov.netz.integration.model.error.ContactPoint;
 import uk.gov.netz.integration.model.error.IntegrationEventError;
 import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
+import uk.gov.netz.integration.model.metscontacts.MetsContactsEvent;
+import uk.gov.netz.integration.model.metscontacts.MetsContactsMessage;
+import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEvent;
 import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 
 @RequiredArgsConstructor
@@ -47,7 +51,7 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
         params.put("infoErrors", getErrors(notification.getErrors(), error -> error.isInfoFor(notification.getContactPoint())));
         params.put("date", DateUtils.prettyCalendarDate(notification.getDate()));
         params.put("time", DateUtils.formatLondonZonedTime(notification.getDate()));
-        params.put("sourceSystem", notification.getSourceSystem().name());
+        params.put("sourceSystem", notification.getSourceSystem().getSource());
 
         Set<String> actionRecipients = getRecipients(IntegrationEventError::getActionRecipients);
         String infoRecipients = getRecipients(IntegrationEventError::getInformationRecipients).stream()
@@ -134,8 +138,48 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
             return getOperatorFields(event);
         }
 
+        if (notification.getEvent() instanceof AccountUpdatingEvent event) {
+            return getUpdatingFields(event);
+        }
+
+        if (notification.getEvent() instanceof AccountExemptionUpdateEvent event) {
+            return getExemptionFields(event);
+        }
+
+        if (notification.getEvent() instanceof MetsContactsEvent event) {
+            return getMetsContactsFields(event);
+        }
+
         return Map.of();
     }
+
+    private Map<String, String> getMetsContactsFields(MetsContactsEvent event) {
+        Map<String, String> fields = new LinkedHashMap<>();
+        fields.put("OperatorID", event.getOperatorId());
+        List<MetsContactsMessage> details = event.getDetails();
+
+        for (int i = 0; i < details.size(); i++) {
+            MetsContactsMessage detail = details.get(i);
+            fields.put("Contact["+i+"].FirstName", asStringOrEmpty(detail.getFirstName()));
+            fields.put("Contact["+i+"].LastName", asStringOrEmpty(detail.getLastName()));
+            fields.put("Contact["+i+"].Email", asStringOrEmpty(detail.getEmail()));
+            fields.put("Contact["+i+"].TelephoneCountryCode", asStringOrEmpty(detail.getTelephoneCountryCode()));
+            fields.put("Contact["+i+"].TelephoneNumber", asStringOrEmpty(detail.getTelephoneNumber()));
+            fields.put("Contact["+i+"].MobilePhoneCountryCode", asStringOrEmpty(detail.getMobilePhoneCountryCode()));
+            fields.put("Contact["+i+"].MobileNumber", asStringOrEmpty(detail.getMobileNumber()));
+            List<String> contactTypes = detail.getContactTypes();
+            String contactTypesField =
+                    contactTypes == null || contactTypes.isEmpty()
+                            ? ""
+                            : String.join(",", contactTypes);
+
+            fields.put("Contact["+i+"].ContactTypes", asStringOrEmpty(contactTypesField));
+            fields.put("Contact["+i+"].UserType", asStringOrEmpty(detail.getUserType()));
+        }
+        return fields;
+    }
+
+
 
     private Map<String, String> getAccountOpeningFields(AccountOpeningEvent event) {
         Map<String, String> fields = new LinkedHashMap<>();
@@ -149,6 +193,35 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
         fields.put("AccountDetails.MonitoringPlanID", asStringOrEmpty(event.getAccountDetails().getMonitoringPlanId()));
         fields.put("AccountDetails.CompanyImoNumber", asStringOrEmpty(event.getAccountDetails().getCompanyImoNumber()));
         fields.put("AccountDetails.Regulator", asStringOrEmpty(event.getAccountDetails().getRegulator()));
+        fields.put("AccountDetails.FirstYearOfVerifiedEmission", asStringOrEmpty(event.getAccountDetails().getFirstYearOfVerifiedEmissions()));
+        //account holder
+        fields.put("AccountHolder.Name", asStringOrEmpty(event.getAccountHolder().getName()));
+        fields.put("AccountHolder.AccountHolderType", asStringOrEmpty(event.getAccountHolder().getAccountHolderType()));
+        fields.put("AccountHolder.AddressLine1", asStringOrEmpty(event.getAccountHolder().getAddressLine1()));
+        fields.put("AccountHolder.AddressLine2", asStringOrEmpty(event.getAccountHolder().getAddressLine2()));
+        fields.put("AccountHolder.TownOrCity", asStringOrEmpty(event.getAccountHolder().getTownOrCity()));
+        fields.put("AccountHolder.StateOrProvince", asStringOrEmpty(event.getAccountHolder().getStateOrProvince()));
+        fields.put("AccountHolder.Country", asStringOrEmpty(event.getAccountHolder().getCountry()));
+        fields.put("AccountHolder.PostalCode", asStringOrEmpty(event.getAccountHolder().getPostalCode()));
+        fields.put("AccountHolder.CrnNotExists", asStringOrEmpty(event.getAccountHolder().getCrnNotExist()));
+        fields.put("AccountHolder.CompanyRegistrationNumber", asStringOrEmpty(event.getAccountHolder().getCompanyRegistrationNumber()));
+        fields.put("AccountHolder.CrnJustification", asStringOrEmpty(event.getAccountHolder().getCrnJustification()));
+
+        return fields;
+    }
+
+    private Map<String, String> getUpdatingFields(AccountUpdatingEvent event) {
+        Map<String, String> fields = new LinkedHashMap<>();
+
+        // account details
+        fields.put("AccountDetails.RegistryID", asStringOrEmpty(event.getAccountDetails().getRegistryId()));
+        fields.put("AccountDetails.AccountType", asStringOrEmpty(event.getAccountDetails().getAccountType()));
+        fields.put("AccountDetails.InstallationActivityTypes", asStringOrEmpty(event.getAccountDetails().getInstallationActivityTypes()));
+        fields.put("AccountDetails.InstallationName", asStringOrEmpty(event.getAccountDetails().getInstallationName()));
+        fields.put("AccountDetails.AccountName", asStringOrEmpty(event.getAccountDetails().getAccountName()));
+        fields.put("AccountDetails.PermitID", asStringOrEmpty(event.getAccountDetails().getPermitId()));
+        fields.put("AccountDetails.MonitoringPlanID", asStringOrEmpty(event.getAccountDetails().getMonitoringPlanId()));
+        fields.put("AccountDetails.CompanyImoNumber", asStringOrEmpty(event.getAccountDetails().getCompanyImoNumber()));
         fields.put("AccountDetails.FirstYearOfVerifiedEmission", asStringOrEmpty(event.getAccountDetails().getFirstYearOfVerifiedEmissions()));
         //account holder
         fields.put("AccountHolder.Name", asStringOrEmpty(event.getAccountHolder().getName()));
@@ -182,6 +255,16 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
         fields.put("Operator ID", asStringOrEmpty(event.getOperatorId()));
         fields.put("Emitter Id", asStringOrEmpty(event.getEmitterId()));
         fields.put("Regulator", asStringOrEmpty(event.getRegulator()));
+
+        return fields;
+    }
+
+    private Map<String, String> getExemptionFields(AccountExemptionUpdateEvent event) {
+        Map<String, String> fields = new LinkedHashMap<>();
+
+        fields.put("Operator ID", asStringOrEmpty(event.getRegistryId()));
+        fields.put("Reporting Year", asStringOrEmpty(event.getReportingYear()));
+        fields.put("Exemption Flag", asStringOrEmpty(event.getExemptionFlag()));
 
         return fields;
     }

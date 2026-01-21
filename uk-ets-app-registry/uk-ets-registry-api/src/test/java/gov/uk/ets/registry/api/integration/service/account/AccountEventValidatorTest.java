@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import gov.uk.ets.registry.api.integration.service.account.validators.AccountOpeningEventValidator;
+import gov.uk.ets.registry.api.integration.consumer.ValidatorOperationType;
+import gov.uk.ets.registry.api.integration.service.account.validators.CommonAccountValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,11 +35,17 @@ class AccountEventValidatorTest {
     @Mock
     private AccountService accountService;
 
-    private AccountEventValidator validator;
+    private AccountOpeningEventValidator validator;
 
     @BeforeEach
     public void setup() {
-        validator = new AccountEventValidator(countryMap, accountService);
+
+        CommonAccountValidator createAccountValidator = new CommonAccountValidator(
+                ValidatorOperationType.CREATE_ACCOUNT,
+                countryMap
+        );
+
+        validator = new AccountOpeningEventValidator(accountService, countryMap, createAccountValidator);
         ReflectionTestUtils.setField(validator, "maritimeStartingYear", 2026);
     }
 

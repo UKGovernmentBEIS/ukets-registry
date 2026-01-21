@@ -2,6 +2,7 @@ package gov.uk.ets.registry.api.account.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import gov.uk.ets.registry.api.account.domain.Account;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -95,7 +97,7 @@ class AccountHolderRepositoryTest {
         account2.setRegistryAccountType(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT);
         account2.setAccountHolder(accountHolder);
         Account account3 = new Account();
-        account3.setAccountName("account2");
+        account3.setAccountName("account3");
         account3.setRegistryAccountType(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT);
         account3.setAccountHolder(accountHolder);
         entityManager.persist(account1);
@@ -115,6 +117,7 @@ class AccountHolderRepositoryTest {
 
         AccountHolder accountHolder2 = new AccountHolder();
         accountHolder2.setType(AccountHolderType.INDIVIDUAL);
+        accountHolder2.setIdentifier(10000037L);
         accountHolder2.setFirstName("Firstname");
         accountHolder2.setLastName("Lastname");
         entityManager.persist(accountHolder2);
@@ -165,14 +168,14 @@ class AccountHolderRepositoryTest {
         Account account6 = new Account();
         account6.setAccountName("account6");
         account6.setRegistryAccountType(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT);
-        account6.setAccountHolder(accountHolder3);
+        account6.setAccountHolder(accountHolder4);
         entityManager.persist(account6);
 
         AccountAccess access4 = new AccountAccess();
-        access3.setUser(user2);
-        access3.setState(AccountAccessState.ACTIVE);
-        access3.setRight(AccountAccessRight.READ_ONLY);
-        access3.setAccount(account6);
+        access4.setUser(user2);
+        access4.setState(AccountAccessState.ACTIVE);
+        access4.setRight(AccountAccessRight.READ_ONLY);
+        access4.setAccount(account6);
         entityManager.persist(access4);
     }
 
@@ -239,6 +242,75 @@ class AccountHolderRepositoryTest {
 
         assertEquals(expectedAccountTypeIntegerMap, actualAccountTypeIntegerMap);
         assertTrue(isAccountHolderOfMultipleAccounts(accountHolderAccountsCount));
+    }
+
+    @Test
+    void findByNameAndTypeAndUser_organisation() {
+        final List<AccountHolderTypeAheadSearchResultDTO> actual = accountHolderRepository.findByNameAndTypeAndUser("ORGANISATION",
+                AccountHolderType.ORGANISATION, TEST_URID, AccountAccessState.ACTIVE);
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getName)
+                .containsExactly("Organisation 1");
+    }
+
+    @Test
+    void findByNameAndTypeAndUser_individual() {
+        final List<AccountHolderTypeAheadSearchResultDTO> actual = accountHolderRepository.findByNameAndTypeAndUser("FIRST",
+                AccountHolderType.INDIVIDUAL, TEST_URID, AccountAccessState.ACTIVE);
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getFirstName)
+                .containsExactly("Firstname");
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getLastName)
+                .containsExactly("Lastname");
+    }
+
+    @Test
+    void findByIdentifierAndTypeAndUser_organisation() {
+
+        final List<AccountHolderTypeAheadSearchResultDTO> actual = accountHolderRepository.findByIdentifierAndTypeAndUser("10000036", Set.of(AccountHolderType.ORGANISATION),
+                TEST_URID, AccountAccessState.ACTIVE);
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getName).containsExactly("Organisation 1");
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getIdentifier).containsExactly(10000036L);
+    }
+
+    @Test
+    void findByIdentifierAndTypeAndUser_individual() {
+
+        final List<AccountHolderTypeAheadSearchResultDTO> actual = accountHolderRepository.findByIdentifierAndTypeAndUser("10000037", Set.of(AccountHolderType.INDIVIDUAL),
+                TEST_URID, AccountAccessState.ACTIVE);
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getFirstName)
+                .containsExactly("Firstname");
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getLastName)
+                .containsExactly("Lastname");
+        assertThat(actual).extracting(AccountHolderTypeAheadSearchResultDTO::getIdentifier).containsExactly(10000037L);
+    }
+
+    @Test
+    void findAccountHoldersByUserTypeAndState_organisation() {
+        final List<AccountHolderDTO> actual =
+                accountHolderRepository.findAccountHoldersByUserTypeAndState(TEST_URID, AccountHolderType.ORGANISATION, AccountAccessState.ACTIVE);
+        assertThat(actual).extracting(AccountHolderDTO::actualName).containsExactlyInAnyOrder("Organisation 1");
+    }
+
+    @Test
+    void findAccountHoldersByUserTypeAndState_individual() {
+        final List<AccountHolderDTO> actual =
+                accountHolderRepository.findAccountHoldersByUserTypeAndState(TEST_URID, AccountHolderType.INDIVIDUAL, AccountAccessState.ACTIVE);
+        assertThat(actual).extracting(AccountHolderDTO::actualName).containsExactly("Firstname Lastname");
+    }
+
+    @Test
+    void findAccountHoldersByType_organisation() {
+
+        final List<AccountHolderDTO> actual =
+                accountHolderRepository.findAccountHoldersByType(AccountHolderType.ORGANISATION);
+        assertThat(actual).extracting(AccountHolderDTO::actualName).containsExactlyInAnyOrder("Organisation 1", "Org 3", "Org 4");
+    }
+
+    @Test
+    void findAccountHoldersByType_individual() {
+
+        final List<AccountHolderDTO> actual =
+                accountHolderRepository.findAccountHoldersByType(AccountHolderType.INDIVIDUAL);
+        assertThat(actual).extracting(AccountHolderDTO::actualName).containsExactly("Firstname Lastname");
     }
 
     private boolean isAccountHolderOfMultipleAccounts(List<Account> accounts) {

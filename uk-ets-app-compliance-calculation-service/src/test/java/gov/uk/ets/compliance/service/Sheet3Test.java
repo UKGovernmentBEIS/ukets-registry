@@ -135,7 +135,7 @@ public class Sheet3Test extends DynamicComplianceServiceTestBase {
         result = dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2023, 100L));
         DynamicComplianceException dynamicComplianceException = assertThrows(DynamicComplianceException.class, () ->
             dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2024, 100L)));
-        assertEquals("Event makes the compliance state invalid", dynamicComplianceException.getMessage());
+        assertEquals("Event not used by compliance calculation engine. Ignoring event.", dynamicComplianceException.getMessage());
         result = dynamicComplianceService.processEvent(surrenderEvent(300L));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
     }

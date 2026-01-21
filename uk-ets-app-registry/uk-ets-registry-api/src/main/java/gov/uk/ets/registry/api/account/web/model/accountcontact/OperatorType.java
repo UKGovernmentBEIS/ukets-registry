@@ -5,5 +5,5 @@ public enum OperatorType {
     OPERATOR_ADMIN,
     OPERATOR,
     CONSULTANT_AGENT,
-    EMITTER
+    EMITTER,
 }

@@ -2,20 +2,24 @@ package gov.uk.ets.registry.api.accountholder.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderContactInfoDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderInAccountsDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDiffDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderInAccountsDTO;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.OnlySeniorOrJuniorCanClaimTaskRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.SeniorAdminCanClaimTaskInitiatedByAdminRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.*;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTaskService;
+import gov.uk.ets.registry.api.integration.changelog.service.AccountAuditService;
+import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.service.TaskTypeService;
 import gov.uk.ets.registry.api.task.web.model.AccountHolderUpdateTaskDetailsDTO;
@@ -25,6 +29,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import java.beans.FeatureDescriptor;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +52,9 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
     private final AccountHolderService accountHolderService;
     private final RequestedDocsTaskService requestedDocsTaskService;
     private final Mapper mapper;
+
+    private final AccountAuditService accountAuditService;
+    private final AccountClaimService accountClaimService;
 
     @Override
     public Set<RequestType> appliesFor() {
@@ -105,37 +113,44 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
         if (TaskOutcome.APPROVED.equals(taskOutcome)) {
 
             Long accountHolderIdentifier;
+            Account account;
             switch (taskDTO.getTaskType()) {
                 case ACCOUNT_HOLDER_UPDATE_DETAILS:
+                    account = accountService.getAccountFullIdentifier(taskDTO.getAccountDetails().getAccountNumber());
+                    AccountDTO accountDto = accountAuditService.toAccountDto(account);
+
                      accountHolderIdentifier = deserializeValues(taskDTO.getBefore(), AccountHolderDTO.class).getId();
                     AccountHolderDTO holderForUpdateDTO = accountHolderService.getAccountHolder(accountHolderIdentifier);
                     AccountHolderDTO holderUpdatedValues = deserializeValues(taskDTO.getDifference(), AccountHolderDTO.class);
                     holderUpdatedValues.setId(accountHolderIdentifier);
                     copyAccountHolderDetailsProperties(holderUpdatedValues, holderForUpdateDTO);
                     accountService.updateHolder(holderForUpdateDTO);
+
+                    accountAuditService.logChanges(accountDto, account, SourceSystem.REGISTRY);
                     break;
                 case ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS:
-                    accountHolderIdentifier = accountService.getAccountFullIdentifier(taskDTO
-                                                                                          .getAccountDetails()
-                                                                                          .getAccountNumber())
-                                                            .getAccountHolder()
-                                                            .getIdentifier();
+                    account = accountService.getAccountFullIdentifier(taskDTO
+                            .getAccountDetails()
+                            .getAccountNumber());
+                    accountHolderIdentifier = account.getAccountHolder().getIdentifier();
                     AccountHolderContactInfoDTO contactForUpdateDTO = accountHolderService.getAccountHolderContactInfo(accountHolderIdentifier);
                     AccountHolderRepresentativeDTO updatedValuesDTO = deserializeValues(taskDTO.getDifference(),
                                                                                         AccountHolderRepresentativeDTO.class);
                     copyAccountHolderContactProperties(updatedValuesDTO, contactForUpdateDTO.getPrimaryContact());
                     accountService.updateContact(accountHolderIdentifier, contactForUpdateDTO.getPrimaryContact(), true);
+                    triggerAccountClaim(account.getIdentifier());
                     break;
                 case ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD:
-                    AccountHolder accountHolder = accountService.getAccountFullIdentifier(taskDTO
+                    account = accountService.getAccountFullIdentifier(taskDTO
                             .getAccountDetails()
-                            .getAccountNumber())
-                            .getAccountHolder();
+                            .getAccountNumber());
+                    AccountHolder accountHolder = account.getAccountHolder();
                     AccountHolderContactInfoDTO contactDTO = accountHolderService.getAccountHolderContactInfo(accountHolder.getIdentifier());
                     AccountHolderRepresentativeDTO newValuesDTO = deserializeValues(taskDTO.getBefore(),
                             AccountHolderRepresentativeDTO.class);
                     contactDTO.setAlternativeContact(newValuesDTO);
                     accountService.insertContact(accountHolder, contactDTO.getAlternativeContact(), false);
+                    triggerAccountClaim(account.getIdentifier());
                     break;
                 case ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE:
                     AccountHolderRepresentativeDTO deleteValuesDTO = deserializeValues(taskDTO.getBefore(),
@@ -245,5 +260,15 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
 
     private static void copyNonNullProperties(Object src, Object target) {
         BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
+    }
+
+    private void triggerAccountClaim(Long accountIdentifier) {
+        final AccountDTO accountDTO = accountService.getAccountDTO(accountIdentifier);
+        AccountContactSendInvitationDTO sendInvitationDTO =
+                AccountContactSendInvitationDTO.builder()
+                        .metsContacts(new HashSet<>(accountDTO.getMetsContacts()))
+                        .registryContacts(new HashSet<>(accountDTO.getRegistryContacts()))
+                        .build();
+        accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO);
     }
 }

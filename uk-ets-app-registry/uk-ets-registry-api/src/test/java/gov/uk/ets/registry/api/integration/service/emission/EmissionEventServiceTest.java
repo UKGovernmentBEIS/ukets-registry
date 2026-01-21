@@ -9,6 +9,7 @@ import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.emissionstable.messaging.UpdateOfVerifiedEmissionsEvent;
 import gov.uk.ets.registry.api.file.upload.emissionstable.model.EmissionsEntry;
 import gov.uk.ets.registry.api.file.upload.emissionstable.repository.EmissionsEntryRepository;
+import gov.uk.ets.registry.api.integration.changelog.service.EmissionAuditService;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import java.time.Year;
@@ -36,13 +37,15 @@ class EmissionEventServiceTest {
     private EventService eventService;
     @Mock
     private EmissionEventValidator validator;
+    @Mock
+    private EmissionAuditService emissionAuditService;
 
     private EmissionEventService service;
 
     @BeforeEach
     public void setup() {
         service = new EmissionEventService(emissionsEntryRepository, complianceEventService,
-            accountRepository, eventService, validator);
+            accountRepository, eventService, validator, emissionAuditService);
     }
 
     @Test
@@ -63,7 +66,7 @@ class EmissionEventServiceTest {
             .thenReturn(Optional.of(account));
 
         // when
-        service.process(event, Map.of(), SourceSystem.METSIA);
+        service.process(event, Map.of(), SourceSystem.METSIA_INSTALLATION);
 
         // then
         Mockito.verify(emissionsEntryRepository, Mockito.times(1)).save(any(EmissionsEntry.class));
@@ -101,7 +104,7 @@ class EmissionEventServiceTest {
             .thenReturn(List.of(existingEntry));
 
         // when
-        service.process(event, Map.of(), SourceSystem.METSIA);
+        service.process(event, Map.of(), SourceSystem.METSIA_INSTALLATION);
 
         // then
         Mockito.verify(emissionsEntryRepository, Mockito.times(0)).save(any(EmissionsEntry.class));

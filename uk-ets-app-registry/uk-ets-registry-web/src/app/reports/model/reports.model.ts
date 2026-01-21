@@ -99,6 +99,7 @@ export enum ReportType {
   R0048 = 'R0048',
   R0049 = 'R0049',
   R0050 = 'R0050',
+  R0051 = 'R0051',
 }
 
 export const SEFYearOptions: Option[] = [
@@ -788,6 +789,30 @@ export const reportTypeMap: Record<ReportType, ReportTypeValue> = {
       },
     ],
     order: 46,
+  },
+  [ReportType.R0051]: {
+    label: 'Integration Change Log report',
+    summary:
+      'This report includes the changes from integration points that were completed during the selected period.',
+    isStandard: true,
+    groupValidators: [UkRegistryValidators.dateRangeValidator('from', 'to')],
+    filters: [
+      {
+        period: true,
+        model: { from: [null, UkRegistryValidators.dateFormatValidator()] },
+        inputType: 'datepicker',
+        isHorizontal: true,
+      },
+      {
+        period: true,
+        model: {
+          to: [null, UkRegistryValidators.dateFormatValidator()],
+        },
+        inputType: 'datepicker',
+        isHorizontal: true,
+      },
+    ],
+    order: 47,
   },
 };
 

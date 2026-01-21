@@ -1,6 +1,12 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { accountFeatureKey, AccountState } from './account.reducer';
-import { AccountType } from '@shared/model/account';
+import {
+  AccountType,
+  AllocationStatus,
+  AnnualAllocation,
+  GroupedAllocation,
+  GroupedAllocationOverview,
+} from '@shared/model/account';
 import { empty } from '@shared/shared.util';
 import { selectState } from '@registry-web/auth/auth.selector';
 import { MenuItemEnum } from './model';
@@ -234,5 +240,118 @@ export const selectIsAOHAorMOHAorOHAO = createSelector(
         AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT ||
       state.account?.accountType == AccountType.OPERATOR_HOLDING_ACCOUNT
     );
+  }
+);
+
+export const selectGroupedAllocationOverview = createSelector(
+  selectAccountAllocation,
+  (allocation): GroupedAllocationOverview => {
+    const standard = allocation?.standard;
+    const underNewEntrantsReserve = allocation?.underNewEntrantsReserve;
+
+    const decideAllocationStatus = (
+      allocation: AnnualAllocation
+    ): AllocationStatus =>
+      allocation.status === AllocationStatus.WITHHELD
+        ? AllocationStatus.WITHHELD
+        : AllocationStatus.ALLOWED;
+
+    const mergedGroupedAllocationOverview: GroupedAllocationOverview = {
+      groupedAllocations: [],
+      totals: {
+        entitlement:
+          (standard.totals.entitlement || 0) +
+          (underNewEntrantsReserve?.totals?.entitlement || 0),
+        allocated:
+          (standard.totals.allocated || 0) +
+          (underNewEntrantsReserve?.totals?.allocated || 0),
+        remaining:
+          (standard.totals.remaining || 0) +
+          (underNewEntrantsReserve?.totals?.remaining || 0),
+      },
+
+      allocationClassification: AllocationStatus.WITHHELD,
+    };
+
+    const annuals = [
+      ...standard.annuals,
+      ...(underNewEntrantsReserve?.annuals || []),
+    ];
+    const annualAllocationMap: { [key: number]: AnnualAllocation } = {};
+
+    // Group the annual allocations by year
+    annuals.forEach((annualAllocation) => {
+      const year = annualAllocation.year;
+
+      if (!annualAllocationMap[year]) {
+        annualAllocationMap[year] = {
+          year,
+          entitlement: 0,
+          allocated: 0,
+          remaining: 0,
+          status: AllocationStatus.ALLOWED,
+          eligibleForReturn: false,
+          excluded: false,
+        };
+      }
+
+      // Update the annual allocation based on the data from both json objects
+      const existingAllocation = annualAllocationMap[year];
+      const newEntitlement =
+        existingAllocation.entitlement + annualAllocation.entitlement;
+      const newAllocated =
+        existingAllocation.allocated + annualAllocation.allocated;
+      const newRemaining =
+        existingAllocation.remaining + annualAllocation.remaining;
+      const newStatus = decideAllocationStatus(annualAllocation);
+
+      annualAllocationMap[year] = {
+        year,
+        entitlement: newEntitlement,
+        allocated: newAllocated,
+        remaining: newRemaining,
+        status: newStatus,
+        eligibleForReturn:
+          existingAllocation.eligibleForReturn ||
+          annualAllocation.eligibleForReturn,
+        excluded: !!annualAllocation.excluded,
+      };
+    });
+
+    // Construct the grouped allocation DTOs
+    for (const year in annualAllocationMap) {
+      const annualAllocation = annualAllocationMap[year];
+
+      const standardAnnualAllocation =
+        standard.annuals.find((a) => a.year === annualAllocation.year) ??
+        ({
+          year: annualAllocation.year,
+          entitlement: 0,
+          allocated: 0,
+          remaining: 0,
+          status: AllocationStatus.ALLOWED,
+          eligibleForReturn: false,
+        } as AnnualAllocation);
+
+      const nerAnnualAllocation =
+        underNewEntrantsReserve?.annuals?.find(
+          (a) => a.year === annualAllocation.year
+        ) ??
+        ({
+          year: annualAllocation.year,
+          entitlement: 0,
+          allocated: 0,
+          remaining: 0,
+          status: AllocationStatus.ALLOWED,
+          eligibleForReturn: false,
+        } as AnnualAllocation);
+
+      mergedGroupedAllocationOverview.groupedAllocations.push({
+        summedAnnualAllocationStandardAndNer: annualAllocation,
+        standardAnnualAllocation,
+        nerAnnualAllocation,
+      });
+    }
+    return mergedGroupedAllocationOverview;
   }
 );

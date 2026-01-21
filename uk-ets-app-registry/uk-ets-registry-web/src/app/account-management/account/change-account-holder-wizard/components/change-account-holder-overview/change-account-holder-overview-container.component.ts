@@ -6,8 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
-import { canGoBack, errors } from '@shared/shared.action';
+import { canGoBack } from '@shared/shared.action';
 import {
   selectCurrentAccountHolder,
   selectAcquiringAccountHolder,
@@ -121,10 +120,5 @@ export class ChangeAccountHolderOverviewContainerComponent implements OnInit {
   onCancel() {
     const route = this.router.url;
     this.store.dispatch(ChangeAccountHolderWizardActions.CANCEL({ route }));
-  }
-
-  onError(value: ErrorDetail) {
-    const summary: ErrorSummary = { errors: [value] };
-    this.store.dispatch(errors({ errorSummary: summary }));
   }
 }

@@ -109,6 +109,8 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
 
         data.add(reportData.getCompliantEntity().getFirstYearOfVerifiedEmissionSubmission());
         data.add(reportData.getCompliantEntity().getLastYearOfVerifiedEmissionSubmission());
+        //Mets Contacts
+        data.add(reportData.getAccount().getMetsContacts());
         return data;
     }
 
@@ -198,7 +200,8 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
                 "Company IMO number",
                 "Maritime EMP ID",
                 "First year of verified emission submission",
-                "Last year of verified emission submission"
+                "Last year of verified emission submission",
+                "METS Contacts"
             );
     }
 

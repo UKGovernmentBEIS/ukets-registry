@@ -20,16 +20,14 @@ import gov.uk.ets.registry.api.compliance.messaging.outbox.ComplianceOutbox;
 import gov.uk.ets.registry.api.compliance.messaging.outbox.ComplianceOutboxRepository;
 import gov.uk.ets.registry.api.compliance.messaging.outbox.ComplianceOutboxStatus;
 import gov.uk.ets.registry.api.file.upload.emissionstable.messaging.UpdateOfVerifiedEmissionsEvent;
+import gov.uk.ets.registry.api.integration.changelog.domain.IntegrationChangeLog;
+import gov.uk.ets.registry.api.integration.changelog.repository.IntegrationChangeLogRepository;
 import gov.uk.ets.registry.api.integration.service.emission.EmissionEventValidator;
 import gov.uk.ets.registry.api.notification.EmailNotification;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import java.time.Duration;
 import java.time.Year;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -73,6 +71,8 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
     private ActivityTypeRepository activityTypeRepository;
     @Autowired
     private InstallationRepository installationRepository;
+    @Autowired
+    private IntegrationChangeLogRepository changeLogRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -106,18 +106,26 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
 
         // Setup kafka consumers
         dltConsumer = new DefaultKafkaConsumerFactory<>(
-            consumerConfigs("dlt-group"), new StringDeserializer(),
-            new StringDeserializer()).createConsumer();
+                consumerConfigs("dlt-group-" + UUID.randomUUID()),
+                new StringDeserializer(),
+                new StringDeserializer()
+        ).createConsumer();
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(dltConsumer, ACCOUNT_EMISSIONS_UPDATED_TOPIC + "-dlt");
 
         JsonDeserializer<AccountEmissionsUpdateEventOutcome> deserializer = new JsonDeserializer<>(AccountEmissionsUpdateEventOutcome.class);
         responseConsumer = new DefaultKafkaConsumerFactory<>(
-            consumerConfigs("response-group"), new StringDeserializer(), deserializer).createConsumer();
+                consumerConfigs("response-group-" + UUID.randomUUID()),
+                new StringDeserializer(),
+                deserializer
+        ).createConsumer();
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(responseConsumer, "installation-account-emissions-updated-response-topic");
 
         JsonDeserializer<EmailNotification> emailDeserializer = new JsonDeserializer<>(EmailNotification.class);
         emailConsumer = new DefaultKafkaConsumerFactory<>(
-            consumerConfigs("email-group"), new StringDeserializer(), emailDeserializer).createConsumer();
+                consumerConfigs("email-group-" + UUID.randomUUID()),
+                new StringDeserializer(),
+                emailDeserializer
+        ).createConsumer();
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(emailConsumer, "group.notification.topic");
     }
 
@@ -176,6 +184,7 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
         installationRepository.delete(installation);
         accountRepository.delete(account);
         repository.deleteAll();
+        changeLogRepository.deleteAll();
     }
 
     @AfterAll
@@ -226,6 +235,18 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
         assertThat(emissionsEvent.getType()).isEqualTo(ComplianceEventType.UPDATE_OF_VERIFIED_EMISSIONS);
         assertThat(emissionsEvent.getYear()).isEqualTo(2023);
         assertThat(emissionsEvent.getVerifiedEmissions()).isEqualTo(123L);
+
+        List<IntegrationChangeLog> changeLogs = changeLogRepository.findAll();
+        assertThat(changeLogs.size()).isEqualTo(1);
+        IntegrationChangeLog changeLog = changeLogs.get(0);
+        assertThat(changeLog.getFieldChanged()).isEqualTo("emissions");
+        assertThat(changeLog.getOldValue()).isEmpty();
+        assertThat(changeLog.getNewValue()).isEqualTo("Year: 2023, Emissions: 123");
+        assertThat(changeLog.getEntity()).isEqualTo("EmissionsEntry");
+        assertThat(changeLog.getAccountNumber()).isEqualTo("fullIdentifier");
+        assertThat(changeLog.getOperatorId()).isEqualTo(123456);
+        assertThat(changeLog.getUpdatedBy()).isEqualTo("METS-Installation");
+        assertThat(changeLog.getUpdatedAt()).isNotNull();
     }
 
     @Test
@@ -277,15 +298,31 @@ class EmissionEventIntegrationTest extends BaseIntegrationTest {
         stringKafkaTemplate.send(ACCOUNT_EMISSIONS_UPDATED_TOPIC, "1111","{}");
 
         // then
-        ConsumerRecords<String, String>
-            records = KafkaTestUtils.getRecords(dltConsumer, Duration.ofMillis(10000), 2);
+        ConsumerRecords<String, String> records =
+                KafkaTestUtils.getRecords(dltConsumer, Duration.ofMillis(10000), 2);
+
         assertThat(records.count()).isEqualTo(2);
-        Iterator<ConsumerRecord<String, String>> iterator = records.iterator();
-        ConsumerRecord<String, String> invalidFormat = iterator.next();
-        assertThat(invalidFormat.key()).isNull();
-        assertThat(invalidFormat.value()).isEqualTo("test");
-        ConsumerRecord<String, String> emptyMessage = iterator.next();
-        assertThat(emptyMessage.key()).isEqualTo("1111");
-        assertThat(emptyMessage.value()).isEqualTo("{\"registryId\":null,\"reportableEmissions\":null,\"reportingYear\":null}");
+
+        // Collect messages (iterator works regardless of topic/partition)
+        List<ConsumerRecord<String,String>> list = new java.util.ArrayList<>();
+        records.iterator().forEachRemaining(list::add);
+
+        // "test" message
+        ConsumerRecord<String,String> recTest =
+                list.stream()
+                        .filter(r -> "test".equals(r.value()))
+                        .findFirst()
+                        .orElseThrow();
+
+        assertThat(recTest.key()).isNull();
+
+        // "{}" message
+        ConsumerRecord<String,String> recJson =
+                list.stream()
+                        .filter(r -> r.value().contains("\"registryId\":null"))
+                        .findFirst()
+                        .orElseThrow();
+
+        assertThat(recJson.key()).isEqualTo("1111");
     }
 }

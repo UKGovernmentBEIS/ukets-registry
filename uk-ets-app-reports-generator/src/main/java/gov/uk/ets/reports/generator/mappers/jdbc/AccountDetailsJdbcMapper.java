@@ -113,7 +113,8 @@ public class AccountDetailsJdbcMapper
             "       mo.imo                                                                  as imo,\n" +
 
             "       ce.start_year                                                           as first_year_verified_emission_submission,\n" +
-            "       ce.end_year                                                             as last_year_verified_emission_submission\n" +
+            "       ce.end_year                                                             as last_year_verified_emission_submission,\n" +
+            "       metsContacts.mets_contacts                                              as mets_contacts\n" +
             "from account a\n" +
             "         left join compliant_entity ce on a.compliant_entity_id = ce.id\n" +
             "         left join account_holder ah on ah.id = a.account_holder_id\n" +
@@ -137,6 +138,11 @@ public class AccountDetailsJdbcMapper
             "         left join contact primaryContact on primaryAr.contact_id = primaryContact.id\n" +
             "         left join contact altContact on altAr.contact_id = altContact.id\n" +
             "         left join contact accountContact on a.contact_id = accountContact.id\n" +
+            "         left join lateral ( \n" +
+            "                   select STRING_AGG(mac.email_address, ', ') as mets_contacts \n" +
+            "                          from mets_account_contact mac \n" +
+            "                          where mac.account_id = a.id) \n" +
+            "               metsContacts on true \n" +
             "order by ah.name, a.full_identifier;\n";
 
     private final JdbcTemplate jdbcTemplate;
@@ -166,6 +172,7 @@ public class AccountDetailsJdbcMapper
                 .transfersOutsideTal(rs.getString("rule_transfers_outside_tal"))
                 .excludedFromBilling(rs.getBoolean("excluded_from_billing"))
                 .excludedFromBillingRemarks(rs.getString("excluded_from_billing_remarks"))
+                .metsContacts(rs.getString("mets_contacts"))
                 // billing
                 .contact(Contact.builder()
                     .addressLine1(rs.getString("billing_address_line_1"))

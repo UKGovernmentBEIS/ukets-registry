@@ -117,6 +117,30 @@
       ]
     },
     {
+      "name": "Account Resource - Send Invitation to Account Contacts",
+      "ownerManagedAccess": false,
+      "displayName": "Account Resource - Send Invitation to Account Contacts",
+      "attributes": {},
+      "uris": ["/api-registry/accounts.send.invitation"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Account Resource - Claim Account",
+      "ownerManagedAccess": false,
+      "displayName": "Account Resource - Claim Account",
+      "attributes": {},
+      "uris": ["/api-registry/accounts.claim"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account:claim"
+        }
+      ]
+    },
+    {
       "name": "Issuance KP Units resource",
       "ownerManagedAccess": false,
       "displayName": "Issuance KP Units resource",
@@ -1431,6 +1455,16 @@
       }
     },
     {
+      "name": "Non Authority User Policy",
+      "description": "Defines that a non Authority User can do something",
+      "type": "aggregate",
+      "logic": "NEGATIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "applyPolicies": "[\"Authority User Policy\"]"
+      }
+    },
+    {
       "name": "Account Details Permission",
       "description": "Defines who can view details of an account",
       "type": "resource",
@@ -2440,6 +2474,17 @@
         "scopes": "[\"urn:uk-ets-registry-api:page:task-list:search:accountType:view\"]",
         "applyPolicies": "[\"Authority User Policy\"]"
       }
+    },
+    {
+      "name": "Account Claim Scope Permission",
+      "description": "Defines who can claim an account on the registry",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"urn:uk-ets-registry-api:account:claim\"]",
+        "applyPolicies": "[\"Any Non Registry Administrator Policy\", \"Non Authority User Policy\"]"
+      }
     }
   ],
   "scopes": [
@@ -2688,6 +2733,9 @@
     },
     {
       "name": "urn:uk-ets-registry-api:page:task-list:search:accountType:view"
+    },
+    {
+      "name": "urn:uk-ets-registry-api:account:claim"
     }
   ],
   "decisionStrategy": "UNANIMOUS"

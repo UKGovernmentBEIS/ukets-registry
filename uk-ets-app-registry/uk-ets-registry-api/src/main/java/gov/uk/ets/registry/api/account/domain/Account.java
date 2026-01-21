@@ -245,4 +245,10 @@ public class Account implements Serializable {
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MetsAccountContact> metsAccountContacts = new ArrayList<>();
+
+    /**
+     * The account claim code
+     */
+    @Column(name = "account_claim_code")
+    private String accountClaimCode;
 }

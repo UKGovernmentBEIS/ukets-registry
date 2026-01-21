@@ -48,7 +48,16 @@ public enum InstallationAndAccountTransferError {
 	// BR14: Request account opening with installation transfer must not be allowed
 	// for accounts which are in status CLOSURE_PENDING.
 	ACCOUNT_WITH_PENDING_CLOSURE_REQUEST("14",
-			"The account has closure pending requests. The transfer cannot be requested.");
+			"The account has closure pending requests. The transfer cannot be requested."),
+
+    MULTIPLE_MARITIME_IMO_COMPANY_NUMBERS_NOT_ALLOWED("15",
+         "An account with this IMO company number already exists. You cannot create another account with the same IMO company number"),
+
+    MULTIPLE_MARITIME_MONITORING_PLAN_ID_NUMBERS_NOT_ALLOWED("16",
+         "An account with this monitoring plan id already exists. You cannot create another account with the same monitoring plan id"),
+
+    MULTIPLE_AIRCRAFT_MONITORING_PLAN_ID_NUMBERS_NOT_ALLOWED("17",
+         "An account with this monitoring plan id already exists. You cannot create another account with the same monitoring plan id");
 
 	private final String ruleID;
 	private final String message;

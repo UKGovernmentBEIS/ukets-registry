@@ -105,7 +105,7 @@ public class ComplianceEventListenerTest extends DynamicComplianceServiceTestBas
             complianceOutboxRepository.findByStatusOrderByGeneratedOnAsc(ComplianceOutboxStatus.PENDING);
         assertEquals(3, outboxMessages.size());
         assertEquals(ComplianceOutgoingEventType.CALCULATION_ERROR, outboxMessages.get(2).getType());
-        assertEquals("Event makes the compliance state invalid",
+        assertEquals("Event not used by compliance calculation engine. Ignoring event.",
             objectMapper.readValue(outboxMessages.get(2).getPayload(), ComplianceCalculationErrorEvent.class).getMessage());
     }
 

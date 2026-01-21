@@ -3,15 +3,12 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output,
 } from '@angular/core';
-import { clearAccountAllocation } from '@account-management/account/account-details/account.actions';
 import { Store } from '@ngrx/store';
-import { AccountAllocation } from '@shared/model/account/account-allocation';
-import { Observable } from 'rxjs';
 import {
   selectAccountAllocation,
+  selectGroupedAllocationOverview,
   selectLastYear,
 } from '@account-management/account/account-details/account.selector';
 import { clearErrors } from '@shared/shared.action';
@@ -22,22 +19,21 @@ import { AllocationType } from '@shared/model/allocation';
   selector: 'app-account-allocation',
   templateUrl: './account-allocation.component.html',
 })
-export class AccountAllocationComponent implements OnInit, OnDestroy {
+export class AccountAllocationComponent implements OnDestroy {
   @Input() accountId: string;
   @Input() operatorType: OperatorType;
   @Input() canRequestUpdate: boolean;
   @Output() readonly openHistoryAndComments = new EventEmitter<void>();
-  accountAllocation$: Observable<AccountAllocation>;
-  lastYear$: Observable<number>;
 
-  constructor(private store: Store) {}
-  readonly allocationTableType = AllocationType;
-  operatorTypes = OperatorType;
+  readonly accountAllocation$ = this.store.select(selectAccountAllocation);
+  readonly groupedAllocationOverview$ = this.store.select(
+    selectGroupedAllocationOverview
+  );
+  readonly lastYear$ = this.store.select(selectLastYear);
 
-  ngOnInit() {
-    this.accountAllocation$ = this.store.select(selectAccountAllocation);
-    this.lastYear$ = this.store.select(selectLastYear);
-  }
+  readonly AllocationType = AllocationType;
+
+  constructor(private readonly store: Store) {}
 
   getAllocationTableType() {
     if (this.operatorType === OperatorType.INSTALLATION) {

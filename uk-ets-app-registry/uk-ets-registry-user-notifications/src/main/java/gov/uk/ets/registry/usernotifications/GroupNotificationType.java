@@ -153,12 +153,17 @@ public enum GroupNotificationType {
      */
     INTEGRATION_ACCOUNT_OPENING_SUCCESS_OUTCOME,
     /**
+     * Notification type that is invoked when a request via account update integration point was processed correctly.
+     */
+    INTEGRATION_ACCOUNT_UPDATING_SUCCESS_OUTCOME,
+    /**
      * Notification type that is invoked when an integration point is disabled.
      */
     INTEGRATION_POINT_DISABLED,
-    
+
     //Payments Related
     PAYMENT_REQUEST,
     PAYMENT_REMINDER,
 
+    SEND_INVITATION_TO_CONTACTS,
 }

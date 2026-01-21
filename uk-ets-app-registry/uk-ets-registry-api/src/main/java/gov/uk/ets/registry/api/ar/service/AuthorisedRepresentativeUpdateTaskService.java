@@ -5,9 +5,12 @@ import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.ContactDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionType;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
@@ -39,6 +42,7 @@ import gov.uk.ets.registry.api.user.admin.service.UserStatusService;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -65,6 +69,7 @@ public class AuthorisedRepresentativeUpdateTaskService
     private final Mapper mapper;
     private final TaskARStatusRepository taskARStatusRepository;
     private final PaymentTaskAutoCompletionService paymentTaskAutoCompletionService;
+    private final AccountClaimService accountClaimService;
     
     @Override
     public Set<RequestType> appliesFor() {
@@ -113,6 +118,10 @@ public class AuthorisedRepresentativeUpdateTaskService
                 : userService.getUserByUrid(taskDTO.getNewUser().getUrid());
         saveUserStatusOnTaskCompletion(task,user);
 
+        if (TaskOutcome.REJECTED.equals(taskOutcome) && taskDTO.getArUpdateType().equals(ARUpdateActionType.ADD)) {
+            triggerAccountClaim(taskDTO.getAccountInfo().getIdentifier());
+        }
+
         //UKETS-6528 Also complete child document subtasks
         requestedDocsTaskService.completeChildRequestedDocumentTasks(taskDTO.getRequestId(),taskOutcome);
         
@@ -139,6 +148,7 @@ public class AuthorisedRepresentativeUpdateTaskService
             case AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST:
                 setAccountAccessState(getARAccount(account, taskDTO.getCurrentUser().getUrid()),
                     AccountAccessState.REMOVED);
+                triggerAccountClaim(account.getIdentifier());
                 authorizedRepresentativeService
                     .removeKeycloakRoleIfNoOtherAccountAccess(taskDTO.getCurrentUser().getUrid(),
                         taskDTO.getCurrentUser().getUser().getKeycloakId());
@@ -182,6 +192,16 @@ public class AuthorisedRepresentativeUpdateTaskService
             default:
                 break;
         }
+    }
+
+    private void triggerAccountClaim(Long accountIdentifier) {
+        final AccountDTO accountDTO = accountService.getAccountDTO(accountIdentifier);
+        AccountContactSendInvitationDTO sendInvitationDTO =
+                AccountContactSendInvitationDTO.builder()
+                        .metsContacts(new HashSet<>(accountDTO.getMetsContacts()))
+                        .registryContacts(new HashSet<>(accountDTO.getRegistryContacts()))
+                        .build();
+        accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO);
     }
 
     /**

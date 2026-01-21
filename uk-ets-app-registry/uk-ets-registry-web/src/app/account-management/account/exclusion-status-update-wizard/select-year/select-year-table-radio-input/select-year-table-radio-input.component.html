@@ -1,0 +1,141 @@
+<div
+  class="govuk-form-group"
+  [class.govuk-form-group--error]="showError()"
+  [attr.id]="key + '-label'"
+>
+  <fieldset class="govuk-fieldset">
+    <legend
+      class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-margin-bottom-7"
+    >
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-xl">Update exclusion status</span>
+        Select the year to update the operator exclusion status
+      </h1>
+    </legend>
+
+    @if (showError()) {
+      <p class="govuk-error-message" [attr.id]="key + '-error-label'">
+        <span class="govuk-visually-hidden">Error:</span
+        >{{ validationErrorMessage }}
+      </p>
+    }
+
+    <table
+      class="govuk-table annual-allocation-table"
+      aria-describedby="allocation summary table"
+    >
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th
+            scope="col"
+            class="govuk-table__header"
+            aria-label="return allowances button"
+            tabindex="-1"
+          >
+            Select
+          </th>
+          <th scope="col" class="govuk-table__header">Year</th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            Entitlement
+          </th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            Allocated
+          </th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric cell-border-left"
+          >
+            Remaining to be allocated
+          </th>
+          <th
+            scope="col"
+            class="govuk-table__header govuk-table__header--numeric"
+          >
+            To be returned
+          </th>
+          <th scope="col" class="govuk-table__header cell-border-left">
+            Withhold status
+          </th>
+          <th scope="col" class="govuk-table__header">Exclusion status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        @for (annual of annuals(); track annual.year) {
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              <div
+                class="govuk-radios govuk-radios--small"
+                [attr.id]="key + '-radios'"
+                [attr.aria-invalid]="formControl.dirty && formControl.invalid"
+              >
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    [id]="key + '-' + annual.year"
+                    type="radio"
+                    [formControl]="formControl"
+                    [value]="annual.year"
+                  />
+                  <label
+                    class="govuk-label govuk-radios__label"
+                    [attr.for]="key + '-' + annual.year"
+                    ><span class="govuk-visually-hidden">{{
+                      annual.year
+                    }}</span></label
+                  >
+                </div>
+              </div>
+            </td>
+            <td class="govuk-table__cell">
+              {{ annual.year }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ annual.entitlement ?? 0 }}
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              {{ annual.allocated ?? 0 }}
+            </td>
+            <td
+              class="govuk-table__cell govuk-table__cell--numeric cell-border-left"
+            >
+              <div
+                class="remaining-col"
+                [class.remaining-allocation]="annual.remaining > 0"
+                [class.under-allocated]="annual.remaining > 0"
+              >
+                {{ annual.remaining > 0 ? annual.remaining : 0 }}
+              </div>
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+              <div
+                class="remaining-col"
+                [class.remaining-allocation]="annual.remaining < 0"
+                [class.over-allocated]="annual.remaining < 0"
+              >
+                {{ annual.remaining < 0 ? -annual.remaining : 0 }}
+              </div>
+            </td>
+            <td class="govuk-table__cell cell-border-left">
+              {{
+                annual.status !== AllocationStatus.ALLOWED
+                  ? allocationStatusLabels[annual.status]?.label
+                  : ''
+              }}
+            </td>
+            <td class="govuk-table__cell">
+              @if (annual.excluded) {
+                <app-govuk-tag [color]="'blue'">EXCLUDED</app-govuk-tag>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </fieldset>
+</div>

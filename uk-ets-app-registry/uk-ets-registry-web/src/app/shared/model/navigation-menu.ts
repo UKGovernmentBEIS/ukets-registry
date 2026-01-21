@@ -10,6 +10,7 @@ export enum MENU_ROUTES {
   ACCOUNT_OPENING = '/account-opening',
 
   BULK_AR = '/bulk-ar',
+  CLAIM_ACCOUNT = '/claim-account',
 
   TRANSACTION_SEARCH = '/transaction-list',
 
@@ -69,6 +70,7 @@ export enum MENU_SCOPES {
   EMISSIONS_TABLE_WRITE = 'urn:uk-ets-registry-api:emissions-table:write',
   STANDARD_REPORTS_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:standardReportsMenuItem:view',
   RECALCULATE_COMPLIANCE_STATUS = 'urn:uk-ets-registry-api:compliance-status:write',
+  CLAIM_ACCOUNT = 'urn:uk-ets-registry-api:account:claim',
 }
 
 export interface NavMenu {
@@ -219,6 +221,11 @@ export const MENU_ITEMS = function (
           label: 'Bulk AR upload',
           routerLink: MENU_ROUTES.BULK_AR,
           protectedScopes: [{ name: MENU_SCOPES.BULK_AR_UPLOAD_WRITE }],
+        },
+        {
+          label: 'Claim account',
+          routerLink: MENU_ROUTES.CLAIM_ACCOUNT,
+          protectedScopes: [{ name: MENU_SCOPES.CLAIM_ACCOUNT }],
         },
       ],
     },

@@ -1,7 +1,9 @@
 package gov.uk.ets.compliance.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.uk.ets.compliance.domain.ComplianceStatus;
 import gov.uk.ets.compliance.domain.DynamicCompliance;
@@ -9,10 +11,10 @@ import gov.uk.ets.compliance.domain.events.CompliantEntityInitializationEvent;
 import gov.uk.ets.compliance.repository.DynamicComplianceRepository;
 import gov.uk.ets.compliance.utils.DynamicComplianceServiceTestBase;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -304,5 +306,29 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
         dynamicComplianceService.processEvent(changeYear());
         result = dynamicComplianceService.processEvent(exclusionEvent(2023));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
+    }
+
+    @Test
+    @DisplayName("When update of verified emissions for the current year")
+    void testUpdateOfVerifiedEmissionsForCurrentYear() {
+        int currentYear = Year.now().getValue();
+        dynamicComplianceService
+                .processEvent(compliantEntityInitializationEvent(2021, null, currentYear));
+
+        //Set emissions for current year
+        assertDoesNotThrow(() ->
+                dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(currentYear, 100L)));
+    }
+
+    @Test
+    @DisplayName("When update of verified emissions for the future year")
+    void testUpdateOfVerifiedEmissionsForFutureYear() {
+        int currentYear = Year.now().getValue();
+        dynamicComplianceService
+                .processEvent(compliantEntityInitializationEvent(2021, null, currentYear));
+
+        //Set emissions for future year
+        assertThrows(DynamicComplianceException.class, () ->
+                dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(currentYear + 1, 100L)));
     }
 }

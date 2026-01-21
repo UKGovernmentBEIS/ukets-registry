@@ -2,8 +2,10 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { UkRadioInputComponent } from '@registry-web/shared/form-controls/uk-radio-input/uk-radio-input.component';
-import { SelectYearComponent } from '../select-year';
+import {
+  SelectYearComponent,
+  SelectYearTableRadioInputComponent,
+} from '../select-year';
 
 const formBuilder = new FormBuilder();
 
@@ -13,7 +15,7 @@ describe('SelectYearComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SelectYearComponent, UkRadioInputComponent],
+      declarations: [SelectYearComponent, SelectYearTableRadioInputComponent],
       providers: [{ provide: FormBuilder, useValue: formBuilder }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [ReactiveFormsModule],
@@ -23,7 +25,8 @@ describe('SelectYearComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SelectYearComponent);
     component = fixture.componentInstance;
-    component.emissionEntries = [
+    fixture.componentRef.setInput('annuals', []);
+    fixture.componentRef.setInput('emissionEntries', [
       {
         compliantEntityId: 123,
         year: 2021,
@@ -36,7 +39,7 @@ describe('SelectYearComponent', () => {
         reportableEmissions: 'Excluded',
         lastUpdated: new Date(),
       },
-    ];
+    ]);
     fixture.detectChanges();
   });
 

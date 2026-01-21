@@ -1,10 +1,16 @@
 package gov.uk.ets.registry.api.account.service;
 
 
-import gov.uk.ets.registry.api.account.domain.*;
+import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
+import gov.uk.ets.registry.api.account.domain.ActivityType;
+import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.repository.AccountContactRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
@@ -15,6 +21,7 @@ import gov.uk.ets.registry.api.account.repository.InstallationOwnershipRepositor
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountClaimDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
@@ -25,6 +32,8 @@ import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
 import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.auditevent.web.AuditEventDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationServiceImpl;
@@ -38,11 +47,14 @@ import gov.uk.ets.registry.api.common.view.ConversionParameters;
 import gov.uk.ets.registry.api.common.view.EmailAddressDTO;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.helper.AuthorizationTestHelper;
+import gov.uk.ets.registry.api.integration.changelog.service.AccountAuditService;
+import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
+import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.transaction.checks.BusinessCheckException;
 import gov.uk.ets.registry.api.transaction.checks.BusinessCheckService;
-import gov.uk.ets.registry.api.transaction.common.GeneratorService;
 import gov.uk.ets.registry.api.transaction.domain.TransactionFilterFactory;
 import gov.uk.ets.registry.api.transaction.domain.UnitBlock;
 import gov.uk.ets.registry.api.transaction.domain.data.AccountSummary;
@@ -60,22 +72,24 @@ import gov.uk.ets.registry.api.transaction.service.TransactionProposalTaskServic
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import gov.uk.ets.registry.api.user.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.CollectionUtils;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -98,8 +112,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("Testing account related service methods")
 class AccountServiceTest {
+
+    private final Long registryId = 100L;
 
     @Mock
     AccountHolderRepresentativeRepository legalRepresentativeRepository;
@@ -110,7 +127,7 @@ class AccountServiceTest {
     @Mock
     private AccountConversionService accountConversionService;
     @Mock
-    private GeneratorService generatorService;
+    private AccountGeneratorService generatorService;
     @Mock
     private UserService userService;
     @Mock
@@ -131,9 +148,6 @@ class AccountServiceTest {
     private UnitBlockRepository unitBlockRepository;
     @Mock
     private EventService eventService;
-
-    private AccountService accountService;
-
     @Mock
     private TransactionProposalService transactionProposalService;
     @Mock
@@ -166,51 +180,20 @@ class AccountServiceTest {
     private ReportRoleMappingService reportRoleMappingService;
     @Mock
     private Mapper mapper;
+    @Mock
+    private AccountContactService accountContactService;
+    @Mock
+    private AccountContactRepository accountContactRepository;
+    @Mock
+    private AccountAuditService accountAuditService;
+    @Mock
+    private TaskRepository taskRepository;
 
     @Spy
     AccountAccess accountAccess;
 
-    AccountServiceTest() {
-    }
-
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.initMocks(this);
-        User currentUser = Mockito.mock(User.class);
-        authService = Mockito.mock(AuthorizationServiceImpl.class);
-        Mockito.when(userService.getCurrentUser()).thenReturn(currentUser);
-        accountService = new AccountService(
-            persistenceService,
-            conversionService,
-            accountConversionService,
-            generatorService, userService,
-            accountRepository,
-            holderRepository,
-            userRepository,
-            legalRepresentativeRepository,
-            compliantEntityRepository,
-            accountDTOFactory,
-            authService,
-            unitBlockRepository,
-            activityTypeRepository,
-            transactionProposalService,
-            businessCheckService,
-            eventService,
-            transactionFilterFactory,
-            searchableTransactionRepository,
-            accountTotalRepository,
-            reportRequestService,
-            mapper,
-            transferValidationService,
-            installationOwnershipRepository,
-            accountOwnershipRepository,
-            taskEventService,
-            accountValidationService,
-            accountAccessRepository,
-            authorizedRepresentativeService,
-            accountStatusService,
-            reportRoleMappingService);
-    }
+    @InjectMocks
+    private AccountService accountService;
 
     @Test
     @DisplayName("Non Kyoto Accounts with status OPEN should have 3 options , expected to succeed")
@@ -891,7 +874,6 @@ class AccountServiceTest {
     @DisplayName("Check Account retrieval by full identifier")
     void test_getAccountFullIdentifier() {
         Account account = retrieveAccountInfo(AccountType.OPERATOR_HOLDING_ACCOUNT);
-        given(accountRepository.findByFullIdentifier(account.getFullIdentifier())).willReturn(Optional.of(account));
         assertEquals(1234L, account.getIdentifier());
     }
 
@@ -1207,4 +1189,86 @@ class AccountServiceTest {
         Mockito.verify(accountRepository, Mockito.atLeast(2)).existsByPublicIdentifier(Mockito.anyString());
     }
 
+    @Test
+    @DisplayName("Sends invitation to account contacts")
+    void sendInvitation() {
+        Long accountIdentifier = 12345L;
+        Long accountId = 1L;
+        Account account = new Account();
+        account.setId(accountId);
+        account.setIdentifier(accountIdentifier);
+        account.setAccountType("ETS - Trading account");
+        account.setAccountStatus(AccountStatus.OPEN);
+
+        AccountDetailsDTO accountDetailsDTO = new AccountDetailsDTO();
+        accountDetailsDTO.setAccountStatus(AccountStatus.OPEN);
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setIdentifier(accountIdentifier);
+        accountDTO.setAccountType("ETS - Trading account");
+        accountDTO.setAccountDetails(accountDetailsDTO);
+        accountDTO.setMetsContacts(List.of(MetsContactDTO.builder().email("email").build()));
+
+        when(accountRepository.findByIdentifierWithAccountHolder(accountIdentifier)).thenReturn(Optional.of(account));
+        when(accountRepository.findByIdentifier(accountIdentifier)).thenReturn(Optional.of(account));
+        when(accountDTOFactory.create(account)).thenReturn(accountDTO);
+        when(taskRepository.countPendingTasksByAccountIdInAndType(
+                        List.of(accountId),
+                        List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST))).thenReturn(0L);
+
+        AccountContactSendInvitationDTO sendInvitationDTO = new AccountContactSendInvitationDTO();
+
+        accountService.sendInvitation(accountIdentifier, sendInvitationDTO);
+
+        verify(accountRepository).findByIdentifierWithAccountHolder(accountIdentifier);
+        verify(accountDTOFactory).create(account);
+        verify(accountValidationService).checkAccountClosureRequestEligibility(account);
+        verify(accountContactService).sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO);
+    }
+
+    @Test
+    @DisplayName("Claims an account")
+    void claimAccount() {
+
+        final Long requestId = 98765L;
+
+        AccountClaimDTO dto = new AccountClaimDTO();
+        dto.setAccountClaimCode("ABC123456789");
+        dto.setRegistryId(1L);
+
+        when(accountContactService.claimAccount(dto))
+                .thenReturn(requestId);
+
+        Long result = accountService.claimAccount(dto);
+
+        assertEquals(requestId, result);
+
+        verify(accountContactService, times(1)).claimAccount(dto);
+    }
+
+    @Test
+    @DisplayName("Update account details")
+    void updateAccountDetails() {
+
+        Long identifier = 1001L;
+        AccountDetailsDTO updatedAccountDetailsDTO = new AccountDetailsDTO();
+
+        Account account = new Account();
+        account.setIdentifier(identifier);
+        when(accountRepository.findByIdentifier(identifier)).thenReturn(Optional.of(account));
+
+        AccountDTO accountDTO = new AccountDTO();
+        when(accountDTOFactory.create(account)).thenReturn(accountDTO);
+
+        User currentUser = new User();
+        currentUser.setUrid("urid");
+        when(userService.getCurrentUser()).thenReturn(currentUser);
+
+        AccountDTO result = accountService.updateAccountDetails(identifier, updatedAccountDetailsDTO);
+
+        assertEquals(accountDTO, result);
+
+        verify(accountAuditService, times(1)).logChanges(accountDTO, account, SourceSystem.REGISTRY);
+        verify(eventService, times(1))
+                .createAndPublishEvent(identifier.toString(), "urid", "", EventType.ACCOUNT_DETAILS_UPDATED, "Update account details");
+    }
 }

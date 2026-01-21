@@ -53,7 +53,7 @@ public class AccountOpeningEventOutcomeConsumer {
         }
     }
 
-    
+
     private AccountOpeningSuccessOutcomeNotification buildSuccessNotification(AccountOpeningEventOutcome outcome,
                                                                               Map<String, Object> headers) {
 

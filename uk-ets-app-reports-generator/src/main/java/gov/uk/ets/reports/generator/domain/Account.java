@@ -27,5 +27,7 @@ public class Account {
     private Contact contact;
     private boolean excludedFromBilling;
     private String excludedFromBillingRemarks;
+    // Mets Contacts
+    private String metsContacts;
 
 }

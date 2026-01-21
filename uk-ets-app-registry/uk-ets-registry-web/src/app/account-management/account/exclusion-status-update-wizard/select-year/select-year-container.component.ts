@@ -1,15 +1,21 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  OnInit,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ActivatedRoute, Data } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { canGoBack, errors } from '@shared/shared.action';
 import { selectCurrentAccountEmissionDetails } from '@exclusion-status-update-wizard/reducers';
-import { Observable } from 'rxjs';
 import {
   cancelClicked,
   setExclusionYear,
 } from '@registry-web/account-management/account/exclusion-status-update-wizard/actions/update-exclusion-status.action';
-import { VerifiedEmissions } from '@registry-web/account-shared/model';
+import { selectGroupedAllocationOverview } from '@account-management/account/account-details/account.selector';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AnnualAllocation } from '@registry-web/shared/model/account';
 
 @Component({
   selector: 'app-select-year-container',
@@ -17,19 +23,35 @@ import { VerifiedEmissions } from '@registry-web/account-shared/model';
     <app-select-year
       *ngIf="emissionEntries$ | async as emissionEntries"
       [emissionEntries]="emissionEntries"
+      [annuals]="annuals()"
       (errorDetails)="onError($event)"
       (selectYear)="onContinue($event)"
       (cancelEmitter)="onCancel()"
-    ></app-select-year>
-    <app-cancel-request-link
-      (goToCancelScreen)="onCancel()"
-    ></app-cancel-request-link>
+    />
+    <app-cancel-request-link (goToCancelScreen)="onCancel()" />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectYearContainerComponent implements OnInit {
-  emissionEntries$: Observable<VerifiedEmissions[]>;
-  constructor(private store: Store, private route: ActivatedRoute) {}
+  readonly emissionEntries$ = this.store.select(
+    selectCurrentAccountEmissionDetails
+  );
+
+  private readonly groupedAllocationOverview = toSignal(
+    this.store.select(selectGroupedAllocationOverview)
+  );
+  readonly annuals = computed<AnnualAllocation[]>(
+    () =>
+      this.groupedAllocationOverview()?.groupedAllocations?.map(
+        (grouped) => grouped.summedAnnualAllocationStandardAndNer
+      ) ?? []
+  );
+
+  constructor(
+    private readonly store: Store,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.store.dispatch(
@@ -39,9 +61,6 @@ export class SelectYearContainerComponent implements OnInit {
         )}`,
       })
     );
-    this.emissionEntries$ = this.store.select(
-      selectCurrentAccountEmissionDetails
-    );
   }
 
   onContinue(value: number) {
@@ -49,15 +68,11 @@ export class SelectYearContainerComponent implements OnInit {
   }
 
   onError(value: ErrorDetail[]) {
-    const summary: ErrorSummary = {
-      errors: value,
-    };
+    const summary: ErrorSummary = { errors: value };
     this.store.dispatch(errors({ errorSummary: summary }));
   }
 
   onCancel() {
-    this.store.dispatch(
-      cancelClicked({ route: this.route.snapshot['_routerState'].url })
-    );
+    this.store.dispatch(cancelClicked({ route: this.router.url }));
   }
 }

@@ -333,6 +333,12 @@
             <artifactId>aws-msk-iam-auth</artifactId>
             <version>${aws-msk-iam-auth.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.javers</groupId>
+            <artifactId>javers-core</artifactId>
+            <version>${javers.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

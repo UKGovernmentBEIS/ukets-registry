@@ -175,4 +175,9 @@ public class AccountDTO {
      * Registry Contacts of the account
      */
     private List<RegistryContactDTO> registryContacts = new ArrayList<>();
+
+    /**
+     * Account claim code
+     */
+    private String accountClaimCode;
 }

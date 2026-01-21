@@ -1,0 +1,117 @@
+<table class="govuk-table" [attr.aria-label]="description() ?? null">
+  @if (caption()) {
+    <caption class="govuk-table__caption govuk-table__caption--m">
+      {{
+        caption()
+      }}
+    </caption>
+  }
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      @if (data()?.length > 0) {
+        <th
+          class="govuk-table__header multi-select__checkbox-cell"
+          scope="col"
+          id="select-all"
+        >
+          <div class="govuk-checkboxes__item govuk-checkboxes--small">
+            <input
+              class="govuk-checkboxes__input"
+              id="global-select"
+              type="checkbox"
+              [checked]="isAllSelected()"
+              [indeterminate]="isIndeterminate()"
+              (change)="masterToggle()"
+            />
+            <label
+              class="govuk-label govuk-checkboxes__label"
+              for="global-select"
+            >
+              <span class="govuk-visually-hidden">Select all</span>
+            </label>
+          </div>
+        </th>
+      }
+      @for (column of columns(); track $index) {
+        <th
+          [attr.aria-sort]="
+            !column.isSortable
+              ? null
+              : sortedField === column.field
+                ? sortingDirection
+                : 'none'
+          "
+          [class.govuk-table__header]="true"
+          [class.govuk-table__header--numeric]="column?.isNumeric"
+          [class]="column.widthClass"
+          scope="col"
+        >
+          @if (!column.isSortable) {
+            {{ column.header }}
+          } @else {
+            <button (click)="sortBy(column.field)" type="button">
+              {{ column.header }}
+            </button>
+          }
+        </th>
+      }
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    @for (row of data(); track rowIndex; let rowIndex = $index) {
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell multi-select__checkbox-cell">
+          <div class="govuk-checkboxes__item govuk-checkboxes--small">
+            <input
+              class="govuk-checkboxes__input"
+              id="{{ rowIndex + '-multi-select-checkbox' }}"
+              type="checkbox"
+              [checked]="row.isSelected"
+              (change)="toggle(rowIndex)"
+            />
+            <label
+              class="govuk-label govuk-checkboxes__label"
+              for="{{ rowIndex + '-multi-select-checkbox' }}"
+            >
+              <span class="govuk-visually-hidden">Select item</span>
+            </label>
+          </div>
+        </td>
+        @for (column of columns(); track $index) {
+          <td
+            class="govuk-table__cell"
+            [class.govuk-table__cell--numeric]="column?.isNumeric"
+          >
+            @if (template()) {
+              <ng-container
+                *ngTemplateOutlet="
+                  template();
+                  context: { column: column, row: row, index: rowIndex }
+                "
+              />
+            } @else {
+              {{ row[column.field] }}
+            }
+          </td>
+        }
+      </tr>
+    } @empty {
+      <td
+        class="govuk-table__cell govuk-table__cell--empty--no-bottom-border"
+        [attr.colspan]="columns().length"
+      >
+        {{ emptyTableText() }}
+      </td>
+    }
+  </tbody>
+</table>
+@if (sortedColumn) {
+  <div
+    aria-atomic="true"
+    aria-live="polite"
+    class="govuk-visually-hidden"
+    role="status"
+  >
+    Sort by {{ sortedColumn }} ({{ sortingDirection }})
+  </div>
+}

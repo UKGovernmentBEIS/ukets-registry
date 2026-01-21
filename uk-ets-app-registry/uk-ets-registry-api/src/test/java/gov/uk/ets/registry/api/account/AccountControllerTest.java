@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,12 +22,14 @@ import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
+import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.shared.AccountProjection;
 import gov.uk.ets.registry.api.account.validation.AccountValidator;
 import gov.uk.ets.registry.api.account.web.mappers.AccountFilterMapper;
+import gov.uk.ets.registry.api.account.web.model.AccountClaimDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountExclusionFromBillingRequestDTO;
@@ -41,6 +44,7 @@ import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.PermitDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.account.web.model.search.AccountTypeOption;
 import gov.uk.ets.registry.api.auditevent.web.AuditEventDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationServiceImpl;
@@ -115,13 +119,17 @@ class AccountControllerTest {
     @MockBean
     private TransactionSearchResultMapper transactionSearchResultMapper;
 
+    @MockBean
+    private AccountClaimService accountClaimService;
+
+
     private AuthorizationTestHelper authorizationTestHelper;
 
     @BeforeEach
     public void setup() {
         controller =
             new AccountController(accountService, authorizationService, accountValidator,
-                                  accountOperatorUpdateService, transactionSearchResultMapper);
+                                  accountOperatorUpdateService, transactionSearchResultMapper, accountClaimService);
         authorizationTestHelper = new AuthorizationTestHelper(authorizationService);
     }
 
@@ -510,6 +518,53 @@ class AccountControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void test_sendInvitation() throws Exception {
+        final String template = "/api-registry/accounts.send.invitation";
+        final Long accountIdentifier = 1000L;
+        final String accountClaimCode = "ACC123456789";
+
+
+        AccountContactSendInvitationDTO sendInvitationDTO = AccountContactSendInvitationDTO.builder()
+                .metsContacts(Set.of())
+                .registryContacts(Set.of())
+                .build();
+
+        Mockito.when(accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO)).thenReturn(accountClaimCode);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mockMvc.perform(post(template)
+                        .param("identifier", accountIdentifier.toString())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(sendInvitationDTO))
+                ).andExpect(status().isOk())
+                .andExpect(content().string(accountClaimCode));
+    }
+
+    @Test
+    void test_claimAccount() throws Exception {
+        final String template = "/api-registry/accounts.claim";
+        final Long requestId = 1L;
+
+        AccountClaimDTO accountClaimDTO = AccountClaimDTO.builder()
+                .accountClaimCode("ACC000000000")
+                .registryId(999L)
+                .build();
+
+        Mockito.when(accountClaimService.claimAccount(accountClaimDTO)).thenReturn(requestId);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mockMvc.perform(post(template)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(accountClaimDTO))
+                ).andExpect(status().isOk())
+                .andExpect(content().string(requestId.toString()));
     }
 
     private void testLengthValidation(String parameter, int minCharsLength) throws Exception {

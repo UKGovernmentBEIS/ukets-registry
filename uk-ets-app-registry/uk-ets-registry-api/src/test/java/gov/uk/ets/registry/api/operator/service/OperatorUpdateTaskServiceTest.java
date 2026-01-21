@@ -8,8 +8,11 @@ import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.common.Mapper;
+import gov.uk.ets.registry.api.integration.changelog.service.AccountAuditService;
+import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.web.model.OperatorUpdateTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
@@ -26,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Date;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -44,13 +48,16 @@ class OperatorUpdateTaskServiceTest {
     @Mock
     private Mapper mapper;
 
+    @Mock
+    AccountAuditService accountAuditService;
+
     OperatorUpdateTaskService operatorUpdateTaskService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         operatorUpdateTaskService =
-            new OperatorUpdateTaskService(mockAccountService, accountRepository, accountOperatorUpdateService, mapper);
+            new OperatorUpdateTaskService(mockAccountService, accountRepository, accountOperatorUpdateService, mapper, accountAuditService);
     }
 
     @Test
@@ -94,6 +101,8 @@ class OperatorUpdateTaskServiceTest {
         AccountInfo accountInfo = AccountInfo.builder().identifier(10001L).build();
         dto.setAccountInfo(accountInfo);
 
+        AccountDTO accountDTO = new AccountDTO();
+        when(accountAuditService.toAccountDto(account)).thenReturn(accountDTO);
         when(mapper.convertToPojo(diff, OperatorDTO.class)).thenReturn(diffDto);
         operatorUpdateTaskService.complete(dto, TaskOutcome.APPROVED, "");
 
@@ -104,6 +113,8 @@ class OperatorUpdateTaskServiceTest {
         ArgumentCaptor<Account> captor4 = ArgumentCaptor.forClass(Account.class);
         then(accountOperatorUpdateService).should(times(1))
             .updateOperator(captor1.capture(), captor2.capture(), captor3.capture(), captor4.capture());
+
+        then(accountAuditService).should(times(1)).logChanges(accountDTO, account, SourceSystem.REGISTRY);
 
         then(accountOperatorUpdateService).should(times(1)).sendComplianceEvents(diffDto, "UK12345", 1234L, now);
 

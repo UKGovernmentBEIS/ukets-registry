@@ -77,6 +77,7 @@ import {
   MetsContactOperatorTypePipe,
   RegistryContactTypePipe,
 } from '@registry-web/shared/pipes';
+import { AccountContactsTablesComponent } from '@registry-web/shared/components/account/account-contacts-tables';
 
 @NgModule({
   declarations: [
@@ -154,6 +155,7 @@ import {
     MetsContactTypePipe,
     MetsContactOperatorTypePipe,
     RegistryContactTypePipe,
+    AccountContactsTablesComponent,
   ],
   providers: [
     AccountApiService,

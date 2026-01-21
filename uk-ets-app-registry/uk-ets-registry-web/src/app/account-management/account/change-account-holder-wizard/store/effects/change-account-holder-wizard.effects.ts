@@ -2,14 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
-import {
-  catchError,
-  concatMap,
-  exhaustMap,
-  map,
-  mergeMap,
-  tap,
-} from 'rxjs/operators';
+import { catchError, exhaustMap, map, mergeMap, tap } from 'rxjs/operators';
 import { concatLatestFrom } from '@ngrx/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -28,10 +21,7 @@ import {
   AccountHolderSelectionType,
   AccountHolderType,
 } from '@shared/model/account';
-import {
-  selectAccount,
-  selectAccountId,
-} from '@account-management/account/account-details/account.selector';
+import { selectAccountId } from '@account-management/account/account-details/account.selector';
 import {
   selectAcquiringAccountHolder,
   selectAcquiringAccountHolderContact,

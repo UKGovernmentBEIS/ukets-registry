@@ -50,6 +50,22 @@ public class AccountAllocationService {
     private final AllocationTableService allocationTableService;
     private final RequestAllocationService requestAllocationService;
 
+
+    /**
+     * @param compliantEntityId The compliantEntity id
+     * @return  if has allocation or not after a given year
+     */
+    public boolean hasAllocationsBeforeFYVE(Long compliantEntityId, Integer fyveYear) {
+        return allocationStatusService.getAllocationEntries(compliantEntityId)
+                .stream()
+                .anyMatch(e ->
+                        e.getYear() != null &&
+                                e.getYear() < fyveYear &&
+                                (e.getAllocated() != null && e.getAllocated() > 0
+                                        || e.getEntitlement() != null && e.getEntitlement() > 0)
+                );
+    }
+
     /**
      * Returns the aggregated information about the account allocation status.
      * @param accountId The account identifier
@@ -117,12 +133,10 @@ public class AccountAllocationService {
      */
     public Map<Integer, AllocationStatusType> getAccountAllocationStatus(Long accountId) {
         CompliantEntity compliantEntity = getCompliantEntityByAccountId(accountId);
-        Integer currentAllocationYear = allocationConfigurationService.getAllocationYear();
-        if (compliantEntity == null || currentAllocationYear == null) {
+        if (compliantEntity == null) {
             return new HashMap<>();
         }
         return allocationStatusService.getAllocationStatus(compliantEntity.getId()).stream()
-            .filter(allocationSummary -> allocationSummary.getYear() <= currentAllocationYear)
             .collect(Collectors.toMap(
                 AllocationSummary::getYear, AllocationSummary::getStatus
             ));

@@ -14,6 +14,7 @@ import gov.uk.ets.registry.api.accountaccess.service.AccountAccessService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
 import gov.uk.ets.registry.api.integration.service.IntegrationHeadersUtil;
+import gov.uk.ets.registry.api.integration.service.account.validators.AccountOpeningEventValidator;
 import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.messaging.UktlAccountNotifyMessageService;
 import gov.uk.ets.registry.api.messaging.domain.AccountNotification;
@@ -38,7 +39,7 @@ import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 @RequiredArgsConstructor
 public class AccountEventOpeningService {
 
-    private final AccountEventValidator eventValidator;
+    private final AccountOpeningEventValidator eventValidator;
     private final AccountValidator accountValidator;
     private final AccountService accountService;
     private final AccountAccessService accountAccessService;
@@ -50,7 +51,7 @@ public class AccountEventOpeningService {
     private final IntegrationHeadersUtil util;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public AccountOpeningResult process(AccountOpeningEvent event, Map<String, Object> headers) {
+    public AccountModificationResult process(AccountOpeningEvent event, Map<String, Object> headers) {
 
         log.info("Received event {} with value {} and headers {}",
             OperationEvent.OPEN_ACCOUNT, event, headers);
@@ -63,7 +64,7 @@ public class AccountEventOpeningService {
             Account newAccount = process(event, operatorType, correlationId);
             log.info("Event {} with correlationId: {} from {} and value {} was processed successfully.",
                 OperationEvent.OPEN_ACCOUNT, correlationId, util.getSourceSystem(headers), event);
-            return new AccountOpeningResult(newAccount.getFullIdentifier());
+            return new AccountModificationResult(newAccount.getFullIdentifier(), true);
         } else {
             log.warn(
                 "Event {} with correlationId: {} from {} and value {} has to following errors {} and was not processed successfully.",
@@ -71,7 +72,7 @@ public class AccountEventOpeningService {
                 errors);
         }
 
-        return new AccountOpeningResult(errors);
+        return new AccountModificationResult(errors);
     }
 
     private Account process(AccountOpeningEvent event, OperatorType operatorType, String correlationId) {

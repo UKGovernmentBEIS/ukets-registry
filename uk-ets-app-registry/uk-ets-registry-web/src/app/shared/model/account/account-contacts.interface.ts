@@ -31,3 +31,8 @@ export interface ContactPhoneNumbers {
   phoneNumber2: string;
   empty?: boolean;
 }
+
+export interface AccountContactSendInvitationDTO {
+  metsContacts: MetsContact[];
+  registryContacts: RegistryContact[];
+}

@@ -23,14 +23,16 @@ import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.domain.AccountHolderFile;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.repository.AccountHolderFileRepository;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +72,35 @@ public class AccountHolderService {
     }
 
     /**
+     * Retrieves the account holders with the provided criteria.
+     *
+     * @param input   The account holder name or identifier.
+     * @param type The AccountHolderType to include in the result set
+     * @return a list of account holders.
+     */
+    @Transactional(readOnly = true)
+    public List<AccountHolderTypeAheadSearchResultDTO> getAllAccountHoldersByNameAndIdentifier(String input,
+                                                                                               AccountHolderType type) {
+        boolean isCurrentUserAdmin = authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN);
+        if (isCurrentUserAdmin) {
+            List<AccountHolderTypeAheadSearchResultDTO> holdersByName =
+                    this.getAccountHolders(input.toUpperCase(), type);
+            List<AccountHolderTypeAheadSearchResultDTO> holdersByIdentifier =
+                    this.getAccountHolders(input, Set.of(type));
+            return Stream.concat(holdersByName.stream(), holdersByIdentifier.stream())
+                    .toList();
+        } else {
+            final String urid = authorizationService.getUrid();
+            final List<AccountHolderTypeAheadSearchResultDTO> holdersByName =
+                    holderRepository.findByNameAndTypeAndUser(input, type, urid, AccountAccessState.ACTIVE);
+            final List<AccountHolderTypeAheadSearchResultDTO> holdersByIdentifier =
+                    holderRepository.findByIdentifierAndTypeAndUser(input, Set.of(type), urid, AccountAccessState.ACTIVE);
+            return Stream.concat(holdersByName.stream(), holdersByIdentifier.stream())
+                    .toList();
+        }
+    }
+
+    /**
      * Retrieves the submitted account holder files
      *
      * @param accountIdentifier The account identifier
@@ -91,10 +122,12 @@ public class AccountHolderService {
      * @param accessState The access state.
      * @return some account holders.
      */
+    @Transactional(readOnly = true)
     public List<AccountHolderDTO> getAccountHolders(AccountHolderType type, AccountAccessState accessState) {
-        var isCurrentUserAdmin = authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN);
-        var urId = isCurrentUserAdmin ? null : authorizationService.getUrid();
-        return holderRepository.getAccountHolders(urId, type, accessState);
+        boolean isCurrentUserAdmin = authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN);
+        final String urid = authorizationService.getUrid();
+        return isCurrentUserAdmin ? holderRepository.findAccountHoldersByType(type) :
+                holderRepository.findAccountHoldersByUserTypeAndState(urid, type, accessState);
     }
 
     /**
@@ -120,6 +153,17 @@ public class AccountHolderService {
             .setAlternativeContact(accountConversionService.convert(accountHolderRepresentative)));
 
         return dto;
+    }
+
+    /**
+     * Retrieves the account holder based on its business identifier.
+     *
+     * @param identifier The business identifier.
+     * @return an account holder domain object.
+     */
+    @Transactional(readOnly = true)
+    public AccountHolder findAccountHolder(Long identifier) {
+        return holderRepository.getAccountHolder(identifier);
     }
 
     /**

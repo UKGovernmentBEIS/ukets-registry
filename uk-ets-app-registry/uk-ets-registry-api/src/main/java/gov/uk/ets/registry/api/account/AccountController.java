@@ -5,6 +5,7 @@ import gov.uk.ets.commons.logging.RequestParamType;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountFilter;
 import gov.uk.ets.registry.api.account.domain.UnitBlockFilter;
+import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
@@ -13,8 +14,22 @@ import gov.uk.ets.registry.api.account.shared.AccountProjection;
 import gov.uk.ets.registry.api.account.validation.AccountValidator;
 import gov.uk.ets.registry.api.account.web.mappers.AccountFilterMapper;
 import gov.uk.ets.registry.api.account.web.mappers.AccountSearchPageableMapper;
-import gov.uk.ets.registry.api.account.web.model.*;
+import gov.uk.ets.registry.api.account.web.model.AccountClaimDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountClosureDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountExclusionFromBillingRequestDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountHoldingDetailsCriteria;
+import gov.uk.ets.registry.api.account.web.model.AccountHoldingDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHoldingDetailsDTO.UnitBlockDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountHoldingsSummaryResultDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
+import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
+import gov.uk.ets.registry.api.account.web.model.ValidateAccountDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.account.web.model.search.AccountFiltersDescriptor;
 import gov.uk.ets.registry.api.account.web.model.search.AccountSearchCriteria;
 import gov.uk.ets.registry.api.account.web.model.search.AccountSearchResult;
@@ -35,7 +50,17 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.AuthoritiesWithAccountA
 import gov.uk.ets.registry.api.authz.ruleengine.features.CannotSubmitRequestWhenAccountIsTransferPendingStatusRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.ReadOnlyAdministratorsCannotSubmitRequest;
 import gov.uk.ets.registry.api.authz.ruleengine.features.SeniorAdminRule;
-import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.*;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.AccountWithOutstandingExceptDelayedTransactionsRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.AccountWithOutstandingTasksRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.FirstYearOfVerifiedEmissionsCheckAllocationRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.LastYearOfVerifiedEmissionsRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.MissingEmissionsBetweenFyveAndLyveRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.NonZeroAccountBalanceRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.NotApplicableToETSGovernmentAccountRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.PendingActivationTrustedAccountsRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.PendingCompliantEntityUpdateRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.PendingTALRequestsRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.TransferPendingWithLinkedInstallation;
 import gov.uk.ets.registry.api.common.search.PageParameters;
 import gov.uk.ets.registry.api.common.search.PageableMapper;
 import gov.uk.ets.registry.api.common.search.SearchFiltersUtils;
@@ -51,10 +76,8 @@ import gov.uk.ets.registry.api.transaction.web.mapper.TransactionSearchResultMap
 import gov.uk.ets.registry.api.transaction.web.mapper.TransactionSortFieldParam;
 import gov.uk.ets.registry.api.transaction.web.model.TransactionSearchResult;
 import gov.uk.ets.registry.api.user.domain.UserRole;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.util.*;
-import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -75,7 +98,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static gov.uk.ets.commons.logging.RequestParamType.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_FULL_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_HOLDER_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.COMPLIANT_ENTITY_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.DTO;
 
 
 /**
@@ -97,6 +131,7 @@ public class AccountController {
     private final AccountValidator accountValidator;
     private final AccountOperatorUpdateService accountOperatorUpdateService;
     private final TransactionSearchResultMapper resultMapper;
+    private final AccountClaimService accountClaimService;
 
 
     /**
@@ -616,7 +651,7 @@ public class AccountController {
     /**
      * Excludes the account from the billing process.
      * 
-     * @param the account identifier
+     * @param identifier the account identifier
      * 
      */
     @Protected({SeniorAdminRule.class})
@@ -629,7 +664,7 @@ public class AccountController {
     /**
      * Includes the account in the billing process.
      * 
-     * @param the account identifier
+     * @param identifier the account identifier
      * 
      */
     @Protected({SeniorAdminRule.class})
@@ -637,5 +672,29 @@ public class AccountController {
     public void includeAccountInBillingProcess(
     		@NotNull @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(ACCOUNT_ID) Long identifier) {
         accountService.markAccountExcludedFromBilling(identifier, false, null);
+    }
+
+    /**
+     * Sends invitations to account METS and Registry contacts.
+     *
+     * @param identifier the account identifier
+     * @param sendInvitationDTO dto that contains contact email addresses
+     */
+    @Protected({SeniorAdminRule.class})
+    @PostMapping(path = "/accounts.send.invitation")
+    public ResponseEntity<String> sendInvitation(
+            @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @Parameter(description = "The account identifier", required = true) @MDCParam(ACCOUNT_ID) Long identifier,
+            @Valid @RequestBody @Parameter(description = "The account contact send invitation dto ", required = true) AccountContactSendInvitationDTO sendInvitationDTO) {
+
+        final String accountClaimCode = accountClaimService.sendInvitation(identifier, sendInvitationDTO);
+        return new ResponseEntity<>(accountClaimCode, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/accounts.claim", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Long> claimAccount(
+            @RequestBody @Valid @Parameter(description = "The account claim dto ", required = true) AccountClaimDTO accountClaimDTO) {
+
+        final Long requestId = accountClaimService.claimAccount(accountClaimDTO);
+        return new ResponseEntity<>(requestId, HttpStatus.OK);
     }
 }

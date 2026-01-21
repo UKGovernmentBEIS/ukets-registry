@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * The legal representative transfer object.
@@ -55,5 +56,7 @@ public class AccountHolderRepresentativeDTO implements Serializable {
      */
     @Valid
     private EmailAddressDTO emailAddress;
+
+    private LocalDateTime invitedOn;
 
 }

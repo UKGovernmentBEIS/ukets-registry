@@ -9,7 +9,7 @@ import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.common.test.BaseIntegrationTest;
-import gov.uk.ets.registry.api.integration.service.account.AccountEventValidator;
+import gov.uk.ets.registry.api.integration.service.account.validators.AccountOpeningEventValidator;
 import gov.uk.ets.registry.api.notification.EmailNotification;
 import java.time.Duration;
 import java.util.HashMap;
@@ -61,7 +61,6 @@ import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 })
 @Disabled
 class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
-
     private static final String ACCOUNT_OPENING_INSTALLATION_TOPIC = "installation-account-created-request-topic";
     private static final String ACCOUNT_OPENING_AVIATION_TOPIC = "aviation-account-created-request-topic";
     private static final String ACCOUNT_OPENING_MARITIME_TOPIC = "maritime-account-created-request-topic";
@@ -70,7 +69,7 @@ class AccountOpeningEventIntegrationTest extends BaseIntegrationTest {
     private Configuration freemarkerConfiguration;
 
     @MockitoSpyBean
-    private AccountEventValidator validator;
+    private AccountOpeningEventValidator validator;
 
     private KafkaTemplate<String, AccountOpeningEvent> kafkaTemplate;
 

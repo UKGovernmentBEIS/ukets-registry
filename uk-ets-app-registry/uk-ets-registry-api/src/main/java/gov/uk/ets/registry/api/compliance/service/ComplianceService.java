@@ -73,8 +73,16 @@ public class ComplianceService {
     private final EmissionsTableService emissionsTableService;
 
     @Transactional
-    public void updateExclusionStatus(Long accountIdentifier,
-        OperatorEmissionsExclusionStatusChangeDTO patch) {
+    public void updateExclusionStatus(Long accountIdentifier, OperatorEmissionsExclusionStatusChangeDTO patch) {
+        updateExclusionStatus(accountIdentifier, patch.getYear(), patch.isExcluded(), patch.getReason(), false);
+    }
+
+    @Transactional
+    public void updateExclusionStatus(Long accountIdentifier, Long year, boolean isExcluded) {
+        updateExclusionStatus(accountIdentifier, year, isExcluded, "Exclusion flag updated", true);
+    }
+
+    private void updateExclusionStatus(Long accountIdentifier, Long year, boolean isExcluded, String reason, boolean isSystemUpdate) {
         Account account = accountService.getAccount(accountIdentifier);
         if (account == null) {
             throw new UkEtsException(String.format(
@@ -82,41 +90,41 @@ public class ComplianceService {
                     accountIdentifier));
         }
         // verify that the exclusion status can be updated for the selected year
-        verifySelectedYearIsValid(patch, account);
+        verifySelectedYearIsValid(year, account);
 
         Optional<Long> emissionsForThisYear = emissionsEntryRepository
             .findAllByCompliantEntityIdAndYear(
-                account.getCompliantEntity().getIdentifier(), patch.getYear())
+                account.getCompliantEntity().getIdentifier(), year)
             .stream()
             .max(Comparator.comparing(EmissionsEntry::getUploadDate))
             .map(EmissionsEntry::getEmissions);
 
         if (emissionsForThisYear.isPresent()) {
             // Update emissions to null
-            EmissionsEntry emissionsEntry = createNullEmissionsEntry(account.getCompliantEntity().getIdentifier(), patch.getYear());
+            EmissionsEntry emissionsEntry = createNullEmissionsEntry(account.getCompliantEntity().getIdentifier(), year);
             emissionsEntryRepository.save(emissionsEntry);
             emissionsTableService.publishUpdateOfVerifiedEmissionsEvent(emissionsEntry, new Date());
         }
 
         ExcludeEmissionsEntry existingEntry = excludeEmissionsRepository
             .findByCompliantEntityIdAndYear(
-                account.getCompliantEntity().getIdentifier(), patch.getYear());
+                account.getCompliantEntity().getIdentifier(), year);
         if (existingEntry != null
-            && existingEntry.isExcluded() == patch.isExcluded()) {
+            && existingEntry.isExcluded() == isExcluded) {
             throw new BusinessRuleErrorException(
                 ErrorBody.from("You must select the other option"));
         }
 
         if (existingEntry != null) {
-            existingEntry.setExcluded(patch.isExcluded());
+            existingEntry.setExcluded(isExcluded);
             existingEntry.setLastUpdated(new Date());
             excludeEmissionsRepository.save(existingEntry);
         } else {
             ExcludeEmissionsEntry entry = new ExcludeEmissionsEntry();
             entry.setCompliantEntityId(
                 account.getCompliantEntity().getIdentifier());
-            entry.setYear(patch.getYear());
-            entry.setExcluded(patch.isExcluded());
+            entry.setYear(year);
+            entry.setExcluded(isExcluded);
             entry.setLastUpdated(new Date());
             excludeEmissionsRepository.save(entry);
         }
@@ -130,22 +138,18 @@ public class ComplianceService {
                 account.getCompliantEntity().getId(), classification.name()));
 
         // record event in account history
-        User currentUser = userService.getCurrentUser();
+        String urid = isSystemUpdate ? null : userService.getCurrentUser().getUrid();
         eventService.createAndPublishEvent(accountIdentifier.toString(),
-            currentUser.getUrid(), "",
+            urid, "",
             EventType.ACCOUNT_EXCLUSION_STATUS_UPDATED,
             ACCOUNT_EXCLUSION_STATUS_UPDATED);
         // publish compliance event
-        if (patch.isExcluded()) {
+        String actorId = urid == null ? "system" : urid;
+        if (isExcluded) {
             publishAccountExclusionEvent(
-                account.getCompliantEntity().getIdentifier(), patch.getYear(),
-                currentUser.getUrid(),
-                patch.getReason(),
-                emissionsForThisYear.orElse(null));
+                account.getCompliantEntity().getIdentifier(), year, actorId, reason, emissionsForThisYear.orElse(null));
         } else {
-            publishAccountExclusionReversalEvent(
-                account.getCompliantEntity().getIdentifier(), patch.getYear(),
-                currentUser.getUrid(), patch.getReason());
+            publishAccountExclusionReversalEvent(account.getCompliantEntity().getIdentifier(), year, actorId, reason);
         }
     }
 
@@ -324,17 +328,17 @@ public class ComplianceService {
             .collect(toList());
     }
 
-    private void verifySelectedYearIsValid(OperatorEmissionsExclusionStatusChangeDTO patch, Account account) {
+    private void verifySelectedYearIsValid(Long year, Account account) {
         int currentYear = LocalDate.now().getYear();
         CompliantEntity compliantEntity = compliantEntityRepository.findByIdentifier(
             account.getCompliantEntity().getIdentifier()).orElseThrow(IllegalArgumentException::new);
         boolean endYearExists = compliantEntity.getEndYear() != null;
-        if (patch.getYear() < compliantEntity.getStartYear() ||
-            endYearExists && patch.getYear() > compliantEntity.getEndYear()) {
+        if (year < compliantEntity.getStartYear() ||
+            endYearExists && year > compliantEntity.getEndYear()) {
             throw new BusinessRuleErrorException(ErrorBody.from(
                 "The selected year should be within the reporting period"));
-        } else if (patch.getYear() > currentYear &&
-            (endYearExists && patch.getYear() <= compliantEntity.getEndYear() || !endYearExists)) {
+        } else if (year > currentYear &&
+            (endYearExists && year <= compliantEntity.getEndYear() || !endYearExists)) {
             throw new BusinessRuleErrorException(ErrorBody.from(
                 "The exclusion status cannot be updated for future years"));
         }

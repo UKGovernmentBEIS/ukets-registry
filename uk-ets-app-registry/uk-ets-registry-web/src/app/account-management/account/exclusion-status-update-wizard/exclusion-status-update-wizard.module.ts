@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SelectYearComponent } from '@exclusion-status-update-wizard/select-year';
+import {
+  SelectYearComponent,
+  SelectYearTableRadioInputComponent,
+} from '@exclusion-status-update-wizard/select-year';
 import { CheckUpdateStatusComponent } from '@exclusion-status-update-wizard/check-update-status';
 import { SelectYearContainerComponent } from '@exclusion-status-update-wizard/select-year';
 import { CancelUpdateExclusionStatusContainerComponent } from '@exclusion-status-update-wizard/cancel-update-exclusion-status';
@@ -22,6 +25,7 @@ import { ExclusionStatusUpdateWizardRoutingModule } from '@exclusion-status-upda
   declarations: [
     SelectYearComponent,
     SelectYearContainerComponent,
+    SelectYearTableRadioInputComponent,
     CancelUpdateExclusionStatusContainerComponent,
     CheckUpdateStatusComponent,
     CheckUpdateStatusContainerComponent,

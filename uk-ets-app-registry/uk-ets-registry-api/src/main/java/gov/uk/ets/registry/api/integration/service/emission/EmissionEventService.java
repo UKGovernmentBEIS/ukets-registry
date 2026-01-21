@@ -8,6 +8,7 @@ import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.emissionstable.messaging.UpdateOfVerifiedEmissionsEvent;
 import gov.uk.ets.registry.api.file.upload.emissionstable.model.EmissionsEntry;
 import gov.uk.ets.registry.api.file.upload.emissionstable.repository.EmissionsEntryRepository;
+import gov.uk.ets.registry.api.integration.changelog.service.EmissionAuditService;
 import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
@@ -36,6 +37,7 @@ public class EmissionEventService {
     private final AccountRepository accountRepository;
     private final EventService eventService;
     private final EmissionEventValidator validator;
+    private final EmissionAuditService emissionAuditService;
 
     @Transactional
     public List<IntegrationEventError> process(AccountEmissionsUpdateEvent event, Map<String, Object> headers, SourceSystem sourceTopic) {
@@ -49,7 +51,7 @@ public class EmissionEventService {
 
         List<IntegrationEventError> errors = validator.validate(event);
         if (errors.isEmpty()) {
-            process(event);
+            process(event, sourceTopic);
         }
 
         if (errors.isEmpty()) {
@@ -63,7 +65,7 @@ public class EmissionEventService {
         return errors;
     }
 
-    private void process(AccountEmissionsUpdateEvent event) {
+    private void process(AccountEmissionsUpdateEvent event, SourceSystem sourceSystem) {
 
         Long compliantId = event.getRegistryId();
         long year = event.getReportingYear().getValue();
@@ -86,6 +88,7 @@ public class EmissionEventService {
         }
 
         emissionsEntryRepository.save(newEntry);
+        emissionAuditService.logChanges(existingEntry.orElse(null), newEntry, sourceSystem);
         publishUpdateOfVerifiedEmissionsEvent(newEntry);
 
         Object oldValue = existingEntry.map(EmissionsEntry::getEmissions).map(Object::toString).orElse("No emissions");

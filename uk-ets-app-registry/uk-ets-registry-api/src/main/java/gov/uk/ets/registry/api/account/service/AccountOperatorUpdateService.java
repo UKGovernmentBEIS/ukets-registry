@@ -5,9 +5,11 @@ import gov.uk.ets.registry.api.account.messaging.compliance.UpdateFirstYearOfVer
 import gov.uk.ets.registry.api.account.messaging.compliance.UpdateLastYearOfVerifiedEmissionsEvent;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
+import gov.uk.ets.registry.api.account.validation.AccountNotFoundValidationException;
+import gov.uk.ets.registry.api.account.validation.FYVEValidationException;
 import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
-import gov.uk.ets.registry.api.common.ConversionService;
+import gov.uk.ets.registry.api.allocation.service.AccountAllocationService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.common.model.services.PersistenceService;
@@ -48,9 +50,28 @@ public class AccountOperatorUpdateService {
     private final UserService userService;
     private final TaskEventService taskEventService;
     private final ComplianceEventService complianceEventService;
-    private final ConversionService conversionService;
     private final ComplianceService complianceService;
+    private final AccountAllocationService accountAllocationService;
     private final Mapper mapper;
+
+    public void validateIfFYVECanBeUpdated(Long registryId, Integer firstYear) throws AccountNotFoundValidationException, FYVEValidationException {
+        Optional<Account> account = accountRepository.findByCompliantEntityIdentifier(registryId);
+        if (account.isEmpty()) {
+            throw new AccountNotFoundValidationException("Account not found");
+        }
+        Account actualAccount = account.get();
+        try{
+            validateFYVE(actualAccount, firstYear, null);
+            Long compliantEntityId = account.get().getCompliantEntity().getId();
+            boolean hasAllocations =
+                    accountAllocationService.hasAllocationsBeforeFYVE(compliantEntityId, firstYear);
+            if(hasAllocations) {
+                throw new FYVEValidationException("Account has allocations");
+            }
+        } catch ( IllegalStateException e) {
+            throw new FYVEValidationException(e.getMessage());
+        }
+    }
 
     @Transactional
     public Long submitAccountOperatorUpdateRequest(Long accountIdentifier, AccountOperatorDetailsUpdateDTO dto) {
@@ -103,6 +124,7 @@ public class AccountOperatorUpdateService {
         CompliantEntity compliantEntity = account.getCompliantEntity();
 
         validateAccountOperatorUpdateRequest(account, updatedValues);
+        compliantEntity.setRegulator(updatedValues.getRegulator());
 
         if (type == RequestType.INSTALLATION_OPERATOR_UPDATE_REQUEST) {
             Installation installation = (Installation) Hibernate.unproxy(compliantEntity);
@@ -161,7 +183,10 @@ public class AccountOperatorUpdateService {
 
         Integer firstYear = dto.getFirstYear();
         Integer lastYear = dto.getLastYear();
+        validateFYVE(account, firstYear, lastYear);
+    }
 
+    private void validateFYVE(Account account, Integer firstYear, Integer lastYear) {
         if (firstYear != null) {
             validateFirstYear(account, firstYear);
         }
@@ -266,6 +291,12 @@ public class AccountOperatorUpdateService {
 
             activityTypeRepository.deleteAll(toBeDeleted);
             activityTypeRepository.saveAll(toBeAdded);
+            Set<ActivityType> totalActivityTypes = existingActivityTypes.stream()
+                    .filter(activityType -> !toBeDeleted.contains(activityType))
+                    .collect(Collectors.toSet());
+            totalActivityTypes.addAll(toBeAdded);
+
+            installation.setActivityTypes(totalActivityTypes);
         }
         if (updatedValues.getPermit() != null) {
             if (updatedValues.getPermit().getId() != null) {

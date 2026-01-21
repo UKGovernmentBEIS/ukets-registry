@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_18_0_INTEGRATION_CHANGE_LOG_TABLE" author="piliotid" context="migrate">
+        <comment>Integration change log table</comment>
+        <sql>
+            create sequence integration_change_log_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1 cache 1 no cycle;
+
+            create table "integration_change_log"
+            ("id" bigint,
+            "field_changed" VARCHAR(256) NOT NULL,
+            "old_value" VARCHAR(1020),
+            "new_value" VARCHAR(1020),
+            "entity" VARCHAR(256) NOT NULL,
+            "entity_id" BIGINT NOT NULL,
+            "account_number" VARCHAR(256) NOT NULL,
+            "operator_id" BIGINT NOT NULL,
+            "updated_at" timestamp NOT NULL,
+            "updated_by" VARCHAR(256) NOT NULL,
+            constraint "pk_integration_change_log" primary key("id"));
+
+            comment on table "integration_change_log" is 'Represents each change coming from integration points.';
+
+            comment on column "integration_change_log"."id" is 'Surrogate key.';
+            comment on column "integration_change_log"."field_changed" IS 'The modified field.';
+            comment on column "integration_change_log"."old_value" is 'The old value of the field.';
+            comment on column "integration_change_log"."new_value" is 'The new value of the field.';
+            comment on column "integration_change_log"."entity" is 'The entity in which the change is applied.';
+            comment on column "integration_change_log"."entity_id" is 'The id of the entity.';
+            comment on column "integration_change_log"."account_number" is 'The account full identifier.';
+            comment on column "integration_change_log"."operator_id" is 'The operator identifier.';
+            comment on column "integration_change_log"."updated_at" is 'The date of the update.';
+            comment on column "integration_change_log"."updated_by" is 'The integration source system.';
+        </sql>
+
+        <rollback>
+            <sql>
+                drop table integration_change_log;
+                drop sequence integration_change_log_seq;
+            </sql>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="5_18_0_ADD_ACCOUNT_CLAIM_CODE_COLUMN_TO_ACCOUNT" author="dimopoulosc" context="migrate">
+        <comment>Add Account claim column to account table</comment>
+        <sql>
+            ALTER TABLE "account" ADD COLUMN "account_claim_code" VARCHAR(12) DEFAULT NULL;
+            COMMENT ON COLUMN "account"."account_claim_code" IS 'An account claim code to be used in account claim process.';
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "account" DROP COLUMN "account_claim_code";
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5_18_0_ADD_INVITED_DATE_COLUMN_TO_ACCOUNT_HOLDER_REPRESENTATIVE" author="dimopoulosc" context="migrate">
+        <comment>Add invited date column to account holder representative table</comment>
+        <sql>
+            ALTER TABLE "account_holder_representative" ADD COLUMN "invited_date" TIMESTAMP DEFAULT NULL;
+            COMMENT ON COLUMN "account_holder_representative"."invited_date" IS 'Invitation timestamp';
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "account_holder_representative" DROP COLUMN "invited_date";
+            </sql>
+        </rollback>
+    </changeSet>
+        
+</databaseChangeLog>

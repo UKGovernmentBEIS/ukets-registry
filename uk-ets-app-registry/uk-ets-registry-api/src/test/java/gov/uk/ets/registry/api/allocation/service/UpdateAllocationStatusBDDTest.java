@@ -32,8 +32,6 @@ class UpdateAllocationStatusBDDTest extends GetAccountAllocationBDDTest {
         // given an unexisted account, when service call getAccountAllocationStatus then should throw exception.
         assertThrows(IllegalArgumentException.class, () -> serviceUnderTest.getAccountAllocationStatus(1L));
 
-        given(allocationConfigurationService.getAllocationYear()).willReturn(currentAllocationYear);
-
         // given an account without compliant entity
         Long accountId = 1234L;
         given(accountRepository.findByIdentifier(accountId)).willReturn(Optional.of(account));

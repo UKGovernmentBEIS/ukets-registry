@@ -154,6 +154,7 @@ public class AccountConversionService {
             result.setPositionInCompany(contact.getPositionInCompany());
         }
 
+        result.setInvitedOn(input.getInvitedOn());
         return result;
     }
 

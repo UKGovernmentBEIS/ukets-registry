@@ -1,15 +1,6 @@
 <ng-container *ngIf="accountAllocation$ | async as accountAllocation">
-  <ng-container
-    *ngIf="getAllocationTableType() === 'NAVAT'; else groupedAllocationTable"
-  >
-    <ng-container
-      *ngIf="
-        accountAllocation.standard !== null &&
-          accountAllocation.standard !== undefined &&
-          accountAllocation.standard.annuals.length > 0;
-        else noAllocationEntriesFound
-      "
-    >
+  @if (getAllocationTableType() === AllocationType.NAVAT) {
+    @if (accountAllocation.standard?.annuals?.length > 0) {
       <h2 class="govuk-heading-m">
         {{ 'Allocation status under National Aviation Allocation Table' }}
       </h2>
@@ -18,49 +9,44 @@
         [nerAllocation]="accountAllocation.underNewEntrantsReserve"
         [lastYear]="lastYear$ | async"
         (openHistoryAndComments)="navToHistoryAndComments()"
-      ></app-allocation-warnings>
+      />
       <app-allocation-table
         [allocation]="accountAllocation.standard"
         [ariaDescription]="'allocation status'"
-        [allocationType]="getAllocationTableType()"
+        [allocationType]="AllocationType.NAVAT"
         [canRequestTransaction]="canRequestUpdate"
-      ></app-allocation-table>
-    </ng-container>
-  </ng-container>
-
-  <ng-template #groupedAllocationTable>
-    <ng-container
-      *ngIf="
-        accountAllocation.standard?.annuals?.length > 0 ||
-          accountAllocation.underNewEntrantsReserve?.annuals?.length > 0;
-        else noAllocationEntriesFound
-      "
-    >
+      />
+    } @else {
+      <ng-container *ngTemplateOutlet="noAllocationEntriesFound" />
+    }
+  } @else {
+    @if (
+      accountAllocation.standard?.annuals?.length > 0 ||
+      accountAllocation.underNewEntrantsReserve?.annuals?.length > 0
+    ) {
       <app-allocation-warnings
         [natAllocation]="accountAllocation.standard"
         [nerAllocation]="accountAllocation.underNewEntrantsReserve"
         [lastYear]="lastYear$ | async"
         (openHistoryAndComments)="navToHistoryAndComments()"
-      ></app-allocation-warnings>
+      />
       <app-grouped-allocation-table
-        [standardAllocation]="accountAllocation.standard"
-        [underNewEntrantsReserveAllocation]="
-          accountAllocation.underNewEntrantsReserve
-        "
+        [groupedAllocationOverview]="groupedAllocationOverview$ | async"
         [ariaDescription]="'allocation status'"
-        [allocationType]="getAllocationTableType()"
         [canRequestTransaction]="canRequestUpdate"
-      ></app-grouped-allocation-table>
-    </ng-container>
-  </ng-template>
-
-  <ng-template #noAllocationEntriesFound>
-    <div class="govuk-warning-text overallocated-warning">
-      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      <strong class="govuk-warning-text__text">
-        <span class="govuk-visually-hidden">Warning</span>
-        There are no Allocation entries to display.
-      </strong>
-    </div>
-  </ng-template>
+      />
+    } @else {
+      <ng-container *ngTemplateOutlet="noAllocationEntriesFound" />
+    }
+  }
 </ng-container>
+
+<ng-template #noAllocationEntriesFound>
+  <div class="govuk-warning-text overallocated-warning">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-visually-hidden">Warning</span>
+      There are no Allocation entries to display.
+    </strong>
+  </div>
+</ng-template>

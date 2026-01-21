@@ -109,19 +109,13 @@ public class EmissionEventValidator {
                                       List<IntegrationEventError> errors) {
 
         int emissionsYear = reportingYear.getValue();
-        int currentYear = LocalDate.now().getYear();
-
-        Optional<Integer> lastYearVerifiedEmissionsOptional = Optional.ofNullable(submitEmissionsValidityInfo.getEndYear());
-        if (emissionsYear == currentYear && !isLastEmissionYearEqualCurrentYear(lastYearVerifiedEmissionsOptional, currentYear)) {
-            errors.add(IntegrationEventError.ERROR_0812);
-            return;
-        }
 
         int firstYearVerifiedEmissions = submitEmissionsValidityInfo.getStartYear();
         if (emissionsYear < firstYearVerifiedEmissions) {
             errors.add(IntegrationEventError.ERROR_0813);
         }
 
+        Optional<Integer> lastYearVerifiedEmissionsOptional = Optional.ofNullable(submitEmissionsValidityInfo.getEndYear());
         if (lastYearVerifiedEmissionsOptional.isPresent() && emissionsYear > lastYearVerifiedEmissionsOptional.get()) {
             errors.add(IntegrationEventError.ERROR_0814);
         }
@@ -132,11 +126,6 @@ public class EmissionEventValidator {
                 && e.isExcluded())
             .findFirst()
             .ifPresent(e -> errors.add(IntegrationEventError.ERROR_0808));
-    }
-
-    private boolean isLastEmissionYearEqualCurrentYear(Optional<Integer> lastYearVerifiedEmissionsOptional,
-                                                       int currentYear) {
-        return lastYearVerifiedEmissionsOptional.filter(lyve -> lyve == currentYear).isPresent();
     }
 
 }

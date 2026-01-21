@@ -35,4 +35,5 @@ export interface Account {
   accountDetailsSameBillingAddress?: boolean;
   metsContacts?: MetsContact[];
   registryContacts?: RegistryContact[];
+  accountClaimCode?: string;
 }

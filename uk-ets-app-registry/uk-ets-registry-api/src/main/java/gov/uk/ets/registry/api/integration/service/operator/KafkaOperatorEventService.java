@@ -69,12 +69,12 @@ public class KafkaOperatorEventService implements OperatorEventService {
 
         if (AccountType.OPERATOR_HOLDING_ACCOUNT.name().equals(accountType) && !installationSetOperatorEnabled) {
             log.debug("Installation set Operator IP disabled.");
-        	integrationPointDisabledNotificationProducer.sendNotifications(operatorUpdateEvent,OperationEvent.SET_OPERATOR_ID,correlationId,SourceSystem.METSIA);
+        	integrationPointDisabledNotificationProducer.sendNotifications(operatorUpdateEvent,OperationEvent.SET_OPERATOR_ID,correlationId,SourceSystem.METSIA_INSTALLATION);
             return;
         }
         if (AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.name().equals(accountType) && !aviationSetOperatorEnabled) {
         	log.debug("Aircraft set Operator IP disabled.");
-        	integrationPointDisabledNotificationProducer.sendNotifications(operatorUpdateEvent,OperationEvent.SET_OPERATOR_ID,correlationId,SourceSystem.METSIA);
+        	integrationPointDisabledNotificationProducer.sendNotifications(operatorUpdateEvent,OperationEvent.SET_OPERATOR_ID,correlationId,SourceSystem.METSIA_AVIATION);
             return;
         }
         if (AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.name().equals(accountType) && !maritimeSetOperatorEnabled) {

@@ -13,6 +13,11 @@ import { ClearNotificationsResultsGuard } from '@notifications/notifications-lis
 import { AboutComponent } from './about/about.component';
 import { RecoveryMethodsChangeRoutePaths } from './user-management/recovery-methods-change/recovery-methods-change.models';
 import { clearRequestPaymentGuard } from '@request-payment/guards';
+import { CLAIM_ACCOUNT_BASE_PATH } from '@claim-account/claim-account.const';
+import {
+  canActivateClaimAccount,
+  clearClaimAccountGuard,
+} from '@claim-account/claim-account.guards';
 
 const routes: Routes = [
   { path: 'under-construction', component: EmptyPageComponent },
@@ -67,6 +72,15 @@ const routes: Routes = [
     canDeactivate: [ClearBulkArGuard],
     loadChildren: () =>
       import('./bulk-ar/bulk-ar.module').then((m) => m.BulkArModule),
+  },
+  {
+    path: CLAIM_ACCOUNT_BASE_PATH,
+    canActivate: [LoginGuard, canActivateClaimAccount],
+    canDeactivate: [clearClaimAccountGuard],
+    loadChildren: () =>
+      import('./claim-account/claim-account.module').then(
+        (m) => m.ClaimAccountModule
+      ),
   },
   {
     path: 'user-list',

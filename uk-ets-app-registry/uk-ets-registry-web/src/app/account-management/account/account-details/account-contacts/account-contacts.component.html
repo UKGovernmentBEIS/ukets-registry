@@ -4,118 +4,23 @@
     Latest contacts list received on 15 Jan 2025, 10:20pm
   </p> -->
 
-  @if (metsContacts().length) {
-    <h2 class="govuk-heading-m">METS contacts</h2>
+  <app-account-contacts-tables
+    [metsContacts]="metsContacts()"
+    [registryContacts]="registryContacts()"
+  />
 
-    <table
-      class="govuk-table govuk-!-margin-bottom-7"
-      aria-describedby="METS contacts"
-    >
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Full name</th>
-          <th scope="col" class="govuk-table__header">Email</th>
-          <th scope="col" class="govuk-table__header">Phone number</th>
-          <th scope="col" class="govuk-table__header">Contact type</th>
-          <th scope="col" class="govuk-table__header">Operator type</th>
-          <th scope="col" class="govuk-table__header">Invited</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        @for (contact of metsContacts(); track contact.fullName) {
-          <tr class="govuk-table__row">
-            <ng-container
-              *ngTemplateOutlet="baseContactCells; context: { contact }"
-            />
-            <td class="govuk-table__cell">
-              @for (
-                type of contact.contactTypes;
-                track type;
-                let isLast = $last
-              ) {
-                {{ type | metsContactType }}{{ isLast ? '' : ', ' }}
-              }
-            </td>
-            <td class="govuk-table__cell">
-              {{ contact.operatorType | metsContactOperatorType }}
-            </td>
-            <td class="govuk-table__cell">
-              {{ contact.invitedOn | gdsDateTimeShort }}
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+  @if (metsContacts().length && account()?.accountClaimCode) {
+    <div class="govuk-button-group">
+      <button
+        (click)="onSendInvitation()"
+        class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+        data-module="govuk-button"
+      >
+        Send invitation
+      </button>
+      <span class="govuk-body"
+        >(Claim account code: {{ account().accountClaimCode }})</span
+      >
+    </div>
   }
-
-  @if (registryContacts().length) {
-    <h2 class="govuk-heading-m">Registry contacts</h2>
-
-    <table
-      class="govuk-table govuk-!-margin-bottom-7"
-      aria-describedby="Registry contacts"
-    >
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Full name</th>
-          <th scope="col" class="govuk-table__header">Email</th>
-          <th scope="col" class="govuk-table__header">Phone number</th>
-          <th scope="col" class="govuk-table__header">Contact type</th>
-          <th scope="col" class="govuk-table__header">Invited</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        @for (contact of registryContacts(); track contact.fullName) {
-          <tr class="govuk-table__row">
-            <ng-container
-              *ngTemplateOutlet="baseContactCells; context: { contact }"
-            />
-            <td class="govuk-table__cell">
-              {{ contact.contactType | registryContactType }}
-            </td>
-            <td class="govuk-table__cell">
-              {{ contact.invitedOn | gdsDateTimeShort }}
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  }
-
-  <ng-template #baseContactCells let-contact="contact">
-    <td class="govuk-table__cell">{{ contact.fullName }}</td>
-    <td class="govuk-table__cell">{{ contact.email }}</td>
-    <td class="govuk-table__cell">
-      @if (
-        contact.phoneNumber.countryCode1 && contact.phoneNumber.phoneNumber1
-      ) {
-        {{ contact.phoneNumber.countryCode1 }}
-        {{ contact.phoneNumber.phoneNumber1
-        }}<ng-container
-          *ngIf="
-            contact.phoneNumber.countryCode2 && contact.phoneNumber.phoneNumber2
-          "
-          >,<br
-        /></ng-container>
-      }
-      @if (
-        contact.phoneNumber.countryCode2 && contact.phoneNumber.phoneNumber2
-      ) {
-        {{ contact.phoneNumber.countryCode2 }}
-        {{ contact.phoneNumber.phoneNumber2 }}
-      }
-    </td>
-  </ng-template>
-
-  <!-- TODO -->
-  <!--  <div class="govuk-button-group">
-    <button
-      (click)="onSendInvitation()"
-      class="govuk-button govuk-!-margin-right-1 govuk-!-margin-bottom-0"
-      data-module="govuk-button"
-    >
-      Send invitation
-    </button>
-    <span class="govuk-body">(Claim account code: 100234)</span>
-  </div> -->
 }

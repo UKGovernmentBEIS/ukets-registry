@@ -32,10 +32,13 @@ public class IntegrationHeadersUtil {
 
     public SourceSystem getSourceSystem(Map<String, Object> headers) {
         String sourceTopic = getSourceTopic(headers);
-        if (sourceTopic.startsWith("installation") || sourceTopic.startsWith("aviation")) {
-            return SourceSystem.METSIA;
+        if (sourceTopic.contains("installation")) {
+            return SourceSystem.METSIA_INSTALLATION;
         }
-        if (sourceTopic.startsWith("maritime")) {
+        if (sourceTopic.contains("aviation")) {
+            return SourceSystem.METSIA_AVIATION;
+        }
+        if (sourceTopic.contains("maritime") || sourceTopic.contains("mrtm")) {
             return SourceSystem.MARITIME;
         }
         throw new IllegalArgumentException("Unknown source");

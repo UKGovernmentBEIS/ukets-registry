@@ -36,6 +36,10 @@ import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.shared.AccountHoldingsSummariesMerger;
 import gov.uk.ets.registry.api.account.shared.AccountProjection;
 import gov.uk.ets.registry.api.account.shared.AccountStatusActionOptionsFactory;
+import gov.uk.ets.registry.api.account.validation.AccountHolderTypeMissmatchException;
+import gov.uk.ets.registry.api.account.validation.AccountNotFoundValidationException;
+import gov.uk.ets.registry.api.account.validation.AccountStatusValidationException;
+import gov.uk.ets.registry.api.account.web.model.AccountClaimDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountClosureDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
@@ -52,6 +56,9 @@ import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.RegistryContactDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.auditevent.web.AuditEventDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
@@ -70,10 +77,13 @@ import gov.uk.ets.registry.api.common.view.ConversionParameters;
 import gov.uk.ets.registry.api.common.view.RequestDTO;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArAccountDTO;
+import gov.uk.ets.registry.api.integration.changelog.service.AccountAuditService;
+import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.transaction.checks.BusinessCheckContext;
 import gov.uk.ets.registry.api.transaction.checks.BusinessCheckError;
@@ -82,7 +92,6 @@ import gov.uk.ets.registry.api.transaction.checks.BusinessCheckGroup;
 import gov.uk.ets.registry.api.transaction.checks.BusinessCheckService;
 import gov.uk.ets.registry.api.transaction.checks.RequiredFieldException;
 import gov.uk.ets.registry.api.transaction.common.FullAccountIdentifierParser;
-import gov.uk.ets.registry.api.transaction.common.GeneratorService;
 import gov.uk.ets.registry.api.transaction.domain.QUnitBlock;
 import gov.uk.ets.registry.api.transaction.domain.TransactionFilter;
 import gov.uk.ets.registry.api.transaction.domain.TransactionFilterFactory;
@@ -124,6 +133,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -162,7 +172,7 @@ public class AccountService {
     private final PersistenceService persistenceService;
     private final ConversionService conversionService;
     private final AccountConversionService accountConversionService;
-    private final GeneratorService generatorService;
+    private final AccountGeneratorService generatorService;
     private final UserService userService;
     private final AccountRepository accountRepository;
     private final AccountHolderRepository holderRepository;
@@ -199,6 +209,9 @@ public class AccountService {
     private final AuthorizedRepresentativeService authorizedRepresentativeService;
     private final AccountStatusService accountStatusService;
     private final ReportRoleMappingService reportRoleMappingService;
+    private final AccountContactService accountContactService;
+    private final AccountAuditService accountAuditService;
+    private final TaskRepository taskRepository;
 
     /**
      * Creates an account.
@@ -297,6 +310,7 @@ public class AccountService {
         Date insertDate = new Date();
         account.setOpeningDate(insertDate);
         account.setBalance(0L);
+        account.setAccountClaimCode(generateAccountClaimCode());
         if (AccountType.isCpIndependent(type)) {
             account.setCommitmentPeriodCode(CommitmentPeriod.CP0.getCode());
         } else {
@@ -1418,6 +1432,8 @@ public class AccountService {
                     identifier));
         }
         Account account = byIdentifier.get();
+        AccountDTO currentAccountDTO = accountDTOFactory.create(account);
+
         account.setBillingAddressSameAsAccountHolderAddress(updatedAccountDetailsDTO.isAccountDetailsSameBillingAddress());
         account.setAccountName(updatedAccountDetailsDTO.getName());
         if(updatedAccountDetailsDTO.getSalesContactDetails() != null) {
@@ -1436,6 +1452,7 @@ public class AccountService {
             persistenceService.save(contact);
         }
         AccountDTO accountDTO = accountDTOFactory.create(account);
+        accountAuditService.logChanges(currentAccountDTO, account, SourceSystem.REGISTRY);
 
         // record event
 
@@ -1509,7 +1526,7 @@ public class AccountService {
         accountDTO.setTransferringAccountHolder(accountConversionService.convert(transferringAccountHolder));
         accountDTO.setTransferringAccountHolderContactInfo(oldAccountHolderContactInfoDTO);
     }
-    
+
     @Transactional
 	public void markAccountExcludedFromBilling(Long accountIdentifier, boolean excluded, String exclusionRemarks) {
 		this.validateExcludedFromBillingRequest(accountIdentifier);
@@ -1540,5 +1557,196 @@ public class AccountService {
             pid = "UK" + RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         } while (accountRepository.existsByPublicIdentifier(pid)); // Ensures uniqueness
         return pid;
+    }
+
+    /**
+     * Checks whether the given permit ID is unique for installation accounts.
+     * Returns {@code true} if the permit ID belongs to the current account (based on registry ID)
+     * or is not used by any other account.
+     *
+     * @param permitId   the permit ID to validate
+     * @param registryId the registry ID of the account being validated
+     * @return {@code true} if the permit ID is unique or associated with the current account; {@code false} otherwise
+     */
+    public boolean validateInstallationPermitUniqueness(String permitId, Long registryId) {
+        return accountRepository.isPermitAvailableForAccount(
+                registryId,
+                permitId
+        );
+    }
+
+    /**
+     * Checks whether the given IMO number is unique for maritime operator accounts.
+     * Returns {@code true} if the IMO number belongs to the current account (based on registry ID)
+     * or is not used by any other account.
+     *
+     * @param imo        the IMO number to validate
+     * @param registryId the registry ID of the account being validated
+     * @return {@code true} if the IMO number is unique or associated with the current account; {@code false} otherwise
+     */
+    public boolean validateMaritimeUniquenessImo(String imo, Long registryId) {
+        return accountRepository.isImoAvailableForAccount(
+                registryId,
+                imo
+        );
+    }
+
+    /**
+     * Checks whether the given monitoring plan ID is unique for maritime operator accounts.
+     * Returns {@code true} if the monitoring plan ID belongs to the current account (based on registry ID)
+     * or is not used by any other account.
+     *
+     * @param monitoringPlanId the monitoring plan ID to validate
+     * @param registryId       the registry ID of the account being validated
+     * @return {@code true} if the monitoring plan ID is unique or associated with the current account; {@code false} otherwise
+     */
+    public boolean validateMaritimeUniquenessMonitoringPlanId(String monitoringPlanId, Long registryId) {
+        return accountRepository.isMaritimeMonitoringPlanAvailableForAccount(
+                registryId,
+                monitoringPlanId
+        );
+    }
+
+    /**
+     * Checks whether the given monitoring plan ID is unique for aircraft operator accounts.
+     * Returns {@code true} if the monitoring plan ID belongs to the current account (based on registry ID)
+     * or is not used by any other account.
+     *
+     * @param monitoringPlanId the monitoring plan ID to validate
+     * @param registryId       the registry ID of the account being validated
+     * @return {@code true} if the monitoring plan ID is unique or associated with the current account; {@code false} otherwise
+     */
+    public boolean validateAircraftUniquenessMonitoringPlanId(String monitoringPlanId, Long registryId) {
+        return accountRepository.isMonitoringPlanAvailableForAccount(
+                registryId,
+                monitoringPlanId
+        );
+    }
+    public boolean validateAccountUpdateRules(
+            String accountHolderType,
+            OperatorType newType,
+            Long registryId)
+            throws AccountNotFoundValidationException,
+            AccountStatusValidationException,
+            AccountHolderTypeMissmatchException {
+
+        return validateAccountUpdateRulesInternal(accountHolderType, newType, registryId);
+    }
+
+    public boolean validateAccountUpdateRules(
+            OperatorType newType,
+            Long registryId)
+            throws AccountNotFoundValidationException,
+            AccountStatusValidationException, AccountHolderTypeMissmatchException {
+
+        return validateAccountUpdateRulesInternal(null, newType, registryId);
+    }
+
+    public void validateAccountMonitoringPlanID(
+            OperatorType newType,
+            Long registryId)
+            throws AccountNotFoundValidationException,
+            AccountStatusValidationException, AccountHolderTypeMissmatchException {
+
+        validateAccountUpdateRulesInternal(null, newType, registryId);
+    }
+
+
+    /**
+     *  Validates that the operator type of an existing account
+     *  by registryId is not different from the given newType param.
+     *
+     * @param newType          the type that we need to check
+     * @param registryId       the registry ID of the account being validated
+     * @return                 true if has not any differences or false if type is different
+     */
+    private boolean validateAccountUpdateRulesInternal(
+            String accountHolderType,
+            OperatorType newType, Long registryId)
+            throws AccountNotFoundValidationException, AccountStatusValidationException, AccountHolderTypeMissmatchException {
+        Account account = accountRepository.findByCompliantEntityIdentifier(registryId)
+                .orElseThrow(() -> new AccountNotFoundValidationException("Account not found"));
+        if(AccountStatus.isClosedOrHasClosureRequests(account.getAccountStatus())) {
+            throw new AccountStatusValidationException("Account has not valid status");
+        }
+
+        if(accountHolderType != null
+                && !account.getAccountHolder().getType().name().equals(accountHolderType)) {
+            throw new AccountHolderTypeMissmatchException("Account holder type mismatch");
+        }
+
+        CompliantEntity entity = account.getCompliantEntity();
+        OperatorType currentType;
+        Object unproxied = Hibernate.unproxy(entity);
+
+        if (unproxied instanceof Installation) {
+            currentType = OperatorType.INSTALLATION;
+        } else if (unproxied instanceof AircraftOperator) {
+            currentType = OperatorType.AIRCRAFT_OPERATOR;
+        } else if (unproxied instanceof MaritimeOperator) {
+            currentType = OperatorType.MARITIME_OPERATOR;
+        } else {
+            return false;
+        }
+        return currentType.equals(newType);
+    }
+
+    private boolean hasRequiredEmitterID(Object unproxied) {
+        if (unproxied instanceof AircraftOperator) {
+            return !Objects.isNull(((AircraftOperator) unproxied).getEmitterId());
+        } else if (unproxied instanceof MaritimeOperator) {
+            return !Objects.isNull(((MaritimeOperator) unproxied).getEmitterId());
+        }
+        return false;
+    }
+
+
+    private String generateAccountClaimCode() {
+        try {
+            return generatorService.generateAccountClaimCode();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Failed to generate account claim code", e);
+        }
+    }
+
+    @Transactional
+    public String sendInvitation(Long accountIdentifier, AccountContactSendInvitationDTO sendInvitationDTO) {
+        final AccountDTO accountDTO = this.getAccountDTO(accountIdentifier);
+        final Long accountId = accountRepository.findByIdentifier(accountIdentifier).map(Account::getId)
+                .orElseThrow(() -> new UkEtsException("Account not found"));
+        if (isAccountClaimApplicable(accountId, accountIdentifier, accountDTO)) {
+            return accountContactService.sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO);
+        }
+        return null;
+    }
+
+    @Transactional
+    public Long claimAccount(AccountClaimDTO accountClaimDTO) {
+        return accountContactService.claimAccount(accountClaimDTO);
+    }
+
+    private boolean isAccountClaimApplicable(Long accountId, Long accountIdentifier, AccountDTO accountDTO) {
+
+        final Long pendingAuthorizedRepresentativeTasks = taskRepository.countPendingTasksByAccountIdInAndType(
+                List.of(accountId),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        final List<AccountAccess> accountAccesses = accountAccessRepository.finARsByAccount_Identifier(accountIdentifier)
+                .stream()
+                .filter(access -> access.getState().equals(AccountAccessState.ACTIVE))
+                .toList();
+
+
+        final List<MetsContactDTO> uninvitedMetsContacts = accountDTO.getMetsContacts().stream()
+                .filter(metsContact -> metsContact.getInvitedOn() == null)
+                .toList();
+        final List<RegistryContactDTO> uninvitedRegistryContacts = accountDTO.getRegistryContacts().stream()
+                .filter(registryContact -> registryContact.getInvitedOn() == null)
+                .toList();
+
+        final boolean hasUninvitedContacts = !(uninvitedMetsContacts.isEmpty() && uninvitedRegistryContacts.isEmpty());
+
+        return  (accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 0 && hasUninvitedContacts);
     }
 }

@@ -17,6 +17,7 @@ import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.accountaccess.service.AccountAccessService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.integration.service.IntegrationHeadersUtil;
+import gov.uk.ets.registry.api.integration.service.account.validators.AccountOpeningEventValidator;
 import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.messaging.UktlAccountNotifyMessageService;
 import gov.uk.ets.registry.api.messaging.domain.AccountNotification;
@@ -41,7 +42,7 @@ import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 class AccountEventOpeningServiceTest {
 
     @Mock
-    private AccountEventValidator eventValidator;
+    private AccountOpeningEventValidator eventValidator;
     @Mock
     private AccountValidator accountValidator;
     @Mock
@@ -108,7 +109,7 @@ class AccountEventOpeningServiceTest {
         Mockito.when(accountService.createAccount(accountDTO)).thenReturn(newAccount);
 
         // when
-        AccountOpeningResult result = service.process(event, headers);
+        AccountModificationResult result = service.process(event, headers);
 
         // then
         assertThat(result.getAccountFullIdentifier()).isEqualTo("fullIdentifier");
@@ -139,7 +140,7 @@ class AccountEventOpeningServiceTest {
         Mockito.when(eventValidator.validate(event, operatorType)).thenReturn(errors);
 
         // when
-        AccountOpeningResult result = service.process(event, headers);
+        AccountModificationResult result = service.process(event, headers);
 
         // then
         assertThat(result.getAccountFullIdentifier()).isNull();
@@ -174,7 +175,7 @@ class AccountEventOpeningServiceTest {
         Mockito.when(accountService.createAccount(accountDTO)).thenReturn(newAccount);
 
         // when
-        AccountOpeningResult result = service.process(event, headers);
+        AccountModificationResult result = service.process(event, headers);
 
         // then
         assertThat(result.getAccountFullIdentifier()).isEqualTo("fullIdentifier");

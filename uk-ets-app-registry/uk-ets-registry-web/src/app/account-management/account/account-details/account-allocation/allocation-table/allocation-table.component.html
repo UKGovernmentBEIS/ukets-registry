@@ -1,4 +1,7 @@
-<table class="govuk-table" aria-describedby="allocation summary table">
+<table
+  class="govuk-table annual-allocation-table"
+  aria-describedby="allocation summary table"
+>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header">Year</th>
@@ -10,10 +13,7 @@
       </th>
       <th
         scope="col"
-        class="
-          govuk-table__header govuk-table__header--numeric
-          cell-border-left
-        "
+        class="govuk-table__header govuk-table__header--numeric cell-border-left"
       >
         Remaining to be allocated
       </th>
@@ -24,71 +24,61 @@
         Withhold status
       </th>
       <th scope="col" class="govuk-table__header">Exclusion status</th>
-      <th scope="col" class="govuk-table__header" aria-label="return allowances button" tabindex="-1"></th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        aria-label="return allowances button"
+        tabindex="-1"
+      ></th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr
-      *ngFor="let annual of allocation.annuals"
-      class="govuk-table__row annual-allocation"
-    >
-      <td class="govuk-table__cell annual-allocation">
+    <tr *ngFor="let annual of allocation.annuals" class="govuk-table__row">
+      <td class="govuk-table__cell">
         <strong>{{ annual.year }}</strong>
       </td>
-      <td
-        class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
-      >
+      <td class="govuk-table__cell govuk-table__cell--numeric">
         {{ annual.entitlement }}
       </td>
-      <td
-        class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
-      >
+      <td class="govuk-table__cell govuk-table__cell--numeric">
         {{ annual.allocated }}
       </td>
-      <td
-        class="
-          govuk-table__cell govuk-table__cell--numeric
-          annual-allocation
-          cell-border-left
-        "
-      >
+      <td class="govuk-table__cell govuk-table__cell--numeric cell-border-left">
         <div
           class="remaining-col"
           [ngClass]="{
-            'remaining-allocation under-allocated': annual.remaining > 0
+            'remaining-allocation under-allocated': annual.remaining > 0,
           }"
         >
           {{ annual.remaining > 0 ? annual.remaining : 0 }}
         </div>
       </td>
-      <td
-        class="govuk-table__cell govuk-table__cell--numeric annual-allocation"
-      >
+      <td class="govuk-table__cell govuk-table__cell--numeric">
         <div
           class="remaining-col"
           [ngClass]="{
-            'remaining-allocation over-allocated': annual.remaining < 0
+            'remaining-allocation over-allocated': annual.remaining < 0,
           }"
         >
           {{ annual.remaining < 0 ? -annual.remaining : 0 }}
         </div>
       </td>
-      <td class="govuk-table__cell annual-allocation cell-border-left">
+      <td class="govuk-table__cell cell-border-left">
         {{
           annual.status !== allocationStatusAllowed
             ? allocationStatusLabels[annual.status]?.label
             : ''
         }}
       </td>
-      <td class="govuk-table__cell annual-allocation">
+      <td class="govuk-table__cell">
         <ng-container *ngIf="annual.excluded">
           <app-govuk-tag [color]="'blue'"> EXCLUDED </app-govuk-tag>
         </ng-container>
       </td>
-      <td class="govuk-table__cell annual-allocation">
+      <td class="govuk-table__cell">
         <button
           *ngIf="canRequestTransaction && annual.eligibleForReturn"
-          class="govuk-button govuk-button--secondary annual-allocation"
+          class="govuk-button govuk-button--secondary"
           data-module="govuk-button"
           (click)="goToReturnExcessTransaction(annual)"
         >

@@ -103,6 +103,7 @@ public enum EventType {
     COMPLIANT_ENTITY_EMISSIONS_FIRST_YEAR_UPDATED(CompliantEntity.class),
     COMPLIANT_ENTITY_EMISSIONS_LAST_YEAR_UPDATED(CompliantEntity.class),
     COMPLIANT_ENTITY_NEW_YEAR(CompliantEntity.class),
+    // Rollover is no longer taking place. We keep it only for old records.
     COMPLIANT_ENTITY_ROLL_OVER_FAILURE(CompliantEntity.class),
 
     COMPLIANT_ENTITY_STATIC_COMPLIANCE_REQUEST(CompliantEntity.class),

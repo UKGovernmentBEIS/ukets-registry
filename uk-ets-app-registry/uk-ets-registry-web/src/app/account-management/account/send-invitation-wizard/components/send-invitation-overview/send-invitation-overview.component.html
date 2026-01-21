@@ -1,0 +1,44 @@
+<div appScreenReaderPageAnnounce pageTitle="Check your answers"></div>
+<h1 class="govuk-heading-xl">
+  <span class="govuk-caption-xl">Send invitation</span>
+  Check your answers
+</h1>
+
+<p class="govuk-body govuk-!-margin-bottom-8">
+  An email will be sent to the selected contacts with claim account code:
+  {{ account().accountClaimCode }}
+</p>
+
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-3">
+      Contacts to be invited
+    </h2>
+    <div class="govuk-summary-list__actions">
+      <a
+        class="govuk-link govuk-link--no-visited-state"
+        [routerLink]="[]"
+        (click)="navigateToSelectContacts()"
+        (keypress)="navigateToSelectContacts()"
+      >
+        Change<span class="govuk-visually-hidden"> selected contacts</span>
+      </a>
+    </div>
+  </div>
+</dl>
+
+<app-account-contacts-tables
+  [metsContacts]="metsContacts()"
+  [registryContacts]="registryContacts()"
+/>
+
+<button
+  id="submit"
+  class="govuk-button"
+  data-module="govuk-button"
+  appDebounceClick
+  (debounceClick)="onSubmit()"
+>
+  Submit
+</button>
+<app-cancel-request-link (goToCancelScreen)="onCancel()" />

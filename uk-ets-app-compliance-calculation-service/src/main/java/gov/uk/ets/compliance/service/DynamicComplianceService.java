@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.compliance.domain.DynamicCompliance;
 import gov.uk.ets.compliance.domain.DynamicComplianceEntity;
 import gov.uk.ets.compliance.domain.events.InitCompliantEntity;
+import gov.uk.ets.compliance.domain.events.UpdateOfVerifiedEmissionsEvent;
 import gov.uk.ets.compliance.domain.events.base.DynamicComplianceEvent;
 import gov.uk.ets.compliance.repository.DynamicComplianceRepository;
+
+import java.time.Year;
 
 public class DynamicComplianceService extends ComplianceServiceBase {
 
@@ -31,12 +34,24 @@ public class DynamicComplianceService extends ComplianceServiceBase {
             boolean processed = dynamicCompliance.processDynamicComplianceUpdateEvent(event);
             dynamicComplianceEntity.setDynamicCompliance(serializeDynamicCompliance(dynamicCompliance));
             dynamicComplianceRepository.save(dynamicComplianceEntity);
-            if (!processed) {
-                throw new DynamicComplianceException("Event makes the compliance state invalid");
+            if (!processed && !shouldIgnoreUnprocessedEvent(event, dynamicCompliance)) {
+                throw new DynamicComplianceException("Event not used by compliance calculation engine. Ignoring event.");
             }
             return dynamicCompliance;
 
         }
+    }
+
+    /*
+     * Events that are allowed but ignored by the compliance calculation.
+     */
+    private boolean shouldIgnoreUnprocessedEvent(DynamicComplianceEvent event, DynamicCompliance dynamicCompliance) {
+        if (event instanceof UpdateOfVerifiedEmissionsEvent updateOfVerifiedEmissionsEvent) {
+            boolean updateForCurrentYear = updateOfVerifiedEmissionsEvent.getYear() == Year.now().getValue();
+            boolean inLastYearOfVerifiedEmissions = dynamicCompliance.getState().isInLastYearOfVerifiedEmissions();
+            return updateForCurrentYear && !inLastYearOfVerifiedEmissions;
+        }
+        return false;
     }
 
     private DynamicCompliance init(InitCompliantEntity initCompliantEntity) {

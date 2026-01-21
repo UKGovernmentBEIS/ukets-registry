@@ -1,12 +1,7 @@
 package gov.uk.ets.registry.api.integration.config;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -39,8 +34,14 @@ import org.springframework.util.backoff.FixedBackOff;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import uk.gov.netz.integration.model.account.AccountOpeningEvent;
 import uk.gov.netz.integration.model.account.AccountOpeningEventOutcome;
+import uk.gov.netz.integration.model.account.AccountUpdatingEvent;
+import uk.gov.netz.integration.model.account.AccountUpdatingEventOutcome;
 import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
 import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEventOutcome;
+import uk.gov.netz.integration.model.metscontacts.MetsContactsEvent;
+import uk.gov.netz.integration.model.metscontacts.MetsContactsEventOutcome;
+import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEvent;
+import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEventOutcome;
 import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 import uk.gov.netz.integration.model.operator.OperatorUpdateEventOutcome;
 
@@ -84,6 +85,12 @@ public class IntegrationKafkaConfiguration {
     @Value("${kafka.integration.set.operator.response.consumer.group-id}")
     private String setOperatorResponseConsumerGroup;
 
+    @Value("${kafka.integration.exemption.request.consumer.group-id}")
+    private String exemptionRequestConsumerGroup;
+
+    @Value("${kafka.integration.exemption.response.consumer.group-id}")
+    private String exemptionResponseConsumerGroup;
+
     @Value("${kafka.integration.installation.emissions.response.transactional.id}")
     private String installationEmissionsResponseTransactionalId;
 
@@ -98,6 +105,9 @@ public class IntegrationKafkaConfiguration {
 
     @Value("${kafka.integration.set.operator.request.transactional.id}")
     private String setOperatorIdRequestTransactionalId;
+
+    @Value("${kafka.integration.exemption.response.transactional.id}")
+    private String exemptionResponseTransactionalId;
 
     @Value("${kafka.integration.installation.emissions.response.topic}")
     private String installationEmissionsResponseTopic;
@@ -120,7 +130,25 @@ public class IntegrationKafkaConfiguration {
     @Value("${kafka.integration.sasl.client.callback.handler.class}")
     private String integrationKafkaSaslClientCallbackHandlerClass;
 
-    @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.installation.emissions.enabled"}, havingValue = "true")
+    @Value("${kafka.integration.account.updating.request.consumer.group-id}")
+    private String accountUpdatingRequestConsumerGroup;
+
+    @Value("${kafka.integration.account.updating.response.consumer.group-id}")
+    private String accountUpdatingResponseConsumerGroup;
+
+    @Value("${kafka.integration.account.updating.response.transactional.id}")
+    private String accountUpdatingResponseTransactionalId;
+
+    @Value("${kafka.integration.mets.contacts.request.consumer.group-id}")
+    private String metsContactsRequestConsumerGroup;
+
+    @Value("${kafka.integration.mets.contacts.response.consumer.group-id}")
+    private String metsContactsResponseConsumerGroup;
+
+    @Value("${kafka.integration.mets.contacts.response.transactional.id}")
+    private String metsContactsResponseTransactionalId;
+
+	@ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.installation.emissions.enabled"}, havingValue = "true")
     @Bean("installationEmissionsConsumerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEvent> installationKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEvent> factory =
@@ -141,7 +169,7 @@ public class IntegrationKafkaConfiguration {
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         return factory;
     }
-    
+
     @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.maritime.emissions.enabled"}, havingValue = "true")
     @Bean("maritimeEmissionsConsumerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEvent> maritimeKafkaListenerContainerFactory() {
@@ -151,7 +179,7 @@ public class IntegrationKafkaConfiguration {
         setupErrorHandler(factory);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         return factory;
-    }    
+    }
 
     @Bean("outcomeConsumerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, AccountEmissionsUpdateEventOutcome> outcomeKafkaListenerContainerFactory() {
@@ -186,11 +214,141 @@ public class IntegrationKafkaConfiguration {
     @Bean("operatorSetIdOutcomeConsumerFactory")
     public ConcurrentKafkaListenerContainerFactory<String, OperatorUpdateEventOutcome> operatorSetIdOutcomeConsumerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, OperatorUpdateEventOutcome> factory =
-            new ConcurrentKafkaListenerContainerFactory<>();
+                new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory(OperatorUpdateEventOutcome.class, setOperatorResponseConsumerGroup));
         setupErrorHandler(factory);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         return factory;
+    }
+
+    // ---- Update account -------------------------//
+    @ConditionalOnProperty(
+            name = "kafka.integration.aviation.account.updating.enabled",
+            havingValue = "true"
+    )
+    @Bean("aviationUpdatingConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountUpdatingEvent> aviationUpdatingConsumerFactory() {
+        return createUpdatingFactory(accountUpdatingRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = "kafka.integration.installation.account.updating.enabled",
+            havingValue = "true"
+    )
+    @Bean("installationUpdatingConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountUpdatingEvent> installationUpdatingConsumerFactory() {
+        return createUpdatingFactory(accountUpdatingRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = "kafka.integration.maritime.account.updating.enabled",
+            havingValue = "true"
+    )
+    @Bean("maritimeUpdatingConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountUpdatingEvent> maritimeUpdatingConsumerFactory() {
+        return createUpdatingFactory(accountUpdatingRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = {
+                    "kafka.integration.enabled"
+            },
+            havingValue = "true"
+    )
+    @Bean("accountUpdatingOutcomeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountUpdatingEventOutcome> accountUpdatingOutcomeConsumerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountUpdatingEventOutcome> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(AccountUpdatingEventOutcome.class, accountUpdatingResponseConsumerGroup));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
+    @ConditionalOnProperty(
+            name = {
+                    "kafka.integration.enabled"
+            },
+            havingValue = "true"
+    )
+    @Bean("accountUpdatingOutcomeKafkaTemplate")
+    public KafkaTemplate<String, AccountUpdatingEventOutcome> accountUpdatingOutcomeKafkaTemplate() {
+        return getKafkaTemplate(accountUpdatingResponseTransactionalId, null);
+    }
+
+    // ---- Mets contacts -------------------------//
+    @ConditionalOnProperty(
+            name = "kafka.integration.aviation.mets.contacts.enabled",
+            havingValue = "true"
+    )
+    @Bean("aviationMetsContactsConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, MetsContactsEvent> aviationMetsContactsConsumerFactory() {
+        return createMetsContactsFactory(metsContactsRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = "kafka.integration.installation.mets.contacts.enabled",
+            havingValue = "true"
+    )
+    @Bean("installationMetsContactsConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, MetsContactsEvent> installationMetsContactsConsumerFactory() {
+        return createMetsContactsFactory(metsContactsRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = "kafka.integration.maritime.mets.contacts.enabled",
+            havingValue = "true"
+    )
+    @Bean("maritimeMetsContactsConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, MetsContactsEvent> maritimeMetsContactsConsumerFactory() {
+        return createMetsContactsFactory(metsContactsRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = {
+                    "kafka.integration.enabled"
+            },
+            havingValue = "true"
+    )
+    @Bean("metsContactsOutcomeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, MetsContactsEventOutcome> metsContactsOutcomeConsumerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, MetsContactsEventOutcome> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(MetsContactsEventOutcome.class, metsContactsResponseConsumerGroup));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
+    @Bean("exemptionOutcomeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountExemptionUpdateEventOutcome> exemptionOutcomeConsumerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountExemptionUpdateEventOutcome> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(AccountExemptionUpdateEventOutcome.class, exemptionRequestConsumerGroup));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
+    @Bean("exemptionConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountExemptionUpdateEvent> exemptionConsumerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountExemptionUpdateEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(AccountExemptionUpdateEvent.class, exemptionRequestConsumerGroup));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
+    @ConditionalOnProperty(
+            name = {
+                    "kafka.integration.enabled"
+            },
+            havingValue = "true"
+    )
+    @Bean("metsContactsOutcomeKafkaTemplate")
+    public KafkaTemplate<String, MetsContactsEventOutcome> metsContactsOutcomeKafkaTemplate() {
+        return getKafkaTemplate(metsContactsResponseTransactionalId, null);
     }
 
     @ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.aviation.emissions.enabled"}, havingValue = "true")
@@ -219,6 +377,11 @@ public class IntegrationKafkaConfiguration {
     @Bean("operatorIdKafkaTemplate")
     public KafkaTemplate<String, OperatorUpdateEvent> operatorIdKafkaTemplate() {
         return getKafkaTemplate(setOperatorIdRequestTransactionalId, null);
+    }
+
+    @Bean("exemptionOutcomeKafkaTemplate")
+    public KafkaTemplate<String, AccountExemptionUpdateEventOutcome> exemptionOutcomeKafkaTemplate() {
+        return getKafkaTemplate(exemptionResponseTransactionalId, null);
     }
 
     private <V> KafkaTemplate<String, V> getKafkaTemplate(String transactionalId, String topic) {
@@ -338,6 +501,24 @@ public class IntegrationKafkaConfiguration {
         defaultKafkaProducerFactory.setKeySerializer(keyByTypeSerializer);
 
         return new KafkaTemplate<>(defaultKafkaProducerFactory);
+    }
+
+    private ConcurrentKafkaListenerContainerFactory<String, AccountUpdatingEvent> createUpdatingFactory(String groupId) {
+        ConcurrentKafkaListenerContainerFactory<String, AccountUpdatingEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(AccountUpdatingEvent.class, groupId));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
+    private ConcurrentKafkaListenerContainerFactory<String, MetsContactsEvent> createMetsContactsFactory(String groupId) {
+        ConcurrentKafkaListenerContainerFactory<String, MetsContactsEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(MetsContactsEvent.class, groupId));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
     }
 
 }

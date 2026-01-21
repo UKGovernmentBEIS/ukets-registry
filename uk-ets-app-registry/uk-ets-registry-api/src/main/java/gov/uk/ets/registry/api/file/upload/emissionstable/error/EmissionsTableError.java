@@ -59,6 +59,7 @@ public enum EmissionsTableError {
 	/**
 	 * Invalid year - cannot upload emissions for current year <b>unless the Last year of verified emissions = current year</b>
 	 */
+    @Deprecated(forRemoval = true)
 	ERROR_5012(5012,"Emissions cannot be reported for the current year"),
 	
 	/**

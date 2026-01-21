@@ -39,8 +39,8 @@ export interface GroupedAllocationOverview {
 }
 
 export interface GroupedAllocation {
-  summedAnnualAllocationNatAndNer: AnnualAllocation;
-  natAnnualAllocation: AnnualAllocation;
+  summedAnnualAllocationStandardAndNer: AnnualAllocation;
+  standardAnnualAllocation: AnnualAllocation;
   nerAnnualAllocation: AnnualAllocation;
   allocationClassification?: AllocationStatus;
 }

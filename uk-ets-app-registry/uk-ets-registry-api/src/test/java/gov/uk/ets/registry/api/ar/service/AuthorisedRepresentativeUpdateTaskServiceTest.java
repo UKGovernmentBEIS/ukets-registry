@@ -4,6 +4,7 @@ import static gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.IN
 import static gov.uk.ets.registry.api.ar.domain.ARUpdateActionType.ADD;
 import static gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome.APPROVED;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,8 +17,11 @@ import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.ContactDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.Mapper;
@@ -45,6 +49,7 @@ import gov.uk.ets.registry.api.user.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
@@ -111,6 +116,8 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
     private TaskARStatusRepository taskARStatusRepository;
     @Mock
     private PaymentTaskAutoCompletionService paymentTaskAutoCompletionService;
+    @Mock
+    private AccountClaimService accountClaimService;
 
     ObjectMapper jacksonMapper = new ObjectMapper();
 
@@ -127,7 +134,7 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
     public void setup() {
         authorisedRepresentativeUpdateTaskService = new AuthorisedRepresentativeUpdateTaskService(accountService,
             userConversionService, userAdministrationService, accountAccessRepository, userService, taskRepository,
-            authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper, taskARStatusRepository,paymentTaskAutoCompletionService);
+            authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper, taskARStatusRepository,paymentTaskAutoCompletionService, accountClaimService);
     }
 
     @DisplayName("Retrieve authorise representative update values successfully.")
@@ -200,6 +207,7 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
             Assertions.assertEquals(1, account.getAccountAccesses().size());
             Assertions.assertEquals(AccountAccessRight.APPROVE, account.getAccountAccesses().get(0).getRight());
             Assertions.assertEquals(AccountAccessState.REMOVED, account.getAccountAccesses().get(0).getState());
+            verify(accountClaimService).sendInvitation(eq(accountInfo.getIdentifier()), any(AccountContactSendInvitationDTO.class));
         } else if (APPROVED.equals(outcome)
             && requestType.equals(RequestType.AUTHORIZED_REPRESENTATIVE_SUSPEND_REQUEST)) {
             Assertions.assertEquals(1, account.getAccountAccesses().size());
@@ -321,6 +329,13 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
         account.setAccountAccesses(initialAccountAccesses);
         when(accountService.getAccount(1004L))
             .thenReturn(account);
+
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setMetsContacts(List.of());
+        accountDTO.setRegistryContacts(List.of());
+
+        when(accountService.getAccountDTO(accountInfo.getIdentifier()))
+                .thenReturn(accountDTO);
 
         UserDTO userDTO = new UserDTO();
         userDTO.setUrid(user.getUrid());

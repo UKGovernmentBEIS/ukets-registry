@@ -22,9 +22,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import uk.gov.netz.integration.model.account.AccountDetailsMessage;
-import uk.gov.netz.integration.model.account.AccountHolderMessage;
-import uk.gov.netz.integration.model.account.AccountOpeningEvent;
+import uk.gov.netz.integration.model.account.*;
+
+import java.util.Optional;
 
 @Log4j2
 @Component
@@ -35,87 +35,179 @@ public class AccountEventMapper {
     public AccountDTO convert(AccountOpeningEvent event, OperatorType operatorType) {
         AccountDTO accountDTO = new AccountDTO();
 
-        AccountDetailsMessage accountDetailsMessage = event.getAccountDetails();
-        AccountDetailsDTO accountDetailsDTO = new AccountDetailsDTO();
-        accountDetailsDTO.setName(accountDetailsMessage.getEmitterId());
-        accountDTO.setAccountDetails(accountDetailsDTO);
+        AccountDetailsMessage details = event.getAccountDetails();
+        accountDTO.setAccountDetails(buildAccountDetails(details.getEmitterId()));
+        accountDTO.setAccountType(resolveAccountType(operatorType));
 
-        OperatorDTO operatorDTO = new OperatorDTO();
-        operatorDTO.setType(operatorType.name());
-        operatorDTO.setRegulator(RegulatorType.valueOf(accountDetailsMessage.getRegulator()));
-        operatorDTO.setFirstYear(accountDetailsMessage.getFirstYearOfVerifiedEmissions());
-        operatorDTO.setEmitterId(accountDetailsMessage.getEmitterId());
-        if (operatorType == OperatorType.INSTALLATION) {
-            accountDTO.setAccountType("OPERATOR_HOLDING_ACCOUNT");
-            Set<InstallationActivityType> activityTypes = accountDetailsMessage.
-                    getInstallationActivityTypes().
-                    stream().
-                    map(InstallationActivityType::valueOf).
-                    collect(Collectors.toSet());
-            operatorDTO.setActivityTypes(activityTypes);
-            operatorDTO.setName(accountDetailsMessage.getInstallationName());
-            PermitDTO permitDTO = new PermitDTO();
-            permitDTO.setId(accountDetailsMessage.getPermitId());
-            operatorDTO.setPermit(permitDTO);
-        }
-        if (operatorType == OperatorType.AIRCRAFT_OPERATOR) {
-            accountDTO.setAccountType("AIRCRAFT_OPERATOR_HOLDING_ACCOUNT");
-            setupMonitoringPlan(accountDetailsMessage, operatorDTO);
-        }
-        if (operatorType == OperatorType.MARITIME_OPERATOR) {
-            accountDTO.setAccountType("MARITIME_OPERATOR_HOLDING_ACCOUNT");
-            setupMonitoringPlan(accountDetailsMessage, operatorDTO);
-            operatorDTO.setImo(accountDetailsMessage.getCompanyImoNumber());
-        }
-        accountDTO.setOperator(operatorDTO);
-
-        // Set up Account Holder
-        AccountHolderMessage accountHolderMessage = event.getAccountHolder();
-        AccountHolderDTO accountHolderDTO = new AccountHolderDTO();
-        AccountHolderType accountHolderType = AccountHolderType.valueOf(accountHolderMessage.getAccountHolderType());
-        accountHolderDTO.setType(accountHolderType);
-
-        DetailsDTO detailsDTO = new DetailsDTO();
-        detailsDTO.setName(accountHolderMessage.getName());
-        if (accountHolderType == AccountHolderType.INDIVIDUAL) {
-            accountHolderDTO.setPhoneNumber(getDefaultPhoneNumber());
-            accountHolderDTO.setEmailAddress(getDefaultEmailAddress());
-            detailsDTO.setFirstName(accountHolderMessage.getName());
-            detailsDTO.setLastName(accountHolderMessage.getName());
-            detailsDTO.setBirthCountry("-");
-        } else if (Boolean.TRUE.equals(accountHolderMessage.getCrnNotExist())) {
-            detailsDTO.setNoRegistrationNumJustification(accountHolderMessage.getCrnJustification());
-        } else {
-            detailsDTO.setRegistrationNumber(accountHolderMessage.getCompanyRegistrationNumber());
-        }
-
-        accountHolderDTO.setDetails(detailsDTO);
-
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setLine1(accountHolderMessage.getAddressLine1());
-        addressDTO.setLine2(accountHolderMessage.getAddressLine2());
-        addressDTO.setCity(accountHolderMessage.getTownOrCity());
-        addressDTO.setStateOrProvince(accountHolderMessage.getStateOrProvince());
-        addressDTO.setCountry(accountHolderMessage.getCountry());
-        if (UK.equals(accountHolderMessage.getCountry())
-            && (accountHolderMessage.getPostalCode() == null || accountHolderMessage.getPostalCode().isBlank())) {
-            addressDTO.setPostCode("Not Provided by METS"); // Set Default value
-        } else {
-            addressDTO.setPostCode(accountHolderMessage.getPostalCode());
-        }
-
-        accountHolderDTO.setAddress(addressDTO);
-
-        accountDTO.setAccountHolder(accountHolderDTO);
-
-        // Setting Default values for primary contact as it is not provided
-        AccountHolderContactInfoDTO accountHolderContactInfoDTO = defaultPrimaryContact(addressDTO);
-        accountDTO.setAccountHolderContactInfo(accountHolderContactInfoDTO);
-
-        // Setting Default values for TAL rules
+        accountDTO.setOperator(buildOperator(details, operatorType));
+        accountDTO.setAccountHolder(buildAccountHolder(event.getAccountHolder()));
+        accountDTO.setAccountHolderContactInfo(defaultPrimaryContact(buildAddress(event.getAccountHolder())));
         accountDTO.setTrustedAccountListRules(defaultTrustedAccountListRules());
+        return accountDTO;
+    }
+
+    public AccountDTO convert(AccountUpdatingEvent event, OperatorType operatorType) {
+        AccountDTO accountDTO = new AccountDTO();
+
+        UpdateAccountDetailsMessage details = event.getAccountDetails();
+
+        // Only the fields used in UpdateAccountService
+        accountDTO.setIdentifier(Long.valueOf(details.getRegistryId()));
+        accountDTO.setAccountHolder(buildAccountHolderForUpdate(event.getAccountHolder()));
+        accountDTO.setOperator(buildOperatorForUpdate(details, operatorType));
 
         return accountDTO;
+    }
+
+    private AccountDetailsDTO buildAccountDetails(String name) {
+        AccountDetailsDTO dto = new AccountDetailsDTO();
+        dto.setName(name);
+        return dto;
+    }
+
+    private OperatorDTO buildOperator(AccountDetailsMessage details, OperatorType type) {
+        OperatorDTO dto = new OperatorDTO();
+        dto.setType(type.name());
+        dto.setRegulator(RegulatorType.valueOf(details.getRegulator()));
+        dto.setFirstYear(details.getFirstYearOfVerifiedEmissions());
+        dto.setEmitterId(details.getEmitterId());
+
+        switch (type) {
+            case INSTALLATION -> {
+                dto.setName(details.getInstallationName());
+                Set<InstallationActivityType> activityTypes = details.getInstallationActivityTypes()
+                        .stream()
+                        .map(InstallationActivityType::valueOf)
+                        .collect(Collectors.toSet());
+                dto.setActivityTypes(activityTypes);
+
+                PermitDTO permit = new PermitDTO();
+                permit.setId(details.getPermitId());
+                dto.setPermit(permit);
+            }
+
+            case AIRCRAFT_OPERATOR -> {
+                MonitoringPlanDTO plan = new MonitoringPlanDTO();
+                plan.setId(details.getMonitoringPlanId());
+                dto.setMonitoringPlan(plan);
+                setupMonitoringPlan(details, dto);
+            }
+
+            case MARITIME_OPERATOR -> {
+                MonitoringPlanDTO plan = new MonitoringPlanDTO();
+                String planId = Optional.ofNullable(details.getMonitoringPlanId())
+                        .orElseGet(details::getEmitterId);
+                plan.setId(planId);
+                dto.setMonitoringPlan(plan);
+                setupMonitoringPlan(details, dto);
+                dto.setImo(details.getCompanyImoNumber());
+            }
+
+            default -> throw new IllegalArgumentException("Unsupported operator type: " + type);
+        }
+
+        return dto;
+    }
+
+    private OperatorDTO buildOperatorForUpdate(UpdateAccountDetailsMessage details, OperatorType type) {
+        OperatorDTO dto = new OperatorDTO();
+        dto.setType(type.name());
+        dto.setRegulator(RegulatorType.valueOf(details.getRegulator()));
+        dto.setFirstYear(details.getFirstYearOfVerifiedEmissions());
+
+        switch (type) {
+            case INSTALLATION -> {
+                dto.setName(details.getInstallationName());
+                dto.setActivityTypes(details.getInstallationActivityTypes().stream()
+                        .map(String::trim)
+                        .map(InstallationActivityType::valueOf)
+                        .collect(Collectors.toSet()));
+                PermitDTO permit = new PermitDTO();
+                permit.setId(details.getPermitId());
+                dto.setPermit(permit);
+            }
+            case AIRCRAFT_OPERATOR -> {
+                MonitoringPlanDTO plan = new MonitoringPlanDTO();
+                plan.setId(details.getMonitoringPlanId());
+                dto.setMonitoringPlan(plan);
+            }
+            case MARITIME_OPERATOR -> {
+                MonitoringPlanDTO plan = new MonitoringPlanDTO();
+                plan.setId(details.getMonitoringPlanId());
+                dto.setMonitoringPlan(plan);
+                dto.setImo(details.getCompanyImoNumber());
+            }
+        }
+        return dto;
+    }
+
+
+    private AccountHolderDTO buildAccountHolder(AccountHolderMessage msg) {
+        AccountHolderDTO holder = new AccountHolderDTO();
+        AccountHolderType type = AccountHolderType.valueOf(msg.getAccountHolderType());
+        holder.setType(type);
+        holder.setDetails(buildDetails(msg, type));
+        holder.setAddress(buildAddress(msg));
+        if (type == AccountHolderType.INDIVIDUAL) {
+            holder.setPhoneNumber(getDefaultPhoneNumber());
+            holder.setEmailAddress(getDefaultEmailAddress());
+        }
+        return holder;
+    }
+
+    private DetailsDTO buildDetails(AccountHolderMessage msg, AccountHolderType type) {
+        DetailsDTO details = new DetailsDTO();
+        details.setName(msg.getName());
+        if (type == AccountHolderType.INDIVIDUAL) {
+            details.setFirstName(msg.getName());
+            details.setLastName(msg.getName());
+            details.setBirthCountry("-");
+        } else if (Boolean.TRUE.equals(msg.getCrnNotExist())) {
+            details.setNoRegistrationNumJustification(msg.getCrnJustification());
+        } else {
+            details.setRegistrationNumber(msg.getCompanyRegistrationNumber());
+        }
+        return details;
+    }
+
+    private AddressDTO buildAddress(AccountHolderMessage msg) {
+        AddressDTO addr = new AddressDTO();
+        addr.setLine1(msg.getAddressLine1());
+        addr.setLine2(msg.getAddressLine2());
+        addr.setCity(msg.getTownOrCity());
+        addr.setStateOrProvince(msg.getStateOrProvince());
+        addr.setCountry(msg.getCountry());
+        if (UK.equals(msg.getCountry()) && (msg.getPostalCode() == null || msg.getPostalCode().isBlank())) {
+            addr.setPostCode("Not Provided by METS");
+        } else {
+            addr.setPostCode(msg.getPostalCode());
+        }
+        return addr;
+    }
+
+    private AccountHolderDTO buildAccountHolderForUpdate(AccountHolderMessage msg) {
+        AccountHolderDTO holder = new AccountHolderDTO();
+        holder.setAddress(buildAddress(msg));
+        holder.setDetails(buildDetailsForUpdate(msg));
+        return holder;
+    }
+
+    private DetailsDTO buildDetailsForUpdate(AccountHolderMessage msg) {
+        DetailsDTO details = new DetailsDTO();
+        details.setName(msg.getName());
+        details.setRegistrationNumber(msg.getCompanyRegistrationNumber());
+        details.setNoRegistrationNumJustification(msg.getCrnJustification());
+        return details;
+    }
+
+
+    private String resolveAccountType(OperatorType type) {
+        return switch (type) {
+            case INSTALLATION -> "OPERATOR_HOLDING_ACCOUNT";
+            case INSTALLATION_TRANSFER -> null;
+            case AIRCRAFT_OPERATOR -> "AIRCRAFT_OPERATOR_HOLDING_ACCOUNT";
+            case MARITIME_OPERATOR -> "MARITIME_OPERATOR_HOLDING_ACCOUNT";
+        };
     }
 
     private void setupMonitoringPlan(AccountDetailsMessage accountDetailsMessage, OperatorDTO operatorDTO) {

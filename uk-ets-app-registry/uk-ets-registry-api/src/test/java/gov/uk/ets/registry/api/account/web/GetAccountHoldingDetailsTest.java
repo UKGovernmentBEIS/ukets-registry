@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import gov.uk.ets.registry.api.account.AccountController;
+import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.validation.AccountValidator;
@@ -38,13 +39,15 @@ public class GetAccountHoldingDetailsTest {
     private AccountOperatorUpdateService accountOperatorUpdateService;
     @MockBean
     private TransactionSearchResultMapper transactionSearchResultMapper;
+    @MockBean
+    private AccountClaimService accountClaimService;
 
     AccountController controller;
 
     @BeforeEach
     public void setup() {
         controller = new AccountController(accountService, authService, accountValidator,
-                                           accountOperatorUpdateService, transactionSearchResultMapper);
+                                           accountOperatorUpdateService, transactionSearchResultMapper, accountClaimService);
     }
 
     @Test

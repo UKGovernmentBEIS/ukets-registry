@@ -36,9 +36,10 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.user.UserConversionService;
 import gov.uk.ets.registry.api.user.UserDTO;
 import gov.uk.ets.registry.api.user.domain.UserWorkContact;
-import gov.uk.ets.registry.api.user.service.UserService;
+import gov.uk.ets.registry.api.user.domain.UserWorkContactRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,7 @@ public class AccountDTOFactory {
 
     private UserConversionService userConversionService;
 
-    private UserService userService;
+    private UserWorkContactRepository userWorkContactRepository;;
 
     private AuthorizedRepresentativeService authorizedRepresentativeService;
 
@@ -99,9 +100,9 @@ public class AccountDTOFactory {
                         account.getKyotoAccountType().name());
         accountDTO.setIdentifier(account.getIdentifier());
         setupTrustedAccountListRulesDTO(accountDTO, account);
-        setupAccountDetailsDTO(accountDTO, account);
+        setupAccountDetailsDTO(accountDTO, account, noUserToken);
         setupOperator(accountDTO, account);
-        setupAuthorizedRepresentatives(accountDTO, account);
+        setupAuthorizedRepresentatives(accountDTO, account, noUserToken);
         accountDTO.setBalance(account.getBalance());
         accountDTO.setUnitType(account.getUnitType());
         AccountType accountType = AccountType.get(account.getRegistryAccountType(), account.getKyotoAccountType());
@@ -119,18 +120,26 @@ public class AccountDTOFactory {
         accountDTO.setAddedARs(arTransitions.getOrDefault(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST, 0));
         accountDTO.setRemovedARs(arTransitions.getOrDefault(RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST, 0));
         setUpAccountContacts(accountDTO, account);
+        accountDTO.setAccountClaimCode(account.getAccountClaimCode());
 
         return accountDTO;
     }
 
-    private void setUpAccountContacts(AccountDTO accountDTO, Account account) {
-
-        final List<MetsAccountContact> metsAccountContacts = accountContactRepository.findByAccountIdentifier(account.getIdentifier());
-        accountDTO.setMetsContacts(metsAccountContacts.stream()
+    public List<MetsContactDTO> createMetsContacts(Long accountIdentifier) {
+        final List<MetsAccountContact> metsAccountContacts =
+                accountContactRepository.findByAccountIdentifier(accountIdentifier);
+        return metsAccountContacts.stream()
                 .map(this::createMetsContact)
-                .toList());
-        accountDTO.setRegistryContacts(createRegistryContacts(accountDTO));
+                .toList();
+    }
 
+    public MetsContactDTO createMetsContactDTO(MetsAccountContact contact) {
+        return createMetsContact(contact);
+    }
+
+    private void setUpAccountContacts(AccountDTO accountDTO, Account account) {
+        accountDTO.setMetsContacts(createMetsContacts(account.getIdentifier()));
+        accountDTO.setRegistryContacts(createRegistryContacts(accountDTO));
     }
 
     private List<RegistryContactDTO> createRegistryContacts(AccountDTO accountDTO) {
@@ -157,7 +166,7 @@ public class AccountDTOFactory {
                 .email(contact.getEmailAddress().getEmailAddress())
                 .phoneNumber(contact.getPhoneNumber())
                 .contactType(type)
-              //  .invitedOn() //TODO fill invited on when invitation is implemented
+                .invitedOn(contact.getInvitedOn())
                 .build();
     }
 
@@ -198,7 +207,7 @@ public class AccountDTOFactory {
         accountDTO.setTrustedAccountListRules(trustedAccountListRulesDTO);
     }
 
-    private void setupAccountDetailsDTO(AccountDTO accountDTO, Account account) {
+    private void setupAccountDetailsDTO(AccountDTO accountDTO, Account account, boolean noUserToken) {
         AccountDetailsDTO accountDetailsDTO = new AccountDetailsDTO();
         accountDetailsDTO.setName(account.getAccountName());
         accountDetailsDTO.setPublicAccountIdentifier(account.getPublicIdentifier());
@@ -208,7 +217,7 @@ public class AccountDTOFactory {
         accountDetailsDTO.setOpeningDate(account.getOpeningDate());
         accountDetailsDTO.setClosingDate(account.getClosingDate());
         accountDetailsDTO.setClosureReason(account.getClosureReason());
-        if (authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN)) {
+        if (!noUserToken && authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN)) {
             accountDetailsDTO.setExcludedFromBilling(account.isExcludedFromBilling());
             accountDetailsDTO.setExcludedFromBillingRemarks(account.getExcludedFromBillingRemarks());
         }
@@ -268,7 +277,7 @@ public class AccountDTOFactory {
         }
     }
 
-    private void setupAuthorizedRepresentatives(AccountDTO accountDTO, Account account) {
+    private void setupAuthorizedRepresentatives(AccountDTO accountDTO, Account account, boolean noUserToken) {
         List<AuthorisedRepresentativeDTO> authorisedRepresentatives = new ArrayList<>();
 
         Map<String, AccountAccess> userAccess = accountAccessRepository.finARsByAccount_Identifier(account.getIdentifier())
@@ -276,7 +285,7 @@ public class AccountDTOFactory {
                 .collect(Collectors.toMap(accountAccess -> accountAccess.getUser().getUrid(), Function.identity()));
 
         if (!userAccess.isEmpty()) {
-            userService.getUserWorkContacts(userAccess.keySet())
+            userWorkContactRepository.fetch(userAccess.keySet(), noUserToken)
                     .forEach(userWorkContact -> {
                         AccountAccess accountAccess = userAccess.get(userWorkContact.getUrid());
                         AuthorisedRepresentativeDTO ar = new AuthorisedRepresentativeDTO();

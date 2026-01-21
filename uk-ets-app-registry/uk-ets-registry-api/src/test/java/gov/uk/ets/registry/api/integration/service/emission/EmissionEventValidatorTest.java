@@ -56,7 +56,7 @@ class EmissionEventValidatorTest {
         event.setReportingYear(Year.of(year));
 
         SubmitEmissionsValidityInfo info =
-            new SubmitEmissionsValidityInfo(123456L, AccountStatus.OPEN, ComplianceStatus.C, 2021, Year.now().getValue());
+            new SubmitEmissionsValidityInfo(123456L, AccountStatus.OPEN, ComplianceStatus.C, 2021, null);
         List<SubmitEmissionsValidityInfo> existingCompliantEntities = List.of(info);
 
         Mockito.when(compliantEntityRepository.findAllIdentifiersFetchAccountStatusAndYears()).thenReturn(existingCompliantEntities);
@@ -246,27 +246,6 @@ class EmissionEventValidatorTest {
             Arguments.of(AccountStatus.TRANSFER_PENDING, IntegrationEventError.ERROR_0806),
             Arguments.of(AccountStatus.CLOSURE_PENDING, IntegrationEventError.ERROR_0807)
         );
-    }
-
-    @Test
-    void testValidateEventWithReportingYearSameAsCurrent() {
-        // given
-        AccountEmissionsUpdateEvent event = new AccountEmissionsUpdateEvent();
-        event.setRegistryId(123456L);
-        event.setReportableEmissions(123L);
-        event.setReportingYear(Year.now());
-
-        SubmitEmissionsValidityInfo info =
-            new SubmitEmissionsValidityInfo(123456L, AccountStatus.OPEN, ComplianceStatus.C, 2021, null);
-        List<SubmitEmissionsValidityInfo> existingCompliantEntities = List.of(info);
-
-        Mockito.when(compliantEntityRepository.findAllIdentifiersFetchAccountStatusAndYears()).thenReturn(existingCompliantEntities);
-
-        // when
-        List<IntegrationEventError> result = validator.validate(event);
-
-        // then
-        assertThat(result).hasSize(1).contains(IntegrationEventError.ERROR_0812);
     }
 
     @Test

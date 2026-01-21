@@ -37,7 +37,11 @@
               "node_modules/quill/dist/quill.snow.css"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["src/sass/include", "."]
+              "includePaths": [
+                "node_modules/govuk-frontend/dist/govuk/",
+                "src/sass/include",
+                "."
+              ]
             },
             "allowedCommonJsDependencies": [
               "core-js",

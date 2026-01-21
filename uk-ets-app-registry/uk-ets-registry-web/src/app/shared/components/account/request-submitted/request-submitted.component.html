@@ -25,7 +25,10 @@
     </div>
   </div>
 </div>
-<div class="govuk-grid-row" *ngIf="submittedIdentifier">
+<div
+  class="govuk-grid-row"
+  *ngIf="submittedIdentifier && !customWhatHappensNext"
+>
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-m">What happens next</h1>
     <p class="govuk-body">

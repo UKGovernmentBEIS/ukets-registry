@@ -1,0 +1,45 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-form-group">
+      <div
+        appScreenReaderPageAnnounce
+        [pageTitle]="'Enter the information needed to claim an account'"
+      ></div>
+      <div class="govuk-fieldset">
+        <div class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <h1 class="govuk-fieldset__heading">
+            Enter the information needed to claim an account
+          </h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <fieldset class="govuk-fieldset">
+        <app-form-control-text
+          class="govuk-input--width-10"
+          label="Claim account code"
+          [validationErrorMessage]="validationErrorMessage.accountClaimCode"
+          controlName="accountClaimCode"
+          autocomplete="off"
+        />
+        <app-form-control-text
+          class="govuk-input--width-10"
+          label="METS Registry ID"
+          [validationErrorMessage]="validationErrorMessage.registryId"
+          controlName="registryId"
+          autocomplete="off"
+        />
+      </fieldset>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="submit"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,19 +1,16 @@
 package gov.uk.ets.registry.api.accountholder.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
+import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountConversionService;
+import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderFileDTO;
+import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderTypeAheadSearchResultDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
@@ -24,10 +21,6 @@ import gov.uk.ets.registry.api.file.upload.types.FileStatus;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.user.domain.User;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +28,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AuthorizationServiceException;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static gov.uk.ets.registry.api.authz.Scope.SCOPE_ACTION_ANY_ADMIN;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class AccountHolderServiceTest {
 
@@ -179,6 +186,97 @@ class AccountHolderServiceTest {
         assertTrue(actual);
     }
 
+    @Test
+    @DisplayName("getAccountHolders: admin user – returns all holders of type")
+    void test_getAccountHolders_admin() {
+        AccountHolderType type = AccountHolderType.ORGANISATION;
+        AccountAccessState accessState = AccountAccessState.ACTIVE;
+
+        List<AccountHolderDTO> expected = List.of(new AccountHolderDTO());
+
+        when(authorizationService.hasScopePermission(SCOPE_ACTION_ANY_ADMIN)).thenReturn(true);
+        when(holderRepository.findAccountHoldersByType(type)).thenReturn(expected);
+
+        List<AccountHolderDTO> actual = accountHolderService.getAccountHolders(type, accessState);
+
+        assertEquals(1, actual.size());
+        verify(holderRepository).findAccountHoldersByType(type);
+        verify(holderRepository, Mockito.never())
+                .findAccountHoldersByUserTypeAndState(Mockito.anyString(), Mockito.any(AccountHolderType.class), Mockito.any(AccountAccessState.class));
+    }
+
+    @Test
+    @DisplayName("getAccountHolders: non-admin user – returns only holders connected to user")
+    void test_getAccountHolders_nonAdmin() {
+        AccountHolderType type = AccountHolderType.ORGANISATION;
+        AccountAccessState accessState = AccountAccessState.ACTIVE;
+
+        String urid = "UK123456789";
+        List<AccountHolderDTO> expected = List.of(new AccountHolderDTO());
+
+        when(authorizationService.hasScopePermission(SCOPE_ACTION_ANY_ADMIN)).thenReturn(false);
+        when(authorizationService.getUrid()).thenReturn(urid);
+        when(holderRepository.findAccountHoldersByUserTypeAndState(urid, type, accessState))
+                .thenReturn(expected);
+
+        List<AccountHolderDTO> actual = accountHolderService.getAccountHolders(type, accessState);
+
+        assertEquals(1, actual.size());
+        verify(holderRepository).findAccountHoldersByUserTypeAndState(urid, type, accessState);
+        verify(holderRepository, Mockito.never()).findAccountHoldersByType(Mockito.any(AccountHolderType.class));
+    }
+
+    @Test
+    @DisplayName("getAllAccountHoldersByNameAndIdentifier: admin user – merges by name and identifier")
+    void test_getAllAccountHoldersByNameAndIdentifier_admin() {
+        String input = "abc";
+        AccountHolderType type = AccountHolderType.ORGANISATION;
+
+        when(authorizationService.hasScopePermission(SCOPE_ACTION_ANY_ADMIN)).thenReturn(true);
+
+        List<AccountHolderTypeAheadSearchResultDTO> byName =
+                List.of(new AccountHolderTypeAheadSearchResultDTO(1L, "Name1", "fname", "lname", type));
+        List<AccountHolderTypeAheadSearchResultDTO> byIdentifier =
+                List.of(new AccountHolderTypeAheadSearchResultDTO(2L, "Name2", "fname2", "lname2", type));
+
+        when(holderRepository.getAccountHolders(input.toUpperCase(), type)).thenReturn(byName);
+        when(holderRepository.getAccountHolders(input, Set.of(type))).thenReturn(byIdentifier);
+
+        List<AccountHolderTypeAheadSearchResultDTO> actual =
+                accountHolderService.getAllAccountHoldersByNameAndIdentifier(input, type);
+
+        assertEquals(2, actual.size());
+        verify(holderRepository).getAccountHolders(input.toUpperCase(), type);
+        verify(holderRepository).getAccountHolders(input, Set.of(type));
+    }
+
+    @Test
+    @DisplayName("getAllAccountHoldersByNameAndIdentifier: non-admin user – filters by user access")
+    void test_getAllAccountHoldersByNameAndIdentifier_nonAdmin() {
+        String input = "abc";
+        var type = AccountHolderType.ORGANISATION;
+        String urid = "user123";
+
+        when(authorizationService.hasScopePermission(SCOPE_ACTION_ANY_ADMIN)).thenReturn(false);
+        when(authorizationService.getUrid()).thenReturn(urid);
+
+        List<AccountHolderTypeAheadSearchResultDTO> byName =
+                List.of(new AccountHolderTypeAheadSearchResultDTO(1L, "UserName1", "fname", "lname", type));
+        List<AccountHolderTypeAheadSearchResultDTO> byIdentifier =
+                List.of(new AccountHolderTypeAheadSearchResultDTO(2L, "UserName2", "fname2", "lname2", type));
+
+        when(holderRepository.findByNameAndTypeAndUser(input, type, urid, AccountAccessState.ACTIVE))
+                .thenReturn(byName);
+        when(holderRepository.findByIdentifierAndTypeAndUser(input, Set.of(type), urid, AccountAccessState.ACTIVE))
+                .thenReturn(byIdentifier);
+
+        List<AccountHolderTypeAheadSearchResultDTO> actual =
+                accountHolderService.getAllAccountHoldersByNameAndIdentifier(input, type);
+
+        assertEquals(2, actual.size());
+        verify(holderRepository).findByNameAndTypeAndUser(input, type, urid, AccountAccessState.ACTIVE);
+        verify(holderRepository).findByIdentifierAndTypeAndUser(input, Set.of(type), urid, AccountAccessState.ACTIVE);
+    }
     private AccountHolder createAccountHolder(Long accountHolderIdentifier, List<Account> accounts) {
         AccountHolder accountHolder = new AccountHolder();
         accountHolder.setId(1L);

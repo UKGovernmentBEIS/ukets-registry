@@ -1,7 +1,6 @@
 package gov.uk.ets.registry.api.notification.integration;
 
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
-import gov.uk.ets.registry.api.notification.EmailNotification;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 import java.util.Date;
 import java.util.Set;
@@ -15,16 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccountOpeningSuccessOutcomeNotification extends EmailNotification {
-
-    private String integrationPoint;
-    private String correlationId;
-    private String accountFullIdentifier;
-    private String emitterId;
-    private String accountName;
-    private String accountType;
-    private Date date;
-    private SourceSystem sourceSystem;
+public class AccountOpeningSuccessOutcomeNotification extends AccountModificationOutcomeNotification {
 
     @Builder
     public AccountOpeningSuccessOutcomeNotification(Set<String> recipients,
@@ -36,14 +26,15 @@ public class AccountOpeningSuccessOutcomeNotification extends EmailNotification 
                                                     String accountType,
                                                     Date date,
                                                     SourceSystem sourceSystem) {
-        super(recipients, GroupNotificationType.INTEGRATION_ACCOUNT_OPENING_SUCCESS_OUTCOME, null, null, null);
-        this.integrationPoint = integrationPoint;
-        this.correlationId = correlationId;
-        this.accountFullIdentifier = accountFullIdentifier;
-        this.emitterId = emitterId;
-        this.accountName = accountName;
-        this.accountType = accountType;
-        this.date = date;
-        this.sourceSystem = sourceSystem;
+        super(recipients,
+                GroupNotificationType.INTEGRATION_ACCOUNT_OPENING_SUCCESS_OUTCOME,
+                integrationPoint,
+                correlationId,
+                accountFullIdentifier,
+                emitterId,
+                accountName,
+                accountType,
+                date,
+                sourceSystem);
     }
 }

@@ -81,7 +81,7 @@ class OperatorEventServiceTest {
         operatorUpdateEvent.setOperatorId(operator.getIdentifier());
         operatorUpdateEvent.setEmitterId(operator.getEmitterId());
         operatorUpdateEvent.setRegulator(operator.getRegulator().name());
-        Mockito.verify(integrationPointDisabledNotificationProducer, Mockito.times(1)).sendNotifications(operatorUpdateEvent, OperationEvent.SET_OPERATOR_ID, correlationId ,SourceSystem.METSIA);
+        Mockito.verify(integrationPointDisabledNotificationProducer, Mockito.times(1)).sendNotifications(operatorUpdateEvent, OperationEvent.SET_OPERATOR_ID, correlationId ,SourceSystem.METSIA_INSTALLATION);
     }
     
     @Test
@@ -104,7 +104,7 @@ class OperatorEventServiceTest {
         operatorUpdateEvent.setOperatorId(operator.getIdentifier());
         operatorUpdateEvent.setEmitterId(operator.getEmitterId());
         operatorUpdateEvent.setRegulator(operator.getRegulator().name());
-        Mockito.verify(integrationPointDisabledNotificationProducer, Mockito.times(1)).sendNotifications(operatorUpdateEvent, OperationEvent.SET_OPERATOR_ID, correlationId ,SourceSystem.METSIA);
+        Mockito.verify(integrationPointDisabledNotificationProducer, Mockito.times(1)).sendNotifications(operatorUpdateEvent, OperationEvent.SET_OPERATOR_ID, correlationId ,SourceSystem.METSIA_AVIATION);
     }
     
     @Test

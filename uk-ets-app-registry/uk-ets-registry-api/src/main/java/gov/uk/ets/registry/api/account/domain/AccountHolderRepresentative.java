@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /** Represents a legal representative. */
@@ -61,4 +62,7 @@ public class AccountHolderRepresentative implements Serializable {
     /** The contact. */
     @ManyToOne(fetch = FetchType.LAZY)
     private Contact contact;
+
+    @Column(name = "invited_date")
+    private LocalDateTime invitedOn;
 }

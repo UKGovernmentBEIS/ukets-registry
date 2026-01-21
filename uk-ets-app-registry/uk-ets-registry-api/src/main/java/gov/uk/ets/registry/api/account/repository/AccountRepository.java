@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.account.repository;
 
 import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.common.model.types.Status;
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArAccountDTO;
@@ -202,6 +203,15 @@ public interface AccountRepository
     @Query(value = "select a from Account a  join fetch a.compliantEntity c where c.identifier = ?1")
     Optional<Account> findByCompliantEntityIdentifier(Long identifier);
 
+    @Query("""
+        select a from Account a
+        join fetch a.compliantEntity c
+        left join fetch a.metsAccountContacts contacts
+        left join fetch contacts.contactTypes
+        where c.identifier = :identifier
+    """)
+    Optional<Account> findByCompliantEntityIdentifierWithContacts(Long identifier);
+
     @Query(value = "select a from Account a  join fetch a.compliantEntity c where a.identifier = ?1")
     Optional<Account> findByAccountIdentifierWithCompliantEntity(Long identifier);
 
@@ -272,4 +282,110 @@ public interface AccountRepository
     boolean existsByPublicIdentifier(String ukPid);
 
     List<Account> findByPublicIdentifierIsNull();
+
+    @Query("""
+    SELECT (COUNT(a) > 0)
+    FROM Account a
+    LEFT JOIN TREAT(a.compliantEntity AS MaritimeOperator) c
+    WHERE c.identifier = :registryId
+      AND (
+            c.imo = :imo
+            OR NOT EXISTS (
+                SELECT 1
+                FROM MaritimeOperator ce
+                WHERE ce.imo = :imo
+                  AND ce <> c
+            )
+          )
+    """)
+    boolean isImoAvailableForAccount(
+            @Param("registryId") Long registryId,
+            @Param("imo") String imo
+    );
+
+    @Query("""
+    SELECT (COUNT(a) > 0)
+    FROM Account a
+    LEFT JOIN TREAT(a.compliantEntity AS MaritimeOperator) c
+    WHERE c.identifier = :registryId
+      AND (
+            c.maritimeMonitoringPlanIdentifier = :monitoringPlanId
+            OR NOT EXISTS (
+                SELECT 1
+                FROM MaritimeOperator ce
+                WHERE ce.maritimeMonitoringPlanIdentifier = :monitoringPlanId
+                  AND ce <> c
+            )
+          )
+    """)
+    boolean isMaritimeMonitoringPlanAvailableForAccount(
+            @Param("registryId") Long registryId,
+            @Param("monitoringPlanId") String monitoringPlanId
+    );
+
+    @Query("""
+    SELECT (COUNT(a) > 0)
+    FROM Account a
+    LEFT JOIN TREAT(a.compliantEntity AS AircraftOperator) c
+    WHERE c.identifier = :registryId
+      AND (
+            c.monitoringPlanIdentifier = :monitoringPlanId
+            OR NOT EXISTS (
+                SELECT 1
+                FROM AircraftOperator ce
+                WHERE ce.monitoringPlanIdentifier = :monitoringPlanId
+                  AND ce <> c
+            )
+          )
+    """)
+    boolean isMonitoringPlanAvailableForAccount(
+            @Param("registryId") Long registryId,
+            @Param("monitoringPlanId") String monitoringPlanId
+    );
+
+    @Query("""
+        SELECT (COUNT(a) > 0)
+        FROM Account a
+        JOIN Installation c ON c = a.compliantEntity
+        WHERE c.identifier = :installationId
+          AND (
+                c.permitIdentifier = :permitId
+                OR NOT EXISTS (
+                    SELECT 1
+                    FROM Installation ce
+                    WHERE ce.permitIdentifier = :permitId
+                      AND ce <> c
+                )
+              )
+        """)
+    boolean isPermitAvailableForAccount(
+            @Param("installationId") Long installationId,
+            @Param("permitId") String permitId
+    );
+
+    @Query("""
+        SELECT ah.type
+        FROM Account a
+        JOIN a.accountHolder ah
+        WHERE a.identifier = :registryId
+    """)
+    AccountHolderType findAccountHolderTypeByAccountId(@Param("registryId") Long registryId);
+
+    /**
+     * Retrieves an account based on its operator identifier(Registry Id) and Account claim code .
+     *
+     * @param operatorIdentifier the operator identifier of the account
+     * @param accountClaimCode the account claim code
+     * @return an account.
+     */
+    @Query(value =
+            "SELECT a " +
+                    "FROM Account a " +
+                    "JOIN FETCH a.compliantEntity c " +
+                    "WHERE c.identifier = :operatorIdentifier " +
+                    "AND a.accountClaimCode = :accountClaimCode")
+    Optional<Account> findByCompliantEntityIdentifierAndAccountClaimCode(@Param("operatorIdentifier") Long operatorIdentifier,
+                                @Param("accountClaimCode") String accountClaimCode);
+
+    List<Account> findByAccountClaimCodeIsNull();
 }

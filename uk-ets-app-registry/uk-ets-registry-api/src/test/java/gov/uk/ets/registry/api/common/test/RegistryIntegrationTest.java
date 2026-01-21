@@ -42,9 +42,15 @@ import org.springframework.test.context.TestPropertySource;
     "maritime-account-created-response-topic",
     "maritime-account-created-request-topic-dlt",
     "maritime-set-operator-request-topic",
-    "maritime-set-operator-response-topic-dlt"},
+    "installation-registry-account-updated-response-topic",
+    "installation-registry-account-updated-request-topic",
+    "maritime-set-operator-response-topic-dlt",
+    "registry-aviation-exemption-response-topic",
+    "aviation-registry-exemption-request-topic-dlt"
+},
     brokerPropertiesLocation = "classpath:integration-test-application.properties",
     brokerProperties = "auto.create.topics.enable=true",
+    partitions = 3,
     count = 3,
     ports = {0, 0, 0}
 )

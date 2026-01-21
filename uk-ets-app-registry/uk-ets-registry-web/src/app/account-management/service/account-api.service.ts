@@ -17,6 +17,8 @@ import {
 } from '../account-list/account-list.model';
 import { Account } from '@shared/model/account/account';
 import {
+  AccountClaimDTO,
+  AccountContactSendInvitationDTO,
   AccountDetails,
   AccountHoldingsResult,
   OperatorType,
@@ -229,5 +231,25 @@ export class AccountApiService {
       sortField: 'createdOn',
     };
     return this.taskService.search(criteria, pageParams, sortParams);
+  }
+
+  sendInvitationToAccountContacts(
+    identifier: number | string,
+    sendInvitationDTO: AccountContactSendInvitationDTO
+  ): Observable<string> {
+    const params = new HttpParams().set('identifier', identifier.toString());
+
+    return this.http.post(
+      `${this.ukEtsRegistryApiBaseUrl}/accounts.send.invitation`,
+      sendInvitationDTO,
+      { params, responseType: 'text' }
+    );
+  }
+
+  claimAccount(accountClaimDTO: AccountClaimDTO): Observable<string> {
+    return this.http.post<string>(
+      `${this.ukEtsRegistryApiBaseUrl}/accounts.claim`,
+      accountClaimDTO
+    );
   }
 }

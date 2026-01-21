@@ -5,6 +5,7 @@ import gov.uk.ets.registry.api.common.mail.MailConfiguration;
 import gov.uk.ets.registry.api.file.upload.allocationtable.notification.UploadAllocationTableEmailNotification;
 import gov.uk.ets.registry.api.notification.*;
 import gov.uk.ets.registry.api.notification.integration.AccountOpeningSuccessOutcomeNotification;
+import gov.uk.ets.registry.api.notification.integration.AccountUpdatingSuccessOutcomeNotification;
 import gov.uk.ets.registry.api.notification.integration.IntegrationDisabledNotification;
 import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotification;
 import gov.uk.ets.registry.api.user.profile.domain.EmergencyOtpChangeRequestedNotification;
@@ -21,6 +22,9 @@ import gov.uk.ets.registry.usernotifications.GroupNotification;
  * Selects the correct email generator.
  */
 public class EmailGeneratorSelector {
+
+    private static final String CREATE_ACCOUNT_IP_EMAIL_TEMPLATE = "integration-account-opening.ftl";;
+    private static final String UPDATE_ACCOUNT_IP_EMAIL_TEMPLATE = "user-details-update-integration-point.ftl";;
 
     /**
      * Private constructor.
@@ -171,17 +175,25 @@ public class EmailGeneratorSelector {
                 return new IntegrationErrorOutcomeEmailGenerator(notificationProperties.getIntegrationErrorOutcome(),
                     (IntegrationErrorOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             case INTEGRATION_ACCOUNT_OPENING_SUCCESS_OUTCOME:
-                return new IntegrationAccountOpeningSuccessOutcomeEmailGenerator(notificationProperties.getIntegrationAccountOpening(),
-                    (AccountOpeningSuccessOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+                return new IntegrationAccountModificationEmailGenerator(notificationProperties.getIntegrationAccountOpening(),
+                        (AccountOpeningSuccessOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration,
+                        CREATE_ACCOUNT_IP_EMAIL_TEMPLATE);
+            case INTEGRATION_ACCOUNT_UPDATING_SUCCESS_OUTCOME:
+                return new IntegrationAccountModificationEmailGenerator(notificationProperties.getIntegrationAccountUpdating(),
+                        (AccountUpdatingSuccessOutcomeNotification) groupNotification, freemarkerConfiguration, mailConfiguration,
+                        UPDATE_ACCOUNT_IP_EMAIL_TEMPLATE);
             case INTEGRATION_POINT_DISABLED:
                 return new IntegrationDisabledEmailGenerator(
-                    (IntegrationDisabledNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+                        (IntegrationDisabledNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             case PAYMENT_REQUEST:
                 return new PaymentRequestEmailGenerator(notificationProperties.getRequestPayment(),
                     (PaymentRequestGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration); 
             case PAYMENT_REMINDER:
                 return new PaymentReminderEmailGenerator(
-                    (PaymentReminderNotification) groupNotification, freemarkerConfiguration, mailConfiguration);                 
+                    (PaymentReminderNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case SEND_INVITATION_TO_CONTACTS:
+                return new AccountSendInvitationEmailGenerator(notificationProperties,
+                        (AccountSendInvitationGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             default:
                 return new DoNothingEmailGenerator();
         }

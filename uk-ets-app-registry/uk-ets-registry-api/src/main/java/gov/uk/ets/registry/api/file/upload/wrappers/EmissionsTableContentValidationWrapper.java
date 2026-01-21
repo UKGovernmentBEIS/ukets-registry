@@ -247,19 +247,6 @@ public class EmissionsTableContentValidationWrapper {
 			int firstYearVerifiedEmissions = existingCompliantEntities
 			        .get(identifier).getStartYear();
 
-			if (emissionsYear == this.currentYear
-			        && !isLastEmissionYearEqualCurrentYear(
-			                lastYearVerifiedEmissionsOptional)) {
-				fileContentExceptions.add(EmissionsUploadBusinessError.builder()
-				        .error(EmissionsTableError.ERROR_5012).rowNumber(rowNum)
-				        .columnNumber(yearColumnIndex)
-				        .operatorId(identifier.toString())
-				        .errorMessage(EmissionsTableError.ERROR_5012
-				                .getMessageTemplate())
-				        .build());
-				return;
-			}
-
 			if (emissionsYear < firstYearVerifiedEmissions
 			        || lastYearVerifiedEmissionsOptional.isPresent()
 			                && emissionsYear > lastYearVerifiedEmissionsOptional

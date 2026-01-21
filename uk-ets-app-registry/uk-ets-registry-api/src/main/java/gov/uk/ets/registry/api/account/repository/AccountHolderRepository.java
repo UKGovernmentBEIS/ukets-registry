@@ -44,6 +44,28 @@ public interface AccountHolderRepository extends JpaRepository<AccountHolder, Lo
     List<AccountHolderTypeAheadSearchResultDTO> getAccountHolders(String nameUpperCased, AccountHolderType type);
 
     /**
+     * Searches for account holders based on their name.
+     *
+     * @param nameUpperCased The name in upper case.
+     * @param type           The account holder type.
+     * @param urid           The urid of the user.
+     * @param state          The  of the user.
+     * @return some account holders.
+     */
+    @Query(value =
+            "select new gov.uk.ets.registry.api.accountholder.web.model.AccountHolderTypeAheadSearchResultDTO(hol.identifier, hol.name, hol.firstName, hol.lastName, hol.type)" +
+                    "  from AccountHolder hol " +
+                    " join hol.accounts acc " +
+                    " join acc.accountAccesses access " +
+                    " join access.user user " +
+                    " where (upper(hol.name) like %?1% or upper(concat(hol.firstName, ' ', hol.lastName)) like %?1%)" +
+                    "   and hol.type = ?2 " +
+                    "   and user.urid = ?3 " +
+                    "   and access.state = ?4 " +
+                    "   and access.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED")
+    List<AccountHolderTypeAheadSearchResultDTO> findByNameAndTypeAndUser(String nameUpperCased, AccountHolderType type, String urid, AccountAccessState state);
+
+    /**
      * Searches for account holders based on their identifier.
      *
      * @param identifier The identifier as a string.
@@ -57,6 +79,30 @@ public interface AccountHolderRepository extends JpaRepository<AccountHolder, Lo
             " order by identifier")
     List<AccountHolderTypeAheadSearchResultDTO> getAccountHolders(String identifier,
                                                                   Set<AccountHolderType> includeTypes);
+
+    /**
+     * Searches for account holders based on their identifier.
+     *
+     * @param nameUpperCased The name in upper case.
+     * @param includeTypes   Account holder types
+     * @param urid           The urid of the user.
+     * @param state The access state.
+     * @return some account holders.
+     */
+    @Query(value =
+            "select new gov.uk.ets.registry.api.accountholder.web.model.AccountHolderTypeAheadSearchResultDTO(hol.identifier, hol.name, hol.firstName, hol.lastName, hol.type)" +
+                    "  from AccountHolder hol " +
+                    " join hol.accounts acc " +
+                    " join acc.accountAccesses access " +
+                    " join access.user user " +
+                    " where cast(hol.identifier as string) like ?1%" +
+                    "   and hol.type IN ?2 " +
+                    "   and user.urid = ?3 " +
+                    "   and access.state = ?4 " +
+                    "   and access.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED " +
+                    "   order by hol.identifier")
+    List<AccountHolderTypeAheadSearchResultDTO> findByIdentifierAndTypeAndUser(String identifier, Set<AccountHolderType> includeTypes,
+                                                                               String urid, AccountAccessState state);
 
     /**
      * Searches for account holders connected to the provided user.
@@ -79,6 +125,34 @@ public interface AccountHolderRepository extends JpaRepository<AccountHolder, Lo
             " order by hol.name")
     List<AccountHolderDTO> getAccountHolders(String urid, AccountHolderType holderType,
                                              AccountAccessState accessState);
+
+    /**
+     * Searches for account holders based on their identifier.
+     *
+     * @param urid The urid of the user.
+     * @param holderType   Account holder type
+     * @param accessState The access state.
+     * @return some account holders.
+     */
+    @Query(value =
+            "select distinct new gov.uk.ets.registry.api.account.shared.AccountHolderDTO(holder.identifier, holder.name, holder.type, holder.firstName, holder.lastName)" +
+                    "  from AccountHolder holder" +
+                    "  join holder.accounts acc " +
+                    "  join acc.accountAccesses access " +
+                    "  join access.user user " +
+                    " where user.urid = :urid " +
+                    "   and holder.type = :holderType" +
+                    "   and access.state = :accessState " +
+                    " and access.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED " +
+                    " order by holder.name")
+    List<AccountHolderDTO> findAccountHoldersByUserTypeAndState(String urid, AccountHolderType holderType,
+                                             AccountAccessState accessState);
+
+    @Query(value =
+            "select distinct new gov.uk.ets.registry.api.account.shared.AccountHolderDTO(holder.identifier, holder.name, holder.type, holder.firstName, holder.lastName)" +
+                    "  from AccountHolder holder " +
+                    "  where holder.type = ?1")
+    List<AccountHolderDTO> findAccountHoldersByType(AccountHolderType type);
 
     /**
      * Retrieves an account holder by its business identifier.

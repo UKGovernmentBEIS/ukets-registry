@@ -14,7 +14,6 @@ import { ReturnExcessAllocationType } from '@shared/model/allocation';
 @Component({
   selector: 'app-allocation-table',
   templateUrl: './allocation-table.component.html',
-  styleUrls: ['./allocation-table.component.scss'],
 })
 export class AllocationTableComponent {
   @Input() allocation: AggregatedAllocation;
@@ -25,7 +24,10 @@ export class AllocationTableComponent {
   allocationStatusLabels = ALLOCATION_STATUS_LABELS;
   allocationStatusAllowed = AllocationStatus.ALLOWED;
 
-  constructor(private store: Store, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private store: Store,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   goToReturnExcessTransaction(annual: AnnualAllocation) {
     const allocationType = this.allocationType as ReturnExcessAllocationType;

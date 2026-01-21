@@ -35,7 +35,12 @@ import {
   canActivateChangeAccountHolder,
   clearChangeAccountHolderRequestGuard,
   IsAccountHolderOrphanResolver,
-} from '@registry-web/account-management/account/change-account-holder-wizard/guards-and-resolvers';
+} from '@change-account-holder-wizard/guards-and-resolvers';
+import { SEND_INVITATION_BASE_PATH } from '@send-invitation-wizard/send-invitation-wizard.helpers';
+import {
+  canActivateSendInvitation,
+  clearSendInvitationGuard,
+} from '@send-invitation-wizard/send-invitation-wizard.guards';
 
 const routes: Routes = [
   {
@@ -135,6 +140,15 @@ const routes: Routes = [
           import(
             './change-account-holder-wizard/change-account-holder-wizard.module'
           ).then((m) => m.ChangeAccountHolderWizardModule),
+      },
+      {
+        path: ':accountId/' + SEND_INVITATION_BASE_PATH,
+        canDeactivate: [clearSendInvitationGuard],
+        canActivate: [canActivateSendInvitation],
+        loadChildren: () =>
+          import('./send-invitation-wizard/send-invitation-wizard.module').then(
+            (m) => m.SendInvitationWizardModule
+          ),
       },
       {
         path: ':accountId/tal-transaction-rules',

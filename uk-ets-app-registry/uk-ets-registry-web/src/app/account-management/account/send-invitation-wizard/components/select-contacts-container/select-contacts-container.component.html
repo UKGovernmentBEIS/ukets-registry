@@ -1,0 +1,89 @@
+<div
+  appScreenReaderPageAnnounce
+  pageTitle="Select who will receive the invitation"
+></div>
+<h1 class="govuk-heading-xl">
+  <span class="govuk-caption-xl">Send invitation</span>
+  Select who will receive the invitation
+</h1>
+
+<ng-template #tableTpl let-column="column" let-row="row">
+  @switch (column.field) {
+    @case ('phoneNumber') {
+      @if (row[column.field].countryCode1 && row[column.field].phoneNumber1) {
+        {{ row[column.field].countryCode1 }}
+        {{ row[column.field].phoneNumber1
+        }}<ng-container
+          *ngIf="
+            row[column.field].countryCode2 && row[column.field].phoneNumber2
+          "
+          >,<br
+        /></ng-container>
+      }
+      @if (row[column.field].countryCode2 && row[column.field].phoneNumber2) {
+        {{ row[column.field].countryCode2 }}
+        {{ row[column.field].phoneNumber2 }}
+      }
+    }
+
+    @case ('operatorType') {
+      {{ row[column.field] | metsContactOperatorType }}
+    }
+
+    @case ('contactTypes') {
+      @for (type of row[column.field]; track type; let isLast = $last) {
+        {{ type | metsContactType }}{{ isLast ? '' : ', ' }}
+      }
+    }
+
+    @case ('contactType') {
+      {{ row[column.field] | registryContactType }}
+    }
+
+    @case ('invitedOn') {
+      {{ row[column.field] | gdsDateTimeShort }}
+    }
+
+    @default {
+      {{ row[column.field] }}
+    }
+  }
+</ng-template>
+
+@if (metsContacts().length) {
+  <app-multi-select-table
+    class="govuk-!-margin-bottom-7"
+    caption="Mets contacts"
+    [columns]="metsContactsColumns"
+    [data]="metsContacts()"
+    (selectionChanged)="onMetsContactsSelectionChanged($event)"
+  >
+    <ng-template let-column="column" let-row="row">
+      <ng-container *ngTemplateOutlet="tableTpl; context: { column, row }" />
+    </ng-template>
+  </app-multi-select-table>
+}
+
+@if (registryContacts().length) {
+  <app-multi-select-table
+    class="govuk-!-margin-bottom-7"
+    caption="Registry contacts"
+    [columns]="registryContactsColumns"
+    [data]="registryContacts()"
+    (selectionChanged)="onRegistryContactsSelectionChanged($event)"
+  >
+    <ng-template let-column="column" let-row="row">
+      <ng-container *ngTemplateOutlet="tableTpl; context: { column, row }" />
+    </ng-template>
+  </app-multi-select-table>
+}
+
+<button
+  id="submit"
+  class="govuk-button"
+  data-module="govuk-button"
+  (click)="onContinue()"
+>
+  Continue
+</button>
+<app-cancel-request-link (goToCancelScreen)="onCancel()" />

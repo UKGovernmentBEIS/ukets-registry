@@ -12,12 +12,19 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -354,6 +361,40 @@ public class AccountRepositoryTest {
         assertFalse(exists);
     }
 
+    @ParameterizedTest(name = "Finds an account by operator Id and account claim code.")
+    @EnumSource(value = AccountStatus.class, names = {"OPEN", "ALL_TRANSACTIONS_RESTRICTED", "SOME_TRANSACTIONS_RESTRICTED", "SUSPENDED_PARTIALLY", "SUSPENDED", "TRANSFER_PENDING", "CLOSURE_PENDING", "REJECTED", "PROPOSED"})
+    void findByCompliantEntityIdentifierAndAccountClaimCode(AccountStatus status){
+        // get an operator Account
+        final String emitterId = "RTUIOLKVSOIV6877";
+        final Long operatorId = 1111L;
+        final String permitId = "12345".toUpperCase();
+        final String accountClaimCode = "ACC123456789";
+
+        Installation installation = getInstallation(permitId);
+        installation.setEmitterId(emitterId);
+        Account account = getOperatorHoldingAccount(status);
+        account.setCompliantEntity(installation);
+        installation.setAccount(account);
+
+        entityManager.persist(installation);
+        entityManager.persist(account);
+
+        final Optional<Account> actual = accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(operatorId, accountClaimCode);
+        assertTrue(actual.isPresent());
+        assertEquals(account, actual.get());
+    }
+
+
+    @Test
+    void findByCompliantEntityIdentifierAndAccountClaimCode_no_result(){
+
+        final Long operatorId = 1111L;
+        final String accountClaimCode = "ACC123456789";
+
+        final Optional<Account> actual = accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(operatorId, accountClaimCode);
+        assertTrue(actual.isEmpty());
+    }
+
     private Account getOperatorHoldingAccount(AccountStatus status) {
         Account account = new Account();
         account.setAccountName("An " + status +  " Account");
@@ -369,8 +410,53 @@ public class AccountRepositoryTest {
         account.setCommitmentPeriodCode(2);
         account.setCheckDigits(44);
         account.setFullIdentifier(String.format("%s-%d-%d-%d-%d", kyotoType.getRegistryCode(), kyotoType.getKyotoCode(), account.getIdentifier(), account.getCommitmentPeriodCode(), account.getCheckDigits()));
-        
+        account.setAccountClaimCode("ACC123456789");
+
         return account;
+    }
+
+    @ParameterizedTest(name = "Finds an account by account claim code is null.")
+    @EnumSource(value = AccountStatus.class, names = {"OPEN", "ALL_TRANSACTIONS_RESTRICTED", "SOME_TRANSACTIONS_RESTRICTED", "SUSPENDED_PARTIALLY", "SUSPENDED", "TRANSFER_PENDING", "CLOSURE_PENDING", "REJECTED", "PROPOSED"})
+    void findByAccountClaimCodeIsNull_no_results(AccountStatus status){
+        // get an operator Account
+        final String emitterId = "RTUIOLKVSOIV6877";
+        final String permitId = "12345".toUpperCase();
+
+
+        Installation installation = getInstallation(permitId);
+        installation.setEmitterId(emitterId);
+        Account account = getOperatorHoldingAccount(status);
+        account.setCompliantEntity(installation);
+        installation.setAccount(account);
+
+        entityManager.persist(installation);
+        entityManager.persist(account);
+
+        final List<Account> actual = accountRepository.findByAccountClaimCodeIsNull();
+        assertTrue(actual.isEmpty());
+    }
+
+    @ParameterizedTest(name = "Finds an account by account claim code is null.")
+    @EnumSource(value = AccountStatus.class, names = {"OPEN", "ALL_TRANSACTIONS_RESTRICTED", "SOME_TRANSACTIONS_RESTRICTED", "SUSPENDED_PARTIALLY", "SUSPENDED", "TRANSFER_PENDING", "CLOSURE_PENDING", "REJECTED", "PROPOSED"})
+    void findByAccountClaimCodeIsNull(AccountStatus status){
+        // get an operator Account
+        final String emitterId = "RTUIOLKVSOIV6877";
+        final String permitId = "12345".toUpperCase();
+
+
+        Installation installation = getInstallation(permitId);
+        installation.setEmitterId(emitterId);
+        Account account = getOperatorHoldingAccount(status);
+        account.setCompliantEntity(installation);
+        account.setAccountClaimCode(null);
+        installation.setAccount(account);
+
+        entityManager.persist(installation);
+        entityManager.persist(account);
+
+        final List<Account> actual = accountRepository.findByAccountClaimCodeIsNull();
+        assertThat(actual).hasSize(1);
+        assertNull(actual.get(0).getAccountClaimCode());
     }
 
     private Installation getInstallation(String permitId) {

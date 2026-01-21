@@ -1,0 +1,49 @@
+@import '_variables';
+
+.govuk-table.annual-allocation-table {
+  .govuk-table__cell {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    vertical-align: inherit;
+  }
+
+  .govuk-table__cell,
+  .govuk-table__header {
+    &.no-border-bottom {
+      border-bottom: none !important;
+    }
+    &.cell-border-left {
+      border-left: 1px solid $govuk-border-colour;
+      padding-left: 8px;
+    }
+    &.center-align-text {
+      text-align: center;
+    }
+  }
+
+  .remaining-allocation {
+    border-width: 6px;
+    border-left-style: solid;
+    padding: 12px;
+
+    &.over-allocated {
+      background-color: $red-tint-50;
+      border-color: $red-tint-25;
+    }
+    &.under-allocated {
+      background-color: $green-tint-50;
+      border-color: $green-tint-25;
+    }
+  }
+
+  .govuk-table__cell .govuk-radios__label {
+    flex: 1;
+    align-self: stretch;
+    max-width: none;
+  }
+
+  .govuk-table__cell .govuk-button {
+    float: right;
+    margin-bottom: 0;
+  }
+}

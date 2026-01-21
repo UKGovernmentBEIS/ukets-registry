@@ -54,6 +54,9 @@
       "@change-account-holder-wizard/*": [
         "src/app/account-management/account/change-account-holder-wizard/*"
       ],
+      "@send-invitation-wizard/*": [
+        "src/app/account-management/account/send-invitation-wizard/*"
+      ],
       "@exclusion-status-update-wizard/*": [
         "src/app/account-management/account/exclusion-status-update-wizard/*"
       ],
@@ -95,7 +98,8 @@
       "@uk-password-control/*": ["src/app/uk-password-control/*"],
       "@guidance/*": ["src/app/guidance/*"],
       "@google-analytics/*": ["src/app/google-analytics/*"],
-      "@generate-logs/*": ["src/app/generate-logs/*"]
+      "@generate-logs/*": ["src/app/generate-logs/*"],
+      "@claim-account/*": ["src/app/claim-account/*"]
     },
     "useDefineForClassFields": false
   },

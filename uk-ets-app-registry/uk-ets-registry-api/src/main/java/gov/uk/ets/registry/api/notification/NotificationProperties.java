@@ -1,6 +1,6 @@
 package gov.uk.ets.registry.api.notification;
 
-import gov.uk.ets.registry.api.notification.integration.AccountOpeningSuccessOutcomeNotificationProperties;
+import gov.uk.ets.registry.api.notification.integration.AccountModificationSuccessOutcomeNotificationProperties;
 import gov.uk.ets.registry.api.notification.integration.IntegrationErrorOutcomeNotificationProperties;
 import jakarta.validation.Valid;
 import lombok.Getter;
@@ -126,9 +126,17 @@ public class NotificationProperties {
 
     @NestedConfigurationProperty
     @Valid
-    private AccountOpeningSuccessOutcomeNotificationProperties integrationAccountOpening;
+    private AccountModificationSuccessOutcomeNotificationProperties integrationAccountOpening;
+
+    @NestedConfigurationProperty
+    @Valid
+    private AccountModificationSuccessOutcomeNotificationProperties integrationAccountUpdating;
     
     @NestedConfigurationProperty
     @Valid
     private PaymentRequestGroupNotificationProperties requestPayment;
+
+    @NestedConfigurationProperty
+    @Valid
+    private AccountSendInvitationNotificationProperties sendInvitation;
 }

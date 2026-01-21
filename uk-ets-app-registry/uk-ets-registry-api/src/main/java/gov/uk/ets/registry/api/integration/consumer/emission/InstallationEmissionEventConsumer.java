@@ -42,7 +42,7 @@ public class InstallationEmissionEventConsumer {
     @KafkaHandler
     @Transactional
     public void processEmissionEvent(AccountEmissionsUpdateEvent event, @Headers Map<String, Object> headers) {
-        List<IntegrationEventError> errors = emissionEventService.process(event, headers, SourceSystem.METSIA);
+        List<IntegrationEventError> errors = emissionEventService.process(event, headers, SourceSystem.METSIA_INSTALLATION);
         kafkaTemplate.send(util.buildKafkaMessage(event, headers, errors));
     }
 }

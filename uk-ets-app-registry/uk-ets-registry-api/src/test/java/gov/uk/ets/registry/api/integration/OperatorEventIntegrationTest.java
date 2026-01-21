@@ -32,6 +32,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.netz.integration.model.IntegrationEventOutcome;
@@ -44,8 +45,9 @@ import uk.gov.netz.integration.model.operator.OperatorUpdateEventOutcome;
     "kafka.integration.enabled=true",
     "kafka.integration.installation.set.operator.enabled=false",
     "kafka.integration.aviation.set.operator.enabled=false",
-    "kafka.integration.maritime.set.operator.enabled=true"    
+    "kafka.integration.maritime.set.operator.enabled=true"
 })
+@EmbeddedKafka(partitions = 1, topics = { "maritime-set-operator-response-topic-dlt", "group.notification.topic" })
 @Disabled
 class OperatorEventIntegrationTest extends BaseIntegrationTest {
 
@@ -57,11 +59,11 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
     private KafkaTemplate<String, OperatorUpdateEventOutcome> kafkaTemplate;
     private Consumer<String, String> dltConsumer;
     private Consumer<String, EmailNotification> emailConsumer;
-    
+
     @Autowired
     private Configuration freemarkerConfiguration;
 
-    
+
     @BeforeAll
     public void init() {
         // Setup kafka template (producer)
@@ -87,7 +89,7 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
 
     /**
      * Consumer configuration.
-     * 
+     *
      * @param groupId
      * @return
      */
@@ -128,7 +130,7 @@ class OperatorEventIntegrationTest extends BaseIntegrationTest {
         event.setOperatorId(123456L);
         event.setRegulator(RegulatorType.EA.name());
         outcome.setEvent(event);
-        
+
         IntegrationEventErrorDetails errorDetails =
             new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0200, "Something is wrong");
         outcome.setErrors(List.of(errorDetails));

@@ -4,6 +4,7 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.OnlySeniorAdminCanClaimTaskRule;
@@ -13,6 +14,8 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.Reg
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.UniqueEmitterIdBusinessRule;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
+import gov.uk.ets.registry.api.integration.changelog.service.AccountAuditService;
+import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.service.TaskTypeService;
 import gov.uk.ets.registry.api.task.web.model.OperatorUpdateTaskDetailsDTO;
@@ -34,6 +37,8 @@ public class OperatorUpdateTaskService implements TaskTypeService<OperatorUpdate
     private final AccountRepository accountRepository;
     private final AccountOperatorUpdateService accountOperatorUpdateService;
     private final Mapper mapper;
+
+    private final AccountAuditService accountAuditService;
 
     @Override
     public Set<RequestType> appliesFor() {
@@ -68,10 +73,12 @@ public class OperatorUpdateTaskService implements TaskTypeService<OperatorUpdate
                 accountRepository.findByIdentifier(accountIdentifier).orElseThrow(() -> new UkEtsException(String
                     .format("Update account operator details for account with identifier:%s which does not exist",
                         accountIdentifier)));
+            AccountDTO currentAccountDTO = accountAuditService.toAccountDto(account);
             OperatorDTO diff = deserializeRequest(taskDTO.getDifference());
 
             accountOperatorUpdateService.updateOperator(diff, accountIdentifier,
                 taskDTO.getTaskType(), account);
+            accountAuditService.logChanges(currentAccountDTO, account, SourceSystem.REGISTRY);
 
             accountOperatorUpdateService.sendComplianceEvents(diff, taskDTO.getInitiatorUrid(),
                 account.getCompliantEntity().getIdentifier(), taskDTO.getCompletedDate());

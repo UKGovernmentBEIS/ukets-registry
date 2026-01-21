@@ -23,17 +23,15 @@ describe('AllocationTableComponent', () => {
     WITHHELD: { label: 'Withheld' },
   };
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideMockStore(),
-          { provide: ActivatedRoute, useValue: activatedRouteSpy },
-        ],
-        declarations: [AllocationTableComponent, GovukTagComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideMockStore(),
+        { provide: ActivatedRoute, useValue: activatedRouteSpy },
+      ],
+      declarations: [AllocationTableComponent, GovukTagComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AllocationTableComponent);
@@ -103,7 +101,9 @@ describe('AllocationTableComponent', () => {
   });
 
   it('should render the column values correctly', () => {
-    const rows = fixture.debugElement.queryAll(By.css('tr.annual-allocation'));
+    const rows = fixture.debugElement.queryAll(
+      By.css('tbody tr.govuk-table__row:not(.total-allocation)')
+    );
     expect(rows.length).toBe(component.allocation.annuals.length);
     const firstAnnualRow = rows[0];
 
