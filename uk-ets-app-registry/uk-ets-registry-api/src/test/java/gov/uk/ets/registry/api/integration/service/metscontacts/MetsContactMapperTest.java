@@ -28,9 +28,9 @@ class MetsContactMapperTest {
         msg.setLastName("Smith");
         msg.setEmail("john.smith@example.com");
         msg.setTelephoneCountryCode("+44");
-        msg.setTelephoneNumber("123456789");
+        msg.setTelephoneNumber("2079460056");
         msg.setMobilePhoneCountryCode("+44");
-        msg.setMobileNumber("987654321");
+        msg.setMobileNumber("7700900123");
         msg.setContactTypes(List.of("PRIMARY"));
         msg.setUserType(OperatorType.OPERATOR_ADMIN.name());
 
@@ -39,7 +39,7 @@ class MetsContactMapperTest {
 
     @Test
     void testConvertSingleMessage() {
-        MetsContactsMessage message = buildMessage();
+        MetsContactsMessage message = buildMessage(); // πρέπει να έχει telephoneCountryCode "+44" ή "44"
 
         MetsContactDTO dto = mapper.convert(new MetsContactsEvent() {{
             setDetails(List.of(message));
@@ -50,12 +50,13 @@ class MetsContactMapperTest {
         assertEquals("john.smith@example.com", dto.getEmail());
         assertEquals(OperatorType.OPERATOR_ADMIN, dto.getOperatorType());
         assertTrue(dto.getContactTypes().contains(MetsAccountContactType.PRIMARY));
+
         PhoneNumberDTO phone = dto.getPhoneNumber();
         assertNotNull(phone);
-        assertEquals("123456789", phone.getPhoneNumber1());
-        assertEquals("+44", phone.getCountryCode1());
-        assertEquals("987654321", phone.getPhoneNumber2());
-        assertEquals("+44", phone.getCountryCode2());
+        assertEquals("2079460056", phone.getPhoneNumber1());
+        assertEquals("UK (44)", phone.getCountryCode1());
+        assertEquals("7700900123", phone.getPhoneNumber2());
+        assertEquals("UK (44)", phone.getCountryCode2());
     }
 
     @Test

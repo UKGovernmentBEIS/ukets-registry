@@ -227,29 +227,6 @@ class InstallationAccountUpdatingEventConsumerIntegrationTest extends BaseIntegr
     }
 
     @Test
-    void shouldReturn0303WhenPostalCodeMissingAndCountryIsUK() {
-
-        String corrId = "corr-missing-uk-postal";
-
-        AccountUpdatingEvent ev =
-                eventHelper.buildInstallationSuccessUpdateEvent(
-                        data1.getRegistryId(),
-                        "PERMIT-123",
-                        "Test Plant",
-                        "Holder X"
-                );
-
-        ev.getAccountHolder().setCountry("UK");
-        ev.getAccountHolder().setPostalCode(null);
-
-        kafkaHelper.sendKafkaRequest(INSTALLATION_REQUEST_TOPIC, ev, corrId, kafkaTemplate);
-        AccountUpdatingEventOutcome outcome = kafkaHelper.receiveOutcome(responseConsumer,corrId);
-
-        assertThat(outcome.getErrors())
-                .anyMatch(e -> e.getError().name().equals("ERROR_0303"));
-    }
-
-    @Test
     void shouldReturn0313WhenInstallationAccountStatusClosed() {
 
         String corrId = "corr-installation-closed";

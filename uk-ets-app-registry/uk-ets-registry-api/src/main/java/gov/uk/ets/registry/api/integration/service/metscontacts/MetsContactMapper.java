@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.integration.service.metscontacts;
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsAccountContactType;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.OperatorType;
@@ -16,6 +17,8 @@ import java.util.Set;
 
 @Component
 public class MetsContactMapper {
+
+    private final PhoneNumberUtil util = PhoneNumberUtil.getInstance();
 
     public List<MetsContactDTO> convert(MetsContactsEvent event) {
         List<MetsContactDTO> contacts = new ArrayList<>();
@@ -53,9 +56,29 @@ public class MetsContactMapper {
     private PhoneNumberDTO phoneNumber(MetsContactsMessage message) {
         PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO();
         phoneNumberDTO.setPhoneNumber1(message.getTelephoneNumber());
-        phoneNumberDTO.setCountryCode1(message.getTelephoneCountryCode());
+        phoneNumberDTO.setCountryCode1(toRegion(message.getTelephoneCountryCode()));
         phoneNumberDTO.setPhoneNumber2(message.getMobileNumber());
-        phoneNumberDTO.setCountryCode2(message.getMobilePhoneCountryCode());
+        phoneNumberDTO.setCountryCode2(toRegion(message.getMobilePhoneCountryCode()));
         return phoneNumberDTO;
+    }
+
+    public String toRegion(String phoneCode) {
+        Integer code = normalizeCallingCode(phoneCode);
+        if (code == null) return null;
+
+        String region = util.getRegionCodeForCountryCode(code);
+        if (region == null || "ZZ".equals(region)) return null;
+        if ("GB".equals(region)) region = "UK";
+
+        return region + " (" + code + ")";
+    }
+
+    private Integer normalizeCallingCode(String raw) {
+        if (raw == null) return null;
+        String s = raw.trim();
+        if (s.isBlank()) return null;
+        if (s.startsWith("+")) s = s.substring(1);
+        if (!s.matches("\\d+")) return null;
+        return Integer.parseInt(s);
     }
 }

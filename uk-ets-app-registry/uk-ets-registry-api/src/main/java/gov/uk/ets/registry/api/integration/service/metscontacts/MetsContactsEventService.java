@@ -54,6 +54,7 @@ public class MetsContactsEventService {
             log.info("Event {} with correlationId: {} from {} and value {} was not processed. " +
                             "Status of account is closed or pending for closed.",
                     OperationEvent.UPDATE_ACCOUNT_METS_CONTACT_DETAILS, correlationId, util.getSourceSystem(headers), event);
+            return new AccountModificationResult(null);
         }
         if (errors.isEmpty()) {
             Account newAccount = process(event, util.getSourceSystem(headers));

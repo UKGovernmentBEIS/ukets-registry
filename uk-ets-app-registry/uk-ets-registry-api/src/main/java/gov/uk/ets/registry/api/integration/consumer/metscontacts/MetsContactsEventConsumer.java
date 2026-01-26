@@ -57,6 +57,9 @@ public abstract class MetsContactsEventConsumer {
                     List.of(new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0700, "Failed to update account by adding mets contacts."));
             result = new AccountModificationResult(event.getOperatorId(), internalErrors);
         }
+        if(!result.getModified() && result.getErrors() == null) {
+            return;
+        }
 
         kafkaTemplate.send(buildKafkaMessage(event, headers, result));
     }

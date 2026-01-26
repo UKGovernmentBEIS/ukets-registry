@@ -222,6 +222,7 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
         fields.put("AccountDetails.PermitID", asStringOrEmpty(event.getAccountDetails().getPermitId()));
         fields.put("AccountDetails.MonitoringPlanID", asStringOrEmpty(event.getAccountDetails().getMonitoringPlanId()));
         fields.put("AccountDetails.CompanyImoNumber", asStringOrEmpty(event.getAccountDetails().getCompanyImoNumber()));
+        fields.put("AccountDetails.Regulator", asStringOrEmpty(event.getAccountDetails().getRegulator()));
         fields.put("AccountDetails.FirstYearOfVerifiedEmission", asStringOrEmpty(event.getAccountDetails().getFirstYearOfVerifiedEmissions()));
         //account holder
         fields.put("AccountHolder.Name", asStringOrEmpty(event.getAccountHolder().getName()));

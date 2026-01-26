@@ -98,7 +98,8 @@ public class UpdateAccountFormatValidator {
             validateLength(accountHolder.getAddressLine2(), "Address Line 2", LEN_DEFAULT, errors);
             validateLength(accountHolder.getTownOrCity(), "Town Or City", LEN_DEFAULT, errors);
             validateLength(accountHolder.getStateOrProvince(), "State or Province", LEN_DEFAULT, errors);
-            //Skip postal code and country
+            validateLength(accountHolder.getPostalCode(), "Postal Code", 64, errors);
+            //Skip country
 
 
             // ORGANISATION: CRN rules (format only)

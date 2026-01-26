@@ -177,7 +177,6 @@ public class UpdateAccountEventValidator {
         // Country & Postal code NOT validated for UPDATE anymore
         updateAccountValidator.validateAccountHolder(event.getAccountHolder(), errors);
         updateAccountValidator.validateCountry(event.getAccountHolder().getCountry(), errors);
-        updateAccountValidator.validatePostalCode(event.getAccountHolder(), errors);
         return errors;
     }
 

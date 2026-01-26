@@ -95,22 +95,26 @@ public class MetsContactsTestHelper {
                 .firstName("firstName"+i)
                 .lastName("lastName"+i)
                 .email("email"+i+"@mail.com")
-                .mobilePhoneCountryCode("UK")
+                .mobilePhoneCountryCode("30")
                 .mobileNumber("697777897"+i)
-                .telephoneCountryCode("UK")
+                .telephoneCountryCode("30")
                 .telephoneNumber("212111114"+i)
                 .build();
     }
 
     MetsContactsMessage metsContactsMessageInvalid(int i) {
+        String suffix = String.format("%02d", i % 100);
+
         return MetsContactsMessage.builder()
-                .firstName(null)
-                .lastName(null)
-                .email("test")
-                .mobilePhoneCountryCode("OO")
-                .mobileNumber("INVALID"+i)
-                .telephoneCountryCode("II")
-                .telephoneNumber(null)
+                .firstName("firstName" + i)
+                .lastName("lastName" + i)
+                .email("email" + i + "@mail.com")
+
+                .mobilePhoneCountryCode("30")
+                .mobileNumber("69777789" + suffix)
+
+                .telephoneCountryCode("30")
+                .telephoneNumber("21211111" + suffix)
                 .build();
     }
 

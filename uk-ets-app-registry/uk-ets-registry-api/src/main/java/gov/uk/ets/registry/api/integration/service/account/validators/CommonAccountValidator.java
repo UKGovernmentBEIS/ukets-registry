@@ -1,11 +1,6 @@
 package gov.uk.ets.registry.api.integration.service.account.validators;
 
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
-import gov.uk.ets.registry.api.account.service.AccountService;
-import gov.uk.ets.registry.api.account.validation.AccountHolderTypeMissmatchException;
-import gov.uk.ets.registry.api.account.validation.AccountNotFoundValidationException;
-import gov.uk.ets.registry.api.account.validation.AccountStatusValidationException;
-import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.common.CountryMap;
 import gov.uk.ets.registry.api.integration.consumer.ValidatorOperationType;
 import uk.gov.netz.integration.model.account.AccountHolderMessage;
@@ -21,9 +16,6 @@ public class CommonAccountValidator {
     private static final Pattern EMAIL_REGEX = Pattern.compile(
             "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
     );
-
-    private static final Pattern PHONE_NUMBER_REGEX =
-            Pattern.compile("^[0-9]{3,15}$");
 
     private final ValidatorOperationType operationType;
     private final CountryMap countryMap;
@@ -171,30 +163,6 @@ public class CommonAccountValidator {
         if (email == null || email.isBlank()) return;
 
         if (!EMAIL_REGEX.matcher(email).matches()) {
-            errors.add(new IntegrationEventErrorDetails(error, fieldName));
-        }
-    }
-
-    public void validatePhoneNumber(String phone,
-                                    String fieldName,
-                                    IntegrationEventError error,
-                                    List<IntegrationEventErrorDetails> errors) {
-
-        if (phone == null || phone.isBlank()) return;
-
-        if (!PHONE_NUMBER_REGEX.matcher(phone).matches()) {
-            errors.add(new IntegrationEventErrorDetails(error, fieldName));
-        }
-    }
-
-    public void validateTelephoneCountryCode(String code,
-                                    String fieldName,
-                                    IntegrationEventError error,
-                                    List<IntegrationEventErrorDetails> errors) {
-
-        if (code == null || code.isBlank()) return;
-
-        if (!countryMap.containsCountryCode(code)) {
             errors.add(new IntegrationEventErrorDetails(error, fieldName));
         }
     }

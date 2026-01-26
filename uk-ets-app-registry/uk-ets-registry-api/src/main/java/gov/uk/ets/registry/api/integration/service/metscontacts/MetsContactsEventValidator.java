@@ -7,6 +7,7 @@ import gov.uk.ets.registry.api.account.validation.AccountStatusValidationExcepti
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsAccountContactType;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.OperatorType;
 import gov.uk.ets.registry.api.integration.service.account.validators.CommonAccountValidator;
+import gov.uk.ets.registry.api.integration.service.metscontacts.utils.PhoneNumberValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +35,9 @@ public class MetsContactsEventValidator {
 
     @Qualifier("metsContactsValidator")
     private final CommonAccountValidator metsContactsValidator;
+
+    private final PhoneNumberValidator phoneNumberValidator;
+
     @Autowired
     private final AccountService accountService;
 
@@ -85,21 +89,23 @@ public class MetsContactsEventValidator {
         metsContactsValidator.validateMandatoryField(msg.getFirstName(), "First name", 256, errors);
         metsContactsValidator.validateMandatoryField(msg.getLastName(), "Last name", 256, errors);
 
-        metsContactsValidator.validateMandatoryField(msg.getTelephoneCountryCode(), "Telephone country code", 256, errors);
-        metsContactsValidator.validateTelephoneCountryCode(msg.getTelephoneCountryCode(), "Telephone country code", IntegrationEventError.ERROR_0701, errors);
+        phoneNumberValidator.validateMandatoryPhone(
+                msg.getTelephoneCountryCode(),
+                msg.getTelephoneNumber(),
+                "Telephone country code",
+                "Telephone number",
+                errors,
+                false
+        );
 
-        metsContactsValidator.validateMandatoryField(msg.getTelephoneNumber(), "Telephone number", 256, errors);
-        metsContactsValidator.validatePhoneNumber(msg.getTelephoneNumber(), "Telephone number", IntegrationEventError.ERROR_0701, errors);
-
-        if (msg.getMobileNumber() != null && !msg.getMobileNumber().isBlank()) {
-            // Validate country code as mandatory if phone number exists
-            metsContactsValidator.validatePhoneNumber(msg.getMobileNumber(), "Mobile number", IntegrationEventError.ERROR_0701, errors);
-            metsContactsValidator.validateMandatoryField(msg.getMobilePhoneCountryCode(), "Mobile phone country code", 256, errors);
-            metsContactsValidator.validateTelephoneCountryCode(msg.getMobilePhoneCountryCode(), "Mobile phone country code", IntegrationEventError.ERROR_0701, errors);
-        } else if(msg.getMobilePhoneCountryCode() != null && !msg.getMobilePhoneCountryCode().isBlank()) {
-            // Validate no reason for mobile country code if not exists mobile -- logical case
-            errors.add(new IntegrationEventErrorDetails(IntegrationEventError.ERROR_0701,"Mobile phone"));
-        }
+        phoneNumberValidator.validateOptionalPhone(
+                msg.getMobilePhoneCountryCode(),
+                msg.getMobileNumber(),
+                "Mobile phone country code",
+                "Mobile number",
+                errors,
+                true
+        );
 
         metsContactsValidator.validateMandatoryField(msg.getEmail(), "Email", 256, errors);
         metsContactsValidator.validateEmail(msg.getEmail(), "Email", IntegrationEventError.ERROR_0701, errors);
