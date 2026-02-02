@@ -5,15 +5,14 @@ import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsAccountConta
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.OperatorType;
 import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
-import org.springframework.stereotype.Component;
-import uk.gov.netz.integration.model.metscontacts.MetsContactsEvent;
-import uk.gov.netz.integration.model.metscontacts.MetsContactsMessage;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import org.springframework.stereotype.Component;
+import uk.gov.netz.integration.model.metscontacts.MetsContactsEvent;
+import uk.gov.netz.integration.model.metscontacts.MetsContactsMessage;
 
 @Component
 public class MetsContactMapper {
@@ -53,6 +52,14 @@ public class MetsContactMapper {
         return message.getFirstName() + " " + message.getLastName();
     }
 
+    /**
+     * Creates a PhoneNumberDTO from a MetsContactsMessage.
+     * The phone numbers are accepted as is while the country codes are
+     * formatted using the region code.
+     * 
+     * @param message the incoming MetsContactsMessage.
+     * @return the created PhoneNumberDTO.
+     */
     private PhoneNumberDTO phoneNumber(MetsContactsMessage message) {
         PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO();
         phoneNumberDTO.setPhoneNumber1(message.getTelephoneNumber());
@@ -62,23 +69,55 @@ public class MetsContactMapper {
         return phoneNumberDTO;
     }
 
+    /**
+     * Constructs a string representation of the provided phone code.
+     * For example +30 or 30 is converted to  GR (30).
+     * The library provided region GB is replaced by UK.
+     * In case the phoneCode is not valid null is returned.
+     *
+     * @param phoneCode as was send by METS
+     * @return the formatted region and phoneCode combination: region (code);
+     */
     public String toRegion(String phoneCode) {
+
         Integer code = normalizeCallingCode(phoneCode);
-        if (code == null) return null;
+        
+        if (code == null) {
+            return null;
+        }
 
         String region = util.getRegionCodeForCountryCode(code);
-        if (region == null || "ZZ".equals(region)) return null;
-        if ("GB".equals(region)) region = "UK";
+        
+        if (region == null || "ZZ".equals(region)) {
+            return null;
+        }
+        
+        if ("GB".equals(region)) {
+            region = "UK";
+        }
 
         return region + " (" + code + ")";
     }
 
+    /**
+     * Returns the phone code as numeric.
+     */
     private Integer normalizeCallingCode(String raw) {
-        if (raw == null) return null;
+
+        if (raw == null) {
+            return null;
+        }
         String s = raw.trim();
-        if (s.isBlank()) return null;
-        if (s.startsWith("+")) s = s.substring(1);
-        if (!s.matches("\\d+")) return null;
+        if (s.isBlank()) {
+            return null;
+        }
+        if (s.startsWith("+")) {
+            s = s.substring(1);
+        }
+        if (!s.matches("\\d+")) {
+            return null;
+        }
+        
         return Integer.parseInt(s);
     }
 }

@@ -260,13 +260,13 @@ export const selectGroupedAllocationOverview = createSelector(
       groupedAllocations: [],
       totals: {
         entitlement:
-          (standard.totals.entitlement || 0) +
+          (standard?.totals?.entitlement || 0) +
           (underNewEntrantsReserve?.totals?.entitlement || 0),
         allocated:
-          (standard.totals.allocated || 0) +
+          (standard?.totals?.allocated || 0) +
           (underNewEntrantsReserve?.totals?.allocated || 0),
         remaining:
-          (standard.totals.remaining || 0) +
+          (standard?.totals?.remaining || 0) +
           (underNewEntrantsReserve?.totals?.remaining || 0),
       },
 
@@ -274,7 +274,7 @@ export const selectGroupedAllocationOverview = createSelector(
     };
 
     const annuals = [
-      ...standard.annuals,
+      ...(standard?.annuals || []),
       ...(underNewEntrantsReserve?.annuals || []),
     ];
     const annualAllocationMap: { [key: number]: AnnualAllocation } = {};
@@ -323,7 +323,9 @@ export const selectGroupedAllocationOverview = createSelector(
       const annualAllocation = annualAllocationMap[year];
 
       const standardAnnualAllocation =
-        standard.annuals.find((a) => a.year === annualAllocation.year) ??
+        (standard?.annuals || []).find(
+          (a) => a.year === annualAllocation.year
+        ) ??
         ({
           year: annualAllocation.year,
           entitlement: 0,

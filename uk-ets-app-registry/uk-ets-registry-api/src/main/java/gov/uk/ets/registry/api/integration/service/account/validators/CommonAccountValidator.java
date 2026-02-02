@@ -3,20 +3,18 @@ package gov.uk.ets.registry.api.integration.service.account.validators;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.common.CountryMap;
 import gov.uk.ets.registry.api.integration.consumer.ValidatorOperationType;
+import java.util.*;
+import java.util.function.Predicate;
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import uk.gov.netz.integration.model.account.AccountHolderMessage;
 import uk.gov.netz.integration.model.error.IntegrationEventError;
 import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
+
 
 public class CommonAccountValidator {
 
-    private static final Pattern EMAIL_REGEX = Pattern.compile(
-            "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-    );
-
+    private final EmailValidator emailValidator = new EmailValidator();
     private final ValidatorOperationType operationType;
     private final CountryMap countryMap;
 
@@ -160,9 +158,11 @@ public class CommonAccountValidator {
                               IntegrationEventError error,
                               List<IntegrationEventErrorDetails> errors) {
 
-        if (email == null || email.isBlank()) return;
+        if (email == null || email.isBlank()) {
+        	return;
+        }
 
-        if (!EMAIL_REGEX.matcher(email).matches()) {
+        if (!emailValidator.isValid(email,null)) {
             errors.add(new IntegrationEventErrorDetails(error, fieldName));
         }
     }

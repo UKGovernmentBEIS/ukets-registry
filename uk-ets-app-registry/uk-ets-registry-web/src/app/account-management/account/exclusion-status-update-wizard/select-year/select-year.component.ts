@@ -17,9 +17,12 @@ export class SelectYearComponent extends UkFormComponent {
 
   readonly filteredAnnuals = computed<AnnualAllocation[]>(() =>
     this.emissionEntries()?.map(
-      ({ year }) =>
+      ({ year, reportableEmissions }) =>
         this.annuals().find((annual) => annual.year === year) ??
-        ({ year } as AnnualAllocation)
+        ({
+          year,
+          excluded: reportableEmissions === 'Excluded',
+        } as AnnualAllocation)
     )
   );
 

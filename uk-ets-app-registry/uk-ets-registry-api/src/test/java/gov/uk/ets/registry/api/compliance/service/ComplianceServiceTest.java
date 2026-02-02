@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -219,7 +220,7 @@ class ComplianceServiceTest {
         verify(emissionsEntryRepository, times(1))
             .save(any(EmissionsEntry.class));
         verify(emissionsTableService, times(1))
-            .publishUpdateOfVerifiedEmissionsEvent(any(EmissionsEntry.class), any(Date.class));
+            .publishUpdateOfVerifiedEmissionsEvent(any(EmissionsEntry.class), any(Date.class), eq("123456"));
 
         verify(allocationEntryRepository, Mockito.times(1)).updateAllocationClassification(1L,
             AllocationClassification.NOT_YET_ALLOCATED.name());
@@ -260,6 +261,7 @@ class ComplianceServiceTest {
             Optional.of((CompliantEntity) installation));
         Mockito.when(emissionsEntryRepository.findAllByCompliantEntityIdAndYear(1234L, (long) currentYear))
             .thenReturn(Collections.singletonList(new EmissionsEntry()));
+        Mockito.when(userService.getCurrentUser()).thenReturn(new User());
         Mockito.when(excludeEmissionsRepository.findByCompliantEntityIdAndYear(1234L, (long) currentYear))
             .thenReturn(entry);
 

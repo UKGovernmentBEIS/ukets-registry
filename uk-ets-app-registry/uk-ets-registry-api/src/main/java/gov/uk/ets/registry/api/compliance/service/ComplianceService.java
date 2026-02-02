@@ -99,11 +99,14 @@ public class ComplianceService {
             .max(Comparator.comparing(EmissionsEntry::getUploadDate))
             .map(EmissionsEntry::getEmissions);
 
+        String urid = isSystemUpdate ? null : userService.getCurrentUser().getUrid();
+        String actorId = urid == null ? "system" : urid;
+
         if (emissionsForThisYear.isPresent()) {
             // Update emissions to null
             EmissionsEntry emissionsEntry = createNullEmissionsEntry(account.getCompliantEntity().getIdentifier(), year);
             emissionsEntryRepository.save(emissionsEntry);
-            emissionsTableService.publishUpdateOfVerifiedEmissionsEvent(emissionsEntry, new Date());
+            emissionsTableService.publishUpdateOfVerifiedEmissionsEvent(emissionsEntry, new Date(), actorId);
         }
 
         ExcludeEmissionsEntry existingEntry = excludeEmissionsRepository
@@ -138,13 +141,11 @@ public class ComplianceService {
                 account.getCompliantEntity().getId(), classification.name()));
 
         // record event in account history
-        String urid = isSystemUpdate ? null : userService.getCurrentUser().getUrid();
         eventService.createAndPublishEvent(accountIdentifier.toString(),
             urid, "",
             EventType.ACCOUNT_EXCLUSION_STATUS_UPDATED,
             ACCOUNT_EXCLUSION_STATUS_UPDATED);
         // publish compliance event
-        String actorId = urid == null ? "system" : urid;
         if (isExcluded) {
             publishAccountExclusionEvent(
                 account.getCompliantEntity().getIdentifier(), year, actorId, reason, emissionsForThisYear.orElse(null));

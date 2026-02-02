@@ -146,7 +146,7 @@ public class TaskListCurrentReportJdbcMapper
         " left join account ap on tp.account_id = ap.id\n" +
         " ) p on p.task_id = t.id\n" +
         " where t.status = 'SUBMITTED_NOT_YET_APPROVED'" +
-        " and t.type not in ('AH_REQUESTED_DOCUMENT_UPLOAD', 'AR_REQUESTED_DOCUMENT_UPLOAD', 'ADD_TRUSTED_ACCOUNT_REQUEST', 'DELETE_TRUSTED_ACCOUNT_REQUEST', 'TRANSACTION_REQUEST', 'ALLOCATION_TABLE_UPLOAD_REQUEST')" +
+        " and t.type not in ('AH_REQUESTED_DOCUMENT_UPLOAD', 'AR_REQUESTED_DOCUMENT_UPLOAD', 'ADD_TRUSTED_ACCOUNT_REQUEST', 'DELETE_TRUSTED_ACCOUNT_REQUEST', 'TRANSACTION_REQUEST', 'ALLOCATION_TABLE_UPLOAD_REQUEST', 'PAYMENT_REQUEST')" +
         " order by t.request_identifier";
 
     @Override

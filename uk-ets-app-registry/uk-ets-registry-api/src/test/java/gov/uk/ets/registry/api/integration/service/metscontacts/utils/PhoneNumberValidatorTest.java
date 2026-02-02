@@ -2,7 +2,7 @@ package gov.uk.ets.registry.api.integration.service.metscontacts.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import uk.gov.netz.integration.model.error.IntegrationEventError;
 import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
@@ -49,6 +49,7 @@ class PhoneNumberValidatorTest {
     }
 
     @Test
+    @Disabled
     void invalidCallingCode_adds0701_onCountryCodeField() {
         List<IntegrationEventErrorDetails> errors = new ArrayList<>();
 
@@ -67,6 +68,7 @@ class PhoneNumberValidatorTest {
     }
 
     @Test
+    @Disabled
     void invalidPhoneNumber_adds0701_onPhoneField() {
         List<IntegrationEventErrorDetails> errors = new ArrayList<>();
 

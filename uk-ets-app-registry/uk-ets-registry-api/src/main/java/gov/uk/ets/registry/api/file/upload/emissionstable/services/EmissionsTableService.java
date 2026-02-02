@@ -172,12 +172,15 @@ public class EmissionsTableService {
         return emissionsEntryRepository.findNonEmptyEntriesAfterYear(compliantEntityId, year);
     }
 
-
     public void publishUpdateOfVerifiedEmissionsEvent(EmissionsEntry entry, Date completedDate) {
+        publishUpdateOfVerifiedEmissionsEvent(entry, completedDate, userService.getCurrentUser().getUrid());
+    }
+
+    public void publishUpdateOfVerifiedEmissionsEvent(EmissionsEntry entry, Date completedDate, String actorId) {
 
         UpdateOfVerifiedEmissionsEvent event = UpdateOfVerifiedEmissionsEvent.builder()
             .compliantEntityId(entry.getCompliantEntityId())
-            .actorId(userService.getCurrentUser().getUrid())
+            .actorId(actorId)
             .dateTriggered(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
             .dateRequested(LocalDateTime.ofInstant(completedDate.toInstant(), UTC))
             .year(entry.getYear().intValue())

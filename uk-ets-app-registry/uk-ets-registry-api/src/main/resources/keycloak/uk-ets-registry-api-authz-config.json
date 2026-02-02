@@ -1625,7 +1625,7 @@
       "decisionStrategy": "UNANIMOUS",
       "config": {
         "scopes": "[\"urn:uk-ets-registry-api:page:dashboard:paymentMenuItem:view\"]",
-        "applyPolicies": "[\"Any UK ETS User\"]"
+        "applyPolicies": "[\"Non Authority User Policy\"]"
       }
     },
     {

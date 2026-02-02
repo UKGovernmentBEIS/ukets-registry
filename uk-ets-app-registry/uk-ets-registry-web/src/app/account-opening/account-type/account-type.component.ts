@@ -82,17 +82,6 @@ export class AccountTypeComponent implements OnInit {
             },
           ],
         },
-        {
-          heading: 'Kyoto Protocol',
-          options: [
-            {
-              label: 'Person Holding Account',
-              value: AccountType.PERSON_HOLDING_ACCOUNT,
-              hint: 'Used for holding and trading international units such as CERs',
-              enabled: true,
-            },
-          ],
-        },
       ],
     };
 
