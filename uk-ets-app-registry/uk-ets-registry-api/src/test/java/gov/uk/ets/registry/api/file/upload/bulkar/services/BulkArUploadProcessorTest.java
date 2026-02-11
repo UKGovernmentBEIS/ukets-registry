@@ -5,6 +5,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import gov.uk.ets.file.upload.services.ClamavService;
 import gov.uk.ets.registry.api.account.authz.AccountAuthorizationService;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
@@ -25,7 +42,6 @@ import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.file.upload.dto.BaseType;
 import gov.uk.ets.registry.api.file.upload.dto.FileHeaderDto;
 import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
-import gov.uk.ets.file.upload.services.ClamavService;
 import gov.uk.ets.registry.api.file.upload.services.FileUploadService;
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArAccountDTO;
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArUserDTO;
@@ -38,61 +54,47 @@ import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import gov.uk.ets.registry.api.user.service.UserService;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class BulkArUploadProcessorTest {
 
-    @MockBean
+    @MockitoBean
     private UploadedFilesRepository uploadedFilesRepository;
-    @MockBean
+    @MockitoBean
     private ConversionService conversionService;
-    @MockBean
+    @MockitoBean
     private ClamavService clamavService;
-    @MockBean
+    @MockitoBean
     private AccountRepository accountRepository;
-    @MockBean
+    @MockitoBean
     private ARAccountAccessRepository arAccountAccessRepository;
-    @MockBean
+    @MockitoBean
     private ARUpdateActionRepository arUpdateActionRepository;
-    @MockBean
+    @MockitoBean
     private TaskRepository taskRepository;
-    @MockBean
+    @MockitoBean
     private UserService userService;
-    @MockBean
+    @MockitoBean
     private DTOFactory dtoFactory;
-    @MockBean
+    @MockitoBean
     private EventService eventService;
-    @MockBean
+    @MockitoBean
     private UserRepository userRepository;
-    @MockBean
+    @MockitoBean
     private AccountAccessRepository accountAccessRepository;
-    @MockBean
+    @MockitoBean
     private AuthorizationService authorizationService;
-    @MockBean
+    @MockitoBean
     private AccountAuthorizationService accountAuthorizationService;
-    @MockBean
+    @MockitoBean
     private ServiceAccountAuthorizationService serviceAccountAuthorizationService;
-    @MockBean
+    @MockitoBean
     private TaskEventService taskEventService;
-    @MockBean
+    @MockitoBean
     private ReportRequestAddRemoveRoleService reportRequestAddRemoveRoleService;
-    @MockBean
+    @MockitoBean
     private PublicationRequestAddRemoveRoleService publicationRequestAddRemoveRoleService;
-    @MockBean
+    @MockitoBean
     private Mapper mapper;
 
     private FileUploadService fileUploadService;

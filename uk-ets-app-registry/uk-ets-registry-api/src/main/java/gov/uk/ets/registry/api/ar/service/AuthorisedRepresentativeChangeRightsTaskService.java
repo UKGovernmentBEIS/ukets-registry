@@ -2,6 +2,7 @@ package gov.uk.ets.registry.api.ar.service;
 
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
+import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.SeniorAdminCanClaimTaskInitiatedByAdminRule;
@@ -44,10 +45,11 @@ public class AuthorisedRepresentativeChangeRightsTaskService extends AuthorisedR
                                                            Mapper mapper,
                                                            TaskARStatusRepository taskARStatusRepository,
                                                            PaymentTaskAutoCompletionService paymentTaskAutoCompletionService,
-                                                           AccountClaimService accountClaimService) {
+                                                           AccountClaimService accountClaimService,
+                                                           AccountContactService accountContactService) {
         super(accountService, userConversionService, userAdministrationService, accountAccessRepository, userService,
             taskRepository, authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper,taskARStatusRepository,paymentTaskAutoCompletionService,
-                accountClaimService);
+                accountClaimService, accountContactService);
     }
 
     @Override

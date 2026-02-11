@@ -1,18 +1,21 @@
 package gov.uk.ets.registry.api.compliance.messaging;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
-import gov.uk.ets.registry.api.compliance.messaging.events.outgoing.ChangeYearEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -22,6 +25,8 @@ import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.compliance.messaging.events.ComplianceEventType;
+import gov.uk.ets.registry.api.compliance.messaging.events.outgoing.ChangeYearEvent;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import net.javacrumbs.shedlock.core.LockAssert;
 
@@ -36,9 +41,13 @@ import net.javacrumbs.shedlock.core.LockAssert;
 @DataJpaTest
 @TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=create",
     "spring.jpa.properties.hibernate.globally_quoted_identifiers=true",
-    "spring.jpa.properties.hibernate.globally_quoted_identifiers_skip_column_definitions=true"})
+    "spring.jpa.properties.hibernate.globally_quoted_identifiers_skip_column_definitions=true",
+    "business.property.change.year.new.year=#{environment['CHANGE_YEAR_EVENT_NEW_YEAR'] ?: T(java.time.LocalDate).now(T(java.time.ZoneId).of('UTC')).year}"})
 class ChangeYearEventSchedulerTest {
 
+	@Value("${business.property.change.year.new.year}") 
+	private int newYear;
+	
     private ChangeYearEventScheduler changeYearEventScheduler;
 
     @Mock
@@ -81,7 +90,19 @@ class ChangeYearEventSchedulerTest {
         //Run the Scheduler
         changeYearEventScheduler.execute();
 
-        verify(service, times(1)).processEvent(any(ChangeYearEvent.class));
+        verify(service, times(1)).processEvent(argThat(evt -> {
+        	ChangeYearEvent changeYearEvent = (ChangeYearEvent) evt; 
+        	return changeYearEvent.getActorId() == "system" &&
+        		   changeYearEvent.getCompliantEntityId() == compliantEntity.getIdentifier() &&
+                   ComplianceEventType.NEW_YEAR.equals(changeYearEvent.getType());
+        }));
+
     }
 
+    
+    @DisplayName("Test EL and property expression.")
+    @Test 
+    void testNewYearInjection() { 
+    	assertEquals(LocalDate.now(ZoneId.of("UTC")).getYear(), newYear); 
+    }    
 }

@@ -50,7 +50,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
-import static org.apache.sis.internal.util.StandardDateFormat.UTC;
 
 @Service
 @RequiredArgsConstructor
@@ -346,7 +345,7 @@ public class ComplianceService {
     }
 
     private void publishAccountExclusionEvent(Long compliantEntityId, Long year, String urid, String reason, Long emissions) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         ExclusionEvent event = ExclusionEvent.builder()
             .compliantEntityId(compliantEntityId).actorId(urid)
             .dateTriggered(now).dateRequested(now).year(year.intValue())
@@ -359,7 +358,7 @@ public class ComplianceService {
                                                       Long year,
                                                       String urid,
                                                       String reason) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
 
         ExclusionReversalEvent event = ExclusionReversalEvent.builder()
             .compliantEntityId(compliantEntityId).actorId(urid)
@@ -394,11 +393,11 @@ public class ComplianceService {
         if (excluded.isExcluded()) {
             return new VerifiedEmissionsDTO(excluded.getCompliantEntityId(),
                 excluded.getYear(), EXCLUDED, LocalDateTime.ofInstant(
-                excluded.getLastUpdated().toInstant(), ZoneId.of(UTC)));
+                excluded.getLastUpdated().toInstant(), ZoneId.of("UTC")));
         }
         return new VerifiedEmissionsDTO(excluded.getCompliantEntityId(),
             excluded.getYear(), null, LocalDateTime.ofInstant(
-            excluded.getLastUpdated().toInstant(), ZoneId.of(UTC)));
+            excluded.getLastUpdated().toInstant(), ZoneId.of("UTC")));
 
     }
 
@@ -448,7 +447,7 @@ public class ComplianceService {
     }
     
     private RecalculateDynamicStatusEvent toRecalculateDynamicStatusEvent(CompliantEntity compliantEntity) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         return RecalculateDynamicStatusEvent.builder()
             .actorId("system")
             .compliantEntityId(compliantEntity.getIdentifier())

@@ -33,20 +33,30 @@ public class MOHAAllocationReportService implements ReportTypeService<MOHAAlloca
         data.add(reportData.getFirstYear());
         data.add(reportData.getLastYear());
         data.add(reportData.getRegulator());
+        data.add(reportData.getSalesContactEmail());
+        data.add(reportData.getSalesContactPhone());
+        data.add(reportData.getUka1To99());
+        data.add(reportData.getUka100To999());
+        data.add(reportData.getUka1000Plus());
         return data;
     }
 
     @Override
     public List<String> getReportHeaders(Long year) {
         return List.of(
-            "Account Holder Name",
-            "Maritime Operator ID",
-            "Company IMO number",
-            "Emissions Monitoring Plan ID",
-            "\"Excluded\" for scheme year",
-            "First Year of Operation",
-            "Last Year of Operation",
-            "Regulator");
+                "Account Holder Name",
+                "Maritime Operator ID",
+                "Company IMO number",
+                "Emissions Monitoring Plan ID",
+                "\"Excluded\" for scheme year",
+                "First Year of Operation",
+                "Last Year of Operation",
+                "Regulator",
+                "UKA Sales Contact Email",
+                "UKA Sales Contact Phone",
+                "1-99 UKAs",
+                "100-999 UKAs",
+                "1000+ UKAs");
     }
 
     @Override

@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,7 +116,7 @@ public class AccountEventOpeningService {
      */
     private void sendAccountComplianceNotifications(Account account) {
         CompliantEntity compliantEntity = account.getCompliantEntity();
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         CompliantEntityInitializationEvent accountCreationEvent = CompliantEntityInitializationEvent.builder()
             .firstYearOfVerifiedEmissions(compliantEntity.getStartYear())
             .lastYearOfVerifiedEmissions(compliantEntity.getEndYear())

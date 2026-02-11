@@ -393,6 +393,14 @@
                 {{ accountDetails?.name }}
               </dd>
             </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Do you want to sell UK Allowances?
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ accountDetails.sellingAllowances ? 'Yes' : 'No' }}
+              </dd>
+            </div>
             <div
               class="govuk-summary-list__row"
               *ngIf="
@@ -418,6 +426,25 @@
                   "
                   [phoneNumber]="accountDetails.salesContactDetails.phoneNumber"
                 ></app-shared-phone-number>
+              </dd>
+            </div>
+            <div
+              class="govuk-summary-list__row"
+              *ngIf="accountDetails?.salesContactDetails"
+            >
+              <dt class="govuk-summary-list__key">
+                UK Allowances sales volumes
+              </dt>
+              <dd class="govuk-summary-list__value">
+                @if (accountDetails.salesContactDetails?.uka1To99) {
+                  <div>1-99 UKAs</div>
+                }
+                @if (accountDetails.salesContactDetails?.uka100To999) {
+                  <div>100-999 UKAs</div>
+                }
+                @if (accountDetails.salesContactDetails?.uka1000Plus) {
+                  <div>1000+ UKAs</div>
+                }
               </dd>
             </div>
           </dl>
@@ -559,19 +586,19 @@
               *ngSwitchCase="type.INSTALLATION"
               [installation]="operator"
               [operatorCompleted]="false"
-              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"              
+              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
             ></app-overview-installation>
             <app-overview-aircraft-operator
               *ngSwitchCase="type.AIRCRAFT_OPERATOR"
               [aircraftOperator]="operator"
               [operatorCompleted]="false"
               [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
-              ></app-overview-aircraft-operator>
+            ></app-overview-aircraft-operator>
             <app-overview-maritime-operator
               *ngSwitchCase="type.MARITIME_OPERATOR"
               [maritimeOperator]="operator"
               [operatorCompleted]="false"
-              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"                 
+              [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
             ></app-overview-maritime-operator>
             <app-overview-installation-transfer
               *ngSwitchCase="type.INSTALLATION_TRANSFER"

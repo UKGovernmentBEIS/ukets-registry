@@ -30,32 +30,9 @@
       {{ accountDetails.publicAccountIdentifier }}
     </dd>
   </div>
-  <div
-    class="govuk-summary-list__row"
-    *ngIf="
-      accountDetails.salesContactDetails?.emailAddress?.emailAddress &&
-      isConfirmMode
-    "
-  >
-    <dt class="govuk-summary-list__key">Sales contact email</dt>
-    <dd class="govuk-summary-list__value">
-      {{ accountDetails.salesContactDetails?.emailAddress?.emailAddress }}
-    </dd>
-  </div>
-  <div
-    class="govuk-summary-list__row"
-    *ngIf="accountDetails.salesContactDetails?.phoneNumber && isConfirmMode"
-  >
-    <dt class="govuk-summary-list__key">Sales contact phone</dt>
-    <dd class="govuk-summary-list__value">
-      <app-shared-phone-number
-        [countryCode]="
-          accountDetails.salesContactDetails.phoneNumberCountryCode
-        "
-        [phoneNumber]="accountDetails.salesContactDetails.phoneNumber"
-      ></app-shared-phone-number>
-    </dd>
-  </div>
+  @if (isConfirmMode) {
+    <ng-container *ngTemplateOutlet="allowancesSectionTpl" />
+  }
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Opened on</dt>
     <dd class="govuk-summary-list__value">
@@ -81,37 +58,26 @@
   >
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">
-        <span class="govuk-heading-m">Sales Contact Details</span>
-        <div class="govuk-hint">
-          These optional fields for sales contact email and sales contact phone
-          will be displayed in the public reports.
-        </div>
+        <span class="govuk-heading-m"
+          >Contact details for selling UK allowances</span
+        >
+        <p class="govuk-body">
+          These optional fields are intended to help potential buyers of UK
+          Allowances (UKAs) to contact the most appropriate businesses to meet
+          their needs.
+        </p>
+        <p class="govuk-body">
+          These details will be displayed in the relevant public Registry
+          reports.
+        </p>
       </dt>
     </div>
   </dl>
+
   <dl
     class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-9"
   >
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Sales contact email</dt>
-      <dd class="govuk-summary-list__value">
-        {{ accountDetails.salesContactDetails?.emailAddress?.emailAddress }}
-      </dd>
-    </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Sales contact phone</dt>
-      <dd
-        class="govuk-summary-list__value"
-        *ngIf="accountDetails.salesContactDetails?.phoneNumber"
-      >
-        <app-shared-phone-number
-          [countryCode]="
-            accountDetails.salesContactDetails?.phoneNumberCountryCode
-          "
-          [phoneNumber]="accountDetails.salesContactDetails?.phoneNumber"
-        ></app-shared-phone-number>
-      </dd>
-    </div>
+    <ng-container *ngTemplateOutlet="allowancesSectionTpl" />
   </dl>
 </ng-container>
 
@@ -123,6 +89,56 @@
     [countries]="countries"
     [isConfirmMode]="isConfirmMode"
     [isAdmin]="isAdmin"
-  >
-  </app-billing-details-view>
+  />
 </ng-container>
+
+<ng-template #allowancesSectionTpl>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Do you want to sell UK Allowances?</dt>
+    <dd class="govuk-summary-list__value">
+      {{ accountDetails.sellingAllowances ? 'Yes' : 'No' }}
+    </dd>
+  </div>
+
+  @if (accountDetails.sellingAllowances) {
+    @if (accountDetails.salesContactDetails?.emailAddress?.emailAddress) {
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          UK Allowances sales contact email
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ accountDetails.salesContactDetails?.emailAddress?.emailAddress }}
+        </dd>
+      </div>
+    }
+    @if (accountDetails.salesContactDetails?.phoneNumber) {
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          UK Allowances sales contact phone
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-phone-number
+            [countryCode]="
+              accountDetails.salesContactDetails?.phoneNumberCountryCode
+            "
+            [phoneNumber]="accountDetails.salesContactDetails?.phoneNumber"
+          />
+        </dd>
+      </div>
+    }
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">UK Allowances sales volumes</dt>
+      <dd class="govuk-summary-list__value">
+        @if (accountDetails.salesContactDetails?.uka1To99) {
+          <div>1-99 UKAs</div>
+        }
+        @if (accountDetails.salesContactDetails?.uka100To999) {
+          <div>100-999 UKAs</div>
+        }
+        @if (accountDetails.salesContactDetails?.uka1000Plus) {
+          <div>1000+ UKAs</div>
+        }
+      </dd>
+    </div>
+  }
+</ng-template>

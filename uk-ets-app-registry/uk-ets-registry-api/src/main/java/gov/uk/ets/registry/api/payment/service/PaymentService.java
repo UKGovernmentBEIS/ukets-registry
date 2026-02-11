@@ -181,12 +181,14 @@ public class PaymentService {
     }
 
     @Transactional
+    @EmitsGroupNotifications(GroupNotificationType.PAYMENT_COMPLETED)
     public PaymentTaskCompleteResponse paymentResponse(Long referenceNumber) throws Exception {
         Payment payment = retrievePayment(referenceNumber);
         return retrievePaymentStatus(payment);
     }
 
     @Transactional
+    @EmitsGroupNotifications(GroupNotificationType.PAYMENT_COMPLETED)
     public PaymentTaskCompleteResponse paymentResponse(String uuid) throws Exception {
         Payment payment = retrievePayment(uuid);
         return retrievePaymentStatus(payment);

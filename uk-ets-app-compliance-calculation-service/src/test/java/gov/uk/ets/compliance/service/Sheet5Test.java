@@ -42,7 +42,7 @@ public class Sheet5Test extends DynamicComplianceServiceTestBase {
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2021, 100L));
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.C, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2022, 100L));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());

@@ -65,6 +65,7 @@ public class PaymentTaskAutoCompletionService {
                 taskRepository.save(childTask);
                 payment.setStatus(paymentStatus); 
                 paymentRepository.save(payment);
+                
                 paymentHistoryRepository.save(createPaymentHistory(payment));
                 //Also insert a history entry
                 eventService.createAndPublishEvent(String.valueOf(childTask.getRequestId()), currentUser.getUrid(),

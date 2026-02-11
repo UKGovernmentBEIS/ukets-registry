@@ -28,6 +28,9 @@ public class TradingAccountReportService implements ReportTypeService<TradingAcc
         data.add(reportData.getAccountHolderName());
         data.add(reportData.getSalesContactEmail());
         data.add(reportData.getSalesContactPhone());
+        data.add(reportData.getUka1To99());
+        data.add(reportData.getUka100To999());
+        data.add(reportData.getUka1000Plus());
         data.add(reportData.getRegistrationNumber());
         data.add(reportData.getAddress());
         data.add(reportData.getCity());
@@ -42,7 +45,8 @@ public class TradingAccountReportService implements ReportTypeService<TradingAcc
 
     @Override
     public List<String> getReportHeaders(Long year) {
-        return List.of("Account Holder", "Sales Contact Email", "Sales Contact Phone", "Registration Number", "Address", "Town or City", "State or Province", "Postal Code or ZIP",
+        return List.of("Account Holder", "UKA Sales Contact Email", "UKA Sales Contact Phone", "1-99 UKAs", "100-999 UKAs", "1000+ UKAs",
+                "Registration Number", "Address", "Town or City", "State or Province", "Postal Code or ZIP",
                 "Country", "Account status", "Open", "Closed");
     }
 

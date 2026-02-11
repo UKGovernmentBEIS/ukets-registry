@@ -118,6 +118,11 @@ public class AccountDetailsDTO implements Serializable {
     private String billingEmail2;
 
     /**
+     * The flag that indicates whether the account is selling allowances.
+     */
+    private boolean sellingAllowances;
+
+    /**
      * The sales contact details.
      */
     @Valid

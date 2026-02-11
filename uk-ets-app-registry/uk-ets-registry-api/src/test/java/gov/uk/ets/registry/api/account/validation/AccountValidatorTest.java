@@ -262,6 +262,7 @@ public class AccountValidatorTest {
         Mockito.when(account.getAccountType()).thenReturn("AIRCRAFT_OPERATOR_HOLDING_ACCOUNT");
         SalesContactDetailsDTO salesContactDetailsDTO = Mockito.mock(SalesContactDetailsDTO.class);
         EmailAddressDTO emailAddressDTO = Mockito.mock(EmailAddressDTO.class);
+        Mockito.when(account.getAccountDetails().isSellingAllowances()).thenReturn(true);
         Mockito.when(emailAddressDTO.getEmailAddress()).thenReturn("p@trasys.gr");
         Mockito.when(emailAddressDTO.getEmailAddressConfirmation()).thenReturn("p@trasys.gr");
         Mockito.when(account.getAccountDetails().getSalesContactDetails()).thenReturn(salesContactDetailsDTO);

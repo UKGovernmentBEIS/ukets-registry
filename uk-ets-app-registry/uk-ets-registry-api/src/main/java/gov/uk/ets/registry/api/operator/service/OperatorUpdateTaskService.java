@@ -21,6 +21,7 @@ import gov.uk.ets.registry.api.task.service.TaskTypeService;
 import gov.uk.ets.registry.api.task.web.model.OperatorUpdateTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskCompleteResponse;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
+import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +79,11 @@ public class OperatorUpdateTaskService implements TaskTypeService<OperatorUpdate
 
             accountOperatorUpdateService.updateOperator(diff, accountIdentifier,
                 taskDTO.getTaskType(), account);
-            accountAuditService.logChanges(currentAccountDTO, account, SourceSystem.REGISTRY);
+            
+            //Traders accounts are not audited for diffs.
+            if (!RegistryAccountType.TRADING_ACCOUNT.equals(account.getRegistryAccountType())) {
+                accountAuditService.logChanges(currentAccountDTO, account, SourceSystem.REGISTRY);
+            }
 
             accountOperatorUpdateService.sendComplianceEvents(diff, taskDTO.getInitiatorUrid(),
                 account.getCompliantEntity().getIdentifier(), taskDTO.getCompletedDate());

@@ -202,6 +202,8 @@ import { TaskTypeLabelPipe } from './pipes/task-type-label.pipe';
 import { MaritimeInputComponent } from '@shared/components/account/operator/maritime-input';
 import { MaritimeOperatorComponent } from './components/account/operator/maritime-operator/maritime-operator.component';
 import { InstallationActivityTypeComponent } from '@shared/components/account/operator/installation-activity-type/installation-activity-type.component';
+import { UkCheckboxGroupComponent } from '@shared/form-controls/uk-checkbox-group/uk-checkbox-group.component';
+import { UkCheckboxGroupItemComponent } from '@shared/form-controls/uk-checkbox-group/uk-checkbox-group-item/uk-checkbox-group-item.component';
 
 @NgModule({
   declarations: [
@@ -382,6 +384,8 @@ import { InstallationActivityTypeComponent } from '@shared/components/account/op
     NgxPageScrollCoreModule,
     PortalModule,
     QuillModule,
+    UkCheckboxGroupComponent,
+    UkCheckboxGroupItemComponent,
   ],
   exports: [
     CommonModule,

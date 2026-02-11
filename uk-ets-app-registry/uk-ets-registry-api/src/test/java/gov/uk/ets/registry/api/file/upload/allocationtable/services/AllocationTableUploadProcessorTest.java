@@ -7,6 +7,27 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import gov.uk.ets.file.upload.services.ClamavService;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
@@ -26,7 +47,6 @@ import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.file.upload.dto.BaseType;
 import gov.uk.ets.registry.api.file.upload.dto.FileHeaderDto;
 import gov.uk.ets.registry.api.file.upload.repository.UploadedFilesRepository;
-import gov.uk.ets.file.upload.services.ClamavService;
 import gov.uk.ets.registry.api.file.upload.services.FileUploadService;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
@@ -35,59 +55,41 @@ import gov.uk.ets.registry.api.transaction.domain.data.IssuanceBlockSummary;
 import gov.uk.ets.registry.api.transaction.service.TransactionPersistenceService;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 class AllocationTableUploadProcessorTest {
 
-    @MockBean
+    @MockitoBean
     private UploadedFilesRepository uploadedFilesRepository;
-    @MockBean
+    @MockitoBean
     private ConversionService conversionService;
-    @MockBean
+    @MockitoBean
     private ClamavService clamavService;
-    @MockBean
+    @MockitoBean
     private AccountRepository accountRepository;
-    @MockBean
+    @MockitoBean
     private InstallationRepository installationRepository;
-    @MockBean
+    @MockitoBean
     private AircraftOperatorRepository aircraftOperatorRepository;
-    @MockBean
+    @MockitoBean
     private AllocationYearCapService allocationYearCapService;
-    @MockBean
+    @MockitoBean
     private AllocationEntryRepository allocationEntryRepository;
-    @MockBean
+    @MockitoBean
     private PersistenceService persistenceService;
-    @MockBean
+    @MockitoBean
     private TransactionPersistenceService transactionPersistenceService;
-    @MockBean
+    @MockitoBean
     private UserService userService;
-    @MockBean
+    @MockitoBean
     private EventService eventService;
-    @MockBean
+    @MockitoBean
     private CompliantEntityRepository compliantEntityRepository;
-    @MockBean
+    @MockitoBean
     private TaskEventService taskEventService;
-    @MockBean
+    @MockitoBean
     private AllocationUtils allocationUtils;
-    @MockBean
+    @MockitoBean
     private Mapper mapper;
 
     private FileUploadService fileUploadService;

@@ -6,6 +6,7 @@ import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,13 @@ public class MOHAAllocationReportJdbcMapper
             "           ce.start_year as first_year, \n" +
             "           ce.regulator, \n" +
             "           ce.end_year as last_year,\n" +
-            "           case when eee.excluded is true then 'TRUE' else 'FALSE' end as excluded\n"+
+            "           case when eee.excluded is true then 'TRUE' else 'FALSE' end as excluded, \n"+
+            "           ac.sales_contact_email, \n"+
+            "           ac.sales_contact_phone_number_country, \n"+
+            "           ac.sales_contact_phone_number, \n"+
+            "           case when BOOL_OR(ac.sales_contact_uka_1_99) then 'TRUE' else 'FALSE' end as sales_contact_uka_1_99, \n" +
+            "           case when BOOL_OR(ac.sales_contact_uka_100_999) then 'TRUE' else 'FALSE' end as sales_contact_uka_100_999, \n" +
+            "           case when BOOL_OR(ac.sales_contact_uka_1000_plus) then 'TRUE' else 'FALSE' end as sales_contact_uka_1000_plus\n" +
             "   from account_holder as ah  \n" +
             "   inner join account as ac \n" +
             "       on ah.id = ac.account_holder_id \n" +
@@ -53,7 +60,10 @@ public class MOHAAllocationReportJdbcMapper
             "           ce.start_year, \n" +
             "           ce.regulator, \n" +
             "           ce.end_year, \n" +
-            "           eee.excluded \n"+
+            "           eee.excluded, \n"+
+            "           ac.sales_contact_email, \n"+
+            "           ac.sales_contact_phone_number_country, \n"+
+            "           ac.sales_contact_phone_number \n"+
             "order by ah.name,ce.identifier \n";
 
     @Override
@@ -74,6 +84,11 @@ public class MOHAAllocationReportJdbcMapper
                 .lastYear(Util.getNullableInteger(resultSet, "last_year"))
                 .regulator(resultSet.getString("regulator"))
                 .excludedForSchemeYear("TRUE".equals(resultSet.getString("excluded")) ? "YES" : "")
+                .salesContactEmail(resultSet.getString("sales_contact_email"))
+                .salesContactPhone(StringUtils.isNotBlank(resultSet.getString("sales_contact_phone_number_country")) ?  StringUtils.trim(resultSet.getString("sales_contact_phone_number_country") + " " +resultSet.getString("sales_contact_phone_number")) : "")
+                .uka1To99(resultSet.getString("sales_contact_uka_1_99"))
+                .uka100To999(resultSet.getString("sales_contact_uka_100_999"))
+                .uka1000Plus(resultSet.getString("sales_contact_uka_1000_plus"))
                 .build();
     }
 }

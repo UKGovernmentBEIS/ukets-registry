@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -153,9 +154,20 @@ public class AccountConversionService {
             result.setPhoneNumber(conversionService.convertPhoneNumber(contact));
             result.setPositionInCompany(contact.getPositionInCompany());
         }
-
-        result.setInvitedOn(input.getInvitedOn());
         return result;
+    }
+
+    /**
+     * Converts an {@link AccountHolderRepresentativeDTO} transfer object.
+     *
+     * @param input the account holder representative entity input
+     * @param invitedDate date the representative was invited
+     * @return a new AccountHolderRepresentative DTO
+     */
+    public AccountHolderRepresentativeDTO convert(AccountHolderRepresentative input, LocalDateTime invitedDate) {
+        final AccountHolderRepresentativeDTO accountHolderRepresentativeDTO = this.convert(input);
+        accountHolderRepresentativeDTO.setInvitedOn(invitedDate);
+        return accountHolderRepresentativeDTO;
     }
 
     /**
@@ -276,6 +288,9 @@ public class AccountConversionService {
         result.setEmailAddress(conversionService.convertEmailAddress(input));
         result.setPhoneNumber(Objects.toString(input.getPhoneNumber(), ""));
         result.setPhoneNumberCountryCode(Objects.toString(input.getPhoneNumberCountry(), ""));
+        result.setUka1To99(input.isUka1To99());
+        result.setUka100To999(input.isUka100To999());
+        result.setUka1000Plus(input.isUka1000Plus());
         return result;
     }
 }

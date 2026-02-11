@@ -27,21 +27,25 @@ public class AOHAAllocationReportService implements ReportTypeService<AOHAAlloca
     public List<Object> getReportDataRow(AOHAAllocationReportData reportData) {
         List<Object> data = new ArrayList<>();
         data.add(reportData.getAccountHolderName());
-        data.add(reportData.getSalesContactEmail());
-        data.add(reportData.getSalesContactPhone());
         data.add(reportData.getAircraftOperatorId());
         data.add(reportData.getMonitoringPlanId());
         data.add(reportData.getFirstYear());
         data.add(reportData.getRegulator());
         data.add(reportData.getEntitled());
         data.add(reportData.getAllocated());
+        data.add(reportData.getSalesContactEmail());
+        data.add(reportData.getSalesContactPhone());
+        data.add(reportData.getUka1To99());
+        data.add(reportData.getUka100To999());
+        data.add(reportData.getUka1000Plus());
         return data;
     }
 
     @Override
     public List<String> getReportHeaders(Long year) {
-        return List.of("Account Holder Name", "Sales Contact Email", "Sales Contact Phone", "Aircraft Operator ID", "Monitoring plan ID",
-                "First Year of Operation", "Regulator", "Allocation Entitlement_"+ year, "Allocation Delivered_"+ year);
+        return List.of("Account Holder Name", "Aircraft Operator ID", "Monitoring plan ID",
+                "First Year of Operation", "Regulator", "Allocation Entitlement_"+ year, "Allocation Delivered_"+ year,
+                "UKA Sales Contact Email", "UKA Sales Contact Phone", "1-99 UKAs", "100-999 UKAs", "1000+ UKAs");
     }
 
     @Override

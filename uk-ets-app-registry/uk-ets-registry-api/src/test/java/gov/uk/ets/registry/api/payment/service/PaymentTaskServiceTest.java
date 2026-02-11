@@ -20,10 +20,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentTaskServiceTest {
@@ -63,10 +60,6 @@ class PaymentTaskServiceTest {
         dto.setRequestId(REF_NUMBER);
         dto.setBacsAmountPaid(BigDecimal.TEN);
 
-//        when(paymentTaskCompleteResponseFactory.create(any())).thenReturn(new PaymentTaskCompleteResponse(
-//
-//        ));
-
         PaymentTaskCompleteResponse response = paymentTaskService.complete(dto, TaskOutcome.APPROVED, "ok");
 
         assertEquals(PaymentStatus.SUCCESS, payment.getStatus());
@@ -85,8 +78,8 @@ class PaymentTaskServiceTest {
         when(paymentRepository.findByReferenceNumber(REF_NUMBER))
                 .thenReturn(Optional.of(payment));
         when(paymentHistoryRepository.findByReferenceNumberAndStatus(REF_NUMBER,PaymentStatus.SUBMITTED))
-                .thenReturn(Optional.empty());
-
+        .thenReturn(Optional.empty());
+        
         PaymentTaskDetailsDTO dto = new PaymentTaskDetailsDTO();
         dto.setRequestId(REF_NUMBER);
 

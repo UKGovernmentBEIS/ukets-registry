@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class AccountSendInvitationEmailGenerator extends EmailGenerator {
@@ -30,7 +31,7 @@ public class AccountSendInvitationEmailGenerator extends EmailGenerator {
         params.put("operatorName", notification.getOperatorName());
         params.put("accountType", notification.getAccountType());
         params.put("registryAccountNumber", notification.getAccountNumber());
-        params.put("emitterId", notification.getEmitterId());
+        params.put("emitterId", Optional.ofNullable(notification.getEmitterId()).orElse(""));
         params.put("accountClaimCode", notification.getAccountClaimCode());
 
         return params;

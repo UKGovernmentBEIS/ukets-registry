@@ -2,8 +2,15 @@ package gov.uk.ets.registry.api.payment.notification;
 
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.api.notification.NotificationService;
+import gov.uk.ets.registry.api.notification.PaymentCompletedGroupNotification;
 import gov.uk.ets.registry.api.notification.PaymentRequestGroupNotification;
+import gov.uk.ets.registry.api.payment.domain.Payment;
+import gov.uk.ets.registry.api.payment.domain.types.PaymentStatus;
+import gov.uk.ets.registry.api.payment.repository.PaymentRepository;
 import gov.uk.ets.registry.api.payment.web.model.PaymentDTO;
+import gov.uk.ets.registry.api.payment.web.model.PaymentTaskCompleteResponse;
+import gov.uk.ets.registry.api.task.domain.Task;
+import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotification;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
@@ -24,6 +31,9 @@ public class PaymentsNotificationAppliance {
 
     private final GroupNotificationClient groupNotificationClient;
     private final NotificationService notificationService;
+
+    private final PaymentRepository paymentRepository;
+    private final TaskRepository taskRepository;
     
     /**
      * This aspect processing method is responsible for applying business logic if the underlying conditions are met.
@@ -48,6 +58,8 @@ public class PaymentsNotificationAppliance {
             if (GroupNotificationType.PAYMENT_REQUEST.equals(groupNotificationType)) {
                 groupNotificationClient.emitGroupNotification(
                         generatePaymentRequestNotification(groupNotificationType, joinPoint, (Long) result));
+            } else if (GroupNotificationType.PAYMENT_COMPLETED.equals(groupNotificationType)) {
+                        sendPaymentCompletedNotification((PaymentTaskCompleteResponse) result);
             }//Add more cases if needed
         }
     }	
@@ -66,5 +78,20 @@ public class PaymentsNotificationAppliance {
             .build();
     }
 
-    
+    private void sendPaymentCompletedNotification(PaymentTaskCompleteResponse result) {
+
+        paymentRepository.findByReferenceNumber(result.getReferenceNumber())
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS || p.getStatus() == PaymentStatus.SUBMITTED)
+                .map(Payment::getReferenceNumber)
+                .map(taskRepository::findByRequestId)
+                .map(Task::getParentTask)
+                .map(Task::getClaimedBy)
+                .map(claimant -> PaymentCompletedGroupNotification.builder()
+                        .recipients(notificationService.findUserEmail(claimant.getUrid(), true))
+                        .requestId(result.getReferenceNumber())
+                        .type(GroupNotificationType.PAYMENT_COMPLETED)
+                        .build())
+                .ifPresent(groupNotificationClient::emitGroupNotification);
+    }
+
 }

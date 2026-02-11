@@ -38,6 +38,7 @@ export const initialState: AccountClosureWizardState = {
     billingEmail1: null,
     billingEmail2: null,
     billingContactDetails: null,
+    sellingAllowances: null,
   },
   closureComment: null,
   submittedRequestIdentifier: null,

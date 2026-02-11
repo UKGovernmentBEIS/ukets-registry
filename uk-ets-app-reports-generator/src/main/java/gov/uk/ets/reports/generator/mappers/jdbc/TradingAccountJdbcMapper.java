@@ -36,7 +36,10 @@ public class TradingAccountJdbcMapper
             "           '' as close, \n"+
             "           ac.sales_contact_email, \n"+
             "           ac.sales_contact_phone_number_country, \n"+
-            "           ac.sales_contact_phone_number \n"+
+            "           ac.sales_contact_phone_number, \n" +
+            "           case when ac.sales_contact_uka_1_99 = true then 'TRUE' else 'FALSE' end as sales_contact_uka_1_99, \n" +
+            "           case when ac.sales_contact_uka_100_999 = true then 'TRUE' else 'FALSE' end as sales_contact_uka_100_999, \n" +
+            "           case when ac.sales_contact_uka_1000_plus = true then 'TRUE' else 'FALSE' end as sales_contact_uka_1000_plus\n" +
             "from account as ac  \n" +
             "   inner join account_holder as ah \n" +
             "       on ac.account_holder_id = ah.id \n" +
@@ -68,6 +71,9 @@ public class TradingAccountJdbcMapper
                 .close(resultSet.getString("close"))
                 .salesContactEmail(resultSet.getString("sales_contact_email"))
                 .salesContactPhone(StringUtils.isNotBlank(resultSet.getString("sales_contact_phone_number_country")) ?  StringUtils.trim(resultSet.getString("sales_contact_phone_number_country") + " " +resultSet.getString("sales_contact_phone_number")) : "")
+                .uka1To99(resultSet.getString("sales_contact_uka_1_99"))
+                .uka100To999(resultSet.getString("sales_contact_uka_100_999"))
+                .uka1000Plus(resultSet.getString("sales_contact_uka_1000_plus"))
                 .build();
     }
 }

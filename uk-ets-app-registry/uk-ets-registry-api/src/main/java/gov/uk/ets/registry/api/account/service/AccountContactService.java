@@ -147,16 +147,19 @@ public class AccountContactService {
                 .map(AccountContactDTO::getEmail)
                 .collect(Collectors.toSet());
 
+        final LocalDateTime now = LocalDateTime.now();
         accountContactRepository.findByAccountIdentifier(accountIdentifier).stream()
-                .filter(metsContact -> metContactEmails.contains(metsContact.getEmailAddress()) && metsContact.getInvitedOn() == null)
-                .forEach(accountContact -> accountContact.setInvitedOn(LocalDateTime.now()));
+                .filter(metsContact -> metContactEmails.contains(metsContact.getEmailAddress()))
+                .forEach(accountContact -> accountContact.setInvitedOn(now));
+        Account account = accountRepository.findByIdentifier(accountIdentifier).orElseThrow(() -> new IllegalStateException(
+                String.format("Account with identifier %s not found.", accountIdentifier)));
         List<AccountHolderRepresentative> accountHolderRepresentatives =
                 accountHolderRepresentativeRepository
                         .getAccountHolderRepresentatives(Long.valueOf(accountDTO.getAccountDetails().getAccountHolderId()));
         accountHolderRepresentatives.stream()
-                .filter(accountHolderRepresentative -> registryContactEmails.contains(accountHolderRepresentative.getContact().getEmailAddress()) && accountHolderRepresentative.getInvitedOn() == null)
+                .filter(accountHolderRepresentative -> registryContactEmails.contains(accountHolderRepresentative.getContact().getEmailAddress()))
                 .forEach(accountHolderRepresentative ->
-                        accountHolderRepresentative.setInvitedOn(LocalDateTime.now()));
+                        account.inviteRepresentative(accountHolderRepresentative, now));
         return accountDTO.getAccountClaimCode();
     }
 

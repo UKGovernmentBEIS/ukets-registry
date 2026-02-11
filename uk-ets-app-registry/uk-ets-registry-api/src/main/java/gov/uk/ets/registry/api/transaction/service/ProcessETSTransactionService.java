@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -157,7 +156,7 @@ public class ProcessETSTransactionService {
             complianceEventService.processEvent(SurrenderEvent.builder()
                 .actorId("system") // TODO should we find the user who initiated the task of the transaction?
                 .compliantEntityId(compliantEntityId)
-                .dateTriggered(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
+                .dateTriggered(LocalDateTime.now(ZoneId.of("UTC")))
                 .dateRequested(calculateRequestedDate(transaction))
                 .amount(transaction.getQuantity())
                 .build());
@@ -167,7 +166,7 @@ public class ProcessETSTransactionService {
             complianceEventService.processEvent(SurrenderReversalEvent.builder()
                 .actorId("system") // TODO should we find the user who initiated the task of the transaction?
                 .compliantEntityId(compliantEntityId)
-                .dateTriggered(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
+                .dateTriggered(LocalDateTime.now(ZoneId.of("UTC")))
                 .dateRequested(calculateRequestedDate(transaction))
                 .amount(transaction.getQuantity())
                 .build());

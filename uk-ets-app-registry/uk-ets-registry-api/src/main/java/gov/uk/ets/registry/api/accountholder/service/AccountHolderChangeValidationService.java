@@ -69,7 +69,9 @@ public class AccountHolderChangeValidationService {
         validateHasAccountSuspendedAR(account.getIdentifier());
         validateOpenTasksForAccounts(account.getId());
         validatePendingForApprovalTrustedAccount(account.getIdentifier());
-        transferValidationService.validateNoPendingAllocationTasks(account.getCompliantEntity().getIdentifier());
+        if (Optional.ofNullable(account.getCompliantEntity()).isPresent()) {
+            transferValidationService.validateNoPendingAllocationTasks(account.getCompliantEntity().getIdentifier());	
+        }
         validateOpenTasksForAccountsUnderTheSameAccountHolder(account.getId());
         validateAcquiringAhIsDifferent(account.getAccountHolder().getId(), newAccountHolderId);
         validateOrphanAccountHolderDeletion(account.getAccountHolder().getIdentifier(), accountIdentifier, shouldDeleteAccountHolder);
@@ -104,7 +106,11 @@ public class AccountHolderChangeValidationService {
         validatePendingForApprovalTrustedAccount(accountToBeChanged.getIdentifier());
         validateHasAccountSuspendedAR(accountToBeChanged.getIdentifier());
         validateOpenTasksForAccounts(accountToBeChanged.getId());
-        transferValidationService.validateNoPendingAllocationTasks(accountToBeChanged.getCompliantEntity().getIdentifier());
+        
+        if (Optional.ofNullable(accountToBeChanged.getCompliantEntity()).isPresent()) {
+            transferValidationService.validateNoPendingAllocationTasks(accountToBeChanged.getCompliantEntity().getIdentifier());        	
+        }
+
         validateOpenTasksForAccountsUnderTheSameAccountHolder(accountToBeChanged.getId());
     }
 

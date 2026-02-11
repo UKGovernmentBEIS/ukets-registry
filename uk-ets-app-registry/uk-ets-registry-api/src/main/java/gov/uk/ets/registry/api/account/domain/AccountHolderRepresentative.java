@@ -3,13 +3,26 @@ package gov.uk.ets.registry.api.account.domain;
 import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.common.model.services.converter.StringTrimConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /** Represents a legal representative. */
@@ -62,7 +75,4 @@ public class AccountHolderRepresentative implements Serializable {
     /** The contact. */
     @ManyToOne(fetch = FetchType.LAZY)
     private Contact contact;
-
-    @Column(name = "invited_date")
-    private LocalDateTime invitedOn;
 }

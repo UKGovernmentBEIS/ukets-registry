@@ -29,8 +29,9 @@ public class AccountSendInvitationGroupNotification extends EmailNotification {
     public AccountSendInvitationGroupNotification(Set<String> recipients, GroupNotificationType type,
                                                   String contactFullName, String operatorName,
                                                   String accountType, String accountNumber,
-                                                  String emitterId, String accountClaimCode, Boolean isMetsContact) {
-        super(recipients, type, null, null, null);
+                                                  String emitterId, String accountClaimCode,
+                                                  Boolean isMetsContact, boolean includeBcc) {
+        super(recipients, type, null, null, null, includeBcc);
         this.contactFullName = contactFullName;
         this.operatorName = operatorName;
         this.accountType = accountType;

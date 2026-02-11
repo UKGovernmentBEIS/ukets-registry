@@ -108,7 +108,7 @@ public class PaymentTaskService implements TaskTypeService<PaymentTaskDetailsDTO
             paymentHistory.setMethod(payment.getMethod());
             paymentHistory.setStatus(payment.getStatus());
             paymentHistory.setUpdated(payment.getUpdated());
-            
+
             paymentHistoryRepository.save(paymentHistory);
         }
 

@@ -51,7 +51,7 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
     void testComplianceCalculationAccountCreationAmendment1() {
         var result = dynamicComplianceService.processEvent(compliantEntityInitializationEvent(2020, 2020, 2020));
         assertEquals(ComplianceStatus.C, result.getState().getDynamicStatus());
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2021));
         assertNotEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
     }
 
@@ -94,8 +94,8 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
     @DisplayName("Change year event")
     void testEveryFirstDayOfTheYearEvent() {
         dynamicComplianceService.processEvent(compliantEntityInitializationEvent(2023, 2023, 2021));
-        dynamicComplianceService.processEvent(changeYear());
-        var result = dynamicComplianceService.processEvent(changeYear());
+        dynamicComplianceService.processEvent(changeYear(2022));
+        var result = dynamicComplianceService.processEvent(changeYear(2023));
         assertEquals(ComplianceStatus.C, result.getState().getDynamicStatus());
     }
 
@@ -123,13 +123,13 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
     @DisplayName("Update last year of verified submissions and surrender")
     void testUpdateLastYearOFVerifiedEmissions() {
         dynamicComplianceService.processEvent(compliantEntityInitializationEvent(2011, null, 2011));
-        dynamicComplianceService.processEvent(changeYear());
+        dynamicComplianceService.processEvent(changeYear(2012));
         dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2011, 200L));
         dynamicComplianceService.processEvent(updateLastYearOfVerifiedEmissionsEvent(2015));
-        dynamicComplianceService.processEvent(changeYear());
-        dynamicComplianceService.processEvent(changeYear());
-        dynamicComplianceService.processEvent(changeYear());
-        dynamicComplianceService.processEvent(changeYear());
+        dynamicComplianceService.processEvent(changeYear(2013));
+        dynamicComplianceService.processEvent(changeYear(2014));
+        dynamicComplianceService.processEvent(changeYear(2015));
+        dynamicComplianceService.processEvent(changeYear(2016));
         dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2012, 200L));
         dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2013, 200L));
         dynamicComplianceService.processEvent(exclusionEvent(2014));
@@ -237,10 +237,10 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
     @DisplayName("Status excluded is expected only when every year is excluded")
     void testAllYearExcluded() {
         dynamicComplianceService.processEvent(compliantEntityInitializationEvent(2011, null, 2011));
-        dynamicComplianceService.processEvent(changeYear());
+        dynamicComplianceService.processEvent(changeYear(2012));
         dynamicComplianceService.processEvent(exclusionEvent(2011));
         dynamicComplianceService.processEvent(exclusionEvent(2012));
-        DynamicCompliance result = dynamicComplianceService.processEvent(changeYear());
+        DynamicCompliance result = dynamicComplianceService.processEvent(changeYear(2013));
         assertEquals(ComplianceStatus.EXCLUDED, result.getState().getDynamicStatus());
     }
     
@@ -252,7 +252,7 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
         result = dynamicComplianceService
             .processEvent(updateOfVerifiedEmissionsEvent(2021, 100L));
         result = dynamicComplianceService.processEvent(surrenderEvent(100L));
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(exclusionEvent(2022));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
@@ -266,7 +266,7 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
         result = dynamicComplianceService
             .processEvent(updateOfVerifiedEmissionsEvent(2021, 100L));
         result = dynamicComplianceService.processEvent(surrenderEvent(50L));
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(exclusionEvent(2022));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
@@ -280,12 +280,12 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
         result = dynamicComplianceService
             .processEvent(updateOfVerifiedEmissionsEvent(2021, 100L));
         //2022
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
         //Set 2022 as excluded
         result = dynamicComplianceService.processEvent(exclusionEvent(2022));
         //2023
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         result = dynamicComplianceService.processEvent(surrenderEvent(100L));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
     }
@@ -298,12 +298,12 @@ class DynamicComplianceServiceTest extends DynamicComplianceServiceTestBase {
         dynamicComplianceService
             .processEvent(updateOfVerifiedEmissionsEvent(2021, 100L));
         //2022
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
         //Set 2022 as excluded
         dynamicComplianceService.processEvent(exclusionEvent(2022));
         //2023
-        dynamicComplianceService.processEvent(changeYear());
+        dynamicComplianceService.processEvent(changeYear(2022));
         result = dynamicComplianceService.processEvent(exclusionEvent(2023));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
     }

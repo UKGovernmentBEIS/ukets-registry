@@ -48,4 +48,22 @@ public class SalesContact implements Serializable{
     @Column(name = "sales_contact_phone_number")
     private String phoneNumber;
 
+    /**
+     * UK Allowances sales volumes 1 to 99
+     */
+    @Column(name = "sales_contact_uka_1_99")
+    private boolean uka1To99;
+
+    /**
+     * UK Allowances sales volumes 100 to 999
+     */
+    @Column(name = "sales_contact_uka_100_999")
+    private boolean uka100To999;
+
+    /**
+     * UK Allowances sales volumes 1000 plus
+     */
+    @Column(name = "sales_contact_uka_1000_plus")
+    private boolean uka1000Plus;
+
 }

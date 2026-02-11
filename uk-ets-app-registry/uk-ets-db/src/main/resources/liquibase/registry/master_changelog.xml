@@ -83,6 +83,8 @@
     <include file="changelogs/v5.12.0/changelog_v5_12_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.16.0/changelog_v5_16_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.18.0/changelog_v5_18_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.19.0/changelog_v5_19_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.22.0/changelog_v5_22_0.xml" relativeToChangelogFile="true"/>
 
     <!-- Include here new files -->
 

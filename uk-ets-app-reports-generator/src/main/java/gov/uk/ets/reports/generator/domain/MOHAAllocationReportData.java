@@ -16,4 +16,9 @@ public class MOHAAllocationReportData extends ReportData {
     private Integer firstYear;
     private Integer lastYear;
     private String regulator;
+    private String salesContactEmail;
+    private String salesContactPhone;
+    private String uka1To99;
+    private String uka100To999;
+    private String uka1000Plus;
 }

@@ -223,26 +223,30 @@ export class ConfirmAccountDetailsUpdateContainerComponent
     }
   }
 
-  salesDetailsChanged(_initial, changed): boolean {
-    const initial = { ..._initial } || {
-      emailAddress: null,
-      phoneNumber: null,
-      phoneNumberCountryCode: null,
-    };
-    if (
-      !initial.emailAddress?.emailAddress ||
-      initial.emailAddress?.emailAddress === ''
-    )
+  salesDetailsChanged(
+    _initial: AccountDetails['salesContactDetails'],
+    changed: AccountDetails['salesContactDetails']
+  ): boolean {
+    const initial = { ..._initial };
+
+    if (!initial.emailAddress?.emailAddress) {
       initial.emailAddress = null;
-    if (!initial.phoneNumber || initial.phoneNumber === '')
+    }
+    if (!initial.phoneNumber) {
       initial.phoneNumber = null;
-    if (!initial.phoneNumberCountryCode) initial.phoneNumberCountryCode = null;
+    }
+    if (!initial.phoneNumberCountryCode) {
+      initial.phoneNumberCountryCode = null;
+    }
 
     return (
-      initial?.phoneNumberCountryCode !== changed?.phoneNumberCountryCode ||
-      initial?.phoneNumber !== changed?.phoneNumber ||
-      initial?.emailAddress?.emailAddress !==
-        changed?.emailAddress?.emailAddress
+      initial.phoneNumberCountryCode !== changed?.phoneNumberCountryCode ||
+      initial.phoneNumber !== changed?.phoneNumber ||
+      initial.emailAddress?.emailAddress !==
+        changed?.emailAddress?.emailAddress ||
+      !!initial.uka1To99 !== changed?.uka1To99 ||
+      !!initial.uka100To999 !== changed?.uka100To999 ||
+      !!initial.uka1000Plus !== changed?.uka1000Plus
     );
   }
 

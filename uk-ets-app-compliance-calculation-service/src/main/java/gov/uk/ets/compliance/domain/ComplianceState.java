@@ -191,8 +191,8 @@ public class ComplianceState {
 
     }
 
-    public void nextYear() {
-        currentYear++;
+    public void nextYear(int newYear) {
+        currentYear = newYear;
 
     }
 

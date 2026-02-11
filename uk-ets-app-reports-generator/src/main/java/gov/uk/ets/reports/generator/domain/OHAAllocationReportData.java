@@ -19,4 +19,7 @@ public class OHAAllocationReportData extends ReportData {
     private Integer entitled;
     private String salesContactEmail;
     private String salesContactPhone;
+    private String uka1To99;
+    private String uka100To999;
+    private String uka1000Plus;
 }

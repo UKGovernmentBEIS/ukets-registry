@@ -107,6 +107,8 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
         data.add(reportData.getCompliantEntity().getImo());
         data.add(reportData.getCompliantEntity().getMaritimeMonitoringPlanId());
 
+        data.add(reportData.getCompliantEntity().getEmitterId());
+
         data.add(reportData.getCompliantEntity().getFirstYearOfVerifiedEmissionSubmission());
         data.add(reportData.getCompliantEntity().getLastYearOfVerifiedEmissionSubmission());
         //Mets Contacts
@@ -199,6 +201,7 @@ public class AccountDetailsReportService implements ReportTypeService<AccountDet
                 "Maritime operator ID",
                 "Company IMO number",
                 "Maritime EMP ID",
+                "Emitter ID",
                 "First year of verified emission submission",
                 "Last year of verified emission submission",
                 "METS Contacts"

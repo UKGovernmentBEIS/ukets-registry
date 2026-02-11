@@ -156,7 +156,7 @@ public class AccountValidator {
         }
 
         if(AccountType.getTypesWithSalesContactDetails().contains(accountType)) {
-        	validateSalesContactDetails(errors, accountDetails.getSalesContactDetails(), source);
+        	validateSalesContactDetails(errors, accountDetails.getSalesContactDetails(), accountDetails.isSellingAllowances(), source);
         }
 
         if (AccountType.getTypesWithBillingDetails().contains(accountType)) {
@@ -583,16 +583,26 @@ public class AccountValidator {
     /**
      * Validates the sales contact details.
      *
-     * @param errors The error list.
-     * @param salesContact The account sales contact details.
-     * @param source The source property.
+     * @param errors            The error list.
+     * @param salesContact      The account sales contact details.
+     * @param sellingAllowances
+     * @param source            The source property.
      */
 	private void validateSalesContactDetails(List<Violation> errors, SalesContactDetailsDTO salesContact,
-			String source) {
+                                             boolean sellingAllowances, String source) {
 		
-		if(salesContact == null) {
+		if(sellingAllowances && salesContact == null) {
+			errors.add(new Violation(String.format("%s.salesContactDetails.empty", source),
+					"The sales contact details is mandatory"));
 			return;
 		}
+
+        if(!sellingAllowances && salesContact != null) {
+            errors.add(new Violation(String.format("%s.salesContactDetails.invalid", source),
+                    "Sales contact details are not required for accounts that do not sell allowances"));
+        }
+
+        if (!sellingAllowances && salesContact == null) return;
 
 		if (salesContact.getEmailAddress() != null && !salesContact.getEmailAddress().isEmpty()) {
 			EmailAddressDTO email = salesContact.getEmailAddress();

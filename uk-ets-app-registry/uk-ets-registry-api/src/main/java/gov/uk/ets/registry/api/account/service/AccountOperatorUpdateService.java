@@ -25,7 +25,6 @@ import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -163,7 +162,7 @@ public class AccountOperatorUpdateService {
                 .firstYearOfVerifiedEmissions(firstYear)
                 .actorId(actorId)
                 .compliantEntityId(compliantEntityId)
-                .dateTriggered(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
+                .dateTriggered(LocalDateTime.now(ZoneId.of("UTC")))
                 .dateRequested(LocalDateTime.ofInstant(taskCompletionDate.toInstant(), UTC))
                 .build());
         }
@@ -173,7 +172,7 @@ public class AccountOperatorUpdateService {
                 .lastYearOfVerifiedEmissions(lastYear)
                 .actorId(actorId)
                 .compliantEntityId(compliantEntityId)
-                .dateTriggered(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
+                .dateTriggered(LocalDateTime.now(ZoneId.of("UTC")))
                 .dateRequested(LocalDateTime.ofInstant(taskCompletionDate.toInstant(), UTC))
                 .build());
         }

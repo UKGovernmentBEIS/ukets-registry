@@ -57,8 +57,6 @@ import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
-import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
-import gov.uk.ets.registry.api.account.web.model.accountcontact.RegistryContactDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.auditevent.web.AuditEventDTO;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
@@ -327,9 +325,9 @@ public class AccountService {
         AccountDetailsDTO detailsDTO = accountDTO.getAccountDetails();
         if (detailsDTO != null) {
             account.setAccountName(detailsDTO.getName());
-            if(detailsDTO.getSalesContactDetails() != null) {
-            	account.setSalesContact(createSalesContactDetails(detailsDTO.getSalesContactDetails()));
-            }
+            account.setSellingAllowances(detailsDTO.isSellingAllowances());
+            account.setSalesContact(createSalesContactDetails(detailsDTO.getSalesContactDetails(), detailsDTO.isSellingAllowances()));
+
             if (detailsDTO.getAddress() != null) {
                 Contact accountAddress = conversionService
                     .convert(ConversionParameters.builder()
@@ -480,13 +478,19 @@ public class AccountService {
         return maritimeOperator;
     }
     
-    private SalesContact createSalesContactDetails(SalesContactDetailsDTO salesContactDetailsDTO) {
-    	SalesContact salesContact = new SalesContact();
-    	if(salesContactDetailsDTO.getEmailAddress() != null && !salesContactDetailsDTO.getEmailAddress().isEmpty()) {
-    		salesContact.setEmailAddress(salesContactDetailsDTO.getEmailAddress().getEmailAddress());
-    	}
-    	salesContact.setPhoneNumber(salesContactDetailsDTO.getPhoneNumber());
-    	salesContact.setPhoneNumberCountry(salesContactDetailsDTO.getPhoneNumberCountryCode());
+    private SalesContact createSalesContactDetails(SalesContactDetailsDTO salesContactDetailsDTO, boolean sellingAllowances) {
+        SalesContact salesContact = null;
+        if (sellingAllowances) {
+            salesContact = new SalesContact();
+            if(salesContactDetailsDTO.getEmailAddress() != null && !salesContactDetailsDTO.getEmailAddress().isEmpty()) {
+                salesContact.setEmailAddress(salesContactDetailsDTO.getEmailAddress().getEmailAddress());
+            }
+            salesContact.setPhoneNumber(salesContactDetailsDTO.getPhoneNumber());
+            salesContact.setPhoneNumberCountry(salesContactDetailsDTO.getPhoneNumberCountryCode());
+            salesContact.setUka1To99(salesContactDetailsDTO.isUka1To99());
+            salesContact.setUka100To999(salesContactDetailsDTO.isUka100To999());
+            salesContact.setUka1000Plus(salesContactDetailsDTO.isUka1000Plus());
+        }
         return salesContact;
     }
 
@@ -1436,9 +1440,8 @@ public class AccountService {
 
         account.setBillingAddressSameAsAccountHolderAddress(updatedAccountDetailsDTO.isAccountDetailsSameBillingAddress());
         account.setAccountName(updatedAccountDetailsDTO.getName());
-        if(updatedAccountDetailsDTO.getSalesContactDetails() != null) {
-        	account.setSalesContact(createSalesContactDetails(updatedAccountDetailsDTO.getSalesContactDetails()));
-        }
+        account.setSellingAllowances(updatedAccountDetailsDTO.isSellingAllowances());
+        account.setSalesContact(createSalesContactDetails(updatedAccountDetailsDTO.getSalesContactDetails(), updatedAccountDetailsDTO.isSellingAllowances()));
         if (account.getContact() != null) {
             Contact contact = conversionService
                 .convert(ConversionParameters.builder()
@@ -1452,7 +1455,10 @@ public class AccountService {
             persistenceService.save(contact);
         }
         AccountDTO accountDTO = accountDTOFactory.create(account);
-        accountAuditService.logChanges(currentAccountDTO, account, SourceSystem.REGISTRY);
+        //Traders accounts are not audited for diffs.
+        if (!RegistryAccountType.TRADING_ACCOUNT.equals(account.getRegistryAccountType())) {
+            accountAuditService.logChanges(currentAccountDTO, account, SourceSystem.REGISTRY);	
+        }
 
         // record event
 
@@ -1691,16 +1697,6 @@ public class AccountService {
         return currentType.equals(newType);
     }
 
-    private boolean hasRequiredEmitterID(Object unproxied) {
-        if (unproxied instanceof AircraftOperator) {
-            return !Objects.isNull(((AircraftOperator) unproxied).getEmitterId());
-        } else if (unproxied instanceof MaritimeOperator) {
-            return !Objects.isNull(((MaritimeOperator) unproxied).getEmitterId());
-        }
-        return false;
-    }
-
-
     private String generateAccountClaimCode() {
         try {
             return generatorService.generateAccountClaimCode();
@@ -1714,7 +1710,7 @@ public class AccountService {
         final AccountDTO accountDTO = this.getAccountDTO(accountIdentifier);
         final Long accountId = accountRepository.findByIdentifier(accountIdentifier).map(Account::getId)
                 .orElseThrow(() -> new UkEtsException("Account not found"));
-        if (isAccountClaimApplicable(accountId, accountIdentifier, accountDTO)) {
+        if (isAccountClaimApplicable(accountId, accountIdentifier)) {
             return accountContactService.sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO);
         }
         return null;
@@ -1725,7 +1721,7 @@ public class AccountService {
         return accountContactService.claimAccount(accountClaimDTO);
     }
 
-    private boolean isAccountClaimApplicable(Long accountId, Long accountIdentifier, AccountDTO accountDTO) {
+    public boolean isAccountClaimApplicable(Long accountId, Long accountIdentifier) {
 
         final Long pendingAuthorizedRepresentativeTasks = taskRepository.countPendingTasksByAccountIdInAndType(
                 List.of(accountId),
@@ -1737,16 +1733,6 @@ public class AccountService {
                 .filter(access -> access.getState().equals(AccountAccessState.ACTIVE))
                 .toList();
 
-
-        final List<MetsContactDTO> uninvitedMetsContacts = accountDTO.getMetsContacts().stream()
-                .filter(metsContact -> metsContact.getInvitedOn() == null)
-                .toList();
-        final List<RegistryContactDTO> uninvitedRegistryContacts = accountDTO.getRegistryContacts().stream()
-                .filter(registryContact -> registryContact.getInvitedOn() == null)
-                .toList();
-
-        final boolean hasUninvitedContacts = !(uninvitedMetsContacts.isEmpty() && uninvitedRegistryContacts.isEmpty());
-
-        return  (accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 0 && hasUninvitedContacts);
+        return  accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 0;
     }
 }

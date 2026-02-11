@@ -6,6 +6,7 @@ import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountDTOFactory;
 import gov.uk.ets.registry.api.account.service.AccountGeneratorService;
+import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ public class MetsContactsNotificationServiceTest {
     @Mock
     private AccountGeneratorService accountGeneratorService;
 
+    @Mock
+    private AccountService accountService;
+
     @InjectMocks
     private MetsContactsNotificationService service;
 
@@ -61,6 +65,7 @@ public class MetsContactsNotificationServiceTest {
     void shouldSendInvitationForEligibleContacts() throws Exception {
 
         Account account = new Account();
+        account.setId(1L);
         account.setIdentifier(100L);
         account.setAccountClaimCode("CLAIM123");
 
@@ -79,6 +84,7 @@ public class MetsContactsNotificationServiceTest {
 
         when(accountDTOFactory.createMetsContactDTO(contact)).thenReturn(metsDTO);
         when(accountDTOFactory.create(account, true)).thenReturn(accountDTO);
+        when(accountService.isAccountClaimApplicable(1L, 100L)).thenReturn(true);
 
         service.sendInvitation(account, List.of(incoming));
 
@@ -96,6 +102,7 @@ public class MetsContactsNotificationServiceTest {
     void shouldGenerateClaimCodeWhenMissing() throws Exception {
 
         Account account = new Account();
+        account.setId(1L);
         account.setIdentifier(100L);
         account.setAccountClaimCode(null);
 
@@ -120,6 +127,8 @@ public class MetsContactsNotificationServiceTest {
         when(accountDTOFactory.createMetsContactDTO(contact))
                 .thenReturn(incoming);
 
+        when(accountService.isAccountClaimApplicable(1L, 100L)).thenReturn(true);
+
         service.sendInvitation(account, List.of(incoming));
 
         verify(accountGeneratorService).generateAccountClaimCode();
@@ -132,6 +141,7 @@ public class MetsContactsNotificationServiceTest {
     void shouldNotUpdateAccountWhenClaimCodeExists() throws Exception {
 
         Account account = new Account();
+        account.setId(1L);
         account.setIdentifier(100L);
         account.setAccountClaimCode("EXISTING");
 
@@ -149,6 +159,8 @@ public class MetsContactsNotificationServiceTest {
 
         when(accountDTOFactory.create(account, true))
                 .thenReturn(new AccountDTO());
+
+        when(accountService.isAccountClaimApplicable(1L, 100L)).thenReturn(true);
 
         service.sendInvitation(account, List.of(incoming));
 

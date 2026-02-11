@@ -111,6 +111,7 @@ public class AccountDetailsJdbcMapper
             "       case when mo.compliant_entity_id IS NOT NULL then ce.identifier end     as maritime_operator_id,\n" +
             "       mo.maritime_monitoring_plan_identifier                                  as maritime_monitoring_plan_id,\n" +
             "       mo.imo                                                                  as imo,\n" +
+            "       ce.emitter_id                                                           as emitter_id,\n" +
 
             "       ce.start_year                                                           as first_year_verified_emission_submission,\n" +
             "       ce.end_year                                                             as last_year_verified_emission_submission,\n" +
@@ -246,6 +247,7 @@ public class AccountDetailsJdbcMapper
                 .maritimeOperatorId(Util.getNullableLong(rs, "maritime_operator_id"))
                 .maritimeMonitoringPlanId(rs.getString("maritime_monitoring_plan_id"))
                 .imo(rs.getString("imo"))
+                .emitterId(rs.getString("emitter_id"))
                 .build())
             .build();
     }

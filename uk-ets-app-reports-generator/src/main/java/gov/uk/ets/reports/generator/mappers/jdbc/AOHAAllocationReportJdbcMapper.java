@@ -34,7 +34,10 @@ public class AOHAAllocationReportJdbcMapper
             "           ac.sales_contact_phone_number_country, \n"+
             "           ac.sales_contact_phone_number, \n"+
             "           sum(ae.entitlement) as entitlement, \n" +
-            "           sum(COALESCE(ae.allocated, 0) - COALESCE(ae.returned, 0) - COALESCE(ae.reversed, 0)) as allocation \n"+
+            "           sum(COALESCE(ae.allocated, 0) - COALESCE(ae.returned, 0) - COALESCE(ae.reversed, 0)) as allocation, \n"+
+            "           case when BOOL_OR(ac.sales_contact_uka_1_99) then 'TRUE' else 'FALSE' end as sales_contact_uka_1_99, \n" +
+            "           case when BOOL_OR(ac.sales_contact_uka_100_999) then 'TRUE' else 'FALSE' end as sales_contact_uka_100_999, \n" +
+            "           case when BOOL_OR(ac.sales_contact_uka_1000_plus) then 'TRUE' else 'FALSE' end as sales_contact_uka_1000_plus\n" +
             "from account_holder as ah \n" +
             "   inner join account as ac  \n" +
             "       on ah.id = ac.account_holder_id   \n" +
@@ -77,6 +80,9 @@ public class AOHAAllocationReportJdbcMapper
                 .entitled(resultSet.getInt("entitlement"))
                 .salesContactEmail(resultSet.getString("sales_contact_email"))
                 .salesContactPhone(StringUtils.isNotBlank(resultSet.getString("sales_contact_phone_number_country")) ?  StringUtils.trim(resultSet.getString("sales_contact_phone_number_country") + " " +resultSet.getString("sales_contact_phone_number")) : "")
+                .uka1To99(resultSet.getString("sales_contact_uka_1_99"))
+                .uka100To999(resultSet.getString("sales_contact_uka_100_999"))
+                .uka1000Plus(resultSet.getString("sales_contact_uka_1000_plus"))
                 .build();
     }
 }

@@ -45,7 +45,7 @@ public class Sheet2Test extends DynamicComplianceServiceTestBase {
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(surrenderEvent(100L));
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(surrenderReversalEvent(50L));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
@@ -62,7 +62,7 @@ public class Sheet2Test extends DynamicComplianceServiceTestBase {
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(updateLastYearOfVerifiedEmissionsEvent(2025));
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
     }
 
@@ -77,9 +77,9 @@ public class Sheet2Test extends DynamicComplianceServiceTestBase {
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(updateLastYearOfVerifiedEmissionsEvent(2025));
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2023));
         assertEquals(ComplianceStatus.C, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2022, 100L));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());

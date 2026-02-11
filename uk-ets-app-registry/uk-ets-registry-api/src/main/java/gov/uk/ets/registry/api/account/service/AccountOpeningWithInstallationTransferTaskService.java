@@ -47,7 +47,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -188,7 +187,7 @@ public class AccountOpeningWithInstallationTransferTaskService
 
             CompliantEntity compliantEntity = newAccount.getCompliantEntity();
             if (compliantEntity != null) {
-                LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+                LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
                 GetCurrentDynamicStatusEvent getCurrentDynamicStatusEvent = GetCurrentDynamicStatusEvent.builder()
                     .actorId(userService.getCurrentUser().getUrid())
                     .compliantEntityId(compliantEntity.getIdentifier())

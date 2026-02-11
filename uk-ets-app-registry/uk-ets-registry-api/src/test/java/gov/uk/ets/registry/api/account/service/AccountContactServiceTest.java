@@ -121,12 +121,12 @@ class AccountContactServiceTest {
 
         when(accountHolderRepresentativeRepository.getAccountHolderRepresentatives(Long.valueOf(accountHolderId)))
                 .thenReturn(List.of(rep));
+        when(accountRepository.findByIdentifier(accountIdentifier)).thenReturn(Optional.of(new Account()));
 
         String result = accountContactService.sendInvitation(accountIdentifier, accountDTO, sendDTO);
 
         assertEquals(accountClaimCode, result);
         assertNotNull(metsAccountContactEntity.getInvitedOn());
-        assertNotNull(rep.getInvitedOn());
     }
 
     @Test

@@ -29,7 +29,6 @@ import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import org.apache.poi.ooxml.POIXMLException;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
@@ -181,7 +180,7 @@ public class EmissionsTableService {
         UpdateOfVerifiedEmissionsEvent event = UpdateOfVerifiedEmissionsEvent.builder()
             .compliantEntityId(entry.getCompliantEntityId())
             .actorId(actorId)
-            .dateTriggered(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
+            .dateTriggered(LocalDateTime.now(ZoneId.of("UTC")))
             .dateRequested(LocalDateTime.ofInstant(completedDate.toInstant(), UTC))
             .year(entry.getYear().intValue())
             .verifiedEmissions(entry.getEmissions())

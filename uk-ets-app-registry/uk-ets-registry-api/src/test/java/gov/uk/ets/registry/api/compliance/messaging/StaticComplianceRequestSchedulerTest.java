@@ -16,7 +16,6 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import net.javacrumbs.shedlock.core.LockAssert;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +42,7 @@ class StaticComplianceRequestSchedulerTest {
     @Test
     void testExecute() {
         // given
-        var now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        var now = LocalDateTime.now(ZoneId.of("UTC"));
         var account1 = createAccount(Date.from(now.minusYears(2).toInstant(ZoneOffset.UTC)));
         var account2 = createAccount(Date.from(now.minusYears(1).toInstant(ZoneOffset.UTC)));
         var account3 = createAccount(null);

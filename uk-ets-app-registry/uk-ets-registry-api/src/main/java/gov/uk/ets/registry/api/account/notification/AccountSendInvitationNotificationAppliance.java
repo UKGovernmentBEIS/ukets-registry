@@ -122,6 +122,7 @@ public class AccountSendInvitationNotificationAppliance {
                 .accountClaimCode(accountClaimCode)
                 .isMetsContact(isMetsContact)
                 .type(type)
+                .includeBcc(true)
                 .build();
     }
 

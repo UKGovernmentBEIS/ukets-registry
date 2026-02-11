@@ -23,7 +23,10 @@ export const selectUpdateTypes = createSelector(
   fromAuth.isAuthorizedRepresentative,
   (account, isAuthorizedRepresentative) => {
     const options: FormRadioOption[] = [];
-    if (!isAuthorizedRepresentative) {
+    if (
+      !isAuthorizedRepresentative ||
+      'TRADING_ACCOUNT' === account?.accountType
+    ) {
       options.push({
         label: AccountHolderDetailsTypeMap.get(
           AccountHolderDetailsType.ACCOUNT_HOLDER_UPDATE_DETAILS

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_22_0_DROP_INVITED_DATE_ON_ACCOUNT_HOLDER_REPRESENTATIVE_TABLE" author="dimopoulosc" context="migrate">
+        <comment>Remove invited date column from account holder representative</comment>
+        <sql>
+            ALTER TABLE "account_holder_representative" DROP COLUMN IF EXISTS "invited_date";
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "account_holder_representative" ADD COLUMN "invited_date" TIMESTAMP;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5_22_0_ACCOUNT_REPRESENTATIVE_INVITATION_TABLE" author="dimopoulosc" context="migrate">
+
+        <comment>Account representative invitation table</comment>
+
+        <sql>
+            CREATE SEQUENCE account_rep_inv_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE "account_representative_invitation"
+            (
+                "id" BIGINT NOT NULL,
+                "account_id" BIGINT NOT NULL,
+                "account_holder_representative_id" BIGINT NOT NULL,
+                "invited_date" TIMESTAMP,
+
+                CONSTRAINT "pk_account_rep_inv"
+                    PRIMARY KEY ("id"),
+
+                CONSTRAINT "fk_acc_rep_inv_account"
+                    FOREIGN KEY ("account_id")
+                        REFERENCES "account" ("id"),
+
+                CONSTRAINT "fk_acc_rep_inv_representative"
+                    FOREIGN KEY ("account_holder_representative_id")
+                        REFERENCES "account_holder_representative" ("id"),
+
+                CONSTRAINT "uk_acc_rep_inv_account_rep"
+                    UNIQUE ("account_id", "account_holder_representative_id")
+            );
+
+            CREATE INDEX "idx_acc_rep_inv_account_id"
+                ON "account_representative_invitation" ("account_id");
+
+            CREATE INDEX "idx_acc_rep_inv_rep_id"
+                ON "account_representative_invitation" ("account_holder_representative_id");
+
+            COMMENT ON TABLE "account_representative_invitation"
+                IS 'Invitations sent to registry contacts for a specific account';
+
+            COMMENT ON COLUMN "account_representative_invitation"."id"
+                IS 'Primary key';
+
+            COMMENT ON COLUMN "account_representative_invitation"."account_id"
+                IS 'FK to account table';
+
+            COMMENT ON COLUMN "account_representative_invitation"."account_holder_representative_id"
+                IS 'FK to account_holder_representative table';
+
+            COMMENT ON COLUMN "account_representative_invitation"."invited_date"
+                IS 'Invitation timestamp';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "account_representative_invitation" CASCADE;
+                DROP SEQUENCE IF EXISTS account_rep_inv_seq;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

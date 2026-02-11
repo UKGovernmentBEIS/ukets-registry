@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
@@ -114,7 +113,7 @@ public class EmissionEventService {
 
     private void publishUpdateOfVerifiedEmissionsEvent(EmissionsEntry entry) {
 
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         UpdateOfVerifiedEmissionsEvent event = UpdateOfVerifiedEmissionsEvent.builder()
             .compliantEntityId(entry.getCompliantEntityId())
             .actorId("system")

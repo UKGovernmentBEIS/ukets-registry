@@ -50,16 +50,17 @@ public abstract class DynamicComplianceServiceTestBase {
             .build();
     }
 
-    protected ChangeYearEvent changeYear() {
-        return changeYear(LocalDateTime.now());
+    protected ChangeYearEvent changeYear(int newYear) {
+        return changeYear(LocalDateTime.now(),newYear);
     }
 
-    protected ChangeYearEvent changeYear(LocalDateTime dateRequested) {
+    protected ChangeYearEvent changeYear(LocalDateTime dateRequested, int newYear) {
         return ChangeYearEvent.builder()
             .eventId(UUID.randomUUID())
             .compliantEntityId(testCompliantEntityId)
             .dateRequested(dateRequested)
             .dateTriggered(LocalDateTime.now())
+            .newYear(newYear)
             .build();
     }
 

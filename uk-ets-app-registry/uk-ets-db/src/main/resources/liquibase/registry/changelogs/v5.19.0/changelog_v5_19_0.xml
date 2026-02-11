@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_19_0_ADD_SMALL_VOLUME_SALES_COLUMNS_TO_ACCOUNT" author="dimopoulosc" context="migrate">
+        <comment>Add small volume sales columns to account.</comment>
+        <sql>
+            alter table account add column if not exists selling_allowances boolean default false;
+            alter table account add column if not exists sales_contact_uka_1_99 boolean default false;
+            alter table account add column if not exists sales_contact_uka_100_999 boolean default false;
+            alter table account add column if not exists sales_contact_uka_1000_plus boolean default false;
+        </sql>
+
+        <rollback>
+            <sql>
+                alter table account drop column if exists selling_allowances;
+                alter table account drop column if exists sales_contact_uka_1_99;
+                alter table account drop column if exists sales_contact_uka_100_999;
+                alter table account drop column if exists sales_contact_uka_1000_plus;
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

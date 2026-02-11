@@ -459,6 +459,83 @@ public class AccountRepositoryTest {
         assertNull(actual.get(0).getAccountClaimCode());
     }
 
+    @ParameterizedTest(name = "#{index} - Emitter Id exists for MaritimeOperator Account with status {0}.")
+    @EnumSource(value = AccountStatus.class, names = {"OPEN", "ALL_TRANSACTIONS_RESTRICTED", "SOME_TRANSACTIONS_RESTRICTED", "SUSPENDED_PARTIALLY", "SUSPENDED", "TRANSFER_PENDING", "CLOSURE_PENDING", "REJECTED", "PROPOSED"})
+    void findByRegistryAccountTypeIn(AccountStatus status) {
+
+        String emitterId = "RTUIOLKVSOIV6877";
+        Long maritimeOperatorId = 100024L;
+        Long aircraftOperatorId = 100025L;
+        Long operatorId = 100026L;
+        String permitId = "12345".toUpperCase();
+        MaritimeOperator maritime = getMaritimeOperator(maritimeOperatorId,emitterId);
+
+        Account maritimeAccount = getOperatorHoldingAccount(maritimeOperatorId,RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
+                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,status);
+        maritimeAccount.setCompliantEntity(maritime);
+        maritime.setAccount(maritimeAccount);
+        entityManager.persist(maritime);
+        entityManager.persist(maritimeAccount);
+
+        AircraftOperator aircraftOperator = getAircraftOperator(aircraftOperatorId,emitterId);
+
+        Account aircraftAccount = getOperatorHoldingAccount(aircraftOperatorId,RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+                AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,status);
+        aircraftAccount.setCompliantEntity(aircraftOperator);
+        aircraftOperator.setAccount(aircraftAccount);
+        entityManager.persist(aircraftOperator);
+        entityManager.persist(aircraftAccount);
+
+        Installation installation = getInstallation(permitId);
+        installation.setEmitterId(emitterId);
+        Account account = getOperatorHoldingAccount(operatorId, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,status);
+        account.setCompliantEntity(installation);
+        installation.setAccount(account);
+
+        entityManager.persist(installation);
+        entityManager.persist(account);
+
+        final List<Account> accounts = accountRepository.findByRegistryAccountTypeIn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
+                RegistryAccountType.TRADING_ACCOUNT));
+
+        assertThat(accounts).hasSize(3);
+        assertThat(accounts).extracting(Account::getRegistryAccountType).containsExactlyInAnyOrder(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT);
+    }
+
+    @ParameterizedTest(name = "#{index} - Emitter Id exists for MaritimeOperator Account with status {0}.")
+    @EnumSource(value = AccountStatus.class, names = {"OPEN", "ALL_TRANSACTIONS_RESTRICTED", "SOME_TRANSACTIONS_RESTRICTED", "SUSPENDED_PARTIALLY", "SUSPENDED", "TRANSFER_PENDING", "CLOSURE_PENDING", "REJECTED", "PROPOSED"})
+    void findByRegistryAccountTypeIn_no_results(AccountStatus status) {
+
+        String emitterId = "RTUIOLKVSOIV6877";
+        Long maritimeOperatorId = 100024L;
+        Long aircraftOperatorId = 100025L;
+        MaritimeOperator maritime = getMaritimeOperator(maritimeOperatorId,emitterId);
+
+        Account maritimeAccount = getOperatorHoldingAccount(maritimeOperatorId,RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
+                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,status);
+        maritimeAccount.setCompliantEntity(maritime);
+        maritime.setAccount(maritimeAccount);
+        entityManager.persist(maritime);
+        entityManager.persist(maritimeAccount);
+
+        AircraftOperator aircraftOperator = getAircraftOperator(aircraftOperatorId,emitterId);
+
+        Account aircraftAccount = getOperatorHoldingAccount(aircraftOperatorId,RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+                AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,status);
+        aircraftAccount.setCompliantEntity(aircraftOperator);
+        aircraftOperator.setAccount(aircraftAccount);
+        entityManager.persist(aircraftOperator);
+        entityManager.persist(aircraftAccount);
+
+        final List<Account> accounts = accountRepository.findByRegistryAccountTypeIn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                RegistryAccountType.TRADING_ACCOUNT));
+
+        assertThat(accounts).isEmpty();
+    }
+
     private Installation getInstallation(String permitId) {
         Installation installation = new Installation();
         installation.setChangedRegulator(RegulatorType.OPRED);

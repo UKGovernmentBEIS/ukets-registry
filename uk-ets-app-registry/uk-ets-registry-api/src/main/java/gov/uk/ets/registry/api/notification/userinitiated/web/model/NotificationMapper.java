@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -48,7 +47,7 @@ public class NotificationMapper {
             .longText(request.getContentDetails().getContent())
             .schedule(request.getActivationDetails().calculateSchedule(request.getType()))
             .creator(creatorUrid)
-            .lastUpdated(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)))
+            .lastUpdated(LocalDateTime.now(ZoneId.of("UTC")))
             .updatedBy(creatorUrid)
             .uploadedFile(uploadedFile)
             .build();
@@ -59,7 +58,7 @@ public class NotificationMapper {
         notification.setLongText(request.getContentDetails().getContent());
         notification.setSchedule(request.getActivationDetails().calculateSchedule(request.getType()));
         notification.setStatus(request.getActivationDetails().calculateStatus());
-        notification.setLastUpdated(LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)));
+        notification.setLastUpdated(LocalDateTime.now(ZoneId.of("UTC")));
         notification.setUpdatedBy(urid);
         return notification;
     }

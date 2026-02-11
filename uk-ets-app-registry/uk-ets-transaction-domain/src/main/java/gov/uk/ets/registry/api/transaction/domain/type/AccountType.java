@@ -475,6 +475,7 @@ public enum AccountType {
 
 	public static List<AccountType> getTypesWithSalesContactDetails() {
 		return List.of(AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
 				AccountType.TRADING_ACCOUNT);
 	}
 

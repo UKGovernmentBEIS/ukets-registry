@@ -1,6 +1,5 @@
 package gov.uk.ets.registry.api.compliance.messaging.outbox;
 
-import static org.apache.sis.internal.util.StandardDateFormat.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
@@ -42,8 +41,8 @@ class ComplianceEventServiceTest {
         CompliantEntityInitializationEvent event = CompliantEntityInitializationEvent.builder()
             .compliantEntityId(TEST_COMPLIANT_ENTITY_ID)
             .actorId(TEST_ACTOR_ID)
-            .dateTriggered(LocalDateTime.now(ZoneId.of(UTC)))
-            .dateRequested(LocalDateTime.now(ZoneId.of(UTC)))
+            .dateTriggered(LocalDateTime.now(ZoneId.of("UTC")))
+            .dateRequested(LocalDateTime.now(ZoneId.of("UTC")))
             .firstYearOfVerifiedEmissions(2021)
             .currentYear(2020)
             .build();
@@ -58,7 +57,7 @@ class ComplianceEventServiceTest {
 
         CompliantEntityInitializationEvent event = CompliantEntityInitializationEvent.builder()
             .actorId(TEST_ACTOR_ID)
-            .dateTriggered(LocalDateTime.now(ZoneId.of(UTC)))
+            .dateTriggered(LocalDateTime.now(ZoneId.of("UTC")))
             .build();
 
         assertThrows(IllegalStateException.class, () -> cut.processEvent(event));

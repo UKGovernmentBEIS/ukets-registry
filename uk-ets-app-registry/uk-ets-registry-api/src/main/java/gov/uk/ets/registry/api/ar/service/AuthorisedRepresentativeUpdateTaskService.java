@@ -6,6 +6,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
+import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
@@ -34,6 +35,8 @@ import gov.uk.ets.registry.api.task.service.TaskTypeService;
 import gov.uk.ets.registry.api.task.web.model.AuthoriseRepresentativeTaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.TaskCompleteResponse;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
+import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
+import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.UserConversionService;
 import gov.uk.ets.registry.api.user.UserDTO;
@@ -50,6 +53,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static gov.uk.ets.registry.api.task.domain.types.RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST;
 
 @Service
 @Log4j2
@@ -70,10 +75,11 @@ public class AuthorisedRepresentativeUpdateTaskService
     private final TaskARStatusRepository taskARStatusRepository;
     private final PaymentTaskAutoCompletionService paymentTaskAutoCompletionService;
     private final AccountClaimService accountClaimService;
-    
+    private final AccountContactService accountContactService;
+
     @Override
     public Set<RequestType> appliesFor() {
-        return Set.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
+        return Set.of(AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
             RequestType.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST,
             RequestType.AUTHORIZED_REPRESENTATIVE_RESTORE_REQUEST, // TODO: Remove restore/suspend as the action does not require task
             RequestType.AUTHORIZED_REPRESENTATIVE_SUSPEND_REQUEST);
@@ -118,8 +124,9 @@ public class AuthorisedRepresentativeUpdateTaskService
                 : userService.getUserByUrid(taskDTO.getNewUser().getUrid());
         saveUserStatusOnTaskCompletion(task,user);
 
-        if (TaskOutcome.REJECTED.equals(taskOutcome) && taskDTO.getArUpdateType().equals(ARUpdateActionType.ADD)) {
-            triggerAccountClaim(taskDTO.getAccountInfo().getIdentifier());
+        if (TaskOutcome.REJECTED.equals(taskOutcome) && taskDTO.getTaskType().equals(AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)) {
+            Account account = extractAccountEntity(taskDTO);
+            triggerAccountClaim(taskDTO.getAccountInfo().getIdentifier(), account.getId(), false, account.getRegistryAccountType());
         }
 
         //UKETS-6528 Also complete child document subtasks
@@ -148,7 +155,7 @@ public class AuthorisedRepresentativeUpdateTaskService
             case AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST:
                 setAccountAccessState(getARAccount(account, taskDTO.getCurrentUser().getUrid()),
                     AccountAccessState.REMOVED);
-                triggerAccountClaim(account.getIdentifier());
+                triggerAccountClaim(account.getIdentifier(), account.getId(), true, account.getRegistryAccountType());
                 authorizedRepresentativeService
                     .removeKeycloakRoleIfNoOtherAccountAccess(taskDTO.getCurrentUser().getUrid(),
                         taskDTO.getCurrentUser().getUser().getKeycloakId());
@@ -194,15 +201,55 @@ public class AuthorisedRepresentativeUpdateTaskService
         }
     }
 
-    private void triggerAccountClaim(Long accountIdentifier) {
-        final AccountDTO accountDTO = accountService.getAccountDTO(accountIdentifier);
-        AccountContactSendInvitationDTO sendInvitationDTO =
-                AccountContactSendInvitationDTO.builder()
-                        .metsContacts(new HashSet<>(accountDTO.getMetsContacts()))
-                        .registryContacts(new HashSet<>(accountDTO.getRegistryContacts()))
-                        .build();
-        accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO);
+    private void triggerAccountClaim(Long accountIdentifier, Long accountId, boolean removalApprove, RegistryAccountType registryAccountType) {
+        if (RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.equals(registryAccountType) ||
+                RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.equals(registryAccountType) ||
+                RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.equals(registryAccountType)) {
+
+            final AccountDTO accountDTO = accountService.getAccountDTO(accountIdentifier);
+            if (removalApprove) {
+                final AccountContactSendInvitationDTO sendInvitationDTO =
+                        createAccountContactInvitationDTO(accountDTO);
+                accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO);
+            } else {
+                final AccountType accountType = AccountType.parse(accountDTO.getAccountType());
+                final RegistryAccountType regAccountType = accountType != null ? accountType.getRegistryType() : null;
+                final boolean accountClaimEnabled =
+                        accountClaimService.isAccountClaimEnabled(regAccountType);
+                final boolean accountClaimApplicable =
+                        isAccountClaimApplicableAdditionReject(accountId, accountIdentifier);
+                if (accountClaimEnabled && accountClaimApplicable) {
+                    final AccountContactSendInvitationDTO sendInvitationDTO =
+                            createAccountContactInvitationDTO(accountDTO);
+                    accountContactService.sendInvitation(accountIdentifier, accountDTO,
+                            sendInvitationDTO);
+                }
+            }
+        }
     }
+
+    private AccountContactSendInvitationDTO createAccountContactInvitationDTO(AccountDTO accountDTO) {
+        return AccountContactSendInvitationDTO.builder()
+                .metsContacts(new HashSet<>(accountDTO.getMetsContacts()))
+                .registryContacts(new HashSet<>(accountDTO.getRegistryContacts()))
+                .build();
+    }
+
+    private boolean isAccountClaimApplicableAdditionReject(Long accountId, Long accountIdentifier) {
+
+        final List<AccountAccess> accountAccesses = accountAccessRepository.finARsByAccount_Identifier(accountIdentifier)
+                .stream()
+                .filter(access -> access.getState().equals(AccountAccessState.ACTIVE))
+                .toList();
+
+        final Long pendingAuthorizedRepresentativeTasks = taskRepository.countPendingTasksByAccountIdInAndType(
+                List.of(accountId),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        return  (accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 1);
+    }
+
 
     /**
      * Runs on {@link RequestType#AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST}

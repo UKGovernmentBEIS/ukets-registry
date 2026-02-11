@@ -138,5 +138,9 @@ public class NotificationProperties {
 
     @NestedConfigurationProperty
     @Valid
+    private PaymentCompletedGroupNotificationProperties completedPayment;
+
+    @NestedConfigurationProperty
+    @Valid
     private AccountSendInvitationNotificationProperties sendInvitation;
 }

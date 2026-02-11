@@ -191,6 +191,9 @@ public class EmailGeneratorSelector {
             case PAYMENT_REMINDER:
                 return new PaymentReminderEmailGenerator(
                     (PaymentReminderNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case PAYMENT_COMPLETED:
+                return new PaymentCompletedEmailGenerator(notificationProperties.getCompletedPayment(),
+                        (PaymentCompletedGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
             case SEND_INVITATION_TO_CONTACTS:
                 return new AccountSendInvitationEmailGenerator(notificationProperties,
                         (AccountSendInvitationGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration);

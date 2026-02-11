@@ -388,4 +388,6 @@ public interface AccountRepository
                                 @Param("accountClaimCode") String accountClaimCode);
 
     List<Account> findByAccountClaimCodeIsNull();
+
+    List<Account> findByRegistryAccountTypeIn(List<RegistryAccountType> types);
 }

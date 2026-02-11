@@ -33,44 +33,131 @@
             [maxlength]="256"
             controlName="name"
             [hint]="getAccountNameHintText()"
-          ></app-form-control-text>
+          />
         </div>
-
-        <ng-container *ngIf="showSalesContact">
+        @if (showSalesContact) {
           <fieldset class="govuk-fieldset" role="group">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              Sales Contact Details
+              Contact details for selling UK allowances
             </legend>
-            <div class="govuk-hint">
-              This information will be used for sales purposes and will be
-              public for anyone
-            </div>
-            <h2 class="govuk-heading-s">Sales contact email</h2>
-            <app-form-control-email
-              label="Email address (optional)"
-              [maxlength]="256"
-              controlName="salesContactDetails.emailAddress.emailAddress"
-            ></app-form-control-email>
-            <app-form-control-email
-              label="Confirm email address"
-              [maxlength]="256"
-              [validationErrorMessage]="
-                validationErrorMessage.emailConfirmation
-              "
-              controlName="salesContactDetails.emailAddress.emailAddressConfirmation"
-            ></app-form-control-email>
+            <p class="govuk-body">
+              These optional fields are intended to help potential buyers of UK
+              Allowances (UKAs) to contact the most appropriate businesses to
+              meet their needs.
+            </p>
+            <p class="govuk-body">
+              These details will be displayed in the relevant public Registry
+              reports.
+            </p>
+            <p class="govuk-body">
+              NB: If you do not sell UKAs to the public, please select the
+              relevant option below.
+            </p>
 
-            <h2 class="govuk-heading-s">Sales contact phone</h2>
+            <fieldset class="govuk-fieldset govuk-!-margin-bottom-4">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                Do you want to sell UK Allowances?
+              </legend>
+              <app-uk-radio-input
+                controlName="sellingAllowances"
+                [formRadioGroupInfo]="sellingAllowancesRadioGroup()"
+                [validationErrorMessage]="
+                  this.validationErrorMessage.sellingAllowances
+                "
+              />
+            </fieldset>
 
-            <app-uk-phone-select
-              [phoneInfo]="_salesPhoneInfo"
-              [showErrors]="showErrors"
-              [countryCodes]="countryCodes"
-              [validationErrorMessages]="validationMessages.salesPhone"
-              formControlName="salesPhone"
-            ></app-uk-phone-select>
+            <ng-template #salesContactDetailsTemplate>
+              <div
+                formGroupName="salesContactDetails"
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="showSalesContactDetailsError()"
+                id="salesContactDetails-label"
+              >
+                <div
+                  formGroupName="emailGroup"
+                  class="govuk-form-group"
+                  [class.govuk-form-group--error]="showEmailGroupError()"
+                  id="emailGroup-label"
+                >
+                  <h2 class="govuk-heading-s">
+                    UK Allowances sales contact email
+                  </h2>
+                  @if (showSalesContactDetailsError()) {
+                    <p
+                      class="govuk-error-message"
+                      [attr.id]="'salesContactDetails-error-label'"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ validationErrorMessage.salesContactDetails }}
+                    </p>
+                  }
+                  @if (showEmailGroupError()) {
+                    <p
+                      class="govuk-error-message"
+                      [attr.id]="'showEmailGroupError-error-label'"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ validationErrorMessage.emailGroup }}
+                    </p>
+                  }
+                  <app-form-control-email
+                    class="govuk-!-margin-bottom-4"
+                    label="Email address (optional)"
+                    [maxlength]="256"
+                    [validationErrorMessage]="
+                      validationErrorMessage.emailAddress
+                    "
+                    controlName="salesContactDetails.emailGroup.emailAddress"
+                  />
+                  <app-form-control-email
+                    label="Confirm email address"
+                    [maxlength]="256"
+                    [validationErrorMessage]="
+                      validationErrorMessage.emailAddressConfirmation
+                    "
+                    controlName="salesContactDetails.emailGroup.emailAddressConfirmation"
+                  />
+                </div>
+
+                <h2 class="govuk-heading-s govuk-!-margin-top-6">
+                  UK Allowances sales contact phone
+                </h2>
+                @if (showSalesContactDetailsError()) {
+                  <p
+                    class="govuk-error-message"
+                    [attr.id]="'salesContactDetails-error-label-2'"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ validationErrorMessage.salesContactDetails }}
+                  </p>
+                }
+                <app-uk-phone-select
+                  [phoneInfo]="_salesPhoneInfo"
+                  [showErrors]="showErrors"
+                  [countryCodes]="countryCodes"
+                  [validationErrorMessages]="validationMessages.salesPhone"
+                  formControlName="salesPhone"
+                />
+              </div>
+
+              <app-uk-checkbox-group
+                formControlName="ukas"
+                label="UK Allowances sales volumes"
+                hint="Please select as many boxes as are appropriate"
+                class="govuk-!-margin-top-6"
+                [validationErrorMessage]="validationErrorMessage.ukas"
+              >
+                @for (option of ukasOptions; track option.value) {
+                  <app-uk-checkbox-group-item
+                    [label]="option.label"
+                    [value]="option.value"
+                  />
+                }
+              </app-uk-checkbox-group>
+            </ng-template>
           </fieldset>
-        </ng-container>
+        }
       </div>
       <button
         class="govuk-button"

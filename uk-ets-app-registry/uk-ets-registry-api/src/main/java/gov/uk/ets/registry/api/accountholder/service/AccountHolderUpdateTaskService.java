@@ -125,8 +125,10 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
                     holderUpdatedValues.setId(accountHolderIdentifier);
                     copyAccountHolderDetailsProperties(holderUpdatedValues, holderForUpdateDTO);
                     accountService.updateHolder(holderForUpdateDTO);
-
-                    accountAuditService.logChanges(accountDto, account, SourceSystem.REGISTRY);
+                    //Traders accounts are not audited for diffs.
+                    if (!RegistryAccountType.TRADING_ACCOUNT.equals(account.getRegistryAccountType())) {
+                        accountAuditService.logChanges(accountDto, account, SourceSystem.REGISTRY);
+                    }
                     break;
                 case ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS:
                     account = accountService.getAccountFullIdentifier(taskDTO
@@ -138,7 +140,7 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
                                                                                         AccountHolderRepresentativeDTO.class);
                     copyAccountHolderContactProperties(updatedValuesDTO, contactForUpdateDTO.getPrimaryContact());
                     accountService.updateContact(accountHolderIdentifier, contactForUpdateDTO.getPrimaryContact(), true);
-                    triggerAccountClaim(account.getIdentifier());
+                    triggerAccountClaim(account.getIdentifier(), account.getRegistryAccountType());
                     break;
                 case ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_ADD:
                     account = accountService.getAccountFullIdentifier(taskDTO
@@ -150,7 +152,6 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
                             AccountHolderRepresentativeDTO.class);
                     contactDTO.setAlternativeContact(newValuesDTO);
                     accountService.insertContact(accountHolder, contactDTO.getAlternativeContact(), false);
-                    triggerAccountClaim(account.getIdentifier());
                     break;
                 case ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_DELETE:
                     AccountHolderRepresentativeDTO deleteValuesDTO = deserializeValues(taskDTO.getBefore(),
@@ -158,16 +159,17 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
                     accountService.deleteContact(deleteValuesDTO);
                     break;
                 case ACCOUNT_HOLDER_ALTERNATIVE_PRIMARY_CONTACT_DETAILS_UPDATE:
-                    accountHolderIdentifier = accountService.getAccountFullIdentifier(taskDTO
+                    account = accountService.getAccountFullIdentifier(taskDTO
                             .getAccountDetails()
-                            .getAccountNumber())
-                            .getAccountHolder()
+                            .getAccountNumber());
+                    accountHolderIdentifier = account.getAccountHolder()
                             .getIdentifier();
                     contactForUpdateDTO = accountHolderService.getAccountHolderContactInfo(accountHolderIdentifier);
                     updatedValuesDTO = deserializeValues(taskDTO.getDifference(),
                             AccountHolderRepresentativeDTO.class);
                     copyAccountHolderContactProperties(updatedValuesDTO, contactForUpdateDTO.getAlternativeContact());
                     accountService.updateContact(accountHolderIdentifier, contactForUpdateDTO.getAlternativeContact(), false);
+                    triggerAccountClaim(account.getIdentifier(), account.getRegistryAccountType());
                     break;
                 default:
                     break;
@@ -262,13 +264,17 @@ public class AccountHolderUpdateTaskService implements TaskTypeService<AccountHo
         BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
     }
 
-    private void triggerAccountClaim(Long accountIdentifier) {
-        final AccountDTO accountDTO = accountService.getAccountDTO(accountIdentifier);
-        AccountContactSendInvitationDTO sendInvitationDTO =
-                AccountContactSendInvitationDTO.builder()
-                        .metsContacts(new HashSet<>(accountDTO.getMetsContacts()))
-                        .registryContacts(new HashSet<>(accountDTO.getRegistryContacts()))
-                        .build();
-        accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO);
+    private void triggerAccountClaim(Long accountIdentifier, RegistryAccountType registryAccountType) {
+        if (RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.equals(registryAccountType) ||
+                RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.equals(registryAccountType) ||
+                RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.equals(registryAccountType)) {
+            final AccountDTO accountDTO = accountService.getAccountDTO(accountIdentifier);
+            AccountContactSendInvitationDTO sendInvitationDTO =
+                    AccountContactSendInvitationDTO.builder()
+                            .metsContacts(new HashSet<>(accountDTO.getMetsContacts()))
+                            .registryContacts(new HashSet<>(accountDTO.getRegistryContacts()))
+                            .build();
+            accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO);
+        }
     }
 }

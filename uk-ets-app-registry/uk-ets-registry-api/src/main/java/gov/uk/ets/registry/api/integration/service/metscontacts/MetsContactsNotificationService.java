@@ -7,6 +7,7 @@ import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountDTOFactory;
 import gov.uk.ets.registry.api.account.service.AccountGeneratorService;
+import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
@@ -30,6 +31,7 @@ public class MetsContactsNotificationService {
     private final MetsContactMapper metsContactMapper;
     private final AccountGeneratorService accountGeneratorService;
     private final AccountClaimService accountClaimService;
+    private final AccountService accountService;
 
     public void sendInvitation(MetsContactsEventOutcome outcome) throws NoSuchAlgorithmException {
 
@@ -54,7 +56,6 @@ public class MetsContactsNotificationService {
         List<MetsAccountContact> contactsToInvite =
                 updatedAccount.getMetsAccountContacts().stream()
                         .filter(c -> incomingEmails.contains(c.getEmailAddress()))
-                        .filter(c -> c.getInvitedOn() == null)
                         .toList();
 
         if (contactsToInvite.isEmpty()) {
@@ -71,9 +72,11 @@ public class MetsContactsNotificationService {
                         .build();
 
         Account accountWithAccountClaimCode = updateAccountIfMissingClaimAccountCode(updatedAccount);
-        AccountDTO accountDTO = accountDTOFactory.create(accountWithAccountClaimCode, true);
 
-        accountContactService.sendInvitation(updatedAccount.getIdentifier(), accountDTO, dto);
+        if (accountService.isAccountClaimApplicable(updatedAccount.getId(), updatedAccount.getIdentifier())) {
+            AccountDTO accountDTO = accountDTOFactory.create(accountWithAccountClaimCode, true);
+            accountContactService.sendInvitation(updatedAccount.getIdentifier(), accountDTO, dto);
+        }
     }
 
     private Account updateAccountIfMissingClaimAccountCode(Account account) throws NoSuchAlgorithmException {

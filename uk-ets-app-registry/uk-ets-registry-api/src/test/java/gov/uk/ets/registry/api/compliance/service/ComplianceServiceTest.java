@@ -2,7 +2,6 @@ package gov.uk.ets.registry.api.compliance.service;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
-import static org.apache.sis.internal.util.StandardDateFormat.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -463,7 +462,7 @@ class ComplianceServiceTest {
             .getVerifiedEmissions();
 
         List<VerifiedEmissionsDTO> expected = new ArrayList<VerifiedEmissionsDTO>(emissions);
-        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of(UTC))));
+        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of("UTC"))));
 
         assertIterableEquals(expected, result);
     }
@@ -504,7 +503,7 @@ class ComplianceServiceTest {
             .getVerifiedEmissions();
 
         List<VerifiedEmissionsDTO> expected = new ArrayList<VerifiedEmissionsDTO>(emissions);
-        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of(UTC))));
+        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of("UTC"))));
 
         assertIterableEquals(expected, result);
     }
@@ -545,7 +544,7 @@ class ComplianceServiceTest {
             .getVerifiedEmissions();
 
         List<VerifiedEmissionsDTO> expected = new ArrayList<VerifiedEmissionsDTO>(emissions);
-        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of(UTC))));
+        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of("UTC"))));
 
         assertIterableEquals(expected, result);
     }
@@ -686,7 +685,7 @@ class ComplianceServiceTest {
             .getVerifiedEmissions();
 
         List<VerifiedEmissionsDTO> expected = new ArrayList<VerifiedEmissionsDTO>(emissions);
-        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of(UTC))));
+        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), "Excluded", LocalDateTime.ofInstant(excludeEntry.getLastUpdated().toInstant(),ZoneId.of("UTC"))));
         expected.add(new VerifiedEmissionsDTO(compliantEntityId, (long) currentYear, null, null));
 
         assertIterableEquals(expected, result);

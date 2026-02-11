@@ -161,7 +161,7 @@ public class Sheet3Test extends DynamicComplianceServiceTestBase {
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
         
         //2022
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.C, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(updateOfVerifiedEmissionsEvent(2021, 100L));
         assertEquals(ComplianceStatus.B, result.getState().getDynamicStatus());
@@ -175,7 +175,7 @@ public class Sheet3Test extends DynamicComplianceServiceTestBase {
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
         
         //2023
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2023));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(updateLastYearOfVerifiedEmissionsEvent(2023));  
         assertEquals(ComplianceStatus.C, result.getState().getDynamicStatus());

@@ -23,4 +23,5 @@ public class CompliantEntity {
     private Long maritimeOperatorId;
     private String maritimeMonitoringPlanId;
     private String imo;
+    private String emitterId;
 }

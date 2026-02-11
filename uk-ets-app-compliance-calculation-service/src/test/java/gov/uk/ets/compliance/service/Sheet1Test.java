@@ -154,7 +154,7 @@ public class Sheet1Test extends DynamicComplianceServiceTestBase {
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
         result = dynamicComplianceService.processEvent(surrenderEvent(100L));
         assertEquals(ComplianceStatus.NOT_APPLICABLE, result.getState().getDynamicStatus());
-        result = dynamicComplianceService.processEvent(changeYear());
+        result = dynamicComplianceService.processEvent(changeYear(2022));
         assertEquals(ComplianceStatus.A, result.getState().getDynamicStatus());
     }
 

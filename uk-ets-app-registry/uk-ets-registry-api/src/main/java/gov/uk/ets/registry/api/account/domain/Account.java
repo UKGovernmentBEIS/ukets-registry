@@ -30,6 +30,7 @@ import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -225,7 +226,10 @@ public class Account implements Serializable {
      */
     @Column(name = "type_label")
     private String accountType;
-    
+
+    @Column(name = "selling_allowances")
+    private boolean sellingAllowances;
+
     @Embedded
     private SalesContact salesContact;
     
@@ -251,4 +255,44 @@ public class Account implements Serializable {
      */
     @Column(name = "account_claim_code")
     private String accountClaimCode;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AccountRepresentativeInvitation> representativeInvitations = new ArrayList<>();
+
+    public void addAccountRepresentativeInvitation(AccountRepresentativeInvitation invitation) {
+
+        boolean exists = representativeInvitations.stream()
+                .anyMatch(i ->
+                        i.getAccountHolderRepresentative()
+                                .equals(invitation.getAccountHolderRepresentative())
+                );
+
+        if (exists) {
+            throw new IllegalStateException("Representative already invited to this account");
+        }
+        invitation.setAccount(this);
+        representativeInvitations.add(invitation);
+    }
+
+    public void inviteRepresentative(
+            AccountHolderRepresentative rep,
+            LocalDateTime invitedDate) {
+
+        this.representativeInvitations.stream()
+                .filter(i -> i.getAccountHolderRepresentative().equals(rep))
+                .findFirst()
+                .ifPresentOrElse(
+                        i -> i.setInvitedDate(invitedDate),
+                        () -> {
+                            AccountRepresentativeInvitation inv =
+                                    AccountRepresentativeInvitation.builder()
+                                            .accountHolderRepresentative(rep)
+                                            .invitedDate(invitedDate)
+                                            .build();
+
+                            this.addAccountRepresentativeInvitation(inv);
+                        }
+                );
+    }
+
 }

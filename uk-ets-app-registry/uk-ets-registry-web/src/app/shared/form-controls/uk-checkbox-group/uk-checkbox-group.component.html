@@ -1,0 +1,36 @@
+<div
+  class="govuk-form-group"
+  [class.govuk-form-group--error]="showError()"
+  [attr.id]="id + '-label'"
+>
+  <fieldset class="govuk-fieldset" [attr.aria-describedby]="id + '-hint'">
+    @if (label) {
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+        {{ label }}
+      </legend>
+    }
+    @if (hint) {
+      <div [attr.id]="id + '-hint'" class="govuk-hint">
+        {{ hint }}
+      </div>
+    }
+    @if (showError()) {
+      <p class="govuk-error-message" [attr.id]="id + '-error-label'">
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ validationErrorMessage }}
+      </p>
+    }
+
+    <div
+      class="govuk-checkboxes"
+      data-module="govuk-checkboxes"
+      [attr.id]="id + '-checkboxes'"
+      [attr.aria-invalid]="formControl.dirty && formControl.invalid"
+    >
+      @for (option of options; track option.value) {
+        <ng-container [ngTemplateOutlet]="option.optionTemplate" />
+        <ng-container [ngTemplateOutlet]="option.conditionalTemplate" />
+      }
+    </div>
+  </fieldset>
+</div>

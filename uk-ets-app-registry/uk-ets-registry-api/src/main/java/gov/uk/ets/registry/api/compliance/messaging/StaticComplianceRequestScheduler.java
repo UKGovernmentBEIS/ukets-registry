@@ -13,7 +13,6 @@ import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import net.javacrumbs.shedlock.core.LockAssert;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -64,7 +63,7 @@ public class StaticComplianceRequestScheduler {
             throw new IllegalStateException("The property 'scheduler.static.compliance.cutoff.date' was not found");
         }
 
-        LocalDateTime dateTriggered = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime dateTriggered = LocalDateTime.now(ZoneId.of("UTC"));
 
         List<Account> accounts = accountRepository.findOHA_AOHAAccountsWithCompliantEntities();
         accounts
@@ -89,7 +88,7 @@ public class StaticComplianceRequestScheduler {
 
     private boolean closedForAtLeastTwoYears(Account account, int currentYear) {
         return Optional.ofNullable(account.getClosingDate())
-                       .map(d -> LocalDateTime.ofInstant(d.toInstant(), ZoneId.of(StandardDateFormat.UTC)))
+                       .map(d -> LocalDateTime.ofInstant(d.toInstant(), ZoneId.of("UTC")))
                        .map(LocalDateTime::getYear)
                        .filter(yearOfClosure -> currentYear > yearOfClosure + 1)
                        .isPresent();

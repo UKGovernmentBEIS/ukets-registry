@@ -35,7 +35,6 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.apache.sis.internal.util.StandardDateFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -177,7 +176,7 @@ class UserInitiatedNotificationServiceTest {
             complianceNotificationRequest.getActivationDetails().getScheduledDateTime());
 
         assertThat(notification.getLastUpdated()).isBeforeOrEqualTo(
-            LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC)));
+            LocalDateTime.now(ZoneId.of("UTC")));
         assertThat(notification.getUpdatedBy()).isEqualTo(TEST_URID);
     }
 
@@ -200,11 +199,11 @@ class UserInitiatedNotificationServiceTest {
             .thenReturn(Optional.of(complianceNotificationDefinition));
 
         complianceNotificationRequest.getActivationDetails()
-            .setScheduledDate(LocalDate.now(ZoneId.of(StandardDateFormat.UTC)).minusDays(1));
+            .setScheduledDate(LocalDate.now(ZoneId.of("UTC")).minusDays(1));
         ComplianceActivationDetails activationDetails =
             (ComplianceActivationDetails) complianceNotificationRequest.getActivationDetails();
         activationDetails.setHasRecurrence(true);
-        activationDetails.setExpirationDate(LocalDate.now(ZoneId.of(StandardDateFormat.UTC)));
+        activationDetails.setExpirationDate(LocalDate.now(ZoneId.of("UTC")));
         activationDetails.setRecurrenceDays(2);
 
         assertThrows(BusinessRuleErrorException.class, () -> cut.createNotification(complianceNotificationRequest));
@@ -247,7 +246,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldUpdateNotificationScheduleButNotContentForAdHoc() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         LocalDateTime updatedStart = now.plusDays(1);
         LocalDateTime updatedEnd = now.plusDays(2);
 
@@ -296,7 +295,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldUpdateNotificationScheduleAndContentForCompliance() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         LocalDateTime updatedStart = now.plusDays(1);
         LocalDateTime updatedEnd = now.plusDays(2);
 
@@ -343,7 +342,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldRetrieveAdHocNotificationById() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         Notification notification = Notification.builder()
             .id(1L)
             .schedule(NotificationSchedule.builder()
@@ -370,7 +369,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldRetrieveComplianceNotificationById() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         Notification notification = Notification.builder()
             .id(1L)
             .schedule(NotificationSchedule.builder()
@@ -398,7 +397,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldUpdateAdHocNotificationStatusToCancelled() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         LocalDateTime updatedStart = now.plusDays(1);
         LocalDateTime updatedEnd = now.plusDays(2);
 
@@ -439,7 +438,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldNotUpdateAdHocNotificationIfStatusIsCancelled(){
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
         LocalDateTime updatedStart = now.plusDays(1);
         LocalDateTime updatedEnd = now.plusDays(2);
 
@@ -478,7 +477,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldNotCancelAdHocNotificationIfStatusIsCancelled(){
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
 
         Notification notification = Notification.builder()
                 .id(1L)
@@ -497,7 +496,7 @@ class UserInitiatedNotificationServiceTest {
 
     @Test
     public void shouldNotCancelAdHocNotificationIfStatusIsExpired(){
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(StandardDateFormat.UTC));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
 
         Notification notification = Notification.builder()
                 .id(1L)

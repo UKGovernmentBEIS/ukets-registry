@@ -44,6 +44,7 @@ export class AccountDetails {
     email: string;
     sopCustomerId: string;
   };
+  sellingAllowances: boolean;
   salesContactDetails?: {
     phoneNumberCountryCode?: string;
     phoneNumber?: string;
@@ -51,6 +52,9 @@ export class AccountDetails {
       emailAddress: string;
       emailAddressConfirmation: string;
     };
+    uka1To99?: boolean;
+    uka100To999?: boolean;
+    uka1000Plus?: boolean;
   };
   excludedFromBilling?: boolean;
   excludedFromBillingRemarks?: string;

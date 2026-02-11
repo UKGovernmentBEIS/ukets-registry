@@ -14,6 +14,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.repository.AccountContactRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
+import gov.uk.ets.registry.api.account.repository.AccountRepresentativeInvitationRepository;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
@@ -39,11 +40,11 @@ import gov.uk.ets.registry.api.user.domain.UserWorkContact;
 import gov.uk.ets.registry.api.user.domain.UserWorkContactRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,8 @@ public class AccountDTOFactory {
     private final AuthorizationService authorizationService;
 
     private final AccountContactRepository accountContactRepository;
+
+    private final AccountRepresentativeInvitationRepository accountRepresentativeInvitationRepository;
 
     @Transactional(readOnly = true)
     public AccountDTO create(Account account) {
@@ -217,6 +220,7 @@ public class AccountDTOFactory {
         accountDetailsDTO.setOpeningDate(account.getOpeningDate());
         accountDetailsDTO.setClosingDate(account.getClosingDate());
         accountDetailsDTO.setClosureReason(account.getClosureReason());
+        accountDetailsDTO.setSellingAllowances(account.isSellingAllowances());
         if (!noUserToken && authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN)) {
             accountDetailsDTO.setExcludedFromBilling(account.isExcludedFromBilling());
             accountDetailsDTO.setExcludedFromBillingRemarks(account.getExcludedFromBillingRemarks());
@@ -247,14 +251,20 @@ public class AccountDTOFactory {
         Optional<AccountHolderRepresentative> primaryContact = accountHolderRepresentatives.stream()
                 .filter(accountHolderRepresentative ->
                         AccountContactType.PRIMARY.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
-        primaryContact.ifPresent(accountHolderRepresentative -> accountHolderContactInfo
-                .setPrimaryContact(accountConversionService.convert(accountHolderRepresentative)));
+        primaryContact.ifPresent(accountHolderRepresentative -> {
+            final LocalDateTime invitedDate = accountRepresentativeInvitationRepository.findDateByRepresentativeIdAndAccountId(accountHolderRepresentative.getId(), account.getId())
+                    .orElse(null);
+            accountHolderContactInfo.setPrimaryContact(accountConversionService.convert(accountHolderRepresentative, invitedDate));
+        });
         // TODO: Some further checks for more than one alternative contacts should be made here.
         Optional<AccountHolderRepresentative> alternativeContact = accountHolderRepresentatives.stream()
                 .filter(accountHolderRepresentative ->
                         AccountContactType.ALTERNATIVE.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
-        alternativeContact.ifPresent(accountHolderRepresentative -> accountHolderContactInfo
-                .setAlternativeContact(accountConversionService.convert(accountHolderRepresentative)));
+        alternativeContact.ifPresent(accountHolderRepresentative -> {
+            final LocalDateTime invitedDate = accountRepresentativeInvitationRepository.findDateByRepresentativeIdAndAccountId(accountHolderRepresentative.getId(), account.getId())
+                    .orElse(null);
+            accountHolderContactInfo.setAlternativeContact(accountConversionService.convert(accountHolderRepresentative, invitedDate));
+        });
         accountDTO.setAccountHolderContactInfo(accountHolderContactInfo);
 
         accountDetailsDTO.setAccountHolderName(accountHolder.getName());
@@ -323,10 +333,10 @@ public class AccountDTOFactory {
 
     private void setupSalesContactDetailsDTO(AccountDetailsDTO accountDetailsDTO, Account account) {
         SalesContact salesContact = account.getSalesContact();
-        if (salesContact == null) {
-            return;
+        if (account.isSellingAllowances() && salesContact != null) {
+            SalesContactDetailsDTO salesContactDetailsDTO = accountConversionService.convert(salesContact);
+            accountDetailsDTO.setSalesContactDetails(salesContactDetailsDTO);
         }
-        SalesContactDetailsDTO salesContactDetailsDTO = accountConversionService.convert(salesContact);
-        accountDetailsDTO.setSalesContactDetails(salesContactDetailsDTO);
+
     }
 }
