@@ -37,9 +37,9 @@ public class OHAAllocationReportJdbcMapper
             "           ac.sales_contact_phone_number, \n"+
             "           sum(ae.entitlement) as entitlement, \n" +
             "           sum(COALESCE(ae.allocated, 0) - COALESCE(ae.returned, 0) - COALESCE(ae.reversed, 0)) as allocation, \n" +
-            "           case when BOOL_OR(ac.sales_contact_uka_1_99) then 'TRUE' else 'FALSE' end as sales_contact_uka_1_99, \n" +
-            "           case when BOOL_OR(ac.sales_contact_uka_100_999) then 'TRUE' else 'FALSE' end as sales_contact_uka_100_999, \n" +
-            "           case when BOOL_OR(ac.sales_contact_uka_1000_plus) then 'TRUE' else 'FALSE' end as sales_contact_uka_1000_plus\n" +
+            "           case when BOOL_OR(ac.sales_contact_uka_1_99) then 'Yes' else 'No' end as sales_contact_uka_1_99, \n" +
+            "           case when BOOL_OR(ac.sales_contact_uka_100_999) then 'Yes' else 'No' end as sales_contact_uka_100_999, \n" +
+            "           case when BOOL_OR(ac.sales_contact_uka_1000_plus) then 'Yes' else 'No' end as sales_contact_uka_1000_plus\n" +
             "from account_holder as ah  \n" +
             "   inner join account as ac \n" +
             "       on ah.id = ac.account_holder_id \n" +

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
+
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -9,10 +9,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './add-note-success.component.html',
 })
 export class AddNoteSuccessComponent {
-  @Output()
-  handleBackToNotes = new EventEmitter<void>();
-
-  constructor(private store: Store) {}
+  @Output() handleBackToNotes = new EventEmitter<void>();
 
   onBackToNotes() {
     this.handleBackToNotes.emit();

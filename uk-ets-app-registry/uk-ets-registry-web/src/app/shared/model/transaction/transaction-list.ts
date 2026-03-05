@@ -33,6 +33,7 @@ export interface Transaction {
     externalAccount: boolean;
     userHasAccess: boolean;
     accountStatus: AccountStatus;
+    accountHolderName: string;
   };
   acquiringAccount: {
     title: string;
@@ -41,6 +42,7 @@ export interface Transaction {
     externalAccount: boolean;
     userHasAccess: boolean;
     accountStatus: AccountStatus;
+    accountHolderName: string;
   };
   lastUpdated: string;
   status: TransactionStatus;

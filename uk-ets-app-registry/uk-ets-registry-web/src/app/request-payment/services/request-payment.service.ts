@@ -12,7 +12,7 @@ import {
   PaymentRequestDetails,
   PaymentStatus,
 } from '@request-payment/model';
-import { PaymentCompleteResponse } from '@task-management/model';
+import { PaymentCompleteResponse } from '@shared/task-and-regulator-notice-management/model';
 
 @Injectable({
   providedIn: 'root',

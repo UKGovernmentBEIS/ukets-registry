@@ -1,12 +1,10 @@
 <div aria-live="polite">
-  <app-bulk-action-success></app-bulk-action-success>
+  <app-bulk-action-success />
 </div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full" aria-live="polite">
-    <app-report-success-banner
-      [isVisible]="isReportSuccess$ | async"
-    ></app-report-success-banner>
+    <app-report-success-banner [isVisible]="isReportSuccess$ | async" />
   </div>
 </div>
 
@@ -24,8 +22,7 @@
       [trueStateLabel]="'Show filters'"
       [falseStateLabel]="'Hide filters'"
       (toggle)="hideShowCriteria($event)"
-    >
-    </app-show-hide-toggle-button>
+    />
 
     <span class="vertical-divider"></span>
 
@@ -39,17 +36,17 @@
       <app-search-report-button
         [criteria]="storedCriteria$ | async"
         (requestReport)="requestReport($event)"
-      ></app-search-report-button>
+      />
 
       <span class="vertical-divider"></span>
     </ng-container>
 
-    <app-claim-assign-button-group
+    <app-bulk-actions-button-group
       [disabled]="disableClaimAssignButtons"
       [displayable]="resultsLoaded$ | async"
       (claim)="onClaim()"
       (assign)="onAssign()"
-    ></app-claim-assign-button-group>
+    />
   </div>
 </div>
 
@@ -67,7 +64,7 @@
   [allocationYearOptions]="allocationYearOptions$ | async"
   (advancedSearch)="toggleAdvancedSearch($event)"
   (errorDetails)="onError($event)"
-></app-search-tasks-admin-criteria>
+/>
 
 <app-search-tasks-user-criteria
   *ngIf="
@@ -83,7 +80,7 @@
   [showAdvancedSearch]="showAdvancedSearch$ | async"
   (advancedSearch)="toggleAdvancedSearch($event)"
   (errorDetails)="onError($event)"
-></app-search-tasks-user-criteria>
+/>
 
 <app-search-tasks-results
   *ngIf="resultsLoaded$ | async"
@@ -95,12 +92,11 @@
   (sort)="onSort($event)"
   (openDetail)="onOpenTaskDetail($event)"
   [sortParameters]="sortParameters$ | async"
-></app-search-tasks-results>
+/>
 
 <app-empty-search-results
   *ngIf="(resultsLoaded$ | async) && (results$ | async).length === 0"
->
-</app-empty-search-results>
+/>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -112,18 +108,17 @@
       (selectNextPage)="goToNextPageOfResults($event)"
       (selectPreviousPage)="goToPreviousPageOfResults($event)"
       (changePageSize)="onChangePageSize($event)"
-    >
-    </app-paginator>
+    />
   </div>
 </div>
 
 <div class="govuk-grid-row govuk-!-margin-top-5">
   <div class="govuk-grid-column-one-third">
-    <app-claim-assign-button-group
+    <app-bulk-actions-button-group
       [disabled]="disableClaimAssignButtons"
       [displayable]="resultsLoaded$ | async"
       (claim)="onClaim()"
       (assign)="onAssign()"
-    ></app-claim-assign-button-group>
+    />
   </div>
 </div>

@@ -5,4 +5,5 @@ public enum ValidatorOperationType {
     CREATE_ACCOUNT,
     UPDATE_ACCOUNT,
     METS_CONTACTS,
+    REGULATOR_NOTICE;
 }

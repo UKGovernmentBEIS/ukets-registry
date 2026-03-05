@@ -2,14 +2,12 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   TemplateRef,
 } from '@angular/core';
 import { merge, Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
-//import { ResultTemplateContext } from '@ng-bootstrap/ng-bootstrap/typeahead/typeahead-window';
 import { NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
 import { UkFormControlComponent } from '../uk-form-control.component';
 import { TypeAheadService } from '@shared/services/type-ahead.service';
@@ -92,7 +90,6 @@ export class TypeAheadComponent extends UkFormControlComponent {
   }
 
   get labelId(): string {
-    const labelId = `${this.id}-${this.label?.toLowerCase()}`;
-    return labelId;
+    return `${this.id}-label`;
   }
 }

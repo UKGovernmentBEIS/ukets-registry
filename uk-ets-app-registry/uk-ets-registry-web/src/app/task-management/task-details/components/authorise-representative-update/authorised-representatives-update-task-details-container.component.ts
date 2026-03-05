@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { AuthoriseRepresentativeTaskDetails } from '@task-management/model';
+import { AuthoriseRepresentativeTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-authorise-representatives-update-task-details-container',

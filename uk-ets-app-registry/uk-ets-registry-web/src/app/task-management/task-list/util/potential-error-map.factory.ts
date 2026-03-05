@@ -24,21 +24,3 @@ export function createTaskListErrorMap() {
 
   return errorMap;
 }
-
-export function createBulkClaimErrorMap() {
-  const errorMap = new Map<any, ErrorDetail>();
-  errorMap.set(
-    'other',
-    new ErrorDetail(null, 'Unexpected error on claiming tasks')
-  );
-  return errorMap;
-}
-
-export function createBulkAssignErrorMap() {
-  const errorMap = new Map<any, ErrorDetail>();
-  errorMap.set(
-    'other',
-    new ErrorDetail(null, 'Unexpected error on assigning tasks')
-  );
-  return errorMap;
-}

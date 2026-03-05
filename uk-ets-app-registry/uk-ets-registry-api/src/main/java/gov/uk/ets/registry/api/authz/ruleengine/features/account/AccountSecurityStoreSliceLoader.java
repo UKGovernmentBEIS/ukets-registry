@@ -77,6 +77,11 @@ public class AccountSecurityStoreSliceLoader {
             .setPendingComplianceEntityUpdate(taskRepository
                 .countPendingTasksByAccountIdInAndType(List.of(account.getId()), COMPLIANT_UPDATE_REQUESTS));
 
+        accountSecurityStoreSlice
+            .setPendingAddAuthorizedRepresentativeTasks(taskRepository
+            .countPendingTasksByAccountIdInAndType(List.of(account.getId()), 
+                  List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)));
+        
         if (account.getCompliantEntity() != null) {
             Long compliantEntityId = account.getCompliantEntity().getIdentifier();
             accountSecurityStoreSlice.setVerifiedEmissionsList(complianceService.getReportableVerifiedEmissions(

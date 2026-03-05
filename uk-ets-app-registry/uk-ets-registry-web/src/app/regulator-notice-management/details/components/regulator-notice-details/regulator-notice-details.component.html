@@ -1,0 +1,76 @@
+<h2 class="govuk-heading-l govuk-!-margin-bottom-4">Notice details</h2>
+<hr
+  class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-7"
+/>
+
+<h3 class="govuk-heading-m">Notice details</h3>
+<dl class="govuk-summary-list govuk-!-margin-bottom-7">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Notice ID</dt>
+    <dd class="govuk-summary-list__value">{{ noticeDetails()?.requestId }}</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Notice type</dt>
+    <dd class="govuk-summary-list__value">
+      {{ noticeDetails()?.processType }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Received date</dt>
+    <dd class="govuk-summary-list__value">
+      {{ noticeDetails()?.initiatedDate | gdsDateTime }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">PDF file</dt>
+    <dd class="govuk-summary-list__value">
+      <a
+        class="govuk-link govuk-link--no-visited-state"
+        [routerLink]="[]"
+        (click)="onDownloadFile()"
+        (keypress)="onDownloadFile()"
+      >
+        {{ noticeDetails()?.file?.fileName }}
+      </a>
+    </dd>
+  </div>
+</dl>
+
+<h3 class="govuk-heading-m">Account details</h3>
+<dl class="govuk-summary-list govuk-!-margin-bottom-7">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account number</dt>
+    <dd class="govuk-summary-list__value">
+      <a
+        class="govuk-link govuk-link--no-visited-state"
+        [routerLink]="[]"
+        (click)="onGoToAccountDetails()"
+        (keypress)="onGoToAccountDetails()"
+      >
+        {{ noticeDetails()?.accountFullIdentifier }}
+      </a>
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account Holder name</dt>
+    <dd class="govuk-summary-list__value">
+      {{ noticeDetails()?.accountHolderName }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Account Holder ID</dt>
+    <dd class="govuk-summary-list__value">
+      {{ noticeDetails()?.accountHolderIdentifier }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Operator ID</dt>
+    <dd class="govuk-summary-list__value">{{ noticeDetails()?.operatorId }}</dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Permit / EMP ID</dt>
+    <dd class="govuk-summary-list__value">
+      {{ noticeDetails()?.permitOrMonitoringPlanIdentifier }}
+    </dd>
+  </div>
+</dl>

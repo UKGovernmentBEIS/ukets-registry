@@ -4,7 +4,10 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '../../app.tokens';
-import { TaskSearchCriteria, TaskStatus } from '@task-management/model';
+import {
+  TaskSearchCriteria,
+  TaskStatus,
+} from '@shared/task-and-regulator-notice-management/model';
 import { PageParameters } from '@shared/search/paginator';
 import { TaskService } from '@shared/services/task-service';
 

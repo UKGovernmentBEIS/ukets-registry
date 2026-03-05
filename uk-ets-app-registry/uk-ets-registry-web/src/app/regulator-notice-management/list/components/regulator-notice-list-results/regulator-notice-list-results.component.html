@@ -1,0 +1,129 @@
+<table
+  appSortableTable
+  class="govuk-table"
+  aria-describedby="search-task-results"
+  (sorting)="sort.emit($event)"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">
+        <div class="govuk-checkboxes__item">
+          <input
+            (change)="$event ? masterToggle() : null"
+            [checked]="isAllSelected()"
+            [indeterminate]="isIndeterminate()"
+            class="govuk-checkboxes__input"
+            id="global-check"
+            type="checkbox"
+          />
+          <label
+            class="govuk-label govuk-checkboxes__label govuk-!-padding-0"
+            for="global-check"
+          ></label>
+        </div>
+      </th>
+      <th
+        scope="col"
+        [sortField]="'requestId'"
+        [sortDirection]="
+          sortParameters?.sortField === 'requestId'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Notice ID
+      </th>
+      <th
+        scope="col"
+        [sortField]="'accountHolder'"
+        [sortDirection]="
+          sortParameters?.sortField === 'accountHolder'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Account Holder
+      </th>
+      <th scope="col" appSortableColumn>Permit / EMP ID</th>
+      <th scope="col" appSortableColumn>Type</th>
+      <th scope="col" appSortableColumn>Received date</th>
+      <th
+        scope="col"
+        [sortField]="'claimant'"
+        [sortDirection]="
+          sortParameters?.sortField === 'claimant'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Claimant
+      </th>
+      <th
+        scope="col"
+        [sortField]="'taskStatus'"
+        [sortDirection]="
+          sortParameters?.sortField === 'taskStatus'
+            ? sortParameters.sortDirection
+            : null
+        "
+        appSortableColumn
+      >
+        Task Status
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    @for (notice of results; track notice.requestId) {
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">
+          <div class="govuk-checkboxes__item">
+            <input
+              class="govuk-checkboxes__input"
+              type="checkbox"
+              id="{{ notice.requestId }}"
+              [checked]="isSelected(notice)"
+              (click)="$event.stopPropagation()"
+              (change)="toggle($event.target.checked, notice)"
+            />
+            <label
+              class="govuk-label govuk-checkboxes__label govuk-!-padding-0"
+              for="{{ notice.requestId }}"
+            ></label>
+          </div>
+        </td>
+        <td class="govuk-table__cell">
+          <a
+            [routerLink]="['../' + detailsPath, notice.requestId]"
+            title="{{ notice.requestId }}"
+            class="govuk-link govuk-link--no-visited-state"
+          >
+            {{ notice.requestId }}
+          </a>
+        </td>
+        <td class="govuk-table__cell break-word-cell">
+          {{ notice.accountHolderName }}
+        </td>
+        <td class="govuk-table__cell break-word-cell">
+          {{ notice.permitOrMonitoringPlanIdentifier }}
+        </td>
+        <td class="govuk-table__cell break-word-cell">
+          {{ notice.processType }}
+        </td>
+        <td class="govuk-table__cell">
+          {{ notice.initiatedDate | gdsDateShort }}
+        </td>
+        <td class="govuk-table__cell break-word-cell">
+          {{ notice.claimantName }}
+        </td>
+        <td class="govuk-table__cell">
+          <app-govuk-tag [color]="taskStatusMap[notice.taskStatus].color">
+            {{ taskStatusMap[notice.taskStatus].label }}
+          </app-govuk-tag>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

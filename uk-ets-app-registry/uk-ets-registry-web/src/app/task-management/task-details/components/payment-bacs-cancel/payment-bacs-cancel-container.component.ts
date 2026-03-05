@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { canGoBack } from '@shared/shared.action';
-import { TaskDetails } from '@task-management/model';
+import { TaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { Observable } from 'rxjs';
 import { bacsPaymentCompleteOrCancelled } from '@task-details/actions/task-details.actions';
 

@@ -7,9 +7,9 @@ import {
   RequestedDocumentUploadTaskDetails,
   RequestType,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { RouterTestingModule } from '@angular/router/testing';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { By } from '@angular/platform-browser';
 import { GdsDateTimePipe } from '@registry-web/shared/pipes';
 
@@ -17,16 +17,14 @@ describe('RequestedDocumentsTaskDetailsComponent', () => {
   let component: RequestedDocumentsTaskDetailsComponent;
   let fixture: ComponentFixture<RequestedDocumentsTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, CommonModule, RouterTestingModule],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        providers: [GdsDateTimePipe],
-        declarations: [RequestedDocumentsTaskDetailsComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, CommonModule, RouterTestingModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [GdsDateTimePipe],
+      declarations: [RequestedDocumentsTaskDetailsComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RequestedDocumentsTaskDetailsComponent);

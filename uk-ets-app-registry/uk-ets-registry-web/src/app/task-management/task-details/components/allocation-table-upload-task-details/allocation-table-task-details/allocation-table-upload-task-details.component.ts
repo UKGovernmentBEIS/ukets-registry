@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AllocationTableUploadTaskDetails } from '@task-management/model';
+import { AllocationTableUploadTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-allocation-table-upload-task-details',

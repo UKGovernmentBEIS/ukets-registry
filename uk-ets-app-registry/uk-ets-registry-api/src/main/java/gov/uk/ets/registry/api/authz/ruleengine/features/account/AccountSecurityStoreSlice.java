@@ -16,6 +16,7 @@ public class AccountSecurityStoreSlice {
     private Long pendingTasks;
     private Long activeTransactions;
     private Long pendingActivationTrustedAccounts;
+    private Long pendingAddAuthorizedRepresentativeTasks;
     private Long pendingComplianceEntityUpdate;
     private List<VerifiedEmissionsDTO> verifiedEmissionsList;
     protected List<TrustedAccount> linkedPendingTrustedAccounts;

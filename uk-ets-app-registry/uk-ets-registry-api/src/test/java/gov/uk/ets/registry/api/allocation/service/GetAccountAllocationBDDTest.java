@@ -12,8 +12,8 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
-import gov.uk.ets.registry.api.allocation.configuration.AllocationConfigurationService;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
+import gov.uk.ets.registry.api.allocation.repository.AllocationStatusRepository;
 import gov.uk.ets.registry.api.allocation.service.dto.AccountAllocationDTO;
 import gov.uk.ets.registry.api.allocation.service.dto.AggregatedAllocationDTO;
 import gov.uk.ets.registry.api.allocation.service.dto.AnnualAllocationDTO;
@@ -21,6 +21,7 @@ import gov.uk.ets.registry.api.allocation.type.AllocationStatusType;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableService;
+import gov.uk.ets.registry.api.integration.changelog.service.WithholdAuditService;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.repository.TransactionRepository;
 import gov.uk.ets.registry.api.user.service.UserService;
@@ -63,7 +64,7 @@ class GetAccountAllocationBDDTest {
     protected EventService eventService;
 
     @Mock
-    protected AllocationConfigurationService allocationConfigurationService;
+    protected AllocationStatusRepository allocationStatusRepository;
 
     @Mock
     protected TransactionRepository transactionRepository;
@@ -73,6 +74,9 @@ class GetAccountAllocationBDDTest {
     
     @Mock
     protected RequestAllocationService requestAllocationService;
+
+    @Mock
+    protected WithholdAuditService auditService;
     
     protected @Mock
     Account account;
@@ -85,8 +89,8 @@ class GetAccountAllocationBDDTest {
             accountRepository,
             compliantEntityRepository,
             allocationStatusService,
-            dtoFactory, eventService, userService, allocationConfigurationService,transactionRepository,
-            allocationTableService,requestAllocationService);
+            dtoFactory, eventService, userService, allocationStatusRepository,transactionRepository,
+            allocationTableService,requestAllocationService, auditService);
     }
 
     @Test

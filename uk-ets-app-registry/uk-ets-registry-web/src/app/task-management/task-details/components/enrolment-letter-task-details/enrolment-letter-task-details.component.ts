@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EnrolmentLetterTaskDetails } from '@task-management/model';
+import { EnrolmentLetterTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-enrolment-letter-task-details',

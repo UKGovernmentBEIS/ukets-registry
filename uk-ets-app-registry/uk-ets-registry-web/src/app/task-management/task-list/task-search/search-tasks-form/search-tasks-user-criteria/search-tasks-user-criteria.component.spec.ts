@@ -15,7 +15,7 @@ import { AuthApiService } from '@registry-web/auth/auth-api.service';
 import { MockAuthApiService } from 'src/testing/mock-auth-api-service';
 import { MockProtectPipe } from 'src/testing/mock-protect.pipe';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { TaskSearchCriteria } from '@registry-web/task-management/model';
+import { TaskSearchCriteria } from '@shared/task-and-regulator-notice-management/model';
 import { DatePipe } from '@angular/common';
 
 describe('SearchTasksUserCriteriaComponent', () => {
@@ -85,25 +85,23 @@ describe('SearchTasksUserCriteriaComponent', () => {
     accountType: 'accountType',
   };
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, FormsModule, NgbModule, NgbModule],
-        declarations: [
-          UkProtoFormTextComponent,
-          UkProtoFormDatePickerComponent,
-          UkProtoFormSelectComponent,
-          SearchTasksUserCriteriaComponent,
-          DisableControlDirective,
-          MockProtectPipe,
-        ],
-        providers: [
-          DatePipe,
-          { provide: AuthApiService, useValue: MockAuthApiService },
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormsModule, NgbModule, NgbModule],
+      declarations: [
+        UkProtoFormTextComponent,
+        UkProtoFormDatePickerComponent,
+        UkProtoFormSelectComponent,
+        SearchTasksUserCriteriaComponent,
+        DisableControlDirective,
+        MockProtectPipe,
+      ],
+      providers: [
+        DatePipe,
+        { provide: AuthApiService, useValue: MockAuthApiService },
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchTasksUserCriteriaComponent);

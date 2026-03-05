@@ -1,5 +1,5 @@
 import { Action, createAction, props } from '@ngrx/store';
-import { RequestType } from '@registry-web/task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { ErrorSummary } from '@shared/error-summary';
 import { AccountType } from '@shared/model/account';
 

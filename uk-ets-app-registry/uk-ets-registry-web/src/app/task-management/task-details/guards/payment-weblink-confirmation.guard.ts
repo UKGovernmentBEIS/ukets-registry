@@ -5,7 +5,7 @@ import { inject } from '@angular/core';
 import {
   PaymentCompleteResponse,
   RequestPaymentTaskDetails,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { catchError, filter, first, Observable, of, switchMap } from 'rxjs';
 import { selectTaskCompleteResponse } from '@task-details/reducers/task-details.selector';
 import { navigateToTaskDetails } from '@task-details/actions/task-details-navigation.actions';

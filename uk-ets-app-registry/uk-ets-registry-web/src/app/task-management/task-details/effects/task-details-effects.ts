@@ -21,19 +21,16 @@ import { ErrorDetail } from '@shared/error-summary';
 import { canGoBack, errors } from '@registry-web/shared/shared.action';
 import {
   AccountHolderChangeTaskDetails,
-  ActionError,
-  apiErrorToBusinessError,
   REQUEST_TYPE_VALUES,
   RequestedDocumentUploadTaskDetails,
   RequestType,
-  TaskActionErrorResponse,
   TaskCompleteResponse,
   TaskDetails,
   TaskFileDownloadInfo,
   TaskOutcome,
   TaskUpdateAction,
   TransactionTaskDetailsBase,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { ExportFileService } from '@shared/export-file/export-file.service';
 import {
   HttpErrorResponse,
@@ -84,6 +81,11 @@ import {
 import { TransactionType } from '@registry-web/shared/model/transaction';
 import { RequestPaymentService } from '@request-payment/services';
 import { AccountHolderChangeService } from '@registry-web/account-management/account/change-account-holder-wizard/service';
+import {
+  ActionError,
+  apiErrorToBusinessError,
+  TaskActionErrorResponse,
+} from '@shared/task-and-regulator-notice-management/model';
 
 @Injectable()
 export class TaskDetailsEffects {
@@ -187,7 +189,7 @@ export class TaskDetailsEffects {
     return this.actions$.pipe(
       ofType(TaskDetailsActions.fetchTask),
       switchMap((action: { taskId: string }) =>
-        this.taskService.fetchOneTask(action.taskId).pipe(
+        this.taskService.fetchOneTask<TaskDetails>(action.taskId).pipe(
           mergeMap((task) => this.addOperatorToTask(task)),
           mergeMap((task) => this.fetchAdditionalTaskDetailsData(task)),
           map((result: TaskDetails) =>
@@ -203,7 +205,7 @@ export class TaskDetailsEffects {
     return this.actions$.pipe(
       ofType(TaskDetailsActions.loadTaskFromList),
       switchMap((action: { taskId: string }) =>
-        this.taskService.fetchOneTask(action.taskId).pipe(
+        this.taskService.fetchOneTask<TaskDetails>(action.taskId).pipe(
           mergeMap((task) => this.addOperatorToTask(task)),
           mergeMap((task) => this.fetchAdditionalTaskDetailsData(task)),
           map((result) =>

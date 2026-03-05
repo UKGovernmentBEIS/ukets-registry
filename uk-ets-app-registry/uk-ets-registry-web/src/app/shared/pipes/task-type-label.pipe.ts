@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { REQUEST_TYPE_VALUES } from '@task-management/model';
+import { REQUEST_TYPE_VALUES } from '@shared/task-and-regulator-notice-management/model';
 
 @Pipe({
   name: 'taskTypeLabel',

@@ -10,7 +10,8 @@ public enum DomainObject {
     OPERATOR("Operator", "CompliantEntity"),
     EMISSIONS("Emissions", "EmissionsEntry"),
     UPDATE_ACCOUNT_CONTACT_LIST("UpdateAccountContactList", "MetsAccountContact"),
-    EXEMPTION("Exemption", "ExcludeEmissionsEntry");
+    EXEMPTION("Exemption", "ExcludeEmissionsEntry"),
+    WITHHOLD("Withhold", "AllocationStatus");
 
     private final String description;
     private final String entity;

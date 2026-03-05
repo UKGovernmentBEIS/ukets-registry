@@ -1,0 +1,86 @@
+<span>
+  <form [formGroup]="form" (ngSubmit)="onSearch()">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-text
+          controlName="accountHolderId"
+          label="Account Holder ID"
+          hint="Enter text"
+        />
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-text
+          controlName="accountNumber"
+          label="Account number"
+          hint="Enter text"
+        />
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-select
+          controlName="processType"
+          [options]="processTypeOptions()"
+          class="govuk-!-width-full"
+          label="Type"
+          hint="Select from list"
+        />
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-select
+          class="govuk-!-width-full"
+          controlName="taskStatus"
+          label="Status"
+          hint="Select from list"
+          [options]="taskStatusOptions"
+        />
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-text
+          controlName="operatorId"
+          label="Operator ID"
+          hint="Enter text"
+        />
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-text
+          controlName="permitOrMonitoringPlanIdentifier"
+          label="Permit ID"
+          hint="Enter text"
+        />
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <app-form-control-text
+          controlName="claimantName"
+          label="Name of claimant"
+          hint="Enter text"
+        />
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <button
+          data-prevent-double-click="true"
+          class="govuk-button submit-form"
+          data-module="govuk-button"
+          type="submit"
+        >
+          Search
+        </button>
+        <button
+          type="button"
+          (click)="onClear()"
+          class="govuk-button govuk-button--secondary govuk-!-margin-left-3 clear-form"
+          data-module="govuk-button"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  </form>
+</span>

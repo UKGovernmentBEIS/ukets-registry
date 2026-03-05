@@ -8,7 +8,7 @@ import { navigateToTaskDetails } from '@task-details/actions/task-details-naviga
 import {
   PaymentCompleteResponse,
   RequestPaymentTaskDetails,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { Observable, of } from 'rxjs';
 import { canGoBackToList } from '@shared/shared.action';
 import { SearchMode } from '@shared/resolvers/search.resolver';

@@ -1,33 +1,41 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import * as TaskListSelectors from '../task-list.selector';
+import { ActivatedRoute, Data, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import {
-  AccountType,
-  Mode,
-  SearchActionPayload,
-  SelectionChange,
-  Task,
-  TaskSearchCriteria,
-  TaskType,
-} from '@task-management/model';
-import { PageParameters, Pagination } from '@shared/search/paginator';
-import * as TaskListActions from '../task-list.actions';
 import { Observable } from 'rxjs';
-import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { Option } from '@shared/form-controls/uk-select-input/uk-select.model';
+import { PageParameters, Pagination } from '@shared/search/paginator';
+import { SortService } from '@shared/search/sort/sort.service';
+import { SortParameters } from '@shared/search/sort/SortParameters';
+import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
+import { allocationYearOptions } from '@shared/shared.selector';
 import {
   canGoBack,
   clearErrors,
   errors,
   loadRequestAllocationData,
 } from '@shared/shared.action';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { TaskListRoutes } from '@task-management/task-list/task-list.properties';
-import { SortService } from '@shared/search/sort/sort.service';
-import { SortParameters } from '@shared/search/sort/SortParameters';
-import { TaskDetailsActions } from '@task-details/actions';
+import {
+  BULK_ASSIGN_PATH,
+  BULK_CLAIM_PATH,
+  BulkActions,
+} from '@shared/task-and-regulator-notice-management/bulk-actions';
+import {
+  ListMode,
+  SelectionChange,
+} from '@shared/task-and-regulator-notice-management/model';
+
 import { selectIsReportSuccess } from '@reports/selectors';
-import { allocationYearOptions } from '@registry-web/shared/shared.selector';
+import { TaskDetailsActions } from '@task-management/task-details/actions';
+import {
+  AccountType,
+  SearchActionPayload,
+  Task,
+  TaskSearchCriteria,
+  TaskType,
+} from '@shared/task-and-regulator-notice-management/model';
+import * as TaskListSelectors from '../store/task-list.selector';
+import * as TaskListActions from '../store/task-list.actions';
+import { TASK_LIST_PATH } from '@task-management/task-list/task-list.const';
 
 @Component({
   selector: 'app-task-search',
@@ -76,6 +84,12 @@ export class TaskSearchContainerComponent implements OnInit {
 
   ngOnInit() {
     this.store.dispatch(loadRequestAllocationData());
+    this.store.dispatch(
+      BulkActions.SET_CONFIG_VALUES({
+        itemTypeLabel: 'task',
+        listPath: TASK_LIST_PATH,
+      })
+    );
 
     this.pagination$ = this.store.select(TaskListSelectors.selectPagination);
     this.results$ = this.store.select(TaskListSelectors.selectResults);
@@ -204,10 +218,12 @@ export class TaskSearchContainerComponent implements OnInit {
     this.searchTasks(TaskListActions.changePageSize, pageParameters);
   }
 
-  hideShowCriteria($event: boolean) {
-    $event
-      ? this.store.dispatch(TaskListActions.hideCriteria())
-      : this.store.dispatch(TaskListActions.showCriteria());
+  hideShowCriteria(isVisible: boolean) {
+    this.store.dispatch(
+      isVisible
+        ? TaskListActions.hideCriteria()
+        : TaskListActions.showCriteria()
+    );
   }
 
   toggleAdvancedSearch(event: boolean) {
@@ -227,20 +243,20 @@ export class TaskSearchContainerComponent implements OnInit {
 
   onClaim() {
     this.dispatchcanGoBackToStoredStateAction();
-    this.router.navigate(['bulk-claim'], { relativeTo: this.route });
+    this.router.navigate([BULK_CLAIM_PATH], { relativeTo: this.route });
   }
 
   onAssign() {
     this.dispatchcanGoBackToStoredStateAction();
-    this.router.navigate(['bulk-assign'], { relativeTo: this.route });
+    this.router.navigate([BULK_ASSIGN_PATH], { relativeTo: this.route });
   }
 
   private dispatchcanGoBackToStoredStateAction() {
     this.store.dispatch(
       canGoBack({
-        goBackRoute: TaskListRoutes.TASK_LIST,
+        goBackRoute: `/${TASK_LIST_PATH}`,
         extras: {
-          queryParams: { mode: Mode.CACHE },
+          queryParams: { mode: ListMode.CACHE },
         },
       })
     );
@@ -257,9 +273,7 @@ export class TaskSearchContainerComponent implements OnInit {
   }
 
   onError(value: ErrorDetail[]) {
-    const summary: ErrorSummary = {
-      errors: value,
-    };
+    const summary: ErrorSummary = { errors: value };
     this.store.dispatch(errors({ errorSummary: summary }));
   }
 }

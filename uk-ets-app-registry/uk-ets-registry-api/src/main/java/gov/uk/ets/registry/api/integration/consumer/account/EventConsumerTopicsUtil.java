@@ -51,6 +51,20 @@ public class EventConsumerTopicsUtil {
     @Value("${kafka.integration.maritime.mets.contacts.response.topic}")
     private String maritimeMetsContactsResponseTopic;
 
+    //Regulator notice topics
+    @Value("${kafka.integration.installation.regulator.notice.request.topic}")
+    private String installationRegulatorNoticeRequestTopic;
+    @Value("${kafka.integration.aviation.regulator.notice.request.topic}")
+    private String aviationRegulatorNoticeRequestTopic;
+    @Value("${kafka.integration.maritime.regulator.notice.request.topic}")
+    private String maritimeRegulatorNoticeRequestTopic;
+    @Value("${kafka.integration.installation.regulator.notice.response.topic}")
+    private String installationRegulatorNoticeResponseTopic;
+    @Value("${kafka.integration.aviation.regulator.notice.response.topic}")
+    private String aviationRegulatorNoticeResponseTopic;
+    @Value("${kafka.integration.maritime.regulator.notice.response.topic}")
+    private String maritimeRegulatorNoticeResponseTopic;
+
     public String getResponseTopic(String topic) {
         if (Objects.equals(topic, installationAccountOpeningRequestTopic)) {
             return installationAccountOpeningResponseTopic;
@@ -88,6 +102,18 @@ public class EventConsumerTopicsUtil {
             return maritimeMetsContactsResponseTopic;
         }
 
+
+        if (Objects.equals(topic, installationRegulatorNoticeRequestTopic)) {
+            return installationRegulatorNoticeResponseTopic;
+        }
+
+        if (Objects.equals(topic, aviationRegulatorNoticeRequestTopic)) {
+            return aviationRegulatorNoticeResponseTopic;
+        }
+
+        if (Objects.equals(topic, maritimeRegulatorNoticeRequestTopic)) {
+            return maritimeRegulatorNoticeResponseTopic;
+        }
         throw new IllegalStateException("Unknown Request topic");
     }
 }

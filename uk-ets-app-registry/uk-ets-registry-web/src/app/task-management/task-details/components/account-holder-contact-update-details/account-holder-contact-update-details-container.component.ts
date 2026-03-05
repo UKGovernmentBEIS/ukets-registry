@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import {
   AccountHolderPrimaryContactUpdateDetails,
   RequestType,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { getLabel } from '@shared/shared.util';
 import { ACCOUNT_TYPE_OPTIONS } from '@task-management/task-list/task-search/search-tasks-form/search-tasks-form.model';
 import { AccountHolderContact } from '@shared/model/account';

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SearchTasksAdminCriteriaComponent } from './search-tasks-admin-criteria.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TaskSearchCriteria } from '@task-management/model';
+import { TaskSearchCriteria } from '@shared/task-and-regulator-notice-management/model';
 import { By } from '@angular/platform-browser';
 import {
   UkProtoFormDatePickerComponent,
@@ -98,25 +98,23 @@ describe('SearchTasksAdminCriteriaComponent', () => {
     nameOrUserId: null,
   };
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, FormsModule, NgbModule],
-        declarations: [
-          UkProtoFormTextComponent,
-          UkProtoFormDatePickerComponent,
-          UkProtoFormSelectComponent,
-          SearchTasksAdminCriteriaComponent,
-          DisableControlDirective,
-          MockProtectPipe,
-        ],
-        providers: [
-          DatePipe,
-          { provide: AuthApiService, useValue: MockAuthApiService },
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormsModule, NgbModule],
+      declarations: [
+        UkProtoFormTextComponent,
+        UkProtoFormDatePickerComponent,
+        UkProtoFormSelectComponent,
+        SearchTasksAdminCriteriaComponent,
+        DisableControlDirective,
+        MockProtectPipe,
+      ],
+      providers: [
+        DatePipe,
+        { provide: AuthApiService, useValue: MockAuthApiService },
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchTasksAdminCriteriaComponent);

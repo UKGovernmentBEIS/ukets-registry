@@ -11,7 +11,7 @@ import {
   AllocationRequestTaskDetails,
   RequestType,
   TaskOutcome,
-} from '@registry-web/task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('AllocationRequestTaskDetailsComponent', () => {

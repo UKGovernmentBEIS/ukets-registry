@@ -21,7 +21,8 @@
         <td class="govuk-table__cell break-word">
           <a
             class="govuk-link govuk-link--no-visited-state"
-            [routerLink]="['/user-details/' + note.userIdentifier]"
+            [routerLink]="[]"
+            (click)="userDetailsClick(note.userIdentifier)"
             >{{ note.userName }}</a
           >
         </td>

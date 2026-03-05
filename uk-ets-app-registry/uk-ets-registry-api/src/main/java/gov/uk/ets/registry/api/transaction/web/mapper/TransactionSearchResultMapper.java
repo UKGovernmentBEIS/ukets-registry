@@ -1,7 +1,5 @@
 package gov.uk.ets.registry.api.transaction.web.mapper;
 
-import org.springframework.stereotype.Component;
-
 import gov.uk.ets.registry.api.accountaccess.service.AccountAccessService;
 import gov.uk.ets.registry.api.transaction.domain.AccountProjection;
 import gov.uk.ets.registry.api.transaction.domain.TransactionProjection;
@@ -9,10 +7,11 @@ import gov.uk.ets.registry.api.transaction.web.model.TransactionSearchResult;
 import gov.uk.ets.registry.api.transaction.web.model.TransactionSearchResult.AccountInfo;
 import gov.uk.ets.registry.api.transaction.web.model.TransactionSearchResult.UnitsInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * Mapper which is responsible for mapping a {@link TransactionProjection} to a {@link
- * TransactionSearchResult}
+ * TransactionSearchResult}.
  */
 @Component
 @RequiredArgsConstructor
@@ -46,12 +45,12 @@ public class TransactionSearchResultMapper {
         .build();
     }
 
-  private <E extends Enum<E>> String getEnumMemberName(E member) {
-    return member != null ? member.name() : null;
-  }
+    private <E extends Enum<E>> String getEnumMemberName(E member) {
+        return member != null ? member.name() : null;
+    }
 
-  private AccountInfo mapToAccountInfo(AccountProjection account) {
-    return AccountInfo.builder()
+    private AccountInfo mapToAccountInfo(AccountProjection account) {
+        return AccountInfo.builder()
         .title(account.isGovernmentAccount() && !account.isExternalAccount() ? account.getUkRegistryAccountName()
             : account.getAccountFullIdentifier())
         .ukRegistryIdentifier(account.getUkRegistryAccountIdentifier())
@@ -59,6 +58,7 @@ public class TransactionSearchResultMapper {
         .ukRegistryFullIdentifier(account.getAccountFullIdentifier())
         .isExternalAccount(account.isExternalAccount())
         .accountStatus(account.getAccountStatus())
+        .accountHolderName(account.isGovernmentAccount() && !account.isExternalAccount() ? null : account.getAccountHolderName())
         .build();
-  }
+    }
 }

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { AccountClosureTaskDetails } from '@task-management/model';
+import { AccountClosureTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { SummaryListItem } from '@shared/summary-list/summary-list.info';
 import { accountStatusMap } from '@account-management/account-list/account-list.model';
 import { AccountTypeMap } from '@registry-web/shared/model/account';

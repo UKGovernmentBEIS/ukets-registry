@@ -3,9 +3,10 @@ package gov.uk.ets.reports.generator.domain;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 public class Task {
     Long taskId;
     String taskType;

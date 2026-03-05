@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import {
   AccountOpeningTaskDetails,
   TaskUpdateDetails,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { Store } from '@ngrx/store';
 import { clearErrors } from '@shared/shared.action';
 import { updateTask } from '@task-details/actions/task-details.actions';
@@ -22,8 +22,10 @@ import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
 export class AccountOpeningTaskDetailsContainerComponent {
   @Input()
   taskDetails: AccountOpeningTaskDetails;
-  
-  isSeniorOrJuniorAdmin$:Observable<boolean> = this.store.select(isSeniorOrJuniorAdmin);
+
+  isSeniorOrJuniorAdmin$: Observable<boolean> = this.store.select(
+    isSeniorOrJuniorAdmin
+  );
 
   constructor(private store: Store) {}
 

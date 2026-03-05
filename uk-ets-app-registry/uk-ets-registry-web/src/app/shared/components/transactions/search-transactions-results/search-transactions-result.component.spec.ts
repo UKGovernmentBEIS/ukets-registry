@@ -1,7 +1,6 @@
 import { SearchTransactionsResultsComponent } from './search-transactions-results.component';
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SortableColumnDirective } from '@shared/search/sort/sortable-column.directive';
-import { RouterTestingModule } from '@angular/router/testing';
 import { GovukTagComponent } from '@shared/govuk-components/govuk-tag';
 import {
   AccountAccessPipe,
@@ -14,9 +13,10 @@ import { mockClass, MockType } from '../../../../../testing/mocker';
 import { provideMockStore } from '@ngrx/store/testing';
 import { AccountAccessService } from '@registry-web/auth/account-access.service';
 import { SortService } from '@shared/search/sort/sort.service';
-import { SortParameters } from '@registry-web/shared/search/sort/SortParameters';
+import { SortParameters } from '@shared/search/sort/SortParameters';
 import { By } from '@angular/platform-browser';
 import { Transaction, transactionStatusMap } from '@shared/model/transaction';
+import { provideRouter } from '@angular/router';
 
 describe('SearchTransactionsResultsComponent', () => {
   let component: SearchTransactionsResultsComponent;
@@ -29,30 +29,28 @@ describe('SearchTransactionsResultsComponent', () => {
     sortDirection: 'DESC',
   };
 
-  beforeEach(
-    waitForAsync(() => {
-      authApiService = mockClass(AuthApiService);
-      accountAccessService = mockClass(AccountAccessService);
-      TestBed.configureTestingModule({
-        declarations: [
-          SearchTransactionsResultsComponent,
-          SortableColumnDirective,
-          GovukTagComponent,
-          ProtectPipe,
-          AccountAccessPipe,
-          GdsDateTimeShortPipe,
-          ApiEnumTypesPipe,
-        ],
-        imports: [RouterTestingModule],
-        providers: [
-          SortService,
-          { provide: AuthApiService, useValue: authApiService },
-          { provide: AccountAccessService, useValue: accountAccessService },
-          provideMockStore(),
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    authApiService = mockClass(AuthApiService);
+    accountAccessService = mockClass(AccountAccessService);
+    TestBed.configureTestingModule({
+      declarations: [
+        SearchTransactionsResultsComponent,
+        SortableColumnDirective,
+        GovukTagComponent,
+        ProtectPipe,
+        AccountAccessPipe,
+        GdsDateTimeShortPipe,
+        ApiEnumTypesPipe,
+      ],
+      providers: [
+        provideRouter([]),
+        SortService,
+        { provide: AuthApiService, useValue: authApiService },
+        { provide: AccountAccessService, useValue: accountAccessService },
+        provideMockStore(),
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchTransactionsResultsComponent);
@@ -62,15 +60,15 @@ describe('SearchTransactionsResultsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  test('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should be sortable by default', () => {
+  test('should be sortable by default', () => {
     expect(component.isSortable).toEqual(true);
   });
 
-  it('should display the link for transferringAccount when not external and user has access', () => {
+  test('should display the link for transferringAccount when not external and user has access', () => {
     const mockResults: Transaction[] = [];
 
     const mockTransaction: Transaction = {
@@ -87,6 +85,7 @@ describe('SearchTransactionsResultsComponent', () => {
         externalAccount: false,
         userHasAccess: true,
         accountStatus: 'OPEN',
+        accountHolderName: 'Test Transferring Account Holder',
       },
       acquiringAccount: {
         title: 'Test Account 2',
@@ -95,6 +94,7 @@ describe('SearchTransactionsResultsComponent', () => {
         externalAccount: true,
         userHasAccess: false,
         accountStatus: 'SUSPENDED',
+        accountHolderName: 'Test Acquiring Account Holder',
       },
       lastUpdated: '2023-06-07',
       status: 'COMPLETED',
@@ -116,7 +116,7 @@ describe('SearchTransactionsResultsComponent', () => {
     expect(linkElement).toBeTruthy();
   });
 
-  it('should display the link for transferringAccount when not external, user has access, and account status is not SUSPENDED or user is admin', () => {
+  test('should display the link for transferringAccount when not external, user has access, and account status is not SUSPENDED or user is admin', () => {
     const mockTransaction: Transaction = {
       id: 'UK123456',
       type: 'TransferAllowances',
@@ -131,6 +131,7 @@ describe('SearchTransactionsResultsComponent', () => {
         externalAccount: false,
         userHasAccess: true,
         accountStatus: 'OPEN',
+        accountHolderName: 'Test Transferring Account Holder',
       },
       acquiringAccount: {
         title: 'Test Account 2',
@@ -139,6 +140,7 @@ describe('SearchTransactionsResultsComponent', () => {
         externalAccount: true,
         userHasAccess: false,
         accountStatus: 'SUSPENDED',
+        accountHolderName: 'Test Acquiring Account Holder',
       },
       lastUpdated: '2023-06-07',
       status: 'COMPLETED',
@@ -161,7 +163,7 @@ describe('SearchTransactionsResultsComponent', () => {
     expect(linkElement).toBeTruthy();
   });
 
-  it('should not display the link for acquiringAccount when account is SUSPENDED even if user has access and it is not external', () => {
+  test('should not display the link for acquiringAccount when account is SUSPENDED even if user has access and it is not external', () => {
     const mockTransaction: Transaction = {
       id: 'UK123456',
       type: 'TransferAllowances',
@@ -176,6 +178,7 @@ describe('SearchTransactionsResultsComponent', () => {
         externalAccount: false,
         userHasAccess: true,
         accountStatus: 'OPEN',
+        accountHolderName: 'Test Transferring Account Holder',
       },
       acquiringAccount: {
         title: 'Test Account 2',
@@ -184,6 +187,7 @@ describe('SearchTransactionsResultsComponent', () => {
         externalAccount: false,
         userHasAccess: true,
         accountStatus: 'SUSPENDED',
+        accountHolderName: 'Test Acquiring Account Holder',
       },
       lastUpdated: '2023-06-07',
       status: 'COMPLETED',

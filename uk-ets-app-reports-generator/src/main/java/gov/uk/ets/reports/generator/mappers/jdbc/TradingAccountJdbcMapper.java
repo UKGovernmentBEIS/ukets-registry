@@ -37,9 +37,9 @@ public class TradingAccountJdbcMapper
             "           ac.sales_contact_email, \n"+
             "           ac.sales_contact_phone_number_country, \n"+
             "           ac.sales_contact_phone_number, \n" +
-            "           case when ac.sales_contact_uka_1_99 = true then 'TRUE' else 'FALSE' end as sales_contact_uka_1_99, \n" +
-            "           case when ac.sales_contact_uka_100_999 = true then 'TRUE' else 'FALSE' end as sales_contact_uka_100_999, \n" +
-            "           case when ac.sales_contact_uka_1000_plus = true then 'TRUE' else 'FALSE' end as sales_contact_uka_1000_plus\n" +
+            "           case when ac.sales_contact_uka_1_99 = true then 'Yes' else 'No' end as sales_contact_uka_1_99, \n" +
+            "           case when ac.sales_contact_uka_100_999 = true then 'Yes' else 'No' end as sales_contact_uka_100_999, \n" +
+            "           case when ac.sales_contact_uka_1000_plus = true then 'Yes' else 'No' end as sales_contact_uka_1000_plus\n" +
             "from account as ac  \n" +
             "   inner join account_holder as ah \n" +
             "       on ac.account_holder_id = ah.id \n" +

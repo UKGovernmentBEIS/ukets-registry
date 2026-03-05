@@ -1,0 +1,77 @@
+<div class="hmcts-identity-bar">
+  <div class="hmcts-identity-bar__container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <a
+          class="govuk-back-link"
+          id="back"
+          [routerLink]="['../../' + listPath]"
+          >Back to list</a
+        >
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+          Regulator Notice
+        </h1>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        @if (
+          noticeDetails() &&
+          noticeDetails().taskStatus !== 'COMPLETED' &&
+          noticeDetails().currentUserClaimant
+        ) {
+          <div style="float: right">
+            <button
+              class="govuk-button govuk-!-margin-bottom-0"
+              data-module="govuk-button"
+              (click)="onCompleteTask()"
+            >
+              Complete task
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      @if (noticeDetails()?.taskStatus === 'COMPLETED') {
+        <div class="govuk-!-margin-left-3 govuk-!-margin-top-2">
+          <app-govuk-tag color="green">Completed</app-govuk-tag>
+        </div>
+      }
+
+      @if (noticeDetails()) {
+        <div class="govuk-grid-column-full govuk-!-margin-top-2">
+          <div class="govuk-body govuk-!-margin-bottom-2">
+            Notice ID: {{ noticeDetails().requestId }}
+            <a
+              [routerLink]="[]"
+              (keypress)="toggleMoreInfo()"
+              (click)="toggleMoreInfo()"
+              class="govuk-link govuk-!-margin-left-2"
+              >{{ moreInfo() ? 'less info' : 'more info' }}</a
+            >
+          </div>
+
+          @if (moreInfo()) {
+            @if (noticeDetails().initiatedDate) {
+              <div class="govuk-body govuk-!-margin-bottom-2">
+                Received on {{ noticeDetails().initiatedDate | gdsDateTime }}
+              </div>
+            }
+
+            @if (noticeDetails().claimantName) {
+              <div class="govuk-body govuk-!-margin-bottom-2">
+                Claimed by {{ noticeDetails().claimantName }} on
+                {{ noticeDetails().claimedDate | gdsDateTime }}
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

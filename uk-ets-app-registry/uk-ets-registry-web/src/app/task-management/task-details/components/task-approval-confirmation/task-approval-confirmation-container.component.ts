@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TaskCompleteResponse } from '@task-management/model';
+import { TaskCompleteResponse } from '@shared/task-and-regulator-notice-management/model';
 import { Store } from '@ngrx/store';
 import { selectTaskCompleteResponse } from '@task-details/reducers/task-details.selector';
 
@@ -11,7 +11,7 @@ import { selectTaskCompleteResponse } from '@task-details/reducers/task-details.
       [taskCompleteResponse]="taskCompleteResponse$ | async"
       [taskType]="(taskCompleteResponse$ | async).taskDetailsDTO.taskType"
     ></app-task-approval-confirmation>
-  `
+  `,
 })
 export class TaskApprovalConfirmationContainerComponent implements OnInit {
   taskCompleteResponse$: Observable<TaskCompleteResponse>;

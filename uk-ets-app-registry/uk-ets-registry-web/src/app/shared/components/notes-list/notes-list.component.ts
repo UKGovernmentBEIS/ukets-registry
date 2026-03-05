@@ -7,14 +7,16 @@ import { Note } from '@registry-web/shared/model/note';
   styleUrls: ['./notes-list.component.scss'],
 })
 export class NotesListComponent {
-  @Input()
-  notes: Note[];
-  @Input()
-  isSeniorAdmin: boolean;
-  @Output()
-  deleteNote = new EventEmitter<string>();
+  @Input() notes: Note[];
+  @Input() isSeniorAdmin: boolean;
+  @Output() deleteNote = new EventEmitter<string>();
+  @Output() goToUserDetails = new EventEmitter<string>();
 
   deleteNoteClick(noteId: string) {
     this.deleteNote.emit(noteId);
+  }
+
+  userDetailsClick(userId: string) {
+    this.goToUserDetails.emit(userId);
   }
 }

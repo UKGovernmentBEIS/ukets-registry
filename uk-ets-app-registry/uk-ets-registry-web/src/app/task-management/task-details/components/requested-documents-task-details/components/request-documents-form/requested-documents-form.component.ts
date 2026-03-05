@@ -14,7 +14,7 @@ import {
   RequestedDocumentsModel,
   RequestedDocumentUploadTaskDetails,
   TaskFileDownloadInfo,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { AuthModel } from '@registry-web/auth/auth.model';
 import { empty, getConfigurationValue } from '@shared/shared.util';
 import { UkValidationMessageHandler } from '@shared/validation';

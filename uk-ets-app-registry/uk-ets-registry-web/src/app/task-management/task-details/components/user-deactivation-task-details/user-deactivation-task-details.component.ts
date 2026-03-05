@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { IUkOfficialCountry } from '@registry-web/shared/countries/country.interface';
 import { selectAllCountries } from '@registry-web/shared/shared.selector';
-import { UserDeactivationTaskDetails } from '@registry-web/task-management/model';
+import { UserDeactivationTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { ViewMode } from '@registry-web/user-management/user-details/model';
 import { Observable } from 'rxjs';
 

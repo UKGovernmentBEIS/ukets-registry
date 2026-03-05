@@ -4,7 +4,7 @@ import { canGoBack } from '@shared/shared.action';
 import { ActivatedRoute } from '@angular/router';
 import { selectTask } from '../../reducers/task-details.selector';
 import { Observable, take } from 'rxjs';
-import { TaskDetails } from '@registry-web/task-management/model';
+import { TaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { cancelChangeTaskDeadline } from '../../actions/task-details.actions';
 
 @Component({
@@ -21,7 +21,10 @@ export class CancelChangeTaskDeadlineContainerComponent implements OnInit {
   goBackRoute: string;
   task$: Observable<TaskDetails>;
 
-  constructor(private store: Store, private route: ActivatedRoute) {}
+  constructor(
+    private store: Store,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {

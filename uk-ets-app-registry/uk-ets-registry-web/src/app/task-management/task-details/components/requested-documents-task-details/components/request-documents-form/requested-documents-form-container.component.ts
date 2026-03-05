@@ -16,7 +16,7 @@ import {
 import {
   RequestedDocumentsModel,
   TaskFileDownloadInfo,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
 import { selectConfigurationRegistry } from '@shared/shared.selector';
 import {

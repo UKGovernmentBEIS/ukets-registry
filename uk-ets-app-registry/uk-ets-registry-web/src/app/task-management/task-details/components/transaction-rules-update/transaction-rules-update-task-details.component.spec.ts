@@ -3,26 +3,24 @@ import { TransactionRulesUpdateTaskDetailsComponent } from '@task-details/compon
 import { AccountSummaryComponent } from '@shared/components/transactions/account-summary/account-summary.component';
 import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RequestType } from '@task-management/model';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { SummaryListComponent } from '@shared/summary-list';
 
 describe('TransactionRulesUpdateTaskDetailsComponent', () => {
   let component: TransactionRulesUpdateTaskDetailsComponent;
   let fixture: ComponentFixture<TransactionRulesUpdateTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CommonModule, RouterTestingModule],
-        declarations: [
-          TransactionRulesUpdateTaskDetailsComponent,
-          AccountSummaryComponent,
-          SummaryListComponent,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [CommonModule, RouterTestingModule],
+      declarations: [
+        TransactionRulesUpdateTaskDetailsComponent,
+        AccountSummaryComponent,
+        SummaryListComponent,
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(

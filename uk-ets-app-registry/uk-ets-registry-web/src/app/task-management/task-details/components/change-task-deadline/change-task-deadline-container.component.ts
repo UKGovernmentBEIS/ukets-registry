@@ -3,7 +3,10 @@ import { Observable, map, take } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { ErrorDetail, ErrorSummary } from '@shared/error-summary';
 import { canGoBack, errors } from '@shared/shared.action';
-import { RequestType, TaskDetails } from '@registry-web/task-management/model';
+import {
+  RequestType,
+  TaskDetails,
+} from '@shared/task-and-regulator-notice-management/model';
 import {
   selectTask,
   selectTaskDeadline,

@@ -3,36 +3,31 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import {
-  AccountType,
-  OperatorType,
-  Regulator,
-} from '@registry-web/shared/model/account';
+import { AccountType, OperatorType, Regulator } from '@shared/model/account';
 import {
   AircraftOperatorPipe,
   InstallationPipe,
-} from '@registry-web/shared/pipes';
-
+  MaritimeOperatorPipe,
+} from '@shared/pipes';
 import { CheckUpdateStatusComponent } from './check-update-status.component';
 
 describe('CheckUpdateStatusComponent', () => {
   let component: CheckUpdateStatusComponent;
   let fixture: ComponentFixture<CheckUpdateStatusComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterModule.forRoot([])],
-        declarations: [CheckUpdateStatusComponent, InstallationPipe],
-        providers: [
-          { provide: APP_BASE_HREF, useValue: '/' },
-          InstallationPipe,
-          AircraftOperatorPipe,
-        ],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [RouterModule.forRoot([])],
+      declarations: [CheckUpdateStatusComponent, InstallationPipe],
+      providers: [
+        { provide: APP_BASE_HREF, useValue: '/' },
+        InstallationPipe,
+        AircraftOperatorPipe,
+        MaritimeOperatorPipe,
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
+  }));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -52,6 +47,7 @@ describe('CheckUpdateStatusComponent', () => {
         type: OperatorType.INSTALLATION,
         regulator: Regulator.EA,
         firstYear: '2021',
+        emitterId: 'EM1234',
       },
       accountHolder: null,
       accountHolderContactInfo: null,
@@ -67,6 +63,8 @@ describe('CheckUpdateStatusComponent', () => {
       pendingARRequests: null,
       canBeClosed: true,
       kyotoAccountType: null,
+      addedARs: 0,
+      removedARs: 0,
     };
     fixture.detectChanges();
   });

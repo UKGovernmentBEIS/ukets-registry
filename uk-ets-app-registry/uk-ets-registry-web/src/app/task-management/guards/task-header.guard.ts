@@ -8,13 +8,16 @@ import { TaskDetailsActions } from '@task-details/actions';
 import { Observable, of } from 'rxjs';
 import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
 
-import { TaskDetails } from '@task-management/model';
+import { TaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { Store } from '@ngrx/store';
 import { selectTask } from '@task-details/reducers/task-details.selector';
 
 @Injectable()
 export class TaskHeaderGuard {
-  constructor(private router: Router, private store: Store) {}
+  constructor(
+    private router: Router,
+    private store: Store
+  ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,

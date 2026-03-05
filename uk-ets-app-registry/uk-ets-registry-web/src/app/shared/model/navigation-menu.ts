@@ -1,3 +1,5 @@
+import { REGULATOR_NOTICE_LIST_PATH } from '@registry-web/regulator-notice-management/list';
+import { TASK_LIST_PATH } from '@registry-web/task-management/task-list/task-list.const';
 import { HeaderItem } from '@shared/header/header-item.enum';
 import { SearchMode } from '@shared/resolvers/search.resolver';
 
@@ -22,7 +24,8 @@ export enum MENU_ROUTES {
   KP_ADMINISTRATION_ITL_NOTIFICATIONS = '/kpadministration/itl-notices',
   KP_ADMINISTRATION_ITL_RECONCILIATION = '/kpadministration/itl-reconciliation',
 
-  TASK_LIST = '/task-list',
+  TASK_LIST = '/' + TASK_LIST_PATH,
+  REGULATOR_NOTICE_LIST = '/' + REGULATOR_NOTICE_LIST_PATH,
 
   USER_ADMINISTRATION = '/user-list',
 
@@ -409,6 +412,13 @@ export const MENU_ITEMS = function (
       protectedScopes: [
         { name: MENU_SCOPES.NOTIFICATION_ADMINISTRATION, isPermission: true },
       ],
+    },
+    {
+      label: 'Regulator Notices',
+      routerLink: MENU_ROUTES.REGULATOR_NOTICE_LIST,
+      checkAuthenticated: true,
+      activeMenuItem: HeaderItem.REGULATOR_NOTICE,
+      queryParams: { mode: SearchMode.INITIAL_LOAD },
     },
     {
       label: 'Documents',

@@ -9,7 +9,10 @@ import {
   UkProtoFormCommentAreaComponent,
   UkProtoFormTextComponent,
 } from '@shared/form-controls/uk-proto-form-controls';
-import { RequestType, TaskOutcome } from '@registry-web/task-management/model';
+import {
+  RequestType,
+  TaskOutcome,
+} from '@shared/task-and-regulator-notice-management/model';
 import { CompleteTaskComponent } from '.';
 import { DisableControlDirective } from '@registry-web/shared/form-controls/disable-control.directive';
 

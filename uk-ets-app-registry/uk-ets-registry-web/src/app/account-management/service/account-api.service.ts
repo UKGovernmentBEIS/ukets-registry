@@ -28,7 +28,10 @@ import {
 import { DomainEvent } from '@shared/model/event';
 import { Transaction } from '@shared/model/transaction';
 import { FileDetails } from '@shared/model/file/file-details.model';
-import { RequestType, TaskSearchCriteria } from '@task-management/model';
+import {
+  RequestType,
+  TaskSearchCriteria,
+} from '@shared/task-and-regulator-notice-management/model';
 import { TaskService } from '@shared/services/task-service';
 
 @Injectable({ providedIn: 'root' })

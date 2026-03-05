@@ -3,7 +3,10 @@ import {
   TaskDetailsState,
 } from '@task-details/reducers/task-details.reducer';
 import { TaskDetailsActions } from '@task-details/actions';
-import { RequestType, TaskDetails } from '@task-management/model';
+import {
+  RequestType,
+  TaskDetails,
+} from '@shared/task-and-regulator-notice-management/model';
 import { verifyBeforeAndAfterActionDispatched } from '../../../../testing/helpers/reducer.test.helper';
 import { UploadStatus } from '@shared/model/file';
 

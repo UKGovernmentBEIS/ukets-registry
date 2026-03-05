@@ -18,6 +18,15 @@ import {
   canActivateClaimAccount,
   clearClaimAccountGuard,
 } from '@claim-account/claim-account.guards';
+import {
+  REGULATOR_NOTICE_DETAILS_PATH,
+  regulatorNoticeDetailsCanActivateGuard,
+  regulatorNoticeDetailsCanDeactivateGuard,
+} from '@regulator-notice-management/details';
+import { TASK_DETAILS_PATH } from '@task-management/task-details/task-details.const';
+import { REGULATOR_NOTICE_LIST_PATH } from '@regulator-notice-management/list';
+import { canActivateRegulatorNoticeList } from '@registry-web/regulator-notice-management/list/guards-and-resolvers';
+import { TASK_LIST_PATH } from '@task-management/task-list/task-list.const';
 
 const routes: Routes = [
   { path: 'under-construction', component: EmptyPageComponent },
@@ -28,9 +37,8 @@ const routes: Routes = [
         (mod) => mod.RegistrationModule
       ),
   },
-  // tasks
   {
-    path: 'task-list',
+    path: TASK_LIST_PATH,
     canActivate: [LoginGuard],
     loadChildren: () =>
       import('./task-management/task-list/task-list.module').then(
@@ -38,7 +46,7 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'task-details',
+    path: TASK_DETAILS_PATH,
     loadChildren: () =>
       import('./task-management/task-details/task-details.module').then(
         (mod) => mod.TaskDetailsModule
@@ -235,6 +243,23 @@ const routes: Routes = [
       import(
         './notifications/notifications-list/notifications-list.module'
       ).then((m) => m.NotificationsListModule),
+  },
+  {
+    path: REGULATOR_NOTICE_LIST_PATH,
+    canActivate: [LoginGuard, canActivateRegulatorNoticeList],
+    loadChildren: () =>
+      import(
+        '@regulator-notice-management/list/regulator-notice-list.module'
+      ).then((mod) => mod.RegulatorNoticeListModule),
+  },
+  {
+    path: REGULATOR_NOTICE_DETAILS_PATH + '/:requestId',
+    canActivate: [LoginGuard, regulatorNoticeDetailsCanActivateGuard],
+    canDeactivate: [regulatorNoticeDetailsCanDeactivateGuard],
+    loadChildren: () =>
+      import(
+        '@regulator-notice-management/details/regulator-notice-details.module'
+      ).then((m) => m.RegulatorNoticeDetailsModule),
   },
   {
     path: 'guidance',

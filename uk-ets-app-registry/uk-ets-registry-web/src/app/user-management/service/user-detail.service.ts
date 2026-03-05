@@ -22,7 +22,7 @@ import {
   REQUEST_TYPES_CAUSING_USER_SUSPENSION,
   RequestType,
   TaskSearchCriteria,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { UserUpdateDetailsType } from '@user-update/model';
 
 @Injectable({

@@ -1218,6 +1218,42 @@
       ]
     },
     {
+      "name": "Regulator notices search",
+      "ownerManagedAccess": false,
+      "displayName": "Regulator notices search",
+      "attributes": {},
+      "uris": ["/api-registry/regulator-notices.list"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Regulator notices types",
+      "ownerManagedAccess": false,
+      "displayName": "Regulator notices types",
+      "attributes": {},
+      "uris": ["/api-registry/regulator-notices.types"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        }
+      ]
+    },
+    {
+      "name": "Regulator notices create",
+      "ownerManagedAccess": false,
+      "displayName": "Regulator notices create",
+      "attributes": {},
+      "uris": ["/api-registry/regulator-notices.create"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+        }
+      ]
+    },
+    {
       "name": "View Note Resource",
       "ownerManagedAccess": false,
       "displayName": "View Note Resource",

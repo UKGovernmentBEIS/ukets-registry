@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { TransactionTaskDetailsBase } from '@task-management/model';
+import { TransactionTaskDetailsBase } from '@shared/task-and-regulator-notice-management/model';
 import {
   TRANSACTION_TYPES_VALUES,
   TransactionType,

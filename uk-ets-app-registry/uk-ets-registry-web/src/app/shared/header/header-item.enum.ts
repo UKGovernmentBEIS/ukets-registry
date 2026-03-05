@@ -10,6 +10,7 @@ export enum HeaderItem {
   REG_ADMIN,
   REPORTS,
   NOTIFICATIONS,
+  REGULATOR_NOTICE,
   ABOUT,
   DOCUMENTS,
 }

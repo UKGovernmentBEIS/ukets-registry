@@ -169,11 +169,15 @@
             >
               {{ transaction.transferringAccount.title }}
             </a>
+            <br />
+            {{ transaction.transferringAccount.accountHolderName }}
           </div>
         </div>
-        <ng-template #elseBlockTransferringAccount>{{
-          transaction.transferringAccount.title
-        }}</ng-template>
+        <ng-template #elseBlockTransferringAccount>
+          {{ transaction.transferringAccount.title }}
+          <br />
+          {{ transaction.transferringAccount.accountHolderName }}
+        </ng-template>
       </td>
       <td class="govuk-table__cell">
         <div
@@ -204,10 +208,14 @@
             >
               {{ transaction.acquiringAccount.title }}
             </a>
+            <br />
+            {{ transaction.acquiringAccount.accountHolderName }}
           </div>
         </div>
         <ng-template #elseBlockAcquiringAccount>
           {{ transaction.acquiringAccount.title }}
+          <br />
+          {{ transaction.acquiringAccount.accountHolderName }}
         </ng-template>
       </td>
       <td class="govuk-table__cell">

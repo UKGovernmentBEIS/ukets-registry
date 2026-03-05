@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Service
 @Log4j2
@@ -45,8 +47,9 @@ public class ReportRequestAddRemoveRoleService {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.set(HttpHeaders.AUTHORIZATION, "bearer " + serviceAccountAuthorizationService.obtainAccessToken().getToken());
-        headers.set("X-Request-ID",
-             MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase()));
+        final String requestInteractionId = MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase());
+
+        headers.set("X-Request-ID", requestInteractionId != null ? requestInteractionId : UUID.randomUUID().toString());
 
         HttpEntity<ReportAddRemoveRoleRequest> request = new HttpEntity<>(reportAddRemoveRoleRequest, headers);
         return request;

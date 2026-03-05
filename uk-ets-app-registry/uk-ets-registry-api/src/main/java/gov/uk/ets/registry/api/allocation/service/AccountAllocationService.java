@@ -6,12 +6,16 @@ import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
 import gov.uk.ets.registry.api.allocation.configuration.AllocationConfigurationService;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
+import gov.uk.ets.registry.api.allocation.domain.AllocationStatus;
+import gov.uk.ets.registry.api.allocation.repository.AllocationStatusRepository;
 import gov.uk.ets.registry.api.allocation.service.dto.AccountAllocationDTO;
 import gov.uk.ets.registry.api.allocation.service.dto.UpdateAllocationCommand;
 import gov.uk.ets.registry.api.allocation.type.AllocationStatusType;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableService;
+import gov.uk.ets.registry.api.integration.changelog.service.WithholdAuditService;
+import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.transaction.domain.BaseTransactionEntity;
 import gov.uk.ets.registry.api.transaction.domain.Transaction;
@@ -29,6 +33,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static gov.uk.ets.registry.api.account.domain.QAccount.account;
+
 /**
  * Service layer for interacting with the account allocation.
  */
@@ -45,10 +51,11 @@ public class AccountAllocationService {
     private final AllocationDTOFactory dtoFactory;
     private final EventService eventService;
     private final UserService userService;
-    private final AllocationConfigurationService allocationConfigurationService;
+    private final AllocationStatusRepository allocationStatusRepository;
     private final TransactionRepository transactionRepository;
     private final AllocationTableService allocationTableService;
     private final RequestAllocationService requestAllocationService;
+    private final WithholdAuditService auditService;
 
 
     /**
@@ -148,6 +155,21 @@ public class AccountAllocationService {
      */
     @Transactional
     public void updateAllocationStatus(UpdateAllocationCommand command) {
+        Map<Integer, AllocationStatusType> currentStatuses = getAccountAllocationStatus(command.getAccountId());
+        updateAllocationStatus(command, true);
+        Account account = accountRepository.findByIdentifier(command.getAccountId())
+                .orElseThrow(() -> new IllegalArgumentException("no such account"));
+        List<AllocationStatus> allocationStatuses = allocationStatusRepository.findByCompliantEntityId(account.getCompliantEntity().getId());
+        auditService.logChanges(currentStatuses, allocationStatuses, account, SourceSystem.REGISTRY);
+    }
+
+    /**
+     * Updates the allocation status of the account.
+     * @param command The update allocation status command
+     * @param triggeredByUser if the update is triggered by a user or not
+     */
+    @Transactional
+    public void updateAllocationStatus(UpdateAllocationCommand command, boolean triggeredByUser) {
         // Under development
         CompliantEntity compliantEntity = getCompliantEntityByAccountId(command.getAccountId());
         if (compliantEntity == null) {
@@ -162,7 +184,7 @@ public class AccountAllocationService {
             compliantEntity.setAllocationWithholdStatus(AllocationStatusType.ALLOWED);
         }
         compliantEntityRepository.save(compliantEntity);
-        generateEvents(command);
+        generateEvents(command, triggeredByUser);
     }
 
     private CompliantEntity getCompliantEntityByAccountId(Long accountId) {
@@ -171,8 +193,8 @@ public class AccountAllocationService {
         return account.getCompliantEntity();
     }
 
-    private void generateEvents(UpdateAllocationCommand command) {
-        String urid = userService.getCurrentUser().getUrid();
+    private void generateEvents(UpdateAllocationCommand command, boolean triggeredByUser) {
+        String urid = triggeredByUser ? userService.getCurrentUser().getUrid() : null;
         command.getChangedStatus().entrySet().stream().forEach(e -> {
             String actionPrefix = e.getValue()
                 .equals(AllocationStatusType.ALLOWED) ?

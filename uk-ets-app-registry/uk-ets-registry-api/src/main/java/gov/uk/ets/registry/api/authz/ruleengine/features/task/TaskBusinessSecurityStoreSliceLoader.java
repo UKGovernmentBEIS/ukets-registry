@@ -84,7 +84,9 @@ public class TaskBusinessSecurityStoreSliceLoader {
             for (Task task : allByRequestIdIn) {
                 TaskBusinessRuleInfo taskBusinessRuleInfo = new TaskBusinessRuleInfo();
                 taskBusinessRuleInfo.setTask(task);
-                setTaskInitiatorAndHisRoles(taskBusinessRuleInfo, task.getInitiatedBy().getUrid());
+                if (task.getInitiatedBy() != null) {
+                    setTaskInitiatorAndHisRoles(taskBusinessRuleInfo, task.getInitiatedBy().getUrid());
+                }
                 list.add(taskBusinessRuleInfo);
             }
             taskBusinessSecurityStoreSlice.setTaskBusinessRuleInfoList(list);
@@ -137,7 +139,9 @@ public class TaskBusinessSecurityStoreSliceLoader {
         if (byRequestId.getClaimedBy() != null) {
             setTaskAssigneeAndHisRoles(taskBusinessSecurityStoreSlice, byRequestId.getClaimedBy().getUrid());
         }
-        setTaskInitiatorAndHisRoles(taskBusinessRuleInfo, byRequestId.getInitiatedBy().getUrid());
+        if (byRequestId.getInitiatedBy() != null) {
+            setTaskInitiatorAndHisRoles(taskBusinessRuleInfo, byRequestId.getInitiatedBy().getUrid());
+        }
         taskBusinessRuleInfo.setTask(byRequestId);
         List<TaskBusinessRuleInfo> list = new ArrayList<>();
 

@@ -17,7 +17,7 @@ import {
   AccountType,
   TaskSearchCriteria,
   TaskType,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import {
   TASK_OUTCOME_OPTIONS,
   TASK_STATUS_OPTIONS,

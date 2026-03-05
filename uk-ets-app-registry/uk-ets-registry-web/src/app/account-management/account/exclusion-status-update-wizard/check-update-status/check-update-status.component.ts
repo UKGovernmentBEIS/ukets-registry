@@ -1,13 +1,18 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { OperatorEmissionsExclusionStatus } from '../model';
+import { OperatorEmissionsExclusionStatus } from '@exclusion-status-update-wizard/model';
 import {
   Account,
   AircraftOperator,
   Installation,
+  MaritimeOperator,
   OperatorType,
 } from '@shared/model/account';
-import { InstallationPipe, AircraftOperatorPipe } from '@shared/pipes';
-import { VerifiedEmissions } from '@registry-web/account-shared/model';
+import {
+  InstallationPipe,
+  AircraftOperatorPipe,
+  MaritimeOperatorPipe,
+} from '@shared/pipes';
+import { VerifiedEmissions } from '@account-shared/model';
 
 @Component({
   selector: 'app-check-update-status',
@@ -40,14 +45,17 @@ export class CheckUpdateStatusComponent implements OnInit {
     {} as OperatorEmissionsExclusionStatus;
   isInstallation: boolean;
   isAircraft: boolean;
+  isMaritime: boolean;
   title: string;
   installation: Installation;
   aircraftOperator: AircraftOperator;
+  maritimeOperator: MaritimeOperator;
   hasEmissions: boolean;
 
   constructor(
     private installationPipe: InstallationPipe,
-    private aircraftOperatorPipe: AircraftOperatorPipe
+    private aircraftOperatorPipe: AircraftOperatorPipe,
+    private maritimeOperatorPipe: MaritimeOperatorPipe
   ) {}
 
   ngOnInit() {
@@ -59,15 +67,23 @@ export class CheckUpdateStatusComponent implements OnInit {
       this.account.operator.type === OperatorType.INSTALLATION;
     this.isAircraft =
       this.account.operator.type === OperatorType.AIRCRAFT_OPERATOR;
+    this.isMaritime =
+      this.account.operator.type === OperatorType.MARITIME_OPERATOR;
     this.title = this.isInstallation
       ? 'Installation details'
-      : 'Aircraft operator details';
+      : this.isMaritime
+        ? 'Maritime operator details'
+        : 'Aircraft operator details';
     if (this.isInstallation) {
       this.installation = this.installationPipe.transform(
         this.account.operator
       );
     } else if (this.isAircraft) {
       this.aircraftOperator = this.aircraftOperatorPipe.transform(
+        this.account.operator
+      );
+    } else if (this.isMaritime) {
+      this.maritimeOperator = this.maritimeOperatorPipe.transform(
         this.account.operator
       );
     }

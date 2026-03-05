@@ -3,8 +3,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { CountryNamePipe } from '@registry-web/shared/pipes';
-import { RequestType } from '@registry-web/task-management/model';
-import { taskDetailsBase } from '@registry-web/task-management/model/task-details.model.spec';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { UserDeactivationDetails } from '@registry-web/user-management/user-details/model/user-deactivation-details';
 import { UserDeactivationTaskDetailsComponent } from './user-deactivation-task-details.component';
 
@@ -12,19 +12,17 @@ describe('UserDeactivationTaskDetailsComponent', () => {
   let component: UserDeactivationTaskDetailsComponent;
   let fixture: ComponentFixture<UserDeactivationTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        declarations: [UserDeactivationTaskDetailsComponent],
-        providers: [
-          { provide: APP_BASE_HREF, useValue: '/' },
-          CountryNamePipe,
-          provideMockStore(),
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      declarations: [UserDeactivationTaskDetailsComponent],
+      providers: [
+        { provide: APP_BASE_HREF, useValue: '/' },
+        CountryNamePipe,
+        provideMockStore(),
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(UserDeactivationTaskDetailsComponent);

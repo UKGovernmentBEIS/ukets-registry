@@ -5,7 +5,7 @@ import {
   RequestType,
   TaskDetails,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { Data } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';

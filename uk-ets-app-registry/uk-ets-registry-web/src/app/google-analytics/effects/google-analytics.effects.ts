@@ -22,7 +22,7 @@ import { GaFactoryService } from '@google-analytics/services/ga-factory.service'
 import { GoogleAnalyticsReducers } from '@google-analytics/reducers';
 import { selectGoogleAnalyticsState } from '@google-analytics/selectors/google-analytics.selectors';
 
-import { RequestType } from '@registry-web/task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { TransactionProposalActions } from '@registry-web/transaction-proposal/actions';
 import { selectRegistryConfigurationProperty } from '@shared/shared.selector';
 

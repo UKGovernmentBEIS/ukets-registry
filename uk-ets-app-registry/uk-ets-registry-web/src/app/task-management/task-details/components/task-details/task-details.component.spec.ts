@@ -7,9 +7,9 @@ import {
   RequestType,
   RequestedDocumentUploadTaskDetails,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { RouterTestingModule } from '@angular/router/testing';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { By } from '@angular/platform-browser';
 import { GdsDateTimePipe, IsPastDatePipe } from '@registry-web/shared/pipes';
 import { SharedModule } from '@registry-web/shared/shared.module';

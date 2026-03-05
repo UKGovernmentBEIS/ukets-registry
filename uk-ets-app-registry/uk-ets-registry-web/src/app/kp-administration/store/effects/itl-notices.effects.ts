@@ -32,7 +32,6 @@ export class ItlNoticesEffects {
       ofType(loadNotices, changeNoticesListPage),
       concatLatestFrom(() => this.store.select(selectNoticesPageParameters)),
       concatMap(([action, storedPageParameters]) => {
-        console.log(action.loadPageParametersFromState, storedPageParameters);
         const pageParameters = action.loadPageParametersFromState
           ? storedPageParameters
           : action.pageParameters;

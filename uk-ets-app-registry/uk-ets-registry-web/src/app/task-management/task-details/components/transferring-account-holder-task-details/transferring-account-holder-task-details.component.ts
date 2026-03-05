@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AccountOpeningTaskDetails } from '@task-management/model';
+import { AccountOpeningTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { AccountHolderType } from '@shared/model/account';
@@ -16,5 +16,8 @@ export class TransferringAccountHolderTaskDetailsComponent {
   @Input() hasAccountHolderChanged: boolean;
   accountHolderType = AccountHolderType;
 
-  constructor(private store: Store, private router: Router) {}
+  constructor(
+    private store: Store,
+    private router: Router
+  ) {}
 }

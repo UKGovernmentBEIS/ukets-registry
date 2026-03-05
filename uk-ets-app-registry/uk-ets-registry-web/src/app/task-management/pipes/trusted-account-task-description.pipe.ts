@@ -1,11 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { RequestType } from '@task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 
 /**
  * A pipe to get the TAL task description
  */
 @Pipe({
-  name: 'trustedAccountTaskDescription'
+  name: 'trustedAccountTaskDescription',
 })
 export class TrustedAccountTaskDescriptionPipe implements PipeTransform {
   transform(value: RequestType): string {

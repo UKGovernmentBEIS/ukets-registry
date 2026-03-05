@@ -11,10 +11,13 @@ import {
   OrganisationPipe,
 } from '@shared/pipes';
 import { ActivatedRoute } from '@angular/router';
-import { RequestType, TaskOutcome } from '@task-management/model';
+import {
+  RequestType,
+  TaskOutcome,
+} from '@shared/task-and-regulator-notice-management/model';
 import { AccountHolderMultipleOwnershipComponent } from '@task-details/components';
 import { RouterTestingModule } from '@angular/router/testing';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { SummaryListComponent } from '@shared/summary-list';
 import { of } from 'rxjs';
 import { provideMockStore } from '@ngrx/store/testing';

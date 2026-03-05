@@ -3,7 +3,7 @@ import { PaymentMethod, PaymentStatus } from '@request-payment/model';
 import {
   PaymentCompleteResponse,
   RequestPaymentTaskDetails,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-payment-confirmation',

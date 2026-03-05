@@ -8,8 +8,8 @@ import { IssueKpUnitsTaskDetailsComponent } from '@task-details/components';
 import { UnitTypeAndActivityPipe } from '../../../../../kp-administration/issue-kp-units/pipes/registry-level-info-view.pipe';
 import { TransactionType } from '@shared/model/transaction';
 import { ApiEnumTypesPipe } from '@shared/pipes/api-enum-types.pipe';
-import { RequestType } from '@task-management/model';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import {
   TransactionReferenceComponent,
   TransactionReferenceWarningComponent,
@@ -26,27 +26,25 @@ describe('IssueKpUnitsTaskDetailsComponent', () => {
   let component: IssueKpUnitsTaskDetailsComponent;
   let fixture: ComponentFixture<IssueKpUnitsTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          CommonModule,
-          RouterTestingModule.withRoutes([
-            { path: 'task-details/history/', component: DummyComponent },
-          ]),
-        ],
-        declarations: [
-          IssueKpUnitsTaskDetailsComponent,
-          IssuanceTransactionSummaryTableComponent,
-          DummyComponent,
-          UnitTypeAndActivityPipe,
-          ApiEnumTypesPipe,
-          TransactionReferenceComponent,
-          TransactionReferenceWarningComponent,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        CommonModule,
+        RouterTestingModule.withRoutes([
+          { path: 'task-details/history/', component: DummyComponent },
+        ]),
+      ],
+      declarations: [
+        IssueKpUnitsTaskDetailsComponent,
+        IssuanceTransactionSummaryTableComponent,
+        DummyComponent,
+        UnitTypeAndActivityPipe,
+        ApiEnumTypesPipe,
+        TransactionReferenceComponent,
+        TransactionReferenceWarningComponent,
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(IssueKpUnitsTaskDetailsComponent);

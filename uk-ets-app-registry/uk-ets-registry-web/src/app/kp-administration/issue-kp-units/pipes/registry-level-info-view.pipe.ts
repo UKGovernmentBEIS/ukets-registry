@@ -1,15 +1,15 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import {
   EnvironmentalActivityLabelMap,
-  RegistryLevelInfo
+  RegistryLevelInfo,
 } from '@shared/model/transaction';
-import { KpIssuanceTaskDetailsDto } from '@task-management/model';
+import { KpIssuanceTaskDetailsDto } from '@shared/task-and-regulator-notice-management/model';
 
 /**
  * A pipe to render The registry level info in select the unit type issuance screen.
  */
 @Pipe({
-  name: 'unitTypeAndActivity'
+  name: 'unitTypeAndActivity',
 })
 export class UnitTypeAndActivityPipe implements PipeTransform {
   transform(

@@ -4,6 +4,37 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
+
+    <changeSet id="5_19_0_TABLE_REGULATOR_NOTICE" author="dimopoulosc" context="migrate">
+        <comment>Defines the regulator notice table</comment>
+        <sql>
+
+            CREATE TABLE "regulator_notice"
+            (
+                "id"           BIGINT       NOT NULL,
+                "process_type" VARCHAR(256) NOT NULL,
+
+                CONSTRAINT "pk_regulator_notice" PRIMARY KEY ("id"),
+                CONSTRAINT "fk_regulator_notice_task" FOREIGN KEY ("id")
+                    REFERENCES "task" ("id")
+            );
+
+            CREATE INDEX regulator_notice_process_type_idx
+                ON regulator_notice(process_type);
+
+            COMMENT
+            ON TABLE "regulator_notice" IS 'Regulator Notice';
+            COMMENT
+            ON COLUMN "regulator_notice"."process_type" IS 'The type of the process';
+
+        </sql>
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "regulator_notice" CASCADE;
+            </sql>
+        </rollback>
+    </changeSet>
+
     <changeSet id="5_19_0_ADD_SMALL_VOLUME_SALES_COLUMNS_TO_ACCOUNT" author="dimopoulosc" context="migrate">
         <comment>Add small volume sales columns to account.</comment>
         <sql>
@@ -22,5 +53,4 @@
             </sql>
         </rollback>
     </changeSet>
-
 </databaseChangeLog>

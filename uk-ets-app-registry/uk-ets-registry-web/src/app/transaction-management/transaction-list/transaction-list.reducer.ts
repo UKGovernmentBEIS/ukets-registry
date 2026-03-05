@@ -6,7 +6,7 @@ import {
 import { mutableOn } from '@shared/mutable-on';
 import { SortParameters } from 'src/app/shared/search/sort/SortParameters';
 import * as TransactionList from './transaction-list.actions';
-import * as TaskListActions from '../../task-management/task-list/task-list.actions';
+import * as TaskListActions from '../../task-management/task-list/store/task-list.actions';
 import {
   Transaction,
   TransactionSearchCriteria,

@@ -4,7 +4,7 @@ import {
   RequestedDocumentUploadTaskDetails,
   RequestType,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { FileDetails } from '@shared/model/file/file-details.model';
 import { Configuration } from '@shared/configuration/configuration.interface';
 import { getConfigurationValue } from '@shared/shared.util';

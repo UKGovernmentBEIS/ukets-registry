@@ -8,7 +8,7 @@ import {
   TaskOutcome,
   RequestType,
   REQUEST_TYPE_VALUES,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-request-payment-task-details',
@@ -81,6 +81,6 @@ export class RequestPaymentTaskDetailsComponent {
   }
 
   shouldShowPaymentReceipt(): boolean {
-    return !!(this.taskDetails?.receiptFile);
+    return !!this.taskDetails?.receiptFile;
   }
 }

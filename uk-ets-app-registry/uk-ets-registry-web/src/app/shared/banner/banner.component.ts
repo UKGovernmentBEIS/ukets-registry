@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { BannerType } from './banner-type.enum';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-banner',
@@ -7,18 +8,12 @@ import { BannerType } from './banner-type.enum';
   styleUrls: ['./banner.component.scss'],
 })
 export class BannerComponent {
-  @Input()
-  type: BannerType = BannerType.INFORMATION;
-  @Input()
-  title: string;
-  @Input()
-  text: string;
-  @Input()
-  contentHtml: string;
-  @Input()
-  link: string;
-  @Input()
-  inline = true;
+  @Input() readonly type: BannerType = BannerType.INFORMATION;
+  @Input() readonly title: string;
+  @Input() readonly text: string;
+  @Input() readonly contentHtml: string;
+  @Input() readonly link: string;
+  @Input() readonly inline = true;
 
-  bannerType = BannerType;
+  readonly BannerType = BannerType;
 }

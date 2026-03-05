@@ -32,7 +32,7 @@ import {
   AuthoriseRepresentativeTaskDetails,
   RequestType,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { selectUrid } from '@user-management/user-details/store/reducers';
 import { TaskDetailsApiActions } from '@task-details/actions';
 

@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GdsDatePipe } from '@registry-web/shared/pipes';
 import { PaymentConfirmationComponent } from '@task-details/components';
-import { RequestType, TaskOutcome } from '@task-management/model';
+import {
+  RequestType,
+  TaskOutcome,
+} from '@shared/task-and-regulator-notice-management/model';
 
 describe('PaymentConfirmationComponent', () => {
   let component: PaymentConfirmationComponent;

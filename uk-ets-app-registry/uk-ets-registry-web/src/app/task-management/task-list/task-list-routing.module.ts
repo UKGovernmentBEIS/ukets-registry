@@ -1,50 +1,41 @@
-import { LoginGuard } from '@shared/guards';
-import { TaskSearchContainerComponent } from './task-search/task-search-container.component';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { TaskSearchResolver } from './task-search/task-search.resolver';
-import { BulkClaimComponent } from './bulk-claim/bulk-claim.component';
-import { BulkAssignComponent } from './bulk-assign/bulk-assign.component';
-import { SelectedTasksResolver } from './util/selected-tasks-resolver';
+import { LoginGuard } from '@registry-web/shared/guards';
 import {
-  createTaskListErrorMap,
-  createBulkClaimErrorMap,
+  BULK_ASSIGN_PATH,
+  BULK_CLAIM_PATH,
+  BulkAssignComponent,
+  BulkClaimComponent,
   createBulkAssignErrorMap,
-} from './util/potential-error-map.factory';
+  createBulkClaimErrorMap,
+} from '@shared/task-and-regulator-notice-management/bulk-actions';
+import { TaskSearchContainerComponent } from './task-search/task-search-container.component';
+import { TaskSearchResolver } from './task-search/task-search.resolver';
+import { SelectedTasksResolver } from './util/selected-tasks-resolver';
+import { createTaskListErrorMap } from './util/potential-error-map.factory';
 
-export const routes: Routes = [
+const routes: Routes = [
   {
     path: '',
     canActivate: [LoginGuard],
     component: TaskSearchContainerComponent,
     resolve: { search: TaskSearchResolver },
-    data: {
-      errorMap: createTaskListErrorMap(),
-    },
+    data: { errorMap: createTaskListErrorMap() },
     title: 'Tasks',
   },
   {
-    path: 'bulk-claim',
+    path: BULK_CLAIM_PATH,
     canActivate: [LoginGuard],
     component: BulkClaimComponent,
-    resolve: {
-      selectedTasks: SelectedTasksResolver,
-    },
-    data: {
-      errorMap: createBulkClaimErrorMap(),
-    },
+    resolve: { selectedTasks: SelectedTasksResolver },
+    data: { errorMap: createBulkClaimErrorMap('task') },
   },
-
   {
-    path: 'bulk-assign',
+    path: BULK_ASSIGN_PATH,
     canActivate: [LoginGuard],
     component: BulkAssignComponent,
-    resolve: {
-      selectedTasks: SelectedTasksResolver,
-    },
-    data: {
-      errorMap: createBulkAssignErrorMap(),
-    },
+    resolve: { selectedTasks: SelectedTasksResolver },
+    data: { errorMap: createBulkAssignErrorMap('task') },
   },
 ];
 

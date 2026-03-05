@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { PaymentCompleteResponse } from '@task-management/model';
+import { PaymentCompleteResponse } from '@shared/task-and-regulator-notice-management/model';
 import { canGoBackToList, clearGoBackRoute } from '@shared/shared.action';
 import { navigateToTaskDetails } from '@task-details/actions/task-details-navigation.actions';
 import { selectTaskCompleteResponse } from '@task-details/reducers/task-details.selector';

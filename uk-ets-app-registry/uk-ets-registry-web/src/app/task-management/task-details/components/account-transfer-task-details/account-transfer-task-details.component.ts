@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AccountTransferTaskDetails } from '@task-management/model';
+import { AccountTransferTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-documents-origin';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
 import { SummaryListItem } from '@registry-web/shared/summary-list/summary-list.info';

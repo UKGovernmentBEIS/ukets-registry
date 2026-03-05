@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AccountClosureTaskDetailsComponent } from './account-closure-task-details.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RequestType } from '@task-management/model';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { AccountType } from '@shared/model/account';
 
 describe('AccountClosureTaskDetailsComponent', () => {

@@ -9,7 +9,10 @@
     [registryContacts]="registryContacts()"
   />
 
-  @if (metsContacts().length && account()?.accountClaimCode) {
+  @if (
+    (metsContacts().length || registryContacts().length) &&
+    account()?.accountClaimCode
+  ) {
     <div class="govuk-button-group">
       <button
         (click)="onSendInvitation()"

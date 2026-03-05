@@ -5,7 +5,7 @@ import {
   TaskFileDownloadInfo,
   TaskOutcome,
   TaskUpdateDetails,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { DomainEvent } from '@shared/model/event';
 import { Account } from '@shared/model/account';
 import { PaymentMethod, PaymentStatus } from '@request-payment/model';

@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TaskCompleteResponseBase } from '@task-management/model/task-complete-response.model';
+import { TaskCompleteResponseBase } from '@shared/task-and-regulator-notice-management/model';
 import { GenericTaskDetailsConfirmationComponent } from '@task-details/components';
 
 describe('GenericTaskDetailsConfirmationComponent', () => {
@@ -12,13 +12,11 @@ describe('GenericTaskDetailsConfirmationComponent', () => {
     taskDetailsDTO: null,
   };
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [GenericTaskDetailsConfirmationComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [GenericTaskDetailsConfirmationComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GenericTaskDetailsConfirmationComponent);

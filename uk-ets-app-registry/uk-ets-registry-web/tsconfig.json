@@ -21,6 +21,9 @@
       "@notes/*": ["src/app/notes/*"],
       "@task-management/*": ["src/app/task-management/*"],
       "@task-details/*": ["src/app/task-management/task-details/*"],
+      "@regulator-notice-management/*": [
+        "src/app/regulator-notice-management/*"
+      ],
       "@transaction-proposal/*": ["src/app/transaction-proposal/*"],
       "@account-management/*": ["src/app/account-management/*"],
       "@account-opening/*": ["src/app/account-opening/*"],

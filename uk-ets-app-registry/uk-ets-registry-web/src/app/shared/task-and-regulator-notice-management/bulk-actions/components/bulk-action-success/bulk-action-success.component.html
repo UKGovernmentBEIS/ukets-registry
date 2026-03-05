@@ -1,0 +1,3 @@
+@if (bulkActionSuccess$ | async; as success) {
+  <app-banner [type]="BannerType.SUCCESS">{{ success.message }}</app-banner>
+}

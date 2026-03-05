@@ -6,18 +6,17 @@ import {
 import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
 import {
   AccountOpeningTaskDetails,
-  PaymentCompleteResponse,
+  RequestedDocumentsModel,
   RequestPaymentTaskDetails,
   RequestType,
   RequestedDocumentUploadTaskDetails,
   TaskDetails,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import {
   TRANSACTION_TYPES_VALUES,
   TransactionType,
 } from '@shared/model/transaction';
 import { UploadStatus } from '@shared/model/file';
-import { RequestedDocumentsModel } from '@task-management/model/requested-documents.model';
 import { convertDateForDatepicker } from '@registry-web/shared/shared.util';
 
 const selectTaskDetailsState = createFeatureSelector<TaskDetailsState>(

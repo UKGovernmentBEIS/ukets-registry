@@ -14,7 +14,7 @@ import {
   TaskDetails,
   TaskFileUploadError,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { DomainEvent } from '@shared/model/event';
 import { UploadStatus } from '@shared/model/file';
 import {

@@ -1,0 +1,20 @@
+@if (displayable) {
+  <button
+    class="claim-button govuk-button"
+    data-module="govuk-button"
+    data-prevent-double-click="true"
+    [disabled]="disabled"
+    (click)="onClaim()"
+  >
+    Claim
+  </button>
+  <button
+    class="assign-button govuk-button govuk-button--secondary govuk-!-margin-left-2"
+    data-module="govuk-button"
+    data-prevent-double-click="true"
+    [disabled]="disabled"
+    (click)="onAssign()"
+  >
+    Assign
+  </button>
+}

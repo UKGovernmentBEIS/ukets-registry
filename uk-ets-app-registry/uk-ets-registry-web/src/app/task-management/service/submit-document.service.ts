@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '../../app.tokens';
 import { HttpClient, HttpEvent, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RequestedDocumentsModel } from '@task-management/model';
+import { RequestedDocumentsModel } from '@shared/task-and-regulator-notice-management/model';
 
 @Injectable({
   providedIn: 'root',

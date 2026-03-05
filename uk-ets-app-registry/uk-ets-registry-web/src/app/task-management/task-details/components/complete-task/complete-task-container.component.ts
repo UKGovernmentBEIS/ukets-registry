@@ -4,7 +4,7 @@ import {
   TaskDetails,
   TaskOutcome,
   TaskType,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { UntypedFormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import {
@@ -12,7 +12,7 @@ import {
   selectUserDecisionForTask,
 } from '@task-details/reducers/task-details.selector';
 import { Observable } from 'rxjs';
-import { taskTypeOptions } from '@task-management/task-list/task-list.selector';
+import { taskTypeOptions } from '@task-management/task-list/store/task-list.selector';
 import { TaskDetailsActions } from '@task-details/actions';
 import { ErrorSummary } from '@shared/error-summary';
 import { selectErrorSummary } from '@shared/shared.selector';

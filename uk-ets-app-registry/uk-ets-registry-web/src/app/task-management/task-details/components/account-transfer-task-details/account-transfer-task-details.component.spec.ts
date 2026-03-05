@@ -2,9 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AccountTransferTaskDetailsComponent } from './account-transfer-task-details.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RequestType } from '@task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { AccountHolderType } from '@shared/model/account';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { FormatUkDatePipe } from '@registry-web/shared/pipes';
 
 describe('AccountTransferTaskDetailsComponent', () => {
@@ -71,8 +71,8 @@ describe('AccountTransferTaskDetailsComponent', () => {
           phoneNumberCountryCode: '',
           phoneNumber: '',
           email: '',
-          sopCustomerId: ''
-        }
+          sopCustomerId: '',
+        },
       },
     };
     fixture.detectChanges();

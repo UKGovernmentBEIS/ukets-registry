@@ -117,9 +117,16 @@ export class SendInvitationWizardEffects {
               catchError((error: HttpErrorResponse) => {
                 return of(
                   errors({
-                    errorSummary: this.apiErrorHandlingService.transform(
-                      error.error
-                    ),
+                    errorSummary: {
+                      errors: [
+                        {
+                          componentId: '',
+                          errorMessage:
+                            JSON.parse(error.error)?.errorDetails[0]?.message ||
+                            'An error occurred while submitting the invitation request.',
+                        },
+                      ],
+                    },
                   })
                 );
               })
@@ -143,7 +150,6 @@ export class SendInvitationWizardEffects {
     private actions$: Actions,
     private store: Store,
     private router: Router,
-    private apiErrorHandlingService: ApiErrorHandlingService,
     private accountService: AccountApiService
   ) {}
 }

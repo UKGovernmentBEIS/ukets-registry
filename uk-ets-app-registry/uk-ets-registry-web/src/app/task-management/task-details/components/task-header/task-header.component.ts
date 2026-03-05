@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
-  Mode,
   REQUEST_TYPE_VALUES,
   requestStatusMap,
   RequestType,
@@ -8,9 +7,8 @@ import {
   TaskFileDownloadInfo,
   TaskOutcome,
   TaskType,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { BannerType } from '@shared/banner/banner-type.enum';
-import { TaskListRoutes } from '@task-management/task-list/task-list.properties';
 import { GoBackNavigationExtras } from '@shared/back-button';
 import { NavigationExtras, RouterModule } from '@angular/router';
 import { navigateTo } from '@registry-web/shared/shared.action';
@@ -21,6 +19,7 @@ import {
 } from '@task-details/actions/task-details-navigation.actions';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '@registry-web/shared/shared.module';
+import { ListMode } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   standalone: true,
@@ -70,9 +69,7 @@ export class TaskHeaderComponent {
 
   moreInfo = false;
 
-  taskListRoutes = TaskListRoutes;
-
-  taskListModes = Mode;
+  taskListModes = ListMode;
 
   requestStatusMap = requestStatusMap;
 

@@ -169,7 +169,12 @@ public enum RequestType {
     /**
      * Request for Payment.
      */
-    PAYMENT_REQUEST(true,true);
+    PAYMENT_REQUEST(true,true),
+
+    /**
+     * Regulator notice request
+     */
+    REGULATOR_NOTICE;
 
     /**
      * True if the request is considered a user task.

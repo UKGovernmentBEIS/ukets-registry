@@ -23,7 +23,6 @@ import {
   EnrolmentLetterTaskDetailsComponent,
   GenericTaskDetailsConfirmationComponent,
   GenericTransactionTaskDetailsComponent,
-  HistoryCommentsComponent,
   HistoryContainerComponent,
   IssueAllowancesTaskDetailsComponent,
   IssueKpUnitsTaskDetailsComponent,
@@ -101,13 +100,17 @@ import { ChangeDeadlineSuccessComponent } from './components/change-task-deadlin
 import { ChangeDeadlineCheckAndSubmitContainerComponent } from './components/change-task-deadline/change-deadline-check-and-submit/change-deadline-check-and-submit-container.component';
 import { ChangeDeadlineCheckAndSubmitComponent } from './components/change-task-deadline/change-deadline-check-and-submit/change-deadline-check-and-submit.component';
 import { TaskDetailsTabsNavigationComponent } from './components/task-details-tabs-navigation/task-details-tabs-navigation.component';
-import { TaskNotesComponent } from './components/task-notes/components/task-notes.component';
-import { NotesEffect } from './components/task-notes/store/task-notes.effects';
-import * as fromTaskNotes from './components/task-notes/store/task-notes.reducer';
 import { PaymentBacsCancelComponent } from './components/payment-bacs-cancel/payment-bacs-cancel.component';
 import { ChangeAccountHolderTaskDetailsComponent } from '@task-details/components/change-account-holder-task-details/change-account-holder-task-details.component';
 import { AccountHolderSharedModule } from '@registry-web/account-shared/account-holder-shared.module';
 import { DeleteOrphanAccountHolderOverviewComponent } from '@registry-web/account-management/account/change-account-holder-wizard/components/delete-orphan-account-holder-overview';
+import { HistoryCommentsFormComponent } from '@registry-web/shared/components/history-comments-form';
+import {
+  TASK_NOTES_PARENT_DETAILS_PATH_TOKEN,
+  TaskNotesEffects,
+  taskNotesFeature,
+} from '@registry-web/notes/task-notes';
+import { TASK_DETAILS_PATH } from './task-details.const';
 
 @NgModule({
   declarations: [
@@ -115,7 +118,6 @@ import { DeleteOrphanAccountHolderOverviewComponent } from '@registry-web/accoun
     TaskDetailsComponent,
     EnrolmentLetterTaskDetailsComponent,
     AccountHolderContactsDetailsComponent,
-    HistoryCommentsComponent,
     CompleteTaskContainerComponent,
     CompleteTaskComponent,
     TransactionTaskDetailsComponent,
@@ -188,13 +190,9 @@ import { DeleteOrphanAccountHolderOverviewComponent } from '@registry-web/accoun
     SharedModule,
     ReactiveFormsModule,
     TaskDetailsTabsNavigationComponent,
-    TaskNotesComponent,
     TaskHeaderComponent,
-    StoreModule.forFeature(
-      fromTaskNotes.taskNotesFeatureKey,
-      fromTaskNotes.reducer
-    ),
-    EffectsModule.forFeature([NotesEffect]),
+    StoreModule.forFeature(taskNotesFeature),
+    EffectsModule.forFeature([TaskNotesEffects]),
     StoreModule.forFeature(
       fromTaskDetails.taskDetailsFeatureKey,
       fromTaskDetails.reducer
@@ -213,6 +211,7 @@ import { DeleteOrphanAccountHolderOverviewComponent } from '@registry-web/accoun
     OperatorModule,
     AccountHolderSharedModule,
     DeleteOrphanAccountHolderOverviewComponent,
+    HistoryCommentsFormComponent,
   ],
   providers: [
     ExportFileService,
@@ -222,6 +221,10 @@ import { DeleteOrphanAccountHolderOverviewComponent } from '@registry-web/accoun
     IndividualPipe,
     IndividualFullNamePipe,
     OrganisationPipe,
+    {
+      provide: TASK_NOTES_PARENT_DETAILS_PATH_TOKEN,
+      useValue: TASK_DETAILS_PATH,
+    },
   ],
 })
 export class TaskDetailsModule {}

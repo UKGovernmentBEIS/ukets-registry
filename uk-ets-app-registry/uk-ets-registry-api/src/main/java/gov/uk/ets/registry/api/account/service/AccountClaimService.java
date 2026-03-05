@@ -43,14 +43,20 @@ public class AccountClaimService {
 
     @Transactional
     public Long claimAccount(AccountClaimDTO accountClaimDTO) {
-        final RegistryAccountType registryAccountType = accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(accountClaimDTO.getRegistryId(), accountClaimDTO.getAccountClaimCode())
-                .map(Account::getRegistryAccountType).orElse(null);
-        if (isAccountClaimEnabled(registryAccountType)) {
-            return accountService.claimAccount(accountClaimDTO);
-        }
-        throw AccountActionException.create(
-                AccountActionError.build(ERROR_MESSAGE));
+        accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(accountClaimDTO.getRegistryId(), accountClaimDTO.getAccountClaimCode())
+                .ifPresent(account -> {
+            if (!isAccountClaimEnabled(account.getRegistryAccountType())) {
+                throw AccountActionException.create(
+                        AccountActionError.build(ERROR_MESSAGE)
+                );
+            }
+        });
+
+        // Delegate to service for all actual validations (missing account, invalid code)
+        return accountService.claimAccount(accountClaimDTO);
     }
+
+
 
     public boolean isAccountClaimEnabled(RegistryAccountType registryAccountType) {
         if (registryAccountType == null) {

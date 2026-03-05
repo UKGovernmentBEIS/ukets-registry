@@ -56,7 +56,7 @@ import { OperatorService } from '@shared/services/operator-service';
 import { ApiErrorHandlingService } from '@shared/services';
 import { InstallationTransfer, OperatorType } from '@shared/model/account';
 import { selectInitialPermitId } from '@account-opening/operator/operator.selector';
-import { RequestType } from '@registry-web/task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { TaskService } from '@registry-web/shared/services/task-service';
 import { ExportFileService } from '@registry-web/shared/export-file/export-file.service';
 import { ErrorDetail } from '@shared/error-summary';

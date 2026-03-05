@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SearchTasksResultsComponent } from './search-tasks-results.component';
-import { Task, TaskOutcome } from '@task-management/model';
+import {
+  Task,
+  TaskOutcome,
+} from '@shared/task-and-regulator-notice-management/model';
 import { By } from '@angular/platform-browser';
 import { SortableColumnDirective } from 'src/app/shared/search/sort/sortable-column.directive';
 import { SortableTableDirective } from 'src/app/shared/search/sort/sortable-table.directive';
 import { SortService } from 'src/app/shared/search/sort/sort.service';
 import { TaskSearchContainerComponent } from '../task-search-container.component';
-import { BulkClaimComponent } from '../../bulk-claim/bulk-claim.component';
-import { BulkAssignComponent } from '../../bulk-assign/bulk-assign.component';
-import { ClaimAssignButtonGroupComponent } from '../claim-assign-button-group/claim-assign-button-group.component';
 import { ToggleButtonComponent } from '@shared/search/toggle-button/toggle-button.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLinkDirectiveStub } from 'src/app/shared/test/router-link-directive-stub';
-import { BulkActionSuccessComponent } from '../../bulk-action-success/bulk-action-success.component';
 import { NgbModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { TypeAheadComponent } from '@shared/form-controls/type-ahead/type-ahead.component';
 import { PaginatorComponent } from '@shared/search/paginator';
@@ -86,54 +85,48 @@ describe('SearchTasksResultsComponent', () => {
     },
   ];
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          ReactiveFormsModule,
-          FormsModule,
-          NgbModule,
-          NgbTypeaheadModule,
-          RouterTestingModule.withRoutes([]),
-          StoreModule.forRoot({ auth: fromAuth.reducer }),
-        ],
-        declarations: [
-          TypeAheadComponent,
-          SortableColumnDirective,
-          SortableTableDirective,
-          TaskSearchContainerComponent,
-          SearchTasksAdminCriteriaComponent,
-          SearchTasksUserCriteriaComponent,
-          SearchTasksResultsComponent,
-          PaginatorComponent,
-          ClaimAssignButtonGroupComponent,
-          BulkClaimComponent,
-          BulkAssignComponent,
-          ToggleButtonComponent,
-          UkProtoFormDatePickerComponent,
-          UkProtoFormSelectComponent,
-          UkProtoFormTextComponent,
-          UkProtoFormCommentAreaComponent,
-          RouterLinkDirectiveStub,
-          BulkActionSuccessComponent,
-          ProtectPipe,
-          GdsDateTimeShortPipe,
-          AccountAccessPipe,
-          GovukTagComponent,
-          DisableControlDirective,
-          ReportSuccessBannerComponent,
-          SearchReportButtonComponent,
-          BannerComponent,
-        ],
-        providers: [
-          SortService,
-          { provide: AuthApiService, useValue: MockAuthApiService },
-          { provide: AccountAccessService, useClass: MockAccountAccessService },
-        ],
-      }).compileComponents();
-      router = TestBed.inject(Router);
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        ReactiveFormsModule,
+        FormsModule,
+        NgbModule,
+        NgbTypeaheadModule,
+        RouterTestingModule.withRoutes([]),
+        StoreModule.forRoot({ auth: fromAuth.reducer }),
+      ],
+      declarations: [
+        TypeAheadComponent,
+        SortableColumnDirective,
+        SortableTableDirective,
+        TaskSearchContainerComponent,
+        SearchTasksAdminCriteriaComponent,
+        SearchTasksUserCriteriaComponent,
+        SearchTasksResultsComponent,
+        PaginatorComponent,
+        ToggleButtonComponent,
+        UkProtoFormDatePickerComponent,
+        UkProtoFormSelectComponent,
+        UkProtoFormTextComponent,
+        UkProtoFormCommentAreaComponent,
+        RouterLinkDirectiveStub,
+        ProtectPipe,
+        GdsDateTimeShortPipe,
+        AccountAccessPipe,
+        GovukTagComponent,
+        DisableControlDirective,
+        ReportSuccessBannerComponent,
+        SearchReportButtonComponent,
+        BannerComponent,
+      ],
+      providers: [
+        SortService,
+        { provide: AuthApiService, useValue: MockAuthApiService },
+        { provide: AccountAccessService, useClass: MockAccountAccessService },
+      ],
+    }).compileComponents();
+    router = TestBed.inject(Router);
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchTasksResultsComponent);

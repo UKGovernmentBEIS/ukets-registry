@@ -11,13 +11,13 @@ import {
   UnitTypeSopRenderPipe,
 } from '@shared/pipes';
 import { TransactionType } from '@shared/model/transaction';
-import { RequestType } from '@task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import {
   ItlNotificationSummaryComponent,
   TransactionConnectionSummaryComponent,
   TransactionSigningDetailsComponent,
 } from '@shared/components/transactions';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { SummaryListComponent } from '@shared/summary-list';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
@@ -29,29 +29,27 @@ describe('GenericTransactionTaskDetailsComponent', () => {
   let component: GenericTransactionTaskDetailsComponent;
   let fixture: ComponentFixture<GenericTransactionTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
-        declarations: [
-          GenericTransactionTaskDetailsComponent,
-          ItlNotificationSummaryComponent,
-          AccountSummaryComponent,
-          QuantityTableComponent,
-          RouterLinkDirectiveStub,
-          EnvironmentalActivityPipe,
-          TrustedAccountPipe,
-          UnitTypeSopRenderPipe,
-          TransactionAtrributesPipe,
-          TransactionSigningDetailsComponent,
-          TransactionConnectionSummaryComponent,
-          SummaryListComponent,
-          TransactionReferenceComponent,
-          TransactionReferenceWarningComponent,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
+      declarations: [
+        GenericTransactionTaskDetailsComponent,
+        ItlNotificationSummaryComponent,
+        AccountSummaryComponent,
+        QuantityTableComponent,
+        RouterLinkDirectiveStub,
+        EnvironmentalActivityPipe,
+        TrustedAccountPipe,
+        UnitTypeSopRenderPipe,
+        TransactionAtrributesPipe,
+        TransactionSigningDetailsComponent,
+        TransactionConnectionSummaryComponent,
+        SummaryListComponent,
+        TransactionReferenceComponent,
+        TransactionReferenceWarningComponent,
+      ],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GenericTransactionTaskDetailsComponent);

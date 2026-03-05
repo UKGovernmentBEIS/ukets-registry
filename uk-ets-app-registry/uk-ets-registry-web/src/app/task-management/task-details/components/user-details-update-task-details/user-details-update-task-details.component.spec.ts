@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { UserDetailsUpdateTaskDetailsComponent } from './user-details-update-task-details.component';
-import { RequestType } from '@task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { RouterModule } from '@angular/router';
 import { PersonalDetailsSummaryChangesComponent } from '@shared/components/user/personal-details-summary-changes';
 import { WorkDetailsSummaryChangesComponent } from '@shared/components/user/work-details-summary-changes';
 import { APP_BASE_HREF } from '@angular/common';
 import { CountryNamePipe, FormatUkDatePipe } from '@shared/pipes';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { IUser } from '@shared/user';
 import { SummaryListComponent } from '@shared/summary-list';
 import { provideMockStore } from '@ngrx/store/testing';

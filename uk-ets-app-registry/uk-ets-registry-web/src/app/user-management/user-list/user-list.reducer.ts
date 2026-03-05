@@ -7,7 +7,7 @@ import { mutableOn } from '@shared/mutable-on';
 import { SortParameters } from 'src/app/shared/search/sort/SortParameters';
 import { UserProjection, UserSearchCriteria } from './user-list.model';
 import * as UserList from './user-list.actions';
-import * as TaskListActions from '../../task-management/task-list/task-list.actions';
+import * as TaskListActions from '../../task-management/task-list/store/task-list.actions';
 
 export const userListFeatureKey = 'userList';
 

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { RequestType } from '@task-management/model';
-import { TaskCompleteResponse } from '@task-management/model/task-complete-response.model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
+import { TaskCompleteResponse } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-task-approval-confirmation',

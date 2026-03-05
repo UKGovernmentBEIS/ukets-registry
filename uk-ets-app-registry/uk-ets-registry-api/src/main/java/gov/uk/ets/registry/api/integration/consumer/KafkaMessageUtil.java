@@ -20,6 +20,8 @@ import uk.gov.netz.integration.model.error.IntegrationEventError;
 import uk.gov.netz.integration.model.error.IntegrationEventErrorDetails;
 import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEvent;
 import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEventOutcome;
+import uk.gov.netz.integration.model.withold.AccountWithholdUpdateEvent;
+import uk.gov.netz.integration.model.withold.AccountWithholdUpdateEventOutcome;
 
 @Component
 public class KafkaMessageUtil {
@@ -45,6 +47,20 @@ public class KafkaMessageUtil {
                                                                                         String responseTopic) {
         IntegrationEventOutcome result = errors.isEmpty() ? IntegrationEventOutcome.SUCCESS : IntegrationEventOutcome.ERROR;
         AccountExemptionUpdateEventOutcome outcome = new AccountExemptionUpdateEventOutcome(event, errors, result);
+        String registryId = Optional.ofNullable(event.getRegistryId()).map(Object::toString).orElse("");
+
+        RecordHeaders targetHeaders = new RecordHeaders();
+        mapper.fromHeaders(new MessageHeaders(headers), targetHeaders);
+
+        return new ProducerRecord<>(responseTopic, null, registryId, outcome, targetHeaders);
+    }
+
+    public ProducerRecord<String, AccountWithholdUpdateEventOutcome> buildKafkaMessage(AccountWithholdUpdateEvent event,
+                                                                                       Map<String, Object> headers,
+                                                                                       List<IntegrationEventErrorDetails> errors,
+                                                                                       String responseTopic) {
+        IntegrationEventOutcome result = errors.isEmpty() ? IntegrationEventOutcome.SUCCESS : IntegrationEventOutcome.ERROR;
+        AccountWithholdUpdateEventOutcome outcome = new AccountWithholdUpdateEventOutcome(event, errors, result);
         String registryId = Optional.ofNullable(event.getRegistryId()).map(Object::toString).orElse("");
 
         RecordHeaders targetHeaders = new RecordHeaders();

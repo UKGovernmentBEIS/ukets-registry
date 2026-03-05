@@ -10,7 +10,7 @@ import {
   Operator,
 } from '@shared/model/account';
 import { TrustedAccountList } from './trusted-account-list/trusted-account-list';
-import { RequestType } from '@registry-web/task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 
 export enum ViewOrCheck {
   VIEW,

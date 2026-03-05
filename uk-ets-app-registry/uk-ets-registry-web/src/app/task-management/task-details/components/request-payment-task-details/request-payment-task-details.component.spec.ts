@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RequestPaymentTaskDetailsComponent } from './request-payment-task-details.component';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
-import { RequestType } from '@task-management/model';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { provideRouter } from '@angular/router';
 import { routes } from '@task-details/task-details-routing.module';
 

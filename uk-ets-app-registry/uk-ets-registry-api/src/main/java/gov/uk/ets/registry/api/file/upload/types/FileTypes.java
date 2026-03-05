@@ -22,7 +22,10 @@ public enum FileTypes {
         "The selected file must be PDF, PNG or JPG"),
 
     AD_HOC_EMAIL_RECIPIENTS(Arrays.asList("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-        "Invalid file type. File should be in .xlsx");
+        "Invalid file type. File should be in .xlsx"),
+
+    REGULATOR_NOTICE_DOCUMENT(Arrays.asList("application/pdf"),
+            "The file type must be a PDF");
 
     private final List<String> mimeTypes;
 

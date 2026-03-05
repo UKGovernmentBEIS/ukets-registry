@@ -10,8 +10,8 @@ import {
   DocumentNamePipe,
   UploadedFilePipe,
 } from '@registry-web/task-management/pipes';
-import { taskDetailsBase } from '@registry-web/task-management/model/task-details.model.spec';
-import { RequestType } from '@registry-web/task-management/model';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 
 describe('RequestedDocumentsFormComponent', () => {
   let component: RequestedDocumentsFormComponent;

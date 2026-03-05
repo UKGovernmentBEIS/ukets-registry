@@ -35,4 +35,12 @@ public class ValidatorConfiguration {
                 countryMap
         );
     }
+
+    @Bean("regulatorNoticeValidator")
+    public CommonAccountValidator regulatorNoticeValidator() {
+        return new CommonAccountValidator(
+                ValidatorOperationType.REGULATOR_NOTICE,
+                countryMap
+        );
+    }
 }

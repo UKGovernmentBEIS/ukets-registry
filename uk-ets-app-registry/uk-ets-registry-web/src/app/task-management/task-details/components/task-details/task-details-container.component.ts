@@ -12,10 +12,10 @@ import {
   REQUEST_TYPE_VALUES,
   TaskFileDownloadInfo,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { TaskDetailsActions } from '@task-details/actions';
 import { FileDetails } from '@shared/model/file/file-details.model';
-import { taskTypeOptions } from '@task-management/task-list/task-list.selector';
+import { taskTypeOptions } from '@task-management/task-list/store/task-list.selector';
 import {
   selectConfigurationRegistry,
   selectGoBackToListNavigationExtras,
@@ -30,7 +30,7 @@ import { fetchAccountOpeningSummaryFile } from '../../actions/task-details.actio
 import { enterRequestPaymentWizard } from '@request-payment/store/actions';
 import { navigateAndLoadPaymentList } from '@registry-web/payment-management/payment-list/store/actions';
 import { navigateToGovUKPayService } from '../../actions/task-details-navigation.actions';
-import { fetchTaskNotes } from '@task-details/components/task-notes/store/task-notes.actions';
+import { TaskNotesActions } from '@registry-web/notes/task-notes';
 
 @Component({
   selector: 'app-task-details-container',
@@ -104,7 +104,7 @@ export class TaskDetailsContainerComponent implements OnInit {
     });
 
     this.store.dispatch(
-      fetchTaskNotes({
+      TaskNotesActions.FETCH_TASK_NOTES({
         requestId: this.requestId,
       })
     );

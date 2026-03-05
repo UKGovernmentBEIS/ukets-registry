@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TaskDetails } from '@task-management/model';
+import { TaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { Store } from '@ngrx/store';
 import {
   selectNavigationAwayTargetUrl,

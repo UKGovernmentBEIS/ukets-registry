@@ -1,5 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { OperatorUpdateTaskDetails, RequestType } from '@task-management/model';
+import {
+  OperatorUpdateTaskDetails,
+  RequestType,
+} from '@shared/task-and-regulator-notice-management/model';
 import { SummaryListItem } from '@shared/summary-list/summary-list.info';
 
 @Component({

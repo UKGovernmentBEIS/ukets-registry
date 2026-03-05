@@ -2,14 +2,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Location } from '@angular/common';
 import {
   AccountType,
-  SelectionChange,
   Task,
-  taskStatusMap,
   requestStatusMap,
   TaskType,
   TaskOutcome,
-} from '@task-management/model';
-import { indexOfTask } from '@task-management/task-list/util/task.comparator';
+} from '@shared/task-and-regulator-notice-management/model';
+import { indexOfItem } from '@shared/task-and-regulator-notice-management/util';
 import { getLabel } from '@shared/shared.util';
 import { SortParameters } from '@shared/search/sort/SortParameters';
 import { Router, RouterStateSnapshot } from '@angular/router';
@@ -17,6 +15,10 @@ import { SearchMode } from '@shared/resolvers/search.resolver';
 import { Store } from '@ngrx/store';
 import { MenuItemEnum } from '@account-management/account/account-details/model';
 import { canGoBackToList } from '@shared/shared.action';
+import {
+  SelectionChange,
+  taskStatusMap,
+} from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-search-tasks-results',
@@ -54,7 +56,7 @@ export class SearchTasksResultsComponent {
 
   isAllSelected() {
     for (const task of this.results) {
-      if (indexOfTask(this.selectedTasks, task) < 0) {
+      if (indexOfItem(this.selectedTasks, task) < 0) {
         return false;
       }
     }
@@ -66,7 +68,7 @@ export class SearchTasksResultsComponent {
       return false;
     }
     for (const task of this.results) {
-      if (indexOfTask(this.selectedTasks, task) > -1) {
+      if (indexOfItem(this.selectedTasks, task) > -1) {
         return true;
       }
     }
@@ -74,7 +76,7 @@ export class SearchTasksResultsComponent {
   }
 
   isSelected(task: Task) {
-    return indexOfTask(this.selectedTasks, task) > -1;
+    return indexOfItem(this.selectedTasks, task) > -1;
   }
 
   masterToggle() {

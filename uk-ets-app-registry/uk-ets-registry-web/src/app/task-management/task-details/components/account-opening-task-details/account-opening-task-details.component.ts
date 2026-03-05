@@ -4,7 +4,7 @@ import {
   AccountOpeningTaskDetails,
   TaskUpdateAction,
   TaskUpdateDetails,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import {
   AccessRightLabelHintMap,
   AccountHolderType,

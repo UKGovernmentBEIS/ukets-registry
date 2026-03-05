@@ -7,7 +7,10 @@ import {
   selectAmountRequested,
   selectTask,
 } from '@task-details/reducers/task-details.selector';
-import { RequestType, TaskDetails } from '@task-management/model';
+import {
+  RequestType,
+  TaskDetails,
+} from '@shared/task-and-regulator-notice-management/model';
 import {
   navigateToBACSCancelPaymentMethod,
   navigateToBACSConfirmPaymentMethod,

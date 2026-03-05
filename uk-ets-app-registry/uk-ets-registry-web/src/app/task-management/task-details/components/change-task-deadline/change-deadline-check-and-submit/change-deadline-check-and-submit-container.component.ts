@@ -11,7 +11,7 @@ import {
   selectTask,
   selectTaskDeadlineAsDate,
 } from '@registry-web/task-management/task-details/reducers/task-details.selector';
-import { TaskDetails } from '@registry-web/task-management/model';
+import { TaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { submitChangedTaskDeadline } from '@registry-web/task-management/task-details/actions/task-details.actions';
 
 @Component({
@@ -32,7 +32,10 @@ export class ChangeDeadlineCheckAndSubmitContainerComponent {
   initialDeadline$: Observable<Date>;
   task$: Observable<TaskDetails>;
 
-  constructor(private store: Store, private route: ActivatedRoute) {
+  constructor(
+    private store: Store,
+    private route: ActivatedRoute
+  ) {
     this.task$ = this.store.select(selectTask);
     this.changedDeadline$ = this.store.select(selectTaskDeadlineAsDate);
     this.initialDeadline$ = this.task$.pipe(map((t) => t.deadline));

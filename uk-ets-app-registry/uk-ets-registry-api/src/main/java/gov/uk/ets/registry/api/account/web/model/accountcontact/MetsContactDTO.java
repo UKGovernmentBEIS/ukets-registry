@@ -1,19 +1,17 @@
 package gov.uk.ets.registry.api.account.web.model.accountcontact;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
@@ -26,7 +24,6 @@ public class MetsContactDTO extends AccountContactDTO implements Serializable {
 
     @Builder.Default
     @JsonDeserialize(as = LinkedHashSet.class)
-    @NotEmpty
     private Set<MetsAccountContactType> contactTypes = new HashSet<>();
 
     @NotNull

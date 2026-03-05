@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EmailChangeTaskDetails } from '@task-management/model';
+import { EmailChangeTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-email-change-task-details',

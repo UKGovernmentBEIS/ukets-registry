@@ -7,55 +7,51 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import {
-  BulkActionSuccess,
-  BulkActionSuccessResponse,
   CompleteTaskInfo,
   Task,
-  TaskCompleteResponse,
   TaskDetails,
+  TaskDetailsBase,
   TaskFileDownloadInfo,
-  TaskOutcome,
   TaskSearchCriteria,
   TaskUpdateDetails,
-} from '@task-management/model';
+  TaskCompleteResponse,
+} from '@shared/task-and-regulator-notice-management/model';
 import { PageParameters } from '@shared/search/paginator';
 import { SortParameters } from '@shared/search/sort/SortParameters';
 import { Observable } from 'rxjs';
 import { PagedResults, search } from '@shared/search/util/search-service.util';
 import { map } from 'rxjs/operators';
 import { DomainEvent } from '@shared/model/event';
+import {
+  RegulatorNoticeSearchCriteria,
+  RegulatorNoticeTask,
+} from '@shared/task-and-regulator-notice-management/model';
+import {
+  BulkActionSuccess,
+  BulkActionSuccessResponse,
+} from '@shared/task-and-regulator-notice-management/bulk-actions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
-  searchTasksApiUrl: string;
-  taskApiUrl: string;
-  fetchTask: string;
-  updateTask: string;
-  completeTask: string;
-  claimTasksApiUrl: string;
-  assignTasksApiUrl: string;
-  taskHistoryApiUrl: string;
-  getTemplateFile: string;
-  getRequestedDocument: string;
+  private readonly searchTasksApiUrl = `${this.ukEtsRegistryApiBaseUrl}/tasks.list`;
+  private readonly fetchTask = `${this.ukEtsRegistryApiBaseUrl}/tasks.get`;
+  private readonly updateTask = `${this.ukEtsRegistryApiBaseUrl}/tasks.update`;
+  private readonly completeTask = `${this.ukEtsRegistryApiBaseUrl}/tasks.complete`;
+  private readonly claimTasksApiUrl = `${this.ukEtsRegistryApiBaseUrl}/tasks.claim`;
+  private readonly assignTasksApiUrl = `${this.ukEtsRegistryApiBaseUrl}/tasks.assign`;
+  private readonly taskHistoryApiUrl = `${this.ukEtsRegistryApiBaseUrl}/tasks.get.history`;
+  private readonly getTemplateFile = `${this.ukEtsRegistryApiBaseUrl}/tasks.get.template-file`;
+  private readonly getRequestedDocument = `${this.ukEtsRegistryApiBaseUrl}/tasks.get.task-file`;
+  private readonly searchRegulatorNoticesApiUrl = `${this.ukEtsRegistryApiBaseUrl}/regulator-notices.list`;
+  private readonly regulatorNoticeTypesApiUrl = `${this.ukEtsRegistryApiBaseUrl}/regulator-notices.types`;
 
   constructor(
     @Inject(UK_ETS_REGISTRY_API_BASE_URL)
     private ukEtsRegistryApiBaseUrl: string,
-    private http: HttpClient
-  ) {
-    this.searchTasksApiUrl = `${ukEtsRegistryApiBaseUrl}/tasks.list`;
-    this.taskApiUrl = `${ukEtsRegistryApiBaseUrl}`;
-    this.fetchTask = `${ukEtsRegistryApiBaseUrl}/tasks.get`;
-    this.updateTask = `${ukEtsRegistryApiBaseUrl}/tasks.update`;
-    this.completeTask = `${ukEtsRegistryApiBaseUrl}/tasks.complete`;
-    this.claimTasksApiUrl = `${ukEtsRegistryApiBaseUrl}/tasks.claim`;
-    this.assignTasksApiUrl = `${ukEtsRegistryApiBaseUrl}/tasks.assign`;
-    this.taskHistoryApiUrl = `${ukEtsRegistryApiBaseUrl}/tasks.get.history`;
-    this.getTemplateFile = `${ukEtsRegistryApiBaseUrl}/tasks.get.template-file`;
-    this.getRequestedDocument = `${ukEtsRegistryApiBaseUrl}/tasks.get.task-file`;
-  }
+    private httpClient: HttpClient
+  ) {}
 
   search(
     criteria: TaskSearchCriteria,
@@ -68,7 +64,23 @@ export class TaskService {
       sortParams,
       api: this.searchTasksApiUrl,
       criteria,
-      http: this.http,
+      http: this.httpClient,
+      isReport,
+    });
+  }
+
+  searchRegulatorNotices(
+    criteria: RegulatorNoticeSearchCriteria,
+    pageParams: PageParameters,
+    sortParams: SortParameters,
+    isReport?: boolean
+  ): Observable<PagedResults<RegulatorNoticeTask>> {
+    return search<RegulatorNoticeSearchCriteria, RegulatorNoticeTask>({
+      pageParams,
+      sortParams,
+      api: this.searchRegulatorNoticesApiUrl,
+      criteria,
+      http: this.httpClient,
       isReport,
     });
   }
@@ -78,7 +90,7 @@ export class TaskService {
     if (comment && comment.trim().length > 0) {
       params = params.set('comment', comment);
     }
-    return this.http
+    return this.httpClient
       .post<BulkActionSuccessResponse>(this.claimTasksApiUrl, params)
       .pipe(
         map((response) => {
@@ -101,7 +113,7 @@ export class TaskService {
     if (urid) {
       params = params.set('urid', urid);
     }
-    return this.http
+    return this.httpClient
       .post<BulkActionSuccessResponse>(this.assignTasksApiUrl, params)
       .pipe(
         map((response) => {
@@ -116,7 +128,7 @@ export class TaskService {
 
   taskHistory(requestId: string): Observable<DomainEvent[]> {
     const params = new HttpParams().set('requestId', requestId);
-    return this.http.get<DomainEvent[]>(`${this.taskHistoryApiUrl}`, {
+    return this.httpClient.get<DomainEvent[]>(`${this.taskHistoryApiUrl}`, {
       params,
     });
   }
@@ -129,17 +141,15 @@ export class TaskService {
     if (comment && comment.trim().length) {
       params = params.set('comment', comment);
     }
-    return this.http.post<{ requestId: string }>(
+    return this.httpClient.post<{ requestId: string }>(
       `${this.taskHistoryApiUrl}`,
       params
     );
   }
 
-  fetchOneTask(taskId: string): Observable<TaskDetails> {
+  fetchOneTask<T extends TaskDetailsBase>(taskId: string): Observable<T> {
     const params = new HttpParams().set('requestId', taskId);
-    return this.http.get<TaskDetails>(this.fetchTask, {
-      params,
-    });
+    return this.httpClient.get<T>(this.fetchTask, { params });
   }
 
   update(taskUpdateDetails: TaskUpdateDetails): Observable<TaskDetails> {
@@ -155,12 +165,10 @@ export class TaskService {
         taskUpdateDetails.taskUpdateAction
       );
     }
-    return this.http.post<TaskDetails>(
+    return this.httpClient.post<TaskDetails>(
       `${this.updateTask}`,
       taskUpdateDetails.taskDetails,
-      {
-        params,
-      }
+      { params }
     );
   }
 
@@ -177,7 +185,10 @@ export class TaskService {
     if (completeTaskInfo.amountPaid) {
       params = params.append('amountPaid', completeTaskInfo.amountPaid);
     }
-    return this.http.post<TaskCompleteResponse>(`${this.completeTask}`, params);
+    return this.httpClient.post<TaskCompleteResponse>(
+      `${this.completeTask}`,
+      params
+    );
   }
 
   fetchTaskRelatedFile(fileId: number): Observable<HttpResponse<Blob>> {
@@ -186,7 +197,7 @@ export class TaskService {
     });
     let params = new HttpParams();
     params = params.append('fileId', fileId.toString());
-    return this.http.get(`${this.getTemplateFile}`, {
+    return this.httpClient.get(`${this.getTemplateFile}`, {
       headers,
       observe: 'response',
       responseType: 'blob',
@@ -206,11 +217,15 @@ export class TaskService {
     if (taskFileInfo.fileId) {
       params = params.set('fileId', taskFileInfo.fileId.toString());
     }
-    return this.http.get(`${this.getRequestedDocument}`, {
+    return this.httpClient.get(`${this.getRequestedDocument}`, {
       headers,
       observe: 'response',
       responseType: 'blob',
       params,
     });
+  }
+
+  getRegulatorNoticeProcessTypesList(): Observable<string[]> {
+    return this.httpClient.get<string[]>(this.regulatorNoticeTypesApiUrl);
   }
 }

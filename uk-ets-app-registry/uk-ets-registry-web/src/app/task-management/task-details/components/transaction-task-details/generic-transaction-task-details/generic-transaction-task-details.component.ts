@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ReturnExcessAllocationTransactionTaskDetailsDTO } from '@task-management/model';
+import { ReturnExcessAllocationTransactionTaskDetailsDTO } from '@shared/task-and-regulator-notice-management/model';
 import {
   TRANSACTION_TYPES_VALUES,
   TransactionBlockSummary,

@@ -2,22 +2,20 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LostTokenTaskDetailsComponent } from './lost-token-task-details.component';
 import { SummaryListComponent } from '@shared/summary-list';
-import { RequestType } from '@task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { RouterTestingModule } from '@angular/router/testing';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 
 describe('LostTokenTaskDetailsComponent', () => {
   let component: LostTokenTaskDetailsComponent;
   let fixture: ComponentFixture<LostTokenTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
-        declarations: [LostTokenTaskDetailsComponent, SummaryListComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
+      declarations: [LostTokenTaskDetailsComponent, SummaryListComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LostTokenTaskDetailsComponent);

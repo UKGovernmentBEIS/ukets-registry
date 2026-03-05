@@ -4,14 +4,14 @@ import {
   RequestType,
   TaskDetails,
   TaskFileDownloadInfo,
-  taskStatusMap,
   TaskType,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { Configuration } from '@shared/configuration/configuration.interface';
 import { AuthModel } from '@registry-web/auth/auth.model';
 import { FileDetails } from '@shared/model/file/file-details.model';
 import { FileBase } from '@shared/model/file';
 import { IsPastDatePipe } from '@registry-web/shared/pipes';
+import { taskStatusMap } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   templateUrl: './task-details.component.html',

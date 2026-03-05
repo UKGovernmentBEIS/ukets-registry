@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { AccountHolderUpdateDetails } from '@task-management/model';
+import { AccountHolderUpdateDetails } from '@shared/task-and-regulator-notice-management/model';
 import { getLabel } from '@shared/shared.util';
 import { ACCOUNT_TYPE_OPTIONS } from '@task-management/task-list/task-search/search-tasks-form/search-tasks-form.model';
 import { AccountHolder } from '@shared/model/account';

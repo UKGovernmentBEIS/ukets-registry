@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FileBase } from '@shared/model/file';
-import { RequestPaymentTaskDetails, TaskDetails } from '@task-management/model';
+import {
+  RequestPaymentTaskDetails,
+  TaskDetails,
+} from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-payment-bacs-details',

@@ -48,8 +48,8 @@
         <failsafeArgLine>--illegal-access=permit</failsafeArgLine>
         <surefireArgLine>--illegal-access=permit</surefireArgLine>
         <cucumber.version>4.3.1</cucumber.version>
-        <node.version>v20.18.2</node.version>
-        <npm.version>10.8.2</npm.version>
+        <node.version>v22.22.0</node.version>
+        <npm.version>10.9.4</npm.version>
         <keycloak.admin.client.version>26.0.4</keycloak.admin.client.version>
         <keycloak.policy.enforcer.version>26.0.4</keycloak.policy.enforcer.version>
         <commons.beanutils.version>1.9.4</commons.beanutils.version>
@@ -71,7 +71,7 @@
         <springdoc.openapi.ui.version>2.8.13</springdoc.openapi.ui.version>
         <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
         <uk-ets-lib-commons-reporting.version>0.0.1-SNAPSHOT</uk-ets-lib-commons-reporting.version>
-        <uk-netz-common-integration-model.version>1.9.0-SNAPSHOT</uk-netz-common-integration-model.version>
+        <uk-netz-common-integration-model.version>1.10.0-SNAPSHOT</uk-netz-common-integration-model.version>
 		<javers.version>7.9.0</javers.version>
         <aws-msk-iam-auth.version>2.2.0</aws-msk-iam-auth.version>
         <querydsl.version>5.0.0</querydsl.version>

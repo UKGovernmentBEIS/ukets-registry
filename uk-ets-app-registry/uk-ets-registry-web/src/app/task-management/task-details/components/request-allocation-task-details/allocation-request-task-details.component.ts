@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AllocationRequestTaskDetails } from '@task-management/model';
+import { AllocationRequestTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import {
   ALLOCATION_TYPE_LABELS,
   AllocationCategory,

@@ -11,11 +11,14 @@ import {
   OrganisationPipe,
 } from '@shared/pipes';
 import { ActivatedRoute } from '@angular/router';
-import { RequestType, TaskOutcome } from '@task-management/model';
+import {
+  RequestType,
+  TaskOutcome,
+} from '@shared/task-and-regulator-notice-management/model';
 import { AccountHolderType } from '@shared/model/account';
 import { AccountHolderMultipleOwnershipComponent } from '../account-holder-multiple-ownership/account-holder-multiple-ownership.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { SummaryListComponent } from '@shared/summary-list';
 import { provideMockStore } from '@ngrx/store/testing';
 import { selectAllCountries } from '@registry-web/shared/shared.selector';

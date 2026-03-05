@@ -1,8 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { REQUEST_TYPE_VALUES, RequestType } from '@task-management/model';
+import {
+  REQUEST_TYPE_VALUES,
+  RequestType,
+} from '@shared/task-and-regulator-notice-management/model';
 
 @Pipe({
-  name: 'taskTypeBeforeApprovalLabel'
+  name: 'taskTypeBeforeApprovalLabel',
 })
 export class TaskTypeBeforeApprovalLabelPipe implements PipeTransform {
   transform(value: RequestType): string {

@@ -1,5 +1,34 @@
 package gov.uk.ets.registry.api.account;
 
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_FULL_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_HOLDER_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.COMPLIANT_ENTITY_ID;
+import static gov.uk.ets.commons.logging.RequestParamType.DTO;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import gov.uk.ets.commons.logging.MDCParam;
 import gov.uk.ets.commons.logging.RequestParamType;
 import gov.uk.ets.registry.api.account.domain.Account;
@@ -45,6 +74,8 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanViewAccountWhenAc
 import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanViewAccountWhenUserStatusIsEnrolled;
 import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCanViewRequestsOnlyForAccountsWithAccess;
 import gov.uk.ets.registry.api.authz.ruleengine.features.ARsCannotSubmitRequestsForAccountsWithReadOnlyAccess;
+import gov.uk.ets.registry.api.authz.ruleengine.features.AccountCanBeClaimedOnlyWhenNoActiveARsExistRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.AccountCanBeClaimedOnlyWhenNoPendingAddARTaskExistsRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.AdminsWithAccountAccessRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.AuthoritiesWithAccountAccessRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.CannotSubmitRequestWhenAccountIsTransferPendingStatusRule;
@@ -82,34 +113,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_FULL_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_HOLDER_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.COMPLIANT_ENTITY_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.DTO;
 
 
 /**
@@ -680,7 +683,11 @@ public class AccountController {
      * @param identifier the account identifier
      * @param sendInvitationDTO dto that contains contact email addresses
      */
-    @Protected({SeniorAdminRule.class})
+    @Protected({
+        AccountCanBeClaimedOnlyWhenNoActiveARsExistRule.class,
+        AccountCanBeClaimedOnlyWhenNoPendingAddARTaskExistsRule.class,
+        SeniorAdminRule.class
+    })
     @PostMapping(path = "/accounts.send.invitation")
     public ResponseEntity<String> sendInvitation(
             @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @Parameter(description = "The account identifier", required = true) @MDCParam(ACCOUNT_ID) Long identifier,

@@ -10,7 +10,7 @@ import {
   selectTask,
 } from '../reducers/task-details.selector';
 import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
-import { RequestType } from '@registry-web/task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { TaskDetailsState } from '../reducers/task-details.reducer';
 import { ROUTER_NAVIGATED } from '@ngrx/router-store';
 import { TaskDetailsNavigationActions } from '../actions';

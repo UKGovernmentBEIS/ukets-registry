@@ -2,22 +2,20 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChangeTokenTaskDetailsComponent } from './change-token-task-details.component';
 import { SummaryListComponent } from '@shared/summary-list';
-import { RequestType } from '@task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { RouterTestingModule } from '@angular/router/testing';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 
 describe('ChangeTokenTaskDetailsComponent', () => {
   let component: ChangeTokenTaskDetailsComponent;
   let fixture: ComponentFixture<ChangeTokenTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
-        declarations: [ChangeTokenTaskDetailsComponent, SummaryListComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
+      declarations: [ChangeTokenTaskDetailsComponent, SummaryListComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ChangeTokenTaskDetailsComponent);

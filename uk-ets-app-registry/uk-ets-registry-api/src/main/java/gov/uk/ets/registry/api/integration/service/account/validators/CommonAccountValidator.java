@@ -185,6 +185,11 @@ public class CommonAccountValidator {
                 if (baseError == IntegrationEventError.ERROR_0101) return IntegrationEventError.ERROR_0701;
                 if (baseError == IntegrationEventError.ERROR_0103) return IntegrationEventError.ERROR_0702;
                 break;
+            case REGULATOR_NOTICE:
+                // Map 01xx → 06xx codes
+                if (baseError == IntegrationEventError.ERROR_0101) return IntegrationEventError.ERROR_0601;
+                if (baseError == IntegrationEventError.ERROR_0103) return IntegrationEventError.ERROR_0602;
+                break;
             case CREATE_ACCOUNT:
             default:
                 return baseError;

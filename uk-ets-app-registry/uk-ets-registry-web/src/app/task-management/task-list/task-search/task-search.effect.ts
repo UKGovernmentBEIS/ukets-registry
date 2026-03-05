@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
-import { catchError, concatMap, debounceTime, map, tap } from 'rxjs/operators';
-import * as TaskListActions from '@task-management/task-list/task-list.actions';
-import { SearchActionPayload, Task } from '@task-management/model';
+import { catchError, concatMap, debounceTime, map } from 'rxjs/operators';
+import * as TaskListActions from '@task-management/task-list/store/task-list.actions';
+import {
+  SearchActionPayload,
+  Task,
+} from '@shared/task-and-regulator-notice-management/model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { errors } from '@shared/shared.action';
 import { ErrorSummary } from '@shared/error-summary';
@@ -11,7 +14,8 @@ import { PagedResults } from '@shared/search/util/search-service.util';
 import { createReportRequestSuccess } from '@reports/actions';
 import { TaskService } from '@shared/services/task-service';
 import { Store } from '@ngrx/store';
-import { selectPageParameters } from '../task-list.selector';
+import { selectPageParameters } from '../store/task-list.selector';
+import { BulkActions } from '@shared/task-and-regulator-notice-management/bulk-actions';
 
 @Injectable()
 export class TaskListEffect {
@@ -93,6 +97,13 @@ export class TaskListEffect {
     );
   });
 
+  clearBulkActionsStore$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TaskListActions.clearState),
+      map(() => BulkActions.CLEAR_SUCCESS())
+    )
+  );
+
   private mapToAction(
     pagedResults: PagedResults<Task>,
     actionPayload: SearchActionPayload
@@ -118,7 +129,6 @@ export class TaskListEffect {
     httpError: HttpErrorResponse,
     action: SearchActionPayload
   ) {
-    console.log(httpError);
     return action.potentialErrors.has(httpError.status)
       ? [
           errors({

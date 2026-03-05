@@ -22,11 +22,12 @@ import { CancelChangeTaskDeadlineContainerComponent } from './components/change-
 import { ChangeTaskDeadlineContainerComponent } from './components/change-task-deadline/change-task-deadline-container.component';
 import { ChangeDeadlineSuccessComponent } from './components/change-task-deadline/change-deadline-success/change-deadline-success.component';
 import { ChangeDeadlineCheckAndSubmitContainerComponent } from './components/change-task-deadline/change-deadline-check-and-submit/change-deadline-check-and-submit-container.component';
-import { TaskNotesContainerComponent } from './components/task-notes/components/task-notes-container.component';
+import { TaskNotesContainerComponent } from './components/task-notes-container/task-notes-container.component';
 import {
   paymentConfirmationGuard,
   paymentWeblinkConfirmationGuard,
 } from '@task-details/guards';
+import { NOTES_LIST_PATH } from '@registry-web/notes/task-notes';
 
 // TODO : move canActivate:[LoginGuard] to a common parent
 export const routes: Routes = [
@@ -38,7 +39,7 @@ export const routes: Routes = [
     title: 'Task Details',
   },
   {
-    path: ':requestId/notes-list',
+    path: ':requestId/' + NOTES_LIST_PATH,
     canActivate: [LoginGuard, TaskHeaderGuard],
     canDeactivate: [UploadedDocumentsGuard],
     component: TaskNotesContainerComponent,
@@ -134,7 +135,7 @@ export const routes: Routes = [
     path: ':requestId/notes',
     loadChildren: () =>
       import(
-        './components/task-notes/task-notes-wizard/task-notes-wizard-routing.module'
+        '@registry-web/notes/task-notes/task-notes-wizard/task-notes-wizard-routing.module'
       ).then((m) => m.TaskNotesRoutingModule),
   },
 ];

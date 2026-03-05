@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { LostTokenTaskDetails } from '@task-management/model';
+import { LostTokenTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-lost-token-task-details',

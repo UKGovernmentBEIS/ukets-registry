@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   AuthoriseRepresentativeTaskDetails,
   TaskOutcome,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 import { AuthorisedRepresentativesUpdateType } from '@authorised-representatives/model';
 import { MenuItemEnum } from '@registry-web/account-management/account/account-details/model';
 

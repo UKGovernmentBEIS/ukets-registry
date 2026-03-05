@@ -14,7 +14,7 @@ import {
   selectTask,
 } from '@task-details/reducers/task-details.selector';
 import { ROUTER_NAVIGATION, RouterAction } from '@ngrx/router-store';
-import { RequestType } from '@registry-web/task-management/model';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { selectLoggedInUser } from '@registry-web/auth/auth.selector';
 
 @Injectable()

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ChangeTokenTaskDetails } from '@task-management/model';
+import { ChangeTokenTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-change-token-task-details',

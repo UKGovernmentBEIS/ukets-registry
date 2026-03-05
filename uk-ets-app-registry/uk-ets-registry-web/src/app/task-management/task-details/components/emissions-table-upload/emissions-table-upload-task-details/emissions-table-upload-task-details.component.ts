@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EmissionsTableUploadTaskDetails } from '@task-management/model';
+import { EmissionsTableUploadTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-emissions-table-upload-task-details',

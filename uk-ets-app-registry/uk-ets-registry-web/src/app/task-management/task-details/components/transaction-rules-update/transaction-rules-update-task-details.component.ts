@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TransactionRuleUpdateTaskDetails } from '@task-management/model';
+import { TransactionRuleUpdateTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { AccountType, getRuleLabel } from '@shared/model/account';
 import { SummaryListItem } from '@shared/summary-list/summary-list.info';
 import { empty } from '@shared/shared.util';

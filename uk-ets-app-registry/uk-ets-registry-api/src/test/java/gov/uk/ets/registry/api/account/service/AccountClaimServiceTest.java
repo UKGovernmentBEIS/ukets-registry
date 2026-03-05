@@ -15,8 +15,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static gov.uk.ets.registry.api.transaction.domain.type.AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT;
-import static gov.uk.ets.registry.api.transaction.domain.type.AccountType.OPERATOR_HOLDING_ACCOUNT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -110,7 +108,7 @@ public class AccountClaimServiceTest {
     }
 
     @Test
-    void claimAccount_shouldThrowException_whenAccountTypeIsNull() {
+    void claimAccount_shouldClaimAccount_whenAccountTypeIsNull() {
         AccountClaimDTO dto = new AccountClaimDTO();
         dto.setRegistryId(200L);
         dto.setAccountClaimCode("INVALID");
@@ -119,12 +117,11 @@ public class AccountClaimServiceTest {
                 dto.getRegistryId(), dto.getAccountClaimCode()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(AccountActionException.class,
-                () -> accountClaimService.claimAccount(dto));
+        accountClaimService.claimAccount(dto);
 
         verify(accountRepository)
                 .findByCompliantEntityIdentifierAndAccountClaimCode(
                         dto.getRegistryId(), dto.getAccountClaimCode());
-        verifyNoInteractions(accountService);
+        verify(accountService).claimAccount(dto);
     }
 }

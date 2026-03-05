@@ -1,7 +1,7 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AllocationTableApprovalConfirmationComponent } from '@task-details/components';
-import { TaskCompleteResponseBase } from '@task-management/model/task-complete-response.model';
+import { TaskCompleteResponseBase } from '@shared/task-and-regulator-notice-management/model';
 
 describe('AllocationTableApprovalConfirmationComponent', () => {
   let component: AllocationTableApprovalConfirmationComponent;
@@ -12,13 +12,11 @@ describe('AllocationTableApprovalConfirmationComponent', () => {
     taskDetailsDTO: null,
   };
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [AllocationTableApprovalConfirmationComponent],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [AllocationTableApprovalConfirmationComponent],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(

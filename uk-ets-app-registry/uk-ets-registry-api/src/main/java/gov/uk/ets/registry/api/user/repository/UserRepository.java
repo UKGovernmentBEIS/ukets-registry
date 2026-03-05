@@ -4,6 +4,7 @@ import gov.uk.ets.registry.api.file.upload.wrappers.BulkArUserDTO;
 import gov.uk.ets.registry.api.user.EnrolmentKeyDTO;
 import gov.uk.ets.registry.api.user.UserDTO;
 import gov.uk.ets.registry.api.user.UserFileDTO;
+import gov.uk.ets.registry.api.user.UserRoleDetails;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import java.util.List;
@@ -166,4 +167,28 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Retrieves all users that have the known_as attribute already set.
      */
     List<User> findByKnownAsNotNull();
+
+    @Query("""
+                SELECT new gov.uk.ets.registry.api.user.UserRoleDetails(
+                    u.iamIdentifier,
+                    u.urid,
+                    u.state,
+                    role.roleName,
+                    urm.mappedOn
+                )
+                FROM User u
+                JOIN u.userRoles urm
+                JOIN urm.role role
+                WHERE u.state = :userStatus AND role.roleName in :roleNames AND
+                NOT EXISTS (
+                    SELECT 1
+                    FROM UserRoleMapping rm
+                    JOIN rm.role r
+                    WHERE rm.user = u
+                    AND r.roleName = 'reports-user'
+                )
+            """)
+    List<UserRoleDetails> findUsersByStatusAndRoleExcludingReportsUser(@Param("userStatus") UserStatus userStatus,
+                                                                       @Param("roleNames") List<String> roleNames);
+
 }

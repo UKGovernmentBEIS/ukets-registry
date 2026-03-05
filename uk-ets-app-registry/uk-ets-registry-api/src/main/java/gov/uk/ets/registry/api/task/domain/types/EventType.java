@@ -38,6 +38,7 @@ public enum EventType {
     ACCOUNT_HOLDER_DELETE_SUBMITTED_DOCUMENT(Account.class),
     ACCOUNT_EXCLUSION_FROM_BILLING(Account.class),
     ACCOUNT_INCLUSION_IN_BILLING(Account.class),
+    REGULATOR_NOTICE(Account.class),
 
     /**
      * Task related

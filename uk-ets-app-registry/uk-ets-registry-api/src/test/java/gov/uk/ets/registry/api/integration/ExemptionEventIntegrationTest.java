@@ -132,7 +132,7 @@ public class ExemptionEventIntegrationTest extends BaseIntegrationTest {
         account.setOpeningDate(new Date());
         account.setAccountStatus(AccountStatus.OPEN);
         account.setCommitmentPeriodCode(1);
-        account.setAccountType("INSTALLATION");
+        account.setAccountType("ETS - Aircraft operator holding account");
         account.setCheckDigits(2);
 
         accountRepository.saveAndFlush(account);
@@ -196,7 +196,7 @@ public class ExemptionEventIntegrationTest extends BaseIntegrationTest {
         assertThat(changeLog.getEntity()).isEqualTo("ExcludeEmissionsEntry");
         assertThat(changeLog.getAccountNumber()).isEqualTo("fullIdentifier");
         assertThat(changeLog.getOperatorId()).isEqualTo(123456);
-        assertThat(changeLog.getUpdatedBy()).isEqualTo("METS-Installation");
+        assertThat(changeLog.getUpdatedBy()).isEqualTo("METS-Aviation");
         assertThat(changeLog.getUpdatedAt()).isNotNull();
     }
 

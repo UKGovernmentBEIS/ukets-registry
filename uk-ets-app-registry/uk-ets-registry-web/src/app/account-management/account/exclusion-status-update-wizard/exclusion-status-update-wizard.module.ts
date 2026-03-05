@@ -18,7 +18,11 @@ import * as fromUpdateExclusionStatus from '@exclusion-status-update-wizard/redu
 import { EffectsModule } from '@ngrx/effects';
 import { UpdateExclusionStatusEffects } from '@exclusion-status-update-wizard/effects';
 import { SelectExclusionStatusContainerComponent } from '@exclusion-status-update-wizard/select-exclusion-status';
-import { InstallationPipe, AircraftOperatorPipe } from '@shared/pipes';
+import {
+  InstallationPipe,
+  AircraftOperatorPipe,
+  MaritimeOperatorPipe,
+} from '@shared/pipes';
 import { ExclusionStatusUpdateWizardRoutingModule } from '@exclusion-status-update-wizard/exclusion-status-update-wizard-routing.module';
 
 @NgModule({
@@ -48,6 +52,7 @@ import { ExclusionStatusUpdateWizardRoutingModule } from '@exclusion-status-upda
     ExclusionStatusUpdateWizardService,
     InstallationPipe,
     AircraftOperatorPipe,
+    MaritimeOperatorPipe,
   ],
 })
 export class ExclusionStatusUpdateWizardModule {}

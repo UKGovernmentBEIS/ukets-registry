@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import {
   PaymentCompleteResponse,
   TaskCompleteResponse,
-} from '@task-management/model';
+} from '@shared/task-and-regulator-notice-management/model';
 
 export const otpVerificationForTaskRequest = createAction(
   `

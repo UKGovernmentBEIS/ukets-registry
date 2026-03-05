@@ -2,7 +2,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AccountSummaryComponent } from '@shared/components/transactions/account-summary/account-summary.component';
-import { RequestType, TaskOutcome } from '@task-management/model';
+import {
+  RequestType,
+  TaskOutcome,
+} from '@shared/task-and-regulator-notice-management/model';
 import { ARAccessRights } from '@shared/model/account';
 import {
   ArUpdateAccessRightsComponent,
@@ -18,7 +21,7 @@ import { ThreeLineAddressComponent } from '@shared/components/three-line-address
 import { MockProtectPipe } from '../../../../../testing/mock-protect.pipe';
 import { GovukTagComponent } from '@shared/govuk-components/govuk-tag';
 import { User } from '@shared/user';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
 import { ArDisplayNamePipe } from '@registry-web/shared/pipes/ar-display-name.pipe';
 
 describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {

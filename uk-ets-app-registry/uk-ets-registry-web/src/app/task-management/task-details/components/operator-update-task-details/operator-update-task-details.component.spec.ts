@@ -4,8 +4,8 @@ import { RouterModule } from '@angular/router';
 import { APP_BASE_HREF } from '@angular/common';
 
 import { OperatorUpdateTaskDetailsComponent } from './operator-update-task-details.component';
-import { taskDetailsBase } from '@task-management/model/task-details.model.spec';
-import { RequestType } from '@task-management/model';
+import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
+import { RequestType } from '@shared/task-and-regulator-notice-management/model';
 import { OperatorSummaryChangesComponent } from '@shared/components/account/operator/operator-summary-changes';
 import {
   Installation,
@@ -20,23 +20,18 @@ describe('OperatorUpdateTaskDetailsComponent', () => {
   let component: OperatorUpdateTaskDetailsComponent;
   let fixture: ComponentFixture<OperatorUpdateTaskDetailsComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
-        declarations: [
-          OperatorUpdateTaskDetailsComponent,
-          OperatorSummaryChangesComponent,
-          FormatUkDatePipe,
-          SummaryListComponent,
-        ],
-        providers: [
-          { provide: APP_BASE_HREF, useValue: '/' },
-          FormatUkDatePipe,
-        ],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
+      declarations: [
+        OperatorUpdateTaskDetailsComponent,
+        OperatorSummaryChangesComponent,
+        FormatUkDatePipe,
+        SummaryListComponent,
+      ],
+      providers: [{ provide: APP_BASE_HREF, useValue: '/' }, FormatUkDatePipe],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(OperatorUpdateTaskDetailsComponent);

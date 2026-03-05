@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TaskDetails, TaskType } from '@task-management/model';
+import {
+  TaskDetails,
+  TaskType,
+} from '@shared/task-and-regulator-notice-management/model';
 import { selectTask } from '@task-details/reducers/task-details.selector';
 import { Store } from '@ngrx/store';
-import { taskTypeOptions } from '@task-management/task-list/task-list.selector';
+import { taskTypeOptions } from '@task-management/task-list/store/task-list.selector';
 
 @Component({
   selector: 'app-task-user-details-container',

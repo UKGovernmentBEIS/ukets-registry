@@ -3,7 +3,7 @@ import { ChangeAccountHolderTaskMap } from '@registry-web/account-management/acc
 import { DocumentsRequestType } from '@registry-web/shared/model/request-documents/documents-request-type';
 import { RequestDocumentsOrigin } from '@registry-web/shared/model/request-documents/request-documents-origin';
 import { isNil } from '@registry-web/shared/shared.util';
-import { AccountHolderChangeTaskDetails } from '@registry-web/task-management/model';
+import { AccountHolderChangeTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-change-account-holder-task-details',

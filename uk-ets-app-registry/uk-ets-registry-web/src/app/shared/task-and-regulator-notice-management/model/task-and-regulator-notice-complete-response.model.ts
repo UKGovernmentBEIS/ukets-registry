@@ -1,0 +1,41 @@
+import { RegulatorNoticeTaskDetails } from './regulator-notice-details.model';
+import { RequestPaymentTaskDetails, TaskDetails } from './task-details.model';
+
+export interface TaskCompleteResponseBase {
+  requestIdentifier: string;
+  taskDetailsDTO: TaskDetails;
+}
+
+export interface TransactionProposalCompleteResponse
+  extends TaskCompleteResponseBase {
+  transactionIdentifier: string;
+  executionTime: string;
+  executionDate: string;
+}
+
+export interface RequestAllocationProposalCompleteResponse
+  extends TaskCompleteResponseBase {
+  executionTime: string;
+  executionDate: string;
+}
+
+export interface PaymentCompleteResponse extends TaskCompleteResponseBase {
+  referenceNumber: string;
+  paidOn: Date;
+  paidBy: string;
+  taskDetailsDTO: RequestPaymentTaskDetails;
+}
+
+export type RegulatorNoticeTaskCompleteResponse = Omit<
+  TaskCompleteResponseBase,
+  'taskDetailsDTO'
+> & {
+  taskDetailsDTO: RegulatorNoticeTaskDetails;
+};
+
+export type TaskCompleteResponse =
+  | TaskCompleteResponseBase
+  | TransactionProposalCompleteResponse
+  | RequestAllocationProposalCompleteResponse
+  | PaymentCompleteResponse
+  | RegulatorNoticeTaskCompleteResponse;

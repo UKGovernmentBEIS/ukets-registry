@@ -61,7 +61,6 @@ export class NotificationsListEffect {
       ofType(NotificationsListActions.loadNotifications),
       concatLatestFrom(() => this.store.select(selectPageParameters)),
       concatMap(([action, storedPageParameters]) => {
-        console.log(action.loadPageParametersFromState, storedPageParameters);
         const pageParameters = action.loadPageParametersFromState
           ? storedPageParameters
           : action.pageParameters;

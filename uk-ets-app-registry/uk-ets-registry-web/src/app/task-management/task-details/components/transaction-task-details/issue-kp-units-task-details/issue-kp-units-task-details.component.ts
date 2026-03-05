@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { KpIssuanceTaskDetailsDto } from '@task-management/model';
+import { KpIssuanceTaskDetailsDto } from '@shared/task-and-regulator-notice-management/model';
 import { ApiEnumTypes } from '@shared/model';
 
 @Component({

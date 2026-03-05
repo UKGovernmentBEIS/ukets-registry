@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { IUkOfficialCountry } from '@registry-web/shared/countries/country.interface';
 import { DocumentsRequestType } from '@registry-web/shared/model/request-documents/documents-request-type';
 import { selectAllCountries } from '@registry-web/shared/shared.selector';
-import { UserDetailsUpdateTaskDetails } from '@registry-web/task-management/model';
+import { UserDetailsUpdateTaskDetails } from '@shared/task-and-regulator-notice-management/model';
 import { Observable } from 'rxjs';
 import { SummaryListItem } from '@shared/summary-list/summary-list.info';
 import { userStatusMap } from '@shared/user';
@@ -23,7 +23,10 @@ export class UserDetailsUpdateTaskDetailsComponent implements OnInit {
 
   isCompleted: boolean;
 
-  constructor(private store: Store, private router: Router) {}
+  constructor(
+    private store: Store,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.countries$ = this.store.select(selectAllCountries);

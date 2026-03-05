@@ -1,10 +1,13 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import {
+  NOTES_LIST_PATH,
+  selectTaskNotes,
+  TaskNotesActions,
+} from '@registry-web/notes/task-notes';
 import { MenuItem } from '@registry-web/shared/model/navigation-menu';
 import { SharedModule } from '@registry-web/shared/shared.module';
-import { selectTaskNotes } from '@task-details/components/task-notes/store/task-notes.selector';
-import { Store } from '@ngrx/store';
-import { fetchTaskNotes } from '@task-details/components/task-notes/store/task-notes.actions';
 
 @Component({
   standalone: true,
@@ -38,7 +41,7 @@ export class TaskDetailsTabsNavigationComponent implements OnInit {
 
     if (this.isAdmin) {
       this.store.dispatch(
-        fetchTaskNotes({
+        TaskNotesActions.FETCH_TASK_NOTES({
           requestId: this.requestId,
         })
       );
@@ -53,7 +56,7 @@ export class TaskDetailsTabsNavigationComponent implements OnInit {
           ...baseItems,
           {
             label: lbl,
-            routerLink: `/task-details/${this.requestId}/notes-list`,
+            routerLink: `/task-details/${this.requestId}/${NOTES_LIST_PATH}`,
             protectedScopes: [],
           },
           {

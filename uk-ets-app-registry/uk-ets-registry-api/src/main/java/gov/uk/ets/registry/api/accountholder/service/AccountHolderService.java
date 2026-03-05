@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -88,6 +89,7 @@ public class AccountHolderService {
             List<AccountHolderTypeAheadSearchResultDTO> holdersByIdentifier =
                     this.getAccountHolders(input, Set.of(type));
             return Stream.concat(holdersByName.stream(), holdersByIdentifier.stream())
+                    .sorted(Comparator.comparing(AccountHolderTypeAheadSearchResultDTO::getName, String::compareToIgnoreCase))
                     .toList();
         } else {
             final String urid = authorizationService.getUrid();
@@ -96,6 +98,7 @@ public class AccountHolderService {
             final List<AccountHolderTypeAheadSearchResultDTO> holdersByIdentifier =
                     holderRepository.findByIdentifierAndTypeAndUser(input, Set.of(type), urid, AccountAccessState.ACTIVE);
             return Stream.concat(holdersByName.stream(), holdersByIdentifier.stream())
+                    .sorted(Comparator.comparing(AccountHolderTypeAheadSearchResultDTO::getName, String::compareToIgnoreCase))
                     .toList();
         }
     }
@@ -126,8 +129,12 @@ public class AccountHolderService {
     public List<AccountHolderDTO> getAccountHolders(AccountHolderType type, AccountAccessState accessState) {
         boolean isCurrentUserAdmin = authorizationService.hasScopePermission(Scope.SCOPE_ACTION_ANY_ADMIN);
         final String urid = authorizationService.getUrid();
-        return isCurrentUserAdmin ? holderRepository.findAccountHoldersByType(type) :
-                holderRepository.findAccountHoldersByUserTypeAndState(urid, type, accessState);
+        return isCurrentUserAdmin ? holderRepository.findAccountHoldersByType(type).stream()
+                .sorted(Comparator.comparing(AccountHolderDTO::actualName, String::compareToIgnoreCase))
+                .toList() :
+                holderRepository.findAccountHoldersByUserTypeAndState(urid, type, accessState).stream()
+                        .sorted(Comparator.comparing(AccountHolderDTO::actualName, String::compareToIgnoreCase))
+                        .toList();
     }
 
     /**

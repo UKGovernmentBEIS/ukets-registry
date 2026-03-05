@@ -59,12 +59,14 @@ class TransactionSearchResultMapperTest {
             .kyotoAccountType(KyotoAccountType.AMBITION_INCREASE_CANCELLATION_ACCOUNT)
             .ukRegistryAccountIdentifier(12345L)
             .ukRegistryAccountName("uk-acquiring-registry-account-name")
+            .accountHolderName("Acquiring Holder Name")
             .build())
         .mockTransferringAccountInput(MockAccountProjectionInput.builder()
             .accountFullIdentifier("UK-ACQUIRING-213123")
             .kyotoAccountType(KyotoAccountType.AMBITION_INCREASE_CANCELLATION_ACCOUNT)
             .ukRegistryAccountIdentifier(12345L)
             .ukRegistryAccountName("uk-transferring-registry-account-name")
+            .accountHolderName("Transferring Holder Name")
             .build())
         .quantity(120L)
         .status(TransactionStatus.COMPLETED)
@@ -84,7 +86,9 @@ class TransactionSearchResultMapperTest {
     assertEquals(transactionProjection.getType().name(), searchResult.getType());
     assertEquals(transactionProjection.getAcquiringAccount().getUkRegistryAccountIdentifier(), searchResult.getAcquiringAccount().getUkRegistryIdentifier());
     assertEquals(transactionProjection.getTransferringAccount().getUkRegistryAccountIdentifier(), searchResult.getTransferringAccount().getUkRegistryIdentifier());
-
+    assertEquals(transactionProjection.getAcquiringAccount().getAccountHolderName(), searchResult.getAcquiringAccount().getAccountHolderName());
+    assertEquals(transactionProjection.getTransferringAccount().getAccountHolderName(), searchResult.getTransferringAccount().getAccountHolderName());
+    
     verifyThatAccountTitleIsCreatedCorrectly(acquiringAccountProjection, sr -> sr.getAcquiringAccount());
 
     verifyThatAccountTitleIsCreatedCorrectly(transferringAccountProjection, sr -> sr.getTransferringAccount());
@@ -98,7 +102,8 @@ class TransactionSearchResultMapperTest {
     // then
     assertEquals(accountProjection.getUkRegistryAccountName(), getAccountInfoFunc.apply(searchResult).getTitle());
     assertNotEquals(accountProjection.getAccountFullIdentifier(), getAccountInfoFunc.apply(searchResult).getTitle());
-
+    assertNotEquals(accountProjection.getAccountHolderName(), getAccountInfoFunc.apply(searchResult).getAccountHolderName());
+    
     // given
     given(accountProjection.isGovernmentAccount()).willReturn(false);
     // when
@@ -106,6 +111,7 @@ class TransactionSearchResultMapperTest {
     // then
     assertNotEquals(accountProjection.getUkRegistryAccountName(), getAccountInfoFunc.apply(searchResult).getTitle());
     assertEquals(accountProjection.getAccountFullIdentifier(), getAccountInfoFunc.apply(searchResult).getTitle());
+    assertEquals(accountProjection.getAccountHolderName(), getAccountInfoFunc.apply(searchResult).getAccountHolderName());
   }
 
   private TransactionProjection mockTransactionProjection(TransactionProjection transactionProjection, MockTransactionProjectionInput input) {
@@ -127,6 +133,7 @@ class TransactionSearchResultMapperTest {
     when(accountProjection.getAccountFullIdentifier()).thenReturn(input.accountFullIdentifier);
     when(accountProjection.getUkRegistryAccountIdentifier()).thenReturn(input.ukRegistryAccountIdentifier);
     when(accountProjection.getUkRegistryAccountName()).thenReturn(input.ukRegistryAccountName);
+    when(accountProjection.getAccountHolderName()).thenReturn(input.accountHolderName);
     return accountProjection;
   }
 
@@ -149,5 +156,6 @@ class TransactionSearchResultMapperTest {
     private RegistryAccountType registryAccountType;
     private Long ukRegistryAccountIdentifier;
     private String ukRegistryAccountName;
+    private String accountHolderName;
   }
 }

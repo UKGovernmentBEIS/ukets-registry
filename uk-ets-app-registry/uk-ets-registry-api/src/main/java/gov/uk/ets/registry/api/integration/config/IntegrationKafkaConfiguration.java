@@ -44,6 +44,11 @@ import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEvent;
 import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEventOutcome;
 import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
 import uk.gov.netz.integration.model.operator.OperatorUpdateEventOutcome;
+import uk.gov.netz.integration.model.regulatornotice.RegulatorNoticeEvent;
+import uk.gov.netz.integration.model.regulatornotice.RegulatorNoticeEventOutcome;
+import uk.gov.netz.integration.model.withold.AccountWithholdUpdateEvent;
+import uk.gov.netz.integration.model.withold.AccountWithholdUpdateEventOutcome;
+
 
 @Configuration
 @Log4j2
@@ -91,6 +96,12 @@ public class IntegrationKafkaConfiguration {
     @Value("${kafka.integration.exemption.response.consumer.group-id}")
     private String exemptionResponseConsumerGroup;
 
+    @Value("${kafka.integration.withhold.request.consumer.group-id}")
+    private String withholdRequestConsumerGroup;
+
+    @Value("${kafka.integration.withhold.response.consumer.group-id}")
+    private String withholdResponseConsumerGroup;
+
     @Value("${kafka.integration.installation.emissions.response.transactional.id}")
     private String installationEmissionsResponseTransactionalId;
 
@@ -108,6 +119,9 @@ public class IntegrationKafkaConfiguration {
 
     @Value("${kafka.integration.exemption.response.transactional.id}")
     private String exemptionResponseTransactionalId;
+
+    @Value("${kafka.integration.withhold.response.transactional.id}")
+    private String withholdResponseTransactionalId;
 
     @Value("${kafka.integration.installation.emissions.response.topic}")
     private String installationEmissionsResponseTopic;
@@ -147,6 +161,15 @@ public class IntegrationKafkaConfiguration {
 
     @Value("${kafka.integration.mets.contacts.response.transactional.id}")
     private String metsContactsResponseTransactionalId;
+
+    @Value("${kafka.integration.regulator.notice.request.consumer.group-id}")
+    private String regulatorNoticeRequestConsumerGroup;
+
+    @Value("${kafka.integration.regulator.notice.response.consumer.group-id}")
+    private String regulatorNoticeResponseConsumerGroup;
+
+    @Value("${kafka.integration.regulator.notice.response.transactional.id}")
+    private String regulatorNoticeResponseTransactionalId;
 
 	@ConditionalOnProperty(name = {"kafka.integration.enabled", "kafka.integration.emissions.enabled", "kafka.integration.installation.emissions.enabled"}, havingValue = "true")
     @Bean("installationEmissionsConsumerFactory")
@@ -265,6 +288,50 @@ public class IntegrationKafkaConfiguration {
         return factory;
     }
 
+    // ---- Regulator Notices -------------------------//
+    @ConditionalOnProperty(
+            name = "kafka.integration.aviation.regulator.notice.enabled",
+            havingValue = "true"
+    )
+    @Bean("aviationRegulatorNoticeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, RegulatorNoticeEvent> aviationRegulatorNoticeConsumerFactory() {
+        return createRegulatorNoticeFactory(regulatorNoticeRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = "kafka.integration.installation.regulator.notice.enabled",
+            havingValue = "true"
+    )
+    @Bean("installationRegulatorNoticeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, RegulatorNoticeEvent> installationRegulatorNoticeConsumerFactory() {
+        return createRegulatorNoticeFactory(regulatorNoticeRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = "kafka.integration.maritime.regulator.notice.enabled",
+            havingValue = "true"
+    )
+    @Bean("maritimeRegulatorNoticeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, RegulatorNoticeEvent> maritimeRegulatorNoticeConsumerFactory() {
+        return createRegulatorNoticeFactory(regulatorNoticeRequestConsumerGroup);
+    }
+
+    @ConditionalOnProperty(
+            name = {
+                    "kafka.integration.enabled"
+            },
+            havingValue = "true"
+    )
+    @Bean("regulatorNoticeOutcomeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, RegulatorNoticeEventOutcome> regulatorNoticeOutcomeConsumerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, RegulatorNoticeEventOutcome> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(RegulatorNoticeEventOutcome.class, regulatorNoticeResponseConsumerGroup));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
     @ConditionalOnProperty(
             name = {
                     "kafka.integration.enabled"
@@ -340,6 +407,26 @@ public class IntegrationKafkaConfiguration {
         return factory;
     }
 
+    @Bean("withholdOutcomeConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountWithholdUpdateEventOutcome> withholdOutcomeConsumerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountWithholdUpdateEventOutcome> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(AccountWithholdUpdateEventOutcome.class, withholdRequestConsumerGroup));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
+    @Bean("withholdConsumerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, AccountWithholdUpdateEvent> withholdConsumerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountWithholdUpdateEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(AccountWithholdUpdateEvent.class, withholdRequestConsumerGroup));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
+
     @ConditionalOnProperty(
             name = {
                     "kafka.integration.enabled"
@@ -382,6 +469,22 @@ public class IntegrationKafkaConfiguration {
     @Bean("exemptionOutcomeKafkaTemplate")
     public KafkaTemplate<String, AccountExemptionUpdateEventOutcome> exemptionOutcomeKafkaTemplate() {
         return getKafkaTemplate(exemptionResponseTransactionalId, null);
+    }
+
+    @ConditionalOnProperty(
+            name = {
+                    "kafka.integration.enabled"
+            },
+            havingValue = "true"
+    )
+    @Bean("regulatorNoticeOutcomeKafkaTemplate")
+    public KafkaTemplate<String, RegulatorNoticeEventOutcome> regulatorNoticeOutcomeKafkaTemplate() {
+        return getKafkaTemplate(regulatorNoticeResponseTransactionalId, null);
+    }
+  
+    @Bean("withholdOutcomeKafkaTemplate")
+    public KafkaTemplate<String, AccountWithholdUpdateEventOutcome> withholdOutcomeKafkaTemplate() {
+        return getKafkaTemplate(withholdResponseTransactionalId, null);
     }
 
     private <V> KafkaTemplate<String, V> getKafkaTemplate(String transactionalId, String topic) {
@@ -521,4 +624,12 @@ public class IntegrationKafkaConfiguration {
         return factory;
     }
 
+    private ConcurrentKafkaListenerContainerFactory<String, RegulatorNoticeEvent> createRegulatorNoticeFactory(String groupId) {
+        ConcurrentKafkaListenerContainerFactory<String, RegulatorNoticeEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory(RegulatorNoticeEvent.class, groupId));
+        setupErrorHandler(factory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        return factory;
+    }
 }

@@ -27,6 +27,8 @@ import uk.gov.netz.integration.model.metscontacts.MetsContactsEvent;
 import uk.gov.netz.integration.model.metscontacts.MetsContactsMessage;
 import uk.gov.netz.integration.model.exemption.AccountExemptionUpdateEvent;
 import uk.gov.netz.integration.model.operator.OperatorUpdateEvent;
+import uk.gov.netz.integration.model.regulatornotice.RegulatorNoticeEvent;
+import uk.gov.netz.integration.model.withold.AccountWithholdUpdateEvent;
 
 @RequiredArgsConstructor
 public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
@@ -146,8 +148,16 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
             return getExemptionFields(event);
         }
 
+        if (notification.getEvent() instanceof AccountWithholdUpdateEvent event) {
+            return getWithholdFields(event);
+        }
+
         if (notification.getEvent() instanceof MetsContactsEvent event) {
             return getMetsContactsFields(event);
+        }
+
+        if (notification.getEvent() instanceof RegulatorNoticeEvent event) {
+            return getRegulatorNoticeFields(event);
         }
 
         return Map.of();
@@ -267,6 +277,24 @@ public class IntegrationErrorOutcomeEmailGenerator extends EmailGenerator {
         fields.put("Reporting Year", asStringOrEmpty(event.getReportingYear()));
         fields.put("Exemption Flag", asStringOrEmpty(event.getExemptionFlag()));
 
+        return fields;
+    }
+
+    private Map<String, String> getRegulatorNoticeFields(RegulatorNoticeEvent event) {
+        Map<String, String> fields = new LinkedHashMap<>();
+
+        fields.put("Operator ID", asStringOrEmpty(event.getRegistryId()));
+        fields.put("Notification Type", asStringOrEmpty(event.getType()));
+        fields.put("File Name", asStringOrEmpty(event.getFileName()));
+        return fields;
+    }
+
+    private Map<String, String> getWithholdFields(AccountWithholdUpdateEvent event) {
+        Map<String, String> fields = new LinkedHashMap<>();
+
+        fields.put("Operator ID", asStringOrEmpty(event.getRegistryId()));
+        fields.put("Reporting Year", asStringOrEmpty(event.getReportingYear()));
+        fields.put("Withhold Flag", asStringOrEmpty(event.getWithholdFlag()));
         return fields;
     }
 

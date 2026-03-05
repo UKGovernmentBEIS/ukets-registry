@@ -13,7 +13,10 @@ import {
   UntypedFormGroup,
   ValidationErrors,
 } from '@angular/forms';
-import { TaskSearchCriteria, TaskType } from '@task-management/model';
+import {
+  TaskSearchCriteria,
+  TaskType,
+} from '@shared/task-and-regulator-notice-management/model';
 import {
   ACCOUNT_TYPE_OPTIONS,
   ALLOCATION_CATEGORY_OPTIONS,

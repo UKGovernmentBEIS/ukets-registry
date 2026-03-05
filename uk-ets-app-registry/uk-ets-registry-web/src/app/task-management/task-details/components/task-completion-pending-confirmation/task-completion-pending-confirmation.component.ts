@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TaskDetails } from '@task-management/model';
+import { TaskDetails } from '@shared/task-and-regulator-notice-management/model';
 
 @Component({
   selector: 'app-task-completion-pending-confirmation',
@@ -11,7 +11,10 @@ export class TaskCompletionPendingConfirmationComponent {
   @Input() taskDetails: TaskDetails;
   @Input() leaveUrl: string;
 
-  constructor(private router: Router, private store: Store) {}
+  constructor(
+    private router: Router,
+    private store: Store
+  ) {}
 
   onGoBack() {
     this.router.navigate([`/task-details/${this.taskDetails.requestId}`]);

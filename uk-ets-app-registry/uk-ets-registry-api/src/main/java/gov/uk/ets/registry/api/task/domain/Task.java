@@ -22,6 +22,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -40,6 +42,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"requestId"})
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Task implements Serializable {
 
     /**
@@ -376,6 +379,8 @@ public class Task implements Serializable {
                 return "Open account with installation transfer task" + appendText;
             case ACCOUNT_HOLDER_CHANGE:
                 return "Account holder change request task" + appendText;
+            case REGULATOR_NOTICE:
+                return "Regulator notice request task" + appendText;
             default:
                 return "";
         }
