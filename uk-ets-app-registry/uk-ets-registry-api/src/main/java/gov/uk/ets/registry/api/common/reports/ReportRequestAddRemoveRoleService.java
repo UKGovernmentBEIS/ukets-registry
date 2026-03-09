@@ -31,7 +31,7 @@ public class ReportRequestAddRemoveRoleService {
         HttpEntity<ReportAddRemoveRoleRequest> request = createRequest(userId);
         restTemplate.postForEntity(reportsApiRequestRolesAddEndpoint, request, String.class);
     }
-    
+
     public void requestReportsApiRemoveRole(String userId) {
         HttpEntity<ReportAddRemoveRoleRequest> request = createRequest(userId);
         restTemplate.postForEntity(reportsApiRequestRolesRemoveEndpoint, request, String.class);

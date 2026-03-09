@@ -12,6 +12,9 @@ import gov.uk.ets.registry.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +32,17 @@ public class ARReportsUserRoleMigrator implements Migrator {
 
     @Override
     @Transactional
+    @Retryable(
+            retryFor = RuntimeException.class,
+            maxAttempts = 10,
+            backoff = @Backoff(
+                    delay = 3000,
+                    multiplier = 2,
+                    maxDelay = 120000
+            )
+    )
     public void migrate() {
+
         log.info("Starting migration of reports-user role to Enrolled ARs");
         List<MigratorHistory> migratorHistoryList =
                 migratorHistoryRepository.findByMigratorName(MigratorName.AR_REPORTS_USER_ROLE_MIGRATOR);
@@ -49,6 +62,11 @@ public class ARReportsUserRoleMigrator implements Migrator {
 
         updateMigrationHistory();
         log.info("Migration of reports-user role to Enrolled ARs completed");
+    }
+
+    @Recover
+    public void recover(RuntimeException ex) {
+        log.error("Migration of reports-user role failed after 10 retries", ex);
     }
 
     private void updateMigrationHistory() {
