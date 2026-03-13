@@ -39,7 +39,7 @@
         Account type
       </th>
       <ng-container
-        *ngIf="isAdmin; then th_accountName; else th_accountHolderName"
+        *ngIf="isAdmin; then th_operatorIdentifier; else th_accountHolderName"
       >
       </ng-container>
 
@@ -93,6 +93,20 @@
           Account name
         </th>
       </ng-template>
+      <ng-template #th_operatorIdentifier>
+        <th
+          scope="col"
+          appSortableColumn
+          [sortField]="'operatorIdentifier'"
+          [sortDirection]="
+            sortParameters?.sortField === 'operatorIdentifier'
+              ? sortParameters.sortDirection
+              : null
+          "
+        >
+          Operator ID
+        </th>
+      </ng-template>
       <ng-template #th_accountHolderName>
         <th
           scope="col"
@@ -125,7 +139,7 @@
       </ng-container>
       <td class="govuk-table__cell">{{ account.accountType }}</td>
       <ng-container
-        *ngIf="isAdmin; then td_accountName; else td_accountHolderName"
+        *ngIf="isAdmin; then td_operatorIdentifier; else td_accountHolderName"
       >
       </ng-container>
       <td class="govuk-table__cell">
@@ -144,6 +158,9 @@
       </td>
       <ng-template #td_accountName>
         <td class="govuk-table__cell">{{ account.accountName }}</td>
+      </ng-template>
+      <ng-template #td_operatorIdentifier>
+        <td class="govuk-table__cell">{{ account.operatorIdentifier }}</td>
       </ng-template>
       <ng-template #td_accountHolderName>
         <td class="govuk-table__cell">{{ account.accountHolderName }}</td>

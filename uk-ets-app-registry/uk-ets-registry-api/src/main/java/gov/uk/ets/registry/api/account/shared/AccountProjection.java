@@ -30,6 +30,7 @@ public class AccountProjection implements SearchResult {
     private Integer commitmentPeriodCode;
     private ComplianceStatus complianceStatus;
     private Long compliantEntityId;
+    private Long compliantEntityIdentifier;
     private Long contactId;
     private String fullIdentifier;
     private Long identifier;
@@ -94,8 +95,8 @@ public class AccountProjection implements SearchResult {
                              String typeLabel, Boolean approvalSecondArRequired, Long balance,
                              Boolean billingAddressSameAsAccountHolderAddress, Integer checkDigits,
                              Integer commitmentPeriodCode,
-                             ComplianceStatus complianceStatus, Long compliantEntityId, Long contactId,
-                             String fullIdentifier, Long identifier,
+                             ComplianceStatus complianceStatus, Long compliantEntityId, Long compliantEntityIdentifier,
+                             Long contactId, String fullIdentifier, Long identifier,
                              KyotoAccountType kyotoAccountType, Date openingDate,
                              RegistryAccountType registryAccountType, String registryCode,
                              Status requestStatus, Boolean transfersToAccountsNotOnTheTrustedListAreAllowed,
@@ -118,6 +119,7 @@ public class AccountProjection implements SearchResult {
         this.commitmentPeriodCode = commitmentPeriodCode;
         this.complianceStatus = complianceStatus;
         this.compliantEntityId = compliantEntityId;
+        this.compliantEntityIdentifier = compliantEntityIdentifier;
         this.contactId = contactId;
         this.fullIdentifier = fullIdentifier;
         this.identifier = identifier;

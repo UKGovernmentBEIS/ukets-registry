@@ -161,8 +161,15 @@ class AccountOperatorUpdateServiceTest {
 
         AccountOperatorDetailsUpdateDTO dto = populateAccountOperatorDetailsUpdateDTO();
 
-        when(emissionsTableService.findNonEmptyEntriesForCompliantEntityForYearAfter(TEST_COMPLIANT_ENTITY_ID,
-            2024L)).thenReturn(List.of(new EmissionsEntry()));
+        EmissionsEntry emissionsEntry = new EmissionsEntry();
+        emissionsEntry.setId(1L);
+        emissionsEntry.setCompliantEntityId(20L);
+        emissionsEntry.setEmissions(30000L);
+        emissionsEntry.setFilename("emissions.xls");
+        emissionsEntry.setYear(2023L);
+
+        when(emissionsTableService.findByCompliantEntityIdAndYearAfter(TEST_COMPLIANT_ENTITY_ID,
+            2024L)).thenReturn(List.of(emissionsEntry));
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
             () -> cut.submitAccountOperatorUpdateRequest(account.getIdentifier(), dto));
@@ -177,7 +184,7 @@ class AccountOperatorUpdateServiceTest {
         AccountOperatorDetailsUpdateDTO dto = populateAccountOperatorDetailsUpdateDTO();
 
         when(complianceService.findExcludedEntriesForCompliantEntityForYearAfter(TEST_COMPLIANT_ENTITY_ID,
-            2024L)).thenReturn(List.of(new ExcludeEmissionsEntry()));
+            2024L)).thenReturn(List.of(new ExcludeEmissionsEntry(12L,1092L,2021L,true,new Date())));
 
         IllegalStateException exception = assertThrows(IllegalStateException.class,
             () -> cut.submitAccountOperatorUpdateRequest(account.getIdentifier(), dto));

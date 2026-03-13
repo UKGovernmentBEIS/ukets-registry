@@ -17,6 +17,7 @@ public class AccountSearchResult implements SearchResult {
     result.setAccountId(account.getIdentifier());
     result.setFullAccountNo(account.getFullIdentifier());
     result.setAccountName(account.getAccountName());
+    result.setOperatorIdentifier(account.getCompliantEntityIdentifier());
     result.setAccountType(account.getTypeLabel());
     result.setAccountHolderName(new AccountHolderNameFromProjectionMapper().map(account));
     result.setAccountStatus(account.getAccountStatus() != null ?
@@ -27,7 +28,7 @@ public class AccountSearchResult implements SearchResult {
     return result;
   }
   /**
-   * The account identifier;
+   * The account identifier.
    */
   private Long accountId;
   /**
@@ -39,6 +40,10 @@ public class AccountSearchResult implements SearchResult {
    * The account name
    */
   private String accountName;
+  /**
+   * The operator identifier.
+   */
+  private Long operatorIdentifier;
   /**
    * The label of the account type which is determined by the combination of one kyoto account type
    * and one registry account type.

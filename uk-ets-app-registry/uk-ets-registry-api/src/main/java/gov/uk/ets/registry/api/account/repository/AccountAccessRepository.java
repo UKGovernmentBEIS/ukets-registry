@@ -5,13 +5,14 @@ import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArAccountAccessDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
+import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.user.domain.User;
-
-import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+
+import java.util.List;
 
 /**
  * Repository for account accesses.
@@ -142,4 +143,13 @@ public interface AccountAccessRepository
      * @return the number of rows deleted
      */
     Long deleteByUserAndRight(User user,AccountAccessRight right);
+
+    @Query("select aa from AccountAccess aa " +
+            " join fetch aa.account ac " +
+            " join fetch aa.user u " +
+            " where ac.kyotoAccountType in (?1) " +
+            " and ac.registryAccountType = gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType.NONE " +
+            " and aa.state = ?2 " +
+            " and aa.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED")
+    List<AccountAccess> findByKyotoAccountTypeAndState(List<KyotoAccountType> kyotoAccountTypes, AccountAccessState state);
 }

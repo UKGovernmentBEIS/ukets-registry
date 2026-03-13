@@ -233,7 +233,6 @@ public class AccountController {
                                                       PageParameters pageParameters,
                                                       @RequestHeader(name = "Is-Report", required = false)
                                                           boolean isReport) {
-        log.info("Incoming request");
         AccountFilter filter = new AccountFilterMapper().map(criteria);
         Pageable pageable = new AccountSearchPageableMapper().get(pageParameters);
         Page<AccountProjection> page = accountService.search(filter, pageable, isReport);

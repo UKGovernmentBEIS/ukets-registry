@@ -16,6 +16,7 @@ import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
+import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.user.domain.User;
 import java.time.LocalDate;
@@ -167,6 +168,37 @@ public class AccountAccessRepositoryTest {
         results = accountAccessRepository.findByUserIamIdentifier(ADD_AUTH_REP_2_IAM_IDENTIFIER);
         assertThat(results).hasSize(1);
 
+    }
+
+    @Test
+    void findByKyotoAccountTypeAndState_should_return_results() {
+
+        List<AccountAccess> results =
+                accountAccessRepository.findByKyotoAccountTypeAndState(
+                        List.of(KyotoAccountType.PERSON_HOLDING_ACCOUNT),
+                        AccountAccessState.ACTIVE
+                );
+
+        assertThat(results).hasSize(3);
+
+        assertThat(results).extracting(AccountAccess::getRight).doesNotContain(AccountAccessRight.ROLE_BASED);
+        assertThat(results).extracting(AccountAccess::getState).containsOnly(AccountAccessState.ACTIVE);
+        assertThat(results).extracting(accountAccess -> accountAccess.getAccount().getKyotoAccountType())
+                .containsOnly(KyotoAccountType.PERSON_HOLDING_ACCOUNT);
+        assertThat(results).extracting(accountAccess -> accountAccess.getAccount().getRegistryAccountType())
+                .containsOnly(RegistryAccountType.NONE);
+    }
+
+    @Test
+    void findByKyotoAccountTypeAndState_no_results() {
+
+        List<AccountAccess> results =
+                accountAccessRepository.findByKyotoAccountTypeAndState(
+                        List.of(KyotoAccountType.FORMER_OPERATOR_HOLDING_ACCOUNT),
+                        AccountAccessState.ACTIVE
+                );
+
+        assertThat(results).isEmpty();
     }
 
     private Account getAccount() {

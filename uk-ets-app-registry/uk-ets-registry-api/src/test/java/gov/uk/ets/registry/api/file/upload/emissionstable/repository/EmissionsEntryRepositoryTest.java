@@ -180,6 +180,13 @@ public class EmissionsEntryRepositoryTest {
     }
 
     @Test
+    void findByCompliantEntityIdAndYearAfter() {
+        List<EmissionsEntry> results = emissionsEntryRepository.findByCompliantEntityIdAndYearAfter(installationId,2024);
+        assertNotNull(results);
+        assertEquals(1,results.size(),"Should select 1 entry.");
+    }
+
+    @Test
     void findTotalVerifiedEmissionsByAccountIdentifier() {
     	List<Long> totalVerifiedEmissions =
             emissionsEntryRepository.findTotalVerifiedEmissionsByAccountIdentifier(operatorHoldingAccountIdentifier);

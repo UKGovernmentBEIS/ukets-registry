@@ -34,6 +34,7 @@ export interface AccountSearchResult {
   accountId: number;
   fullAccountNo: string;
   accountName: string;
+  operatorIdentifier: number | null;
   accountType: AccountType;
   accountHolderName: string;
   accountStatus: AccountStatus;

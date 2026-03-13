@@ -11,6 +11,10 @@ public class AccountPropertyPath {
    * The account name
    */
   public static final String ACCOUNT_NAME = "account.accountName";
+  /**
+   * The operator identifier
+   */
+  public static final String ACCOUNT_OPERATOR_IDENTIFIER = "account.compliantEntity.identifier";
   /*
    * The account type label
    */

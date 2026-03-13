@@ -212,22 +212,12 @@ public class AccountOperatorUpdateService {
                 firstYear.longValue())
             .stream()
             .collect(Collectors.groupingBy(ExcludeEmissionsEntry::getYear,Collectors.maxBy(Comparator.comparing(ExcludeEmissionsEntry::getLastUpdated))));
-        
-       boolean emissionsHaveBeenUploadedForYearsBefore = emissionsPerYear
-           .values()
-           .stream()
-           .filter(Optional::isPresent)
-           .map(Optional::get)
-           .map(EmissionsEntry::getEmissions)
-           .filter(Objects::nonNull)
-           .filter( t -> t >= 0)
-           .count() > 0;
-           
-       boolean emissionsHaveBeenExcludedForYearsBefore = excludedEmissionsPerYear
-           .values()
-           .stream()
-           .filter(Optional::isPresent)
-           .count() > 0;
+
+        final boolean emissionsHaveBeenUploadedForYearsBefore = checkEmissionsUpload(emissionsPerYear);
+
+        boolean emissionsHaveBeenExcludedForYearsBefore = excludedEmissionsPerYear
+                .values()
+                .stream().anyMatch(Optional::isPresent);
        
         if ( emissionsHaveBeenUploadedForYearsBefore ||  emissionsHaveBeenExcludedForYearsBefore) {
             throw new IllegalStateException(
@@ -252,20 +242,40 @@ public class AccountOperatorUpdateService {
 
         }
 
-        List<EmissionsEntry> emissions = emissionsTableService
-            .findNonEmptyEntriesForCompliantEntityForYearAfter(account.getCompliantEntity().getIdentifier(),
-                lastYear.longValue());
+        Map<Long,Optional<EmissionsEntry>> emissionsPerYear = emissionsTableService
+            .findByCompliantEntityIdAndYearAfter(account.getCompliantEntity().getIdentifier(),
+                lastYear.longValue())
+                .stream()
+                .collect(Collectors.groupingBy(EmissionsEntry::getYear,Collectors.maxBy(Comparator.comparing(EmissionsEntry::getUploadDate))));
 
-        List<ExcludeEmissionsEntry> excludedEmissions = complianceService
+        Map<Long,Optional<ExcludeEmissionsEntry>> excludedEmissionsPerYear = complianceService
             .findExcludedEntriesForCompliantEntityForYearAfter(account.getCompliantEntity().getIdentifier(),
-                lastYear.longValue());
+                lastYear.longValue())
+                .stream()
+                .collect(Collectors.groupingBy(ExcludeEmissionsEntry::getYear,Collectors.maxBy(Comparator.comparing(ExcludeEmissionsEntry::getLastUpdated))));
 
-        if (emissions.size() > 0 || excludedEmissions.size() > 0) {
+        final boolean emissionsHaveBeenUploadedForYearsAfter = checkEmissionsUpload(emissionsPerYear);
+
+        boolean emissionsHaveBeenExcludedForYearsAfter = excludedEmissionsPerYear
+                .values()
+                .stream().anyMatch(Optional::isPresent);
+
+        if (emissionsHaveBeenUploadedForYearsAfter || emissionsHaveBeenExcludedForYearsAfter) {
             throw new IllegalStateException(
                 "Last Year of Verified Emission Submission cannot be set to an earlier date " +
                     "if emissions (zero, positive integer or excluded) have been reported for the years " +
                     "that will be excluded after the update. ");
         }
+    }
+
+    private boolean checkEmissionsUpload(Map<Long, Optional<EmissionsEntry>> emissionsPerYear) {
+        return emissionsPerYear
+                .values()
+                .stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(EmissionsEntry::getEmissions)
+                .filter(Objects::nonNull).anyMatch(t -> t >= 0);
     }
 
 

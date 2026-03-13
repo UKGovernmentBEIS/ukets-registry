@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_24_0_ACCOUNT_ACCESS_BACKUP_TABLE" author="dimopoulosc" context="migrate">
+
+        <comment>Account access backup table</comment>
+
+        <sql>
+            CREATE SEQUENCE account_access_backup_seq
+                MINVALUE 0
+                MAXVALUE 999999999999999999
+                INCREMENT BY 1
+                START WITH 1
+                CACHE 1
+            NO CYCLE;
+
+            CREATE TABLE "account_access_backup"
+            (
+                "id" BIGINT NOT NULL,
+                "original_access_id" BIGINT NOT NULL,
+                "account_id" BIGINT NOT NULL,
+                "user_id" BIGINT NOT NULL,
+                "state" VARCHAR(50) NOT NULL,
+                "access_right" VARCHAR(50),
+                "backup_date" TIMESTAMP NOT NULL,
+
+                CONSTRAINT "pk_account_access_backup"
+                    PRIMARY KEY ("id"),
+
+                CONSTRAINT "fk_acc_access_bkp_account"
+                    FOREIGN KEY ("account_id")
+                        REFERENCES "account" ("id"),
+
+                CONSTRAINT "fk_acc_access_bkp_user"
+                    FOREIGN KEY ("user_id")
+                        REFERENCES "users" ("id"),
+
+                CONSTRAINT "uk_acc_access_bkp_original"
+                    UNIQUE ("original_access_id")
+            );
+
+            CREATE INDEX "idx_acc_access_bkp_account_id"
+                ON "account_access_backup" ("account_id");
+
+            CREATE INDEX "idx_acc_access_bkp_user_id"
+                ON "account_access_backup" ("user_id");
+
+            CREATE INDEX "idx_acc_access_bkp_original_id"
+                ON "account_access_backup" ("original_access_id");
+
+            COMMENT ON TABLE "account_access_backup"
+            IS 'Backup table for account access records removed by AR access removal scheduler';
+
+        COMMENT ON COLUMN "account_access_backup"."id"
+            IS 'Primary key';
+
+        COMMENT ON COLUMN "account_access_backup"."original_access_id"
+            IS 'Original account_access record identifier';
+
+        COMMENT ON COLUMN "account_access_backup"."account_id"
+            IS 'FK to account table';
+
+        COMMENT ON COLUMN "account_access_backup"."user_id"
+            IS 'FK to users table';
+
+        COMMENT ON COLUMN "account_access_backup"."state"
+            IS 'Account access state at time of backup';
+
+        COMMENT ON COLUMN "account_access_backup"."access_right"
+            IS 'Account access right at time of backup';
+
+        COMMENT ON COLUMN "account_access_backup"."backup_date"
+            IS 'Timestamp when backup record was created';
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS "account_access_backup" CASCADE;
+                DROP SEQUENCE IF EXISTS account_access_backup_seq;
+            </sql>
+        </rollback>
+
+        <comment>
+            Account access backup table.
+
+            Manual rollback procedure:
+
+            UPDATE account_access aa
+            SET state = b.state
+            FROM account_access_backup b
+            WHERE aa.id = b.original_access_id
+            AND aa.state = 'REMOVED';
+
+            TRUNCATE account_access_backup;
+        </comment>
+
+    </changeSet>
+
+</databaseChangeLog>

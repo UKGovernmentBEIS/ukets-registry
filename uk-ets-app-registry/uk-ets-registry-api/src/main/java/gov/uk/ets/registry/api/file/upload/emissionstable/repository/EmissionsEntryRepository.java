@@ -37,10 +37,8 @@ public interface EmissionsEntryRepository extends JpaRepository<EmissionsEntry, 
     List<EmissionsEntry> findNonEmptyEntriesBeforeYear(Long compliantEntityId, long year);
 
     List<EmissionsEntry> findByCompliantEntityIdAndYearBefore(Long compliantEntityId, long year);
-    
-    @Query("select e from EmissionsEntry e " +
-        "where e.compliantEntityId =  ?1 and e.year > ?2 and e.emissions >= 0")
-    List<EmissionsEntry> findNonEmptyEntriesAfterYear(Long compliantEntityId, long year);
+
+    List<EmissionsEntry> findByCompliantEntityIdAndYearAfter(Long compliantEntityId, long year);
     
 	@Query("select e.emissions as e "
 		    + "from Account a inner join a.compliantEntity c inner join EmissionsEntry e on e.compliantEntityId = c.identifier "

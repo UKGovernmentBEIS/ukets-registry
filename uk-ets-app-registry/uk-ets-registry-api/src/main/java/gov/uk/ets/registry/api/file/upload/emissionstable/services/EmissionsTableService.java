@@ -167,8 +167,8 @@ public class EmissionsTableService {
         return emissionsEntryRepository.findByCompliantEntityIdAndYearBefore(compliantEntityId, year);
     }
 
-    public List<EmissionsEntry> findNonEmptyEntriesForCompliantEntityForYearAfter(Long compliantEntityId, Long year) {
-        return emissionsEntryRepository.findNonEmptyEntriesAfterYear(compliantEntityId, year);
+    public List<EmissionsEntry> findByCompliantEntityIdAndYearAfter(Long compliantEntityId, Long year) {
+        return emissionsEntryRepository.findByCompliantEntityIdAndYearAfter(compliantEntityId, year);
     }
 
     public void publishUpdateOfVerifiedEmissionsEvent(EmissionsEntry entry, Date completedDate) {

@@ -50,6 +50,7 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
     private Map<String, EntityPathBase<?>> sortingMap = Stream.of(new Object[][] {
         {AccountPropertyPath.ACCOUNT_FULL_IDENTIFIER, account},
         {AccountPropertyPath.ACCOUNT_NAME, account},
+        {AccountPropertyPath.ACCOUNT_OPERATOR_IDENTIFIER, compliantEntity},
         {AccountPropertyPath.ACCOUNT_TYPE_LABEL, account},
         {AccountPropertyPath.ACCOUNT_HOLDER_NAME, holder},
         {AccountPropertyPath.ACCOUNT_STATUS, account},
@@ -164,6 +165,7 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
             account.commitmentPeriodCode,
             account.complianceStatus,
             account.compliantEntity.id,
+            account.compliantEntity.identifier,
             account.contact.id,
             account.fullIdentifier,
             account.identifier,
