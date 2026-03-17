@@ -5,7 +5,10 @@ import gov.uk.ets.registry.api.account.domain.AccountAccessBackup;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessBackupRepository;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
+import gov.uk.ets.registry.api.user.domain.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.javacrumbs.shedlock.core.LockAssert;
@@ -27,6 +30,10 @@ public class ArAccessRemovalScheduler {
 
     private final AccountAccessRepository accountAccessRepository;
     private final AccountAccessBackupRepository accountAccessBackupRepository;
+    private final AuthorizedRepresentativeService authorizedRepresentativeService;
+    private final EventService eventService;
+    public static final String ACCOUNT_AUTHORISED_REPRESENTATIVE_REMOVED =
+            "Authorised representative removed due to Kyoto termination.";
 
     /**
      * Removes account access to all ARs appointed to Person Holding Accounts or
@@ -68,7 +75,22 @@ public class ArAccessRemovalScheduler {
             throw new IllegalStateException("AR Access Removal Scheduler Backup size mismatch. Aborting removal.");
         }
 
-        accountAccesses.forEach(accountAccess -> accountAccess.setState(AccountAccessState.REMOVED));
+        accountAccesses.forEach(accountAccess -> {
+            accountAccess.setState(AccountAccessState.REMOVED);
+
+            eventService.createAndPublishEvent(accountAccess.getAccount().getIdentifier().toString(), 
+                     accountAccess.getUser().getUrid(),
+                     "Removed due to Kyoto termination.",
+                EventType.ACCOUNT_AR_REMOVED, ACCOUNT_AUTHORISED_REPRESENTATIVE_REMOVED);
+            
+            boolean removedRole = authorizedRepresentativeService.removeKeycloakRoleIfNoOtherAccountAccess(
+                    accountAccess.getUser().getUrid(), accountAccess.getUser().getIamIdentifier());
+            if (removedRole) {
+                eventService.createAndPublishEvent(accountAccess.getUser().getUrid(), null, UserRole.AUTHORISED_REPRESENTATIVE.getKeycloakLiteral(),
+                        EventType.USER_ROLE_REMOVED, "Remove User Role");            	
+            }
+
+        });
 
         log.info("AR Access Removal Scheduler finished at {}", LocalDateTime.now());
     }

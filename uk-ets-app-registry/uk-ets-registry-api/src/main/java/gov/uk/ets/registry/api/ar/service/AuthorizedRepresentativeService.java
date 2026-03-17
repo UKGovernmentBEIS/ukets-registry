@@ -271,8 +271,9 @@ public class AuthorizedRepresentativeService {
 
     /**
      * Removes the AR role from the keycloak user, if the user is not AR in other accounts.
+     * @return true if the role was removed false otherwise.
      */
-    public void removeKeycloakRoleIfNoOtherAccountAccess(String urid, String keycloakId) {
+    public boolean removeKeycloakRoleIfNoOtherAccountAccess(String urid, String keycloakId) {
         List<AccountAccessDTO> accountAccesses =
             accountAuthorizationService.getActiveOrSuspendedAccountAccessesForUrid(urid);
         if (accountAccesses.isEmpty()) {
@@ -283,8 +284,13 @@ public class AuthorizedRepresentativeService {
             // request to remove reports-user role from reports-api
             reportRequestAddRemoveRoleService.requestReportsApiRemoveRole(keycloakId);
             publicationRequestAddRemoveRoleService.requestPublicationApiRemoveRole(keycloakId);
+            
+            return true;
         }
+        
+        return false;
     }
+    
     public boolean hasSuspendedAR(Long identifier) {
         return !arAccountAccessRepository.fetchARs(identifier, AccountAccessState.SUSPENDED).isEmpty();
     }
