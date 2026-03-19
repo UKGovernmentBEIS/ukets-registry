@@ -43,17 +43,18 @@ public class AccountSearchJdbcMapper
         return
             AccountSearchReportData.builder()
                 .account(Account.builder()
-                    .number(rs.getString(14))
+                    .number(rs.getString(15))
                     .name(rs.getString(3))
                     .type(rs.getString(5))
                     .status(rs.getString(4))
                     .complianceStatus(rs.getString(11))
+                    .operatorIdentifier(rs.getObject(13, Long.class))
                     .balance(rs.getLong(7))
-                    .regulatorGroup(rs.getString(33))
-                    .openingDate(LocalDateTime.parse(rs.getString(17), inputFormatter))
+                    .regulatorGroup(rs.getString(34))
+                    .openingDate(LocalDateTime.parse(rs.getString(18), inputFormatter))
                     .build())
                 .accountHolder(AccountHolder.builder()
-                    .id(rs.getLong(27))
+                    .id(rs.getLong(28))
                     .name(retrieveAccountHolderName(rs))
                     .build())
                 .build();
@@ -65,14 +66,14 @@ public class AccountSearchJdbcMapper
      * in case of individual it is stored in first + last names.
      */
     private String retrieveAccountHolderName(ResultSet rs) throws SQLException {
-        boolean hasAccountHolderInfo = rs.getMetaData().getColumnCount() > 21;
+        boolean hasAccountHolderInfo = rs.getMetaData().getColumnCount() > 22;
         if (!hasAccountHolderInfo) {
             return "";
         }
-        String ahName = rs.getString(29);
+        String ahName = rs.getString(30);
         if (ahName != null) {
             return ahName;
         };
-        return rs.getString(25) + " " + rs.getString(28);
+        return rs.getString(26) + " " + rs.getString(29);
     }
 }

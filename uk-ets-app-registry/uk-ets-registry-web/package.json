@@ -132,8 +132,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commit-message-validator",
-      "pre-commit": "pretty-quick --staged --bail",
-      "pre-push": "eslint . --quiet && ng build --configuration production"
+      "pre-commit": "npx lint-staged"
     }
   },
   "jestSonar": {

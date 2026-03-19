@@ -30,6 +30,7 @@ public class AccountSearchReportService implements ReportTypeService<AccountSear
         data.add(reportData.getAccount().getType());
         data.add(reportData.getAccount().getName());
         data.add(reportData.getAccount().getStatus());
+        data.add(reportData.getAccount().getOperatorIdentifier());
         data.add(reportData.getAccount().getComplianceStatus());
         data.add(reportData.getAccount().getBalance());
         data.add(reportData.getAccount().getRegulatorGroup());
@@ -41,7 +42,7 @@ public class AccountSearchReportService implements ReportTypeService<AccountSear
     public List<String> getReportHeaders(Long year) {
         return List
             .of("Account number", "AH name", "AH ID", "Account type", "Account name", "Account status",
-                "Compliance status", "Balance", "Regulator", "Opened on (UTC)");
+            		"Operator ID", "Compliance status", "Balance", "Regulator", "Opened on (UTC)");
     }
 
     @Override

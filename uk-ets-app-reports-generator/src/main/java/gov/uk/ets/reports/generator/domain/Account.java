@@ -15,6 +15,7 @@ public class Account {
     private String type;
     private String accountHolderName;
     private String complianceStatus;
+    private Long operatorIdentifier;
     private Long balance;
     private String regulatorGroup;
     private LocalDateTime openingDate;

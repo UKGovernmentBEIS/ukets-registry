@@ -36,7 +36,7 @@ describe('NavMenuService', () => {
     authApiService = TestBed.inject(AuthApiService);
   });
 
-  it('should be created', () => {
+  test('should be created', () => {
     expect(service).toBeTruthy();
   });
 
@@ -62,7 +62,7 @@ describe('NavMenuService', () => {
       expect(observable).toBeObservable(expected);
     });
 
-    it('should retrieve only scopes that user has access to', () => {
+    test('Should retrieve only scopes that user has access to', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
       allMenuScopes.splice(6, 1);
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
@@ -86,18 +86,18 @@ describe('NavMenuService', () => {
   });
 
   describe('Get All unique scopes for menu', () => {
-    it('should calculate unique scopes for navigation menu ', () => {
+    test('should calculate unique scopes for navigation menu ', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
       allMenuScopes.splice(6, 1);
       const scopes = service.getAllUniqueScopesForMenu(false, true, true);
 
-      expect(scopes.length).toEqual(21);
+      expect(scopes.length).toEqual(22);
       expect(scopes.map((s) => s.name).sort()).toEqual(allMenuScopes);
     });
   });
 
   describe('Load menu permissions with environment variable to run for RAs only', () => {
-    it('should retrieve all scopes', () => {
+    test('should retrieve all scopes', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
       allMenuScopes.splice(4, 1);
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
@@ -116,7 +116,7 @@ describe('NavMenuService', () => {
       expect(observable).toBeObservable(expected);
     });
 
-    it('should retrieve only scopes that user has access to', () => {
+    test('Should retrieve only scopes that user has access to', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
       allMenuScopes.splice(4, 1);
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
@@ -140,18 +140,18 @@ describe('NavMenuService', () => {
   });
 
   describe('Get All unique scopes for menu with environment variable to run for RAs only', () => {
-    it('should calculate unique scopes for navigation menu ', () => {
+    test('should calculate unique scopes for navigation menu ', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
       allMenuScopes.splice(4, 1);
       const scopes = service.getAllUniqueScopesForMenu(true, true, true);
 
-      expect(scopes.length).toEqual(21);
+      expect(scopes.length).toEqual(22);
       expect(scopes.map((s) => s.name).sort()).toEqual(allMenuScopes);
     });
   });
 
   describe('Get active menu items', () => {
-    it('should get visible menu items', () => {
+    test('should get visible menu items', () => {
       const { topMenuActive, subMenuActive } = service.getActiveMenuItems(
         MENU_ITEMS(false, true, true),
         MENU_ITEMS(false, true, true).find(
@@ -164,7 +164,7 @@ describe('NavMenuService', () => {
       expect(subMenuActive).toEqual('/ets-administration/issue-allowances');
     });
 
-    it('should get visible menu items when route does not contain top menu route', () => {
+    test('should get visible menu items when route does not contain top menu route', () => {
       const { topMenuActive, subMenuActive } = service.getActiveMenuItems(
         MENU_ITEMS(false, true, true),
         MENU_ITEMS(false, true, true).find((item) => item.label === 'Accounts')
@@ -178,7 +178,7 @@ describe('NavMenuService', () => {
   });
 
   describe('Check navigated route is a menu route', () => {
-    it('should keep menu route', () => {
+    test('should keep menu route', () => {
       const isMenuRoute = service.isNavigatedRouteAMenuRoute(
         MENU_ITEMS(false, true, true),
         MENU_ITEMS(false, true, true).find((item) => item.label === 'Accounts')
@@ -189,7 +189,7 @@ describe('NavMenuService', () => {
       expect(isMenuRoute).toBeTruthy();
     });
 
-    it('should not keep non-menu route', () => {
+    test('should not keep non-menu route', () => {
       const isMenuRoute = service.isNavigatedRouteAMenuRoute(
         MENU_ITEMS(false, true, true),
         MENU_ITEMS(false, true, true).find((item) => item.label === 'Accounts')

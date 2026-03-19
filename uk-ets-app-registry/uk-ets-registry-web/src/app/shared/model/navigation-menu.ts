@@ -74,6 +74,7 @@ export enum MENU_SCOPES {
   STANDARD_REPORTS_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:standardReportsMenuItem:view',
   RECALCULATE_COMPLIANCE_STATUS = 'urn:uk-ets-registry-api:compliance-status:write',
   CLAIM_ACCOUNT = 'urn:uk-ets-registry-api:account:claim',
+  REGULATOR_NOTICE_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:regulatorNoticeMenuItem:view',
 }
 
 export interface NavMenu {
@@ -419,6 +420,11 @@ export const MENU_ITEMS = function (
       checkAuthenticated: true,
       activeMenuItem: HeaderItem.REGULATOR_NOTICE,
       queryParams: { mode: SearchMode.INITIAL_LOAD },
+      protectedScopes: [
+        {
+          name: MENU_SCOPES.REGULATOR_NOTICE_MENU_ITEM_VIEW,
+        },
+      ],
     },
     {
       label: 'Documents',
