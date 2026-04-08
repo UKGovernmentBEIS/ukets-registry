@@ -1,5 +1,21 @@
 package gov.uk.ets.registry.api.compliance.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Set;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.Installation;
@@ -9,6 +25,7 @@ import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.repository.InstallationRepository;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.common.model.types.Status;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.common.test.PostgresJpaTest;
 import gov.uk.ets.registry.api.compliance.domain.StaticComplianceStatus;
 import gov.uk.ets.registry.api.compliance.messaging.events.incoming.ComplianceCalculatedEvent;
@@ -17,18 +34,6 @@ import gov.uk.ets.registry.api.compliance.repository.StaticComplianceStatusRepos
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.user.admin.service.DisabledKeycloakUserAdministrationService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @PostgresJpaTest
 @Import({ComplianceIncomingEventsHandler.class, EventService.class, DisabledKeycloakUserAdministrationService.class})
@@ -47,6 +52,8 @@ class ComplianceIncomingEventsHandlerIntegrationTest {
     private StaticComplianceStatusRepository staticComplianceStatusRepository;
     @Autowired
     private EventService eventService;
+    @MockitoBean
+    private ReportingMetricsEventService reportingMetricsEventService;
 
     @Autowired
     private ComplianceIncomingEventsHandler cut;

@@ -53,10 +53,10 @@ public enum AccountAccessRight {
                 }
             }
             case READ_ONLY: {
-                return accessRight == AccountAccessRight.READ_ONLY;
+                return accessRight == READ_ONLY;
             }
             case ROLE_BASED: {
-                return accessRight == AccountAccessRight.ROLE_BASED;
+                return accessRight == ROLE_BASED;
             }
         }
         return false;
@@ -67,10 +67,10 @@ public enum AccountAccessRight {
      * @param input the input string.
      * @return the corresponding enum value, null if parse fails.
      */
-    public static AccountAccessRight parse (String input) {
+    public static AccountAccessRight parse(String input) {
         AccountAccessRight accessRight;
         try {
-            accessRight = AccountAccessRight.valueOf(input.replaceAll("[\\s-]","_").toUpperCase());
+            accessRight = valueOf(input.replaceAll("[\\s-]","_").toUpperCase());
         } catch (IllegalArgumentException exception) {
             accessRight = null;
         }

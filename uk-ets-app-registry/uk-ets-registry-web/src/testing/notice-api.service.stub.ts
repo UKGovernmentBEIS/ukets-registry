@@ -4,7 +4,6 @@ import { PageParameters } from '@shared/search/paginator';
 import { Observable, of } from 'rxjs';
 import { PagedResults } from '@shared/search/util/search-service.util';
 import { Notice } from '@kp-administration/itl-notices/model/notice';
-import { RegistryDbEnvirnomentalActivityEnum } from '../../e2e/src/util/test-data/registry-db/registry-level/model/types/registry-db-envirnomental-activity.enum';
 import { SortParameters } from '@shared/search/sort/SortParameters';
 
 @Injectable()
@@ -44,7 +43,7 @@ export class NoticeApiServiceStub implements Partial<NoticeApiService> {
         actionDueDate: new Date(),
         commitPeriod: 1,
         content: 'Test content',
-        lulucfactivity: RegistryDbEnvirnomentalActivityEnum.REVEGETATION,
+        lulucfactivity: 'REVEGETATION',
         messageDate: new Date(),
         status: 'TRANSACTION_PROPOSAL_PENDING',
         type: 'COMMITMENT_PERIOD_RESERVE',

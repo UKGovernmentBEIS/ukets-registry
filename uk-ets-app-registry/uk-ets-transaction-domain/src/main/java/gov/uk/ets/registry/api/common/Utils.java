@@ -160,7 +160,7 @@ public class Utils {
             sbMaskString.append(MASK_CHAR);
         }
         // Masking will start from the 3rd digit of identifier part
-        int start = org.apache.commons.lang3.StringUtils.ordinalIndexOf(str, "-", 2) + (MASK_LENGTH - 1);
+        int start = org.apache.commons.lang3.StringUtils.ordinalIndexOf(str, "-", 2) + MASK_LENGTH - 1;
 
         return str.substring(0, start)
             + sbMaskString.toString()

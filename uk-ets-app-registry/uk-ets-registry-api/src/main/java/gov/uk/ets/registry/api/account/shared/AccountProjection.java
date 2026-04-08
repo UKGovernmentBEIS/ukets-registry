@@ -52,7 +52,8 @@ public class AccountProjection implements SearchResult {
     private String accountHolderRegistrationNumber;
     private AccountHolderType accountHolderType;
     private RegulatorType regulator;
-
+    private Long surrenderBalance;
+    
     /**
      *
      * @param accountId
@@ -88,6 +89,7 @@ public class AccountProjection implements SearchResult {
      * @param accountHolderRegistrationNumber
      * @param accountHolderType
      * @param regulator
+     * @param surrenderBalance
      */
     @QueryProjection
     public AccountProjection(Long accountId, Long accountHolderId, String accountName,
@@ -105,7 +107,8 @@ public class AccountProjection implements SearchResult {
                              Long accountHolderIdentifier, String accountHolderLastName, 
                              String accountHolderName, String accountHolderNoRegJustification, 
                              String accountHolderRegistrationNumber, AccountHolderType accountHolderType,
-                             RegulatorType regulator) {
+                             RegulatorType regulator,
+                             Long surrenderBalance) {
 
         this.accountId = accountId;
         this.accountHolderId = accountHolderId;
@@ -141,5 +144,6 @@ public class AccountProjection implements SearchResult {
         this.accountHolderRegistrationNumber = accountHolderRegistrationNumber;
         this.accountHolderType = accountHolderType;
         this.regulator = regulator;
+        this.surrenderBalance = surrenderBalance;
     }
 }

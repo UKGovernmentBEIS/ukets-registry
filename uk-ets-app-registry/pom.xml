@@ -33,18 +33,17 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.versions.plugin>2.7</maven.versions.plugin>
-        <maven.checkstyle.plugin>3.1.1</maven.checkstyle.plugin>
+        <maven.checkstyle.plugin>3.6.0</maven.checkstyle.plugin>
         <maven.checkstyle.plugin.configLocation>checkstyle-ukets.xml</maven.checkstyle.plugin.configLocation>
-        <maven.pmd.plugin>3.15.0</maven.pmd.plugin>
-        <maven.spotbugs.plugin>4.7.2.1</maven.spotbugs.plugin>
-        <maven.javadoc.plugin>3.1.1</maven.javadoc.plugin>
-        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
-        <maven.frontend.plugin>1.8.0</maven.frontend.plugin>
+        <maven.pmd.plugin>3.28.0</maven.pmd.plugin>
+        <maven.spotbugs.plugin>4.9.8.2</maven.spotbugs.plugin>
+        <maven.javadoc.plugin>3.12.0</maven.javadoc.plugin>
+        <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
+        <maven.frontend.plugin>2.0.0</maven.frontend.plugin>
         <maven.properties.plugin>1.0.0</maven.properties.plugin>
         <maven.project.info.reports.plugin>3.0.0</maven.project.info.reports.plugin>
-        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
         <failsafeArgLine>--illegal-access=permit</failsafeArgLine>
         <surefireArgLine>--illegal-access=permit</surefireArgLine>
         <cucumber.version>4.3.1</cucumber.version>
@@ -62,22 +61,22 @@
         <dependency.check.maven.version>5.3.0</dependency.check.maven.version>
         <dependency.check.maven.skip>false</dependency.check.maven.skip>
         <jacoco.skip>true</jacoco.skip>
-        <shedlock.version>4.18.0</shedlock.version>
+        <shedlock.version>7.6.0</shedlock.version>
         <apache.tika.version>3.2.3</apache.tika.version>
         <fastexcel.version>0.19.0</fastexcel.version>
         <re2j.version>1.5</re2j.version>
-        <equalsverifier.version>3.8.1</equalsverifier.version>
+        <equalsverifier.version>4.3.1</equalsverifier.version>
         <java.jwt.version>3.11.0</java.jwt.version>
         <springdoc.openapi.ui.version>2.8.13</springdoc.openapi.ui.version>
         <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
         <uk-ets-lib-commons-reporting.version>0.0.1-SNAPSHOT</uk-ets-lib-commons-reporting.version>
-        <uk-netz-common-integration-model.version>1.10.0-SNAPSHOT</uk-netz-common-integration-model.version>
+        <uk-netz-common-integration-model.version>1.11.0-SNAPSHOT</uk-netz-common-integration-model.version>
 		<javers.version>7.9.0</javers.version>
         <aws-msk-iam-auth.version>2.2.0</aws-msk-iam-auth.version>
         <querydsl.version>5.0.0</querydsl.version>
         <hypersistence.utils.hibernate.version>3.6.1</hypersistence.utils.hibernate.version>
         <jsoup.version>1.14.3</jsoup.version>
-        <checkstyle.version>8.45.1</checkstyle.version>
+        <checkstyle.version>13.2.0</checkstyle.version>
         <fluent.hc.version>4.5.14</fluent.hc.version>
         <findsecbugs.plugin.version>1.14.0</findsecbugs.plugin.version>
     </properties>

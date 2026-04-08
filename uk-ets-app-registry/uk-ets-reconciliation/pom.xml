@@ -145,7 +145,7 @@
                 <configuration>
                     <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
-                    <targetJdk>11</targetJdk>
+                    <targetJdk>${java.version}</targetJdk>
                     <excludeRoots>
                         <excludeRoot>target/generated-sources</excludeRoot>
                     </excludeRoots>
@@ -230,7 +230,7 @@
                 <configuration>
                     <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
-                    <targetJdk>11</targetJdk>
+                    <targetJdk>${java.version}</targetJdk>
                     <excludes>
                         <exclude>**/generated/*.java</exclude>
                         <exclude>**/generated-sources/*.java</exclude>

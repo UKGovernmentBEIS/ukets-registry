@@ -50,6 +50,7 @@ public class AccountSearchJdbcMapper
                     .complianceStatus(rs.getString(11))
                     .operatorIdentifier(rs.getObject(13, Long.class))
                     .balance(rs.getLong(7))
+                    .surrenderBalance(rs.getObject(35, Long.class))
                     .regulatorGroup(rs.getString(34))
                     .openingDate(LocalDateTime.parse(rs.getString(18), inputFormatter))
                     .build())

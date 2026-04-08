@@ -68,7 +68,7 @@ public class RecoveryMethodProcessor {
 
     private Long calculateRemainingMillis(Date expiredAt) {
         return expiredAt == null ? null :
-            Math.max((long)((expiredAt.getTime() - System.currentTimeMillis()) - TIMER_BUFFER_MILLIS), 0);
+            Math.max((long)(expiredAt.getTime() - System.currentTimeMillis() - TIMER_BUFFER_MILLIS), 0);
     }
 
     private Date getOrSendSecurityCode(String email, User user) {

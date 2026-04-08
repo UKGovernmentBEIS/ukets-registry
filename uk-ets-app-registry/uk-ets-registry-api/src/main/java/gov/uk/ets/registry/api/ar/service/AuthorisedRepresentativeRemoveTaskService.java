@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.ar.service;
 
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.service.AccountClaimProcessor;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountService;
@@ -42,10 +43,11 @@ public class AuthorisedRepresentativeRemoveTaskService extends AuthorisedReprese
                                                      TaskARStatusRepository taskARStatusRepository,
                                                      PaymentTaskAutoCompletionService paymentTaskAutoCompletionService,
                                                      AccountClaimService accountClaimService,
-                                                     AccountContactService accountContactService) {
+                                                     AccountContactService accountContactService,
+                                                     AccountClaimProcessor accountClaimProcessor) {
         super(accountService, userConversionService, userAdministrationService, accountAccessRepository, userService,
             taskRepository, authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper,taskARStatusRepository,paymentTaskAutoCompletionService,
-                accountClaimService, accountContactService);
+                accountClaimService, accountContactService, accountClaimProcessor);
     }
 
     @Override

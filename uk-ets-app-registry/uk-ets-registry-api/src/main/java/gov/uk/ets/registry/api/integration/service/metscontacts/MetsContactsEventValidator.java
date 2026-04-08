@@ -9,6 +9,8 @@ import gov.uk.ets.registry.api.account.web.model.accountcontact.OperatorType;
 import gov.uk.ets.registry.api.integration.service.account.validators.CommonAccountValidator;
 import gov.uk.ets.registry.api.integration.service.metscontacts.utils.PhoneNumberValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,7 @@ import static gov.uk.ets.registry.api.account.web.model.accountcontact.OperatorT
 
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class MetsContactsEventValidator {
     private static final Set<OperatorType> ALLOWED_USER_TYPES =
             Set.of(OPERATOR_ADMIN, OPERATOR, CONSULTANT_AGENT, EMITTER);
@@ -188,7 +191,7 @@ public class MetsContactsEventValidator {
                 ));
             }
         } catch (AccountHolderTypeMissmatchException e) {
-            return;
+        	log.debug("Unhandled AccountHolderTypeMissmatchException");
         } catch (AccountNotFoundValidationException ex) {
             errorDetails.add(new IntegrationEventErrorDetails(
                     IntegrationEventError.ERROR_0703,  // “Account not found”

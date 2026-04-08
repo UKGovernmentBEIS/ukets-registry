@@ -96,7 +96,7 @@ public enum CommitmentPeriod {
     public static CommitmentPeriod getCurrentPeriod() {
         CommitmentPeriod result = null;
         LocalDateTime now = LocalDateTime.now();
-        for (CommitmentPeriod element : CommitmentPeriod.values()) {
+        for (CommitmentPeriod element : values()) {
             if (now.isAfter(element.getStart()) && now.isBefore(element.getEnd())) {
                 result = element;
                 break;

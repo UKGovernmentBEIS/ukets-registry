@@ -948,7 +948,8 @@ public class UserServiceTest {
 		final List<RequestType> blockingTaskTypes = List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST, 
-				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD);
+				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD,
+                RequestType.PRINT_ENROLMENT_LETTER_REQUEST);
 		
 		Mockito.when(taskRepository.findPendingTasksByTypesAndUser(blockingTaskTypes, user.getUrid()))
 				.thenReturn(Collections.singletonList(new Task()));
@@ -974,7 +975,8 @@ public class UserServiceTest {
 		final List<RequestType> blockingTaskTypes = List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST, 
-				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD);
+				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD,
+                RequestType.PRINT_ENROLMENT_LETTER_REQUEST);
 		
 		Mockito.when(taskRepository.findPendingTasksByTypesAndUser(blockingTaskTypes, user.getUrid()))
 				.thenReturn(Collections.emptyList());
@@ -1005,7 +1007,8 @@ public class UserServiceTest {
 		final List<RequestType> blockingTaskTypes = List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST, 
-				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD);
+				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD,
+                RequestType.PRINT_ENROLMENT_LETTER_REQUEST);
 		
 		Mockito.when(taskRepository.findPendingTasksByTypesAndUser(blockingTaskTypes, user.getUrid()))
 				.thenReturn(Collections.emptyList());
@@ -1041,7 +1044,8 @@ public class UserServiceTest {
 		final List<RequestType> blockingTaskTypes = List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST,
 				RequestType.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST, 
-				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD);
+				RequestType.AR_REQUESTED_DOCUMENT_UPLOAD,
+                RequestType.PRINT_ENROLMENT_LETTER_REQUEST);
 		
 		Mockito.when(taskRepository.findPendingTasksByTypesAndUser(blockingTaskTypes, user.getUrid()))
 				.thenReturn(Collections.emptyList());

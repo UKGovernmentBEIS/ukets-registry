@@ -91,7 +91,7 @@ public interface TaskTypeService<T extends TaskDetailsDTO> {
      * @param taskDetailsDTO the task details DTO.
      * @param taskUpdateAction the task update action.
      */
-   default T updateTask(String updateInfo, TaskDetailsDTO taskDetailsDTO, TaskUpdateAction taskUpdateAction) {
-       return  null;
-   };
+    default T updateTask(String updateInfo, TaskDetailsDTO taskDetailsDTO, TaskUpdateAction taskUpdateAction) {
+        return  null;
+    }
 }

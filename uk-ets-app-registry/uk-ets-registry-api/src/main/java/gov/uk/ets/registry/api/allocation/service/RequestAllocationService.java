@@ -1,9 +1,5 @@
 package gov.uk.ets.registry.api.allocation.service;
 
-import static gov.uk.ets.registry.api.allocation.error.AllocationError.INVALID_ALLOCATION_YEAR;
-import static gov.uk.ets.registry.api.allocation.error.AllocationError.PENDING_ALLOCATION_TASK_APPROVAL;
-import static gov.uk.ets.registry.api.allocation.error.AllocationError.PENDING_ALLOCATION_TRANSACTIONS;
-import static gov.uk.ets.registry.api.allocation.error.AllocationError.PENDING_UPLOAD_ALLOCATION_TABLE;
 import static java.util.stream.Collectors.toList;
 
 import gov.uk.ets.registry.api.account.domain.Account;
@@ -12,6 +8,7 @@ import gov.uk.ets.registry.api.allocation.configuration.AllocationConfigurationS
 import gov.uk.ets.registry.api.allocation.data.AllocationOverview;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
 import gov.uk.ets.registry.api.allocation.error.AllocationBusinessRulesException;
+import gov.uk.ets.registry.api.allocation.error.AllocationError;
 import gov.uk.ets.registry.api.allocation.type.AllocationCategory;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
 import gov.uk.ets.registry.api.common.Mapper;
@@ -123,20 +120,20 @@ public class RequestAllocationService {
 
     private void validateRequest(Integer allocationYear, AllocationCategory allocationCategory) {
         if (!getAvailableAllocationYears().contains(allocationYear)) {
-            throw AllocationBusinessRulesException.create(INVALID_ALLOCATION_YEAR);
+            throw AllocationBusinessRulesException.create(AllocationError.INVALID_ALLOCATION_YEAR);
         }
 
         if (allocationUtils.getPendingAllocationRequest(allocationYear, allocationCategory) != null) {
-            throw AllocationBusinessRulesException.create(PENDING_ALLOCATION_TASK_APPROVAL);
+            throw AllocationBusinessRulesException.create(AllocationError.PENDING_ALLOCATION_TASK_APPROVAL);
         }
 
         boolean pendingAllocationTableExists = allocationUtils.pendingAllocationTableTaskExists(allocationCategory);
         if (pendingAllocationTableExists) {
-            throw AllocationBusinessRulesException.create(PENDING_UPLOAD_ALLOCATION_TABLE);
+            throw AllocationBusinessRulesException.create(AllocationError.PENDING_UPLOAD_ALLOCATION_TABLE);
         }
 
         if (allocationUtils.hasPendingAllocationJobOrTransactions(allocationCategory, allocationYear)) {
-            throw AllocationBusinessRulesException.create(PENDING_ALLOCATION_TRANSACTIONS);
+            throw AllocationBusinessRulesException.create(AllocationError.PENDING_ALLOCATION_TRANSACTIONS);
         }
     }
 

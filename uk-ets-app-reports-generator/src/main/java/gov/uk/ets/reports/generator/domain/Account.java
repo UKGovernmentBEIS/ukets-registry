@@ -17,6 +17,7 @@ public class Account {
     private String complianceStatus;
     private Long operatorIdentifier;
     private Long balance;
+    private Long surrenderBalance;
     private String regulatorGroup;
     private LocalDateTime openingDate;
     private LocalDateTime closingDate;

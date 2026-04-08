@@ -10,6 +10,7 @@ import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.common.model.types.Status;
+import gov.uk.ets.registry.api.common.reporting.metrics.domain.AccountMetrics;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
@@ -92,6 +93,21 @@ public class AccountModelTestHelper {
         entityManager.persist(primaryContact);
 
         return holder;
+    }
+    
+    /***
+     * Creates and persists a new {@link AccountMetrics} and links it to the {@link Account} entity of the command argument
+     * @param command The {@link AddAccountMetricsToAccountCommand} command
+     * @return The created {@link AccountMetrics} of command
+     */
+    public AccountMetrics addMetricsToAccount(AddAccountMetricsToAccountCommand command) {
+        AccountMetrics accountMetrics = new AccountMetrics();
+        accountMetrics.setIdentifier(command.account.getIdentifier());
+        accountMetrics.setDynamicComplianceStatus(command.complianceStatus);
+        
+        entityManager.persist(accountMetrics);
+
+        return accountMetrics;
     }
 
     /***
@@ -222,6 +238,24 @@ public class AccountModelTestHelper {
          */
         private Status status;
     }
+    
+    /**
+     * Command object for creating and persisting an {@link AddAccountMetrics} entity
+     */
+    @Builder
+    @Getter
+    public static class AddAccountMetricsToAccountCommand {
+    	
+        /**
+         * The {@link Account} account which relates to the metrics entity
+         */
+        private Account account;
+    	
+        /**
+         * The compliance status of the account
+         */
+        private ComplianceStatus complianceStatus;
+    }    
 
     /**
      * Command object for creating and persisting an {@link Account} entity

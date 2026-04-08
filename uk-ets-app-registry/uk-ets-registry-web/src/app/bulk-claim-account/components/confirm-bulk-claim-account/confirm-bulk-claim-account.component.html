@@ -1,0 +1,29 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl" *ngIf="numberAffectedAccounts > 0">
+      Are you sure you want to send the invitation(s) ?
+    </h1>
+    <h1 class="govuk-heading-xl" *ngIf="numberAffectedAccounts === 0">
+      There are no invitations to be sent.
+    </h1>
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <p class="govuk-body" *ngIf="numberAffectedAccounts > 0">
+      An invitation will be sent to the contacts of {{ numberAffectedAccounts }} accounts.
+    </p>
+    <p class="govuk-body" *ngIf="numberAffectedAccounts === 0">
+      Could not find any account(s) to send invitation(s).
+    </p>
+
+    <button *ngIf="numberAffectedAccounts > 0"
+      class="govuk-button"
+      data-module="govuk-button"
+      appDebounceClick
+      (debounceClick)="onContinue()"
+      id="submit"
+    >
+      Submit
+    </button>
+  </div>
+</div>

@@ -13,6 +13,7 @@ export enum MENU_ROUTES {
 
   BULK_AR = '/bulk-ar',
   CLAIM_ACCOUNT = '/claim-account',
+  BULK_CLAIM_ACCOUNT = '/bulk-claim-account',
 
   TRANSACTION_SEARCH = '/transaction-list',
 
@@ -74,6 +75,7 @@ export enum MENU_SCOPES {
   STANDARD_REPORTS_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:standardReportsMenuItem:view',
   RECALCULATE_COMPLIANCE_STATUS = 'urn:uk-ets-registry-api:compliance-status:write',
   CLAIM_ACCOUNT = 'urn:uk-ets-registry-api:account:claim',
+  BULK_CLAIM_ACCOUNT = 'urn:uk-ets-registry-api:account:bulk-claim',
   REGULATOR_NOTICE_MENU_ITEM_VIEW = 'urn:uk-ets-registry-api:page:dashboard:regulatorNoticeMenuItem:view',
 }
 
@@ -230,6 +232,11 @@ export const MENU_ITEMS = function (
           label: 'Claim account',
           routerLink: MENU_ROUTES.CLAIM_ACCOUNT,
           protectedScopes: [{ name: MENU_SCOPES.CLAIM_ACCOUNT }],
+        },
+        {
+          label: 'Bulk Claim account',
+          routerLink: MENU_ROUTES.BULK_CLAIM_ACCOUNT,
+          protectedScopes: [{ name: MENU_SCOPES.BULK_CLAIM_ACCOUNT }],
         },
       ],
     },

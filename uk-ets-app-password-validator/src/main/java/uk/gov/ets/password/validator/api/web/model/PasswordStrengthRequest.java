@@ -1,6 +1,6 @@
 package uk.gov.ets.password.validator.api.web.model;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

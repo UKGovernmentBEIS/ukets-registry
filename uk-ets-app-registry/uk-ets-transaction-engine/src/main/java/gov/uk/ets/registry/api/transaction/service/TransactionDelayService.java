@@ -217,7 +217,7 @@ public class TransactionDelayService {
     private LocalDate add(LocalDate date, LocalDate[] bankHolidays) {
         LocalDate result = date;
         int addedDays = 0;
-        while (addedDays < TransactionDelayService.ONE_DAY) {
+        while (addedDays < ONE_DAY) {
             result = result.plusDays(ONE_DAY);
             if (isWorkingDay(result, bankHolidays)) {
                 ++addedDays;

@@ -3,7 +3,6 @@ package gov.uk.ets.registry.api.transaction.service;
 import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
-import gov.uk.ets.registry.api.allocation.type.AllocationType;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.Scope;
 import gov.uk.ets.registry.api.common.Mapper;
@@ -22,7 +21,6 @@ import gov.uk.ets.registry.api.task.web.model.*;
 import gov.uk.ets.registry.api.transaction.TransactionService;
 import gov.uk.ets.registry.api.transaction.checks.BusinessCheckResult;
 import gov.uk.ets.registry.api.transaction.domain.Transaction;
-import gov.uk.ets.registry.api.transaction.domain.TransactionAttributes;
 import gov.uk.ets.registry.api.transaction.domain.data.*;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
@@ -470,7 +468,7 @@ public class TransactionWithTaskService {
             excessAllocationTransactionTaskDetailsDTO.setNatTransactionIdentifier(relatedTransaction.getIdentifier());
             excessAllocationTransactionTaskDetailsDTO.setNatTransactionBlocks(transactionService.getTransactionBlockSummariesFromBlocks(relatedTransaction.getBlocks(),
                     transferringAccount.getBalance()));
-            excessAllocationTransactionTaskDetailsDTO.setNerAcquiringAccount(populateAcquiringAccount(transaction,transferringAccountInfo));;
+            excessAllocationTransactionTaskDetailsDTO.setNerAcquiringAccount(populateAcquiringAccount(transaction,transferringAccountInfo));
             excessAllocationTransactionTaskDetailsDTO.setNerQuantity(transaction.getQuantity());
             excessAllocationTransactionTaskDetailsDTO.setNerTransactionIdentifier(transaction.getIdentifier());
             excessAllocationTransactionTaskDetailsDTO.setNerTransactionBlocks(transactionService.getTransactionBlockSummariesFromBlocks(transaction.getBlocks(),

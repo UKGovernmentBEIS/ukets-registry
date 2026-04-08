@@ -3,6 +3,10 @@ package gov.uk.ets.registry.api.file.upload.emissionstable.services;
 import static java.time.ZoneOffset.UTC;
 import static java.util.function.Predicate.not;
 
+import com.google.common.base.Objects;
+import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.EmissionsUpdatedEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.compliance.web.model.VerifiedEmissionsDTO;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
@@ -20,13 +24,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import lombok.AllArgsConstructor;
 import org.apache.poi.ooxml.POIXMLException;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
@@ -34,8 +38,6 @@ import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Objects;
 
 /**
  * Service for handling emission tables.
@@ -56,6 +58,10 @@ public class EmissionsTableService {
     private final ComplianceEventService complianceEventService;
 
     private final UserService userService;
+    
+    private final AccountRepository accountRepository;
+    
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     @Transactional
     public Set<Long> submitEmissionEntries(UploadedFile file, Date completedDate) {
@@ -140,6 +146,14 @@ public class EmissionsTableService {
                         }
                         if (!Objects.equal(reportableEmissions, entry.getEmissions())) {
                             emissionsEntryRepository.save(entry);
+                            //TODO Also insert an event to reporting_metrics_outbox
+                            reportingMetricsEventService.processEvent(EmissionsUpdatedEvent
+                                        .builder()
+                                        .accountIdentifier(accountRepository.findByCompliantEntityIdentifier(entry.getCompliantEntityId()).orElseThrow().getIdentifier())
+                                        .year(Year.of(entry.getYear().intValue()))
+                                        .oldEmissionsValue(reportableEmissions)
+                                        .newEmissionsValue(entry.getEmissions())
+                                        .build());
                             publishUpdateOfVerifiedEmissionsEvent(entry, completedDate);       
                             if (unprocessedCompliantEntityIdentifers.contains(entry.getCompliantEntityId())) {
                                 unprocessedCompliantEntityIdentifers.remove(entry.getCompliantEntityId());
@@ -149,6 +163,14 @@ public class EmissionsTableService {
                         }
                     } else {
                         emissionsEntryRepository.save(entry);
+                        //TODO Also insert an event to reporting_metrics_outbox
+                        reportingMetricsEventService.processEvent(EmissionsUpdatedEvent
+                                    .builder()
+                                    .accountIdentifier(accountRepository.findByCompliantEntityIdentifier(entry.getCompliantEntityId()).orElseThrow().getIdentifier())
+                                    .year(Year.of(entry.getYear().intValue()))
+                                    .oldEmissionsValue(null)
+                                    .newEmissionsValue(entry.getEmissions())
+                                    .build());
                         publishUpdateOfVerifiedEmissionsEvent(entry, completedDate);                           
                     }
 

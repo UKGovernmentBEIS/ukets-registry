@@ -40,6 +40,8 @@ public class AccountSearchPageableMapper extends PageableMapper {
     ACCOUNT_COMPLIANCE_STATUS("complianceStatus",
         direction -> Sort.by(direction,
             AccountPropertyPath.ACCOUNT_COMPLIANCE_STATUS)),
+    ACCOUNT_SURRENDER_BALANCE("surrenderBalance", direction -> Sort.by(direction,
+            AccountPropertyPath.ACCOUNT_SURRENDER_BALANCE)),
     ACCOUNT_BALANCE("balance", direction -> Sort.by(direction,
         AccountPropertyPath.ACCOUNT_BALANCE));
 

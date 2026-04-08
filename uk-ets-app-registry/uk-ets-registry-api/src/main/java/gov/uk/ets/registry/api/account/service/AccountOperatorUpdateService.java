@@ -307,10 +307,8 @@ public class AccountOperatorUpdateService {
 
             installation.setActivityTypes(totalActivityTypes);
         }
-        if (updatedValues.getPermit() != null) {
-            if (updatedValues.getPermit().getId() != null) {
-                installation.setPermitIdentifier(updatedValues.getPermit().getId());
-            }
+        if (updatedValues.getPermit() != null && updatedValues.getPermit().getId() != null) {
+            installation.setPermitIdentifier(updatedValues.getPermit().getId());
         }
     }
 

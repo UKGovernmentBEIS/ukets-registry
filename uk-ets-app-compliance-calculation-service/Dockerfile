@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:21-jdk
 RUN apt-get update
 RUN apt-get install -y tzdata
 RUN groupadd -g 499 ets && \

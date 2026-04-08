@@ -16,22 +16,22 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.ListItem;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import org.openpdf.text.Chunk;
+import org.openpdf.text.Document;
+import org.openpdf.text.DocumentException;
+import org.openpdf.text.Element;
+import org.openpdf.text.Font;
+import org.openpdf.text.Image;
+import org.openpdf.text.ListItem;
+import org.openpdf.text.PageSize;
+import org.openpdf.text.Paragraph;
+import org.openpdf.text.Phrase;
+import org.openpdf.text.Rectangle;
+import org.openpdf.text.pdf.ColumnText;
+import org.openpdf.text.pdf.PdfContentByte;
+import org.openpdf.text.pdf.PdfPCell;
+import org.openpdf.text.pdf.PdfPTable;
+import org.openpdf.text.pdf.PdfWriter;
 
 import gov.uk.ets.reports.generator.ReportGeneratorException;
 import gov.uk.ets.reports.generator.config.PdfReportConfig;
@@ -98,7 +98,7 @@ public class PdfReportR0034Service {
             
             //Date & Time of completion: last_updated 4 November 2022 hh:mm
             DateTimeFormatter lastUpdatedFormatter = DateTimeFormatter.ofPattern(dateTimeFormatterPattern).withLocale(Locale.UK).withZone(ZoneId.of("UTC"));
-            com.lowagie.text.List listTransactionAttrsl = new com.lowagie.text.List(com.lowagie.text.List.UNORDERED);
+            org.openpdf.text.List listTransactionAttrsl = new org.openpdf.text.List(org.openpdf.text.List.UNORDERED);
             listTransactionAttrsl.setListSymbol("");
             listTransactionAttrsl.add(new ListItem(reportDataLabels.get(0) + ": " + reportDataRow.get(0).toString() , font));
             //Transaction Type

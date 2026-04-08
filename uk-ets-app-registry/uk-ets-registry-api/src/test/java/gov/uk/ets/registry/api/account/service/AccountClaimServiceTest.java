@@ -4,20 +4,32 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
 import gov.uk.ets.registry.api.account.web.model.AccountClaimDTO;
+import gov.uk.ets.registry.api.account.web.model.AccountDTO;
+import gov.uk.ets.registry.api.account.web.model.BulkClaimResult;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.RegistryContactDTO;
+import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -32,58 +44,36 @@ public class AccountClaimServiceTest {
     @Mock
     private AccountRepository accountRepository;
 
+    @Mock
+    private AccountSendInvitationService accountSendInvitationService;
+
+    @Mock
+    private AccountClaimProcessor processor;
+
     @InjectMocks
     private AccountClaimService accountClaimService;
 
     @Test
     void sendInvitation_shouldSendInvitation_whenAviationAccountClaimEnabled() {
-        ReflectionTestUtils.setField(accountClaimService, "aviationAccountClaimEnabled", true);
         Long accountIdentifier = 1L;
         AccountContactSendInvitationDTO dto = new AccountContactSendInvitationDTO();
 
         Account account = new Account();
         account.setRegistryAccountType(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT);
 
-        when(accountRepository.findByIdentifier(accountIdentifier))
-                .thenReturn(Optional.of(account));
-        when(accountService.sendInvitation(accountIdentifier, dto))
-                .thenReturn("SUCCESS");
+        when(processor.processSendInvitation(accountIdentifier, dto))
+                .thenReturn("ACCOUNT_CLAIM_CODE");
 
         String result = accountClaimService.sendInvitation(accountIdentifier, dto);
 
-        assertEquals("SUCCESS", result);
+        assertEquals("ACCOUNT_CLAIM_CODE", result);
 
-        verify(accountRepository).findByIdentifier(accountIdentifier);
-        verify(accountService).sendInvitation(accountIdentifier, dto);
-        verifyNoMoreInteractions(accountService);
-    }
-
-    @Test
-    void sendInvitation_shouldThrowException_whenAccountClaimDisabled() {
-
-        Long accountIdentifier = 2L;
-        AccountContactSendInvitationDTO dto = new AccountContactSendInvitationDTO();
-
-        Account account = new Account();
-        account.setRegistryAccountType(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT);
-
-        when(accountRepository.findByIdentifier(accountIdentifier))
-                .thenReturn(Optional.of(account));
-
-        AccountActionException exception = assertThrows(
-                AccountActionException.class,
-                () -> accountClaimService.sendInvitation(accountIdentifier, dto)
-        );
-
-        assertNotNull(exception);
-
-        verify(accountRepository).findByIdentifier(accountIdentifier);
-        verifyNoInteractions(accountService);
+        verify(processor).processSendInvitation(accountIdentifier, dto);
+        verifyNoMoreInteractions(processor);
     }
 
     @Test
     void claimAccount_shouldClaimAccount_whenInstallationAccountEnabled() {
-        ReflectionTestUtils.setField(accountClaimService, "installationAccountClaimEnabled", true);
         AccountClaimDTO dto = new AccountClaimDTO();
         dto.setRegistryId(100L);
         dto.setAccountClaimCode("CLAIM_CODE");
@@ -96,6 +86,8 @@ public class AccountClaimServiceTest {
                 .thenReturn(Optional.of(account));
 
         when(accountService.claimAccount(dto)).thenReturn(99L);
+        when(processor.isAccountClaimEnabled(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT))
+                .thenReturn(true);
 
         Long result = accountClaimService.claimAccount(dto);
 
@@ -123,5 +115,300 @@ public class AccountClaimServiceTest {
                 .findByCompliantEntityIdentifierAndAccountClaimCode(
                         dto.getRegistryId(), dto.getAccountClaimCode());
         verify(accountService).claimAccount(dto);
+    }
+
+    @Test
+    void countEligibleBulkClaimAccounts_shouldReturnZero_whenAllFlagsDisabled() {
+
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(Collections.emptyList());
+
+        Long result = accountClaimService.countEligibleBulkClaimAccounts();
+
+        assertEquals(0L, result);
+        verifyNoInteractions(accountRepository);
+    }
+
+    @Test
+    void countEligibleBulkClaimAccounts_shouldCallRepository_withInstallationTypeOnly() {
+
+        when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        )).thenReturn(5L);
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
+
+        Long result = accountClaimService.countEligibleBulkClaimAccounts();
+
+        assertEquals(5L, result);
+
+        verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+    }
+
+    @Test
+    void countEligibleBulkClaimAccounts_shouldCallRepository_withAviationTypeOnly() {
+
+        when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        )).thenReturn(3L);
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT));
+
+        Long result = accountClaimService.countEligibleBulkClaimAccounts();
+
+        assertEquals(3L, result);
+        verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+    }
+
+    @Test
+    void countEligibleBulkClaimAccounts_shouldCallRepository_withMaritimeTypeOnly() {
+
+        when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        )).thenReturn(2L);
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT));
+
+        Long result = accountClaimService.countEligibleBulkClaimAccounts();
+
+        assertEquals(2L, result);
+        verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+    }
+
+    @Test
+    void countEligibleBulkClaimAccounts_shouldCallRepository_withAllEnabledTypes() {
+
+
+        List<RegistryAccountType> expectedTypes = List.of(
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+                RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
+        );
+
+        when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                expectedTypes,
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        )).thenReturn(10L);
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(expectedTypes);
+
+        Long result = accountClaimService.countEligibleBulkClaimAccounts();
+
+        assertEquals(10L, result);
+
+        verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                expectedTypes,
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+    }
+
+    @Test
+    void countEligibleBulkClaimAccounts_shouldReturnZero_whenRepositoryReturnsZero() {
+
+        when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        )).thenReturn(0L);
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
+
+        Long result = accountClaimService.countEligibleBulkClaimAccounts();
+
+        assertEquals(0L, result);
+        verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+    }
+
+    @Test
+    void shouldReturnZeroWhenNoAccountTypesEnabled() {
+
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(Collections.emptyList());
+
+        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
+
+        assertEquals(0, result.getTotal());
+        assertEquals(0, result.getSuccessful());
+        assertEquals(0, result.getFailed());
+        verifyNoInteractions(accountRepository, accountService, accountSendInvitationService);
+    }
+
+    @Test
+    void shouldReturnZeroWhenNoAccountsFound() {
+
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
+
+        when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                anyList(),
+                anyList()
+        )).thenReturn(List.of());
+
+        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
+
+        assertEquals(0, result.getTotal());
+        assertEquals(0, result.getSuccessful());
+        assertEquals(0, result.getFailed());
+
+        verifyNoInteractions(accountService, accountSendInvitationService);
+    }
+
+    @Test
+    void shouldSendInvitationsSuccessfully() {
+
+        Long accountIdentifier = 1L;
+
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
+
+        AccountDTO dto = mock(AccountDTO.class);
+        when(dto.getMetsContacts()).thenReturn(List.of(MetsContactDTO.builder().email("a").build()));
+        when(dto.getRegistryContacts()).thenReturn(List.of(RegistryContactDTO.builder().email("b").build()));
+
+        when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                anyList(),
+                anyList()
+        )).thenReturn(List.of(accountIdentifier));
+
+        when(accountService.getAccountDTO(accountIdentifier)).thenReturn(dto);
+
+        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
+
+        assertEquals(1, result.getTotal());
+        assertEquals(1, result.getSuccessful());
+        assertEquals(0, result.getFailed());
+
+        verify(accountSendInvitationService)
+                .sendInvitation(eq(accountIdentifier), any(AccountContactSendInvitationDTO.class));
+    }
+
+    @Test
+    void shouldCountFailedWhenExceptionOccurs() {
+
+        Long accountIdentifier = 1L;
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
+
+        AccountDTO dto = mock(AccountDTO.class);
+        when(dto.getMetsContacts()).thenReturn(List.of(MetsContactDTO.builder().email("a").build()));
+        when(dto.getRegistryContacts()).thenReturn(List.of(RegistryContactDTO.builder().email("b").build()));
+
+        when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                anyList(),
+                anyList()
+        )).thenReturn(List.of(accountIdentifier));
+
+        when(accountService.getAccountDTO(accountIdentifier))
+                .thenReturn(dto);
+
+        doThrow(new AccountActionException())
+                .when(accountSendInvitationService)
+                .sendInvitation(eq(accountIdentifier), any(AccountContactSendInvitationDTO.class));
+
+        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
+
+        assertEquals(1, result.getTotal());
+        assertEquals(0, result.getSuccessful());
+        assertEquals(1, result.getFailed());
+
+        verify(accountSendInvitationService)
+                .sendInvitation(eq(accountIdentifier), any(AccountContactSendInvitationDTO.class));
+        verifyNoMoreInteractions(accountSendInvitationService);
+    }
+
+    @Test
+    void shouldSkipAccountsWithNoContacts() {
+
+        Long accountIdentifier = 1L;
+
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
+
+        AccountDTO dto = mock(AccountDTO.class);
+        when(dto.getMetsContacts()).thenReturn(List.of());
+        when(dto.getRegistryContacts()).thenReturn(List.of());
+
+        when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                anyList(),
+                anyList()
+        )).thenReturn(List.of(accountIdentifier));
+
+        when(accountService.getAccountDTO(accountIdentifier)).thenReturn(dto);
+
+        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
+
+        assertEquals(1, result.getTotal());
+        assertEquals(0, result.getSuccessful());
+        assertEquals(0, result.getFailed());
+
+        verifyNoInteractions(accountSendInvitationService);
+    }
+
+    @Test
+    void shouldHandleMixedResults() {
+
+        Long identifier1 = 1L;
+        Long identifier2 = 2L;
+        Long identifier3 = 3L;
+
+        when(processor.getEnabledAccountTypes())
+                .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                        RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+                        RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT));
+
+        when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                anyList(),
+                anyList()
+        )).thenReturn(List.of(identifier1, identifier2, identifier3));
+
+        // identifier1 → success
+        AccountDTO dto1 = mock(AccountDTO.class);
+        when(dto1.getMetsContacts()).thenReturn(List.of(MetsContactDTO.builder().email("a").build()));
+        when(dto1.getRegistryContacts()).thenReturn(List.of(RegistryContactDTO.builder().email("b").build()));
+
+        // id2 → exception
+        AccountDTO dto2 = mock(AccountDTO.class);
+        when(dto2.getMetsContacts()).thenReturn(List.of(MetsContactDTO.builder().email("a").build()));
+        when(dto2.getRegistryContacts()).thenReturn(List.of(RegistryContactDTO.builder().email("b").build()));
+
+        // id3 → no contacts
+        AccountDTO dto3 = mock(AccountDTO.class);
+        when(dto3.getMetsContacts()).thenReturn(List.of());
+        when(dto3.getRegistryContacts()).thenReturn(List.of());
+
+        when(accountService.getAccountDTO(identifier1)).thenReturn(dto1);
+        when(accountService.getAccountDTO(identifier2)).thenReturn(dto2);
+        when(accountService.getAccountDTO(identifier3)).thenReturn(dto3);
+
+        doNothing()
+                .when(accountSendInvitationService)
+                .sendInvitation(eq(identifier1), any(AccountContactSendInvitationDTO.class));
+
+        doThrow(new AccountActionException())
+                .when(accountSendInvitationService)
+                .sendInvitation(eq(identifier2), any(AccountContactSendInvitationDTO.class));
+
+        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
+
+        assertEquals(3, result.getTotal());
+        assertEquals(1, result.getSuccessful());
+        assertEquals(1, result.getFailed());
+
+        verify(accountService, times(3)).getAccountDTO(anyLong());
+        verify(accountSendInvitationService, times(2)).sendInvitation(anyLong(), any(AccountContactSendInvitationDTO.class));
     }
 }

@@ -39,6 +39,7 @@ export interface AccountSearchResult {
   accountHolderName: string;
   accountStatus: AccountStatus;
   complianceStatus: ComplianceStatus;
+  surrenderBalance: number | null;
   balance: number;
 }
 

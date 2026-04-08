@@ -179,7 +179,7 @@ public enum AccountType {
      */
     public static AccountType get(RegistryAccountType registryAccountType,
                                   KyotoAccountType kyotoAccountType) {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> accountType.registryType == registryAccountType
                 && accountType.kyotoType == kyotoAccountType)
             .findFirst().orElse(null);
@@ -191,7 +191,7 @@ public enum AccountType {
      * @return the Kyoto government types.
      */
     public static List<AccountType> getAllKyotoGovernmentTypes() {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> accountType.kyotoType.isGovernment() && accountType.kyoto).collect(
                 Collectors.toList());
     }
@@ -202,7 +202,7 @@ public enum AccountType {
      * @return the registry government types.
      */
     public static List<AccountType> getAllRegistryGovernmentTypes() {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> accountType.registryType.isGovernment() && !accountType.kyoto)
             .collect(Collectors.toList());
     }
@@ -228,7 +228,7 @@ public enum AccountType {
      * @return some account types
      */
     public static List<AccountType> of(KyotoAccountType... kyotoAccountType) {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> Arrays.asList(kyotoAccountType).contains(accountType.kyotoType))
             .collect(Collectors.toList());
     }
@@ -263,8 +263,8 @@ public enum AccountType {
             return false;
         }
 
-        return this == AccountType.UK_AUCTION_DELIVERY_ACCOUNT ||
-            this == AccountType.OPERATOR_HOLDING_ACCOUNT || this == AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ||
-            this == AccountType.TRADING_ACCOUNT;
+        return this == UK_AUCTION_DELIVERY_ACCOUNT ||
+            this == OPERATOR_HOLDING_ACCOUNT || this == AIRCRAFT_OPERATOR_HOLDING_ACCOUNT ||
+            this == TRADING_ACCOUNT;
     }
 }

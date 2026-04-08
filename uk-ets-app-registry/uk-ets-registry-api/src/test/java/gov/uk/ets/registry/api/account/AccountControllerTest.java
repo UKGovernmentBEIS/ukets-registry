@@ -9,6 +9,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,6 +42,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO
 import gov.uk.ets.registry.api.account.web.model.AccountStatusAction;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
+import gov.uk.ets.registry.api.account.web.model.BulkClaimResult;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
@@ -171,7 +174,7 @@ class AccountControllerTest {
             newStatus(AccountStatus.ALL_TRANSACTIONS_RESTRICTED).
             message("A message").
             build();
-        Mockito.when(accountService.getAccountStatusAvailableActions(any()))
+        when(accountService.getAccountStatusAvailableActions(any()))
             .thenReturn(Collections.singletonList(option));
 
         mockMvc.perform(get(template)
@@ -193,7 +196,7 @@ class AccountControllerTest {
         dto.setFirstYear(2022);
         dto.setActivityTypes(Set.of(InstallationActivityType.MANUFACTURE_OF_CERAMICS));
 
-        Mockito.when(accountService.getInstallationOrAircraftOperatorDTO(any()))
+        when(accountService.getInstallationOrAircraftOperatorDTO(any()))
             .thenReturn(dto);
 
         mockMvc.perform(get(template)
@@ -325,8 +328,8 @@ class AccountControllerTest {
     @DisplayName("Test the validation of the account full identifier. ")
     void validateAccountFullIdentifier() throws Exception {
         String accountFullIdentifier = "JP-100-123456";
-        Mockito.when(accountService.checkAccountFullIdentifier(accountFullIdentifier)).thenReturn(true);
-        Mockito.when(accountService.getAccountFullIdentifier(accountFullIdentifier)).thenReturn(null);
+        when(accountService.checkAccountFullIdentifier(accountFullIdentifier)).thenReturn(true);
+        when(accountService.getAccountFullIdentifier(accountFullIdentifier)).thenReturn(null);
         mockMvc.perform(post("/api-registry/accounts.validate")
                 .param("accountFullIdentifier", accountFullIdentifier)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -399,7 +402,7 @@ class AccountControllerTest {
         AuditEventDTO dto = new AuditEventDTO(String.valueOf(identifier), EventType.TASK_COMMENT.name(), description,
             creator, creatorType, new Date());
         eventDTOS.add(dto);
-        Mockito.when(accountService.getAccountHistory(identifier)).thenReturn(eventDTOS);
+        when(accountService.getAccountHistory(identifier)).thenReturn(eventDTOS);
         mockMvc.perform(get("/api-registry/accounts.get.history")
                 .accept(MediaType.APPLICATION_JSON).param("identifier", identifier.toString()))
             .andExpect(status().isOk())
@@ -532,7 +535,7 @@ class AccountControllerTest {
                 .registryContacts(Set.of())
                 .build();
 
-        Mockito.when(accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO)).thenReturn(accountClaimCode);
+        when(accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO)).thenReturn(accountClaimCode);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -555,7 +558,7 @@ class AccountControllerTest {
                 .registryId(999L)
                 .build();
 
-        Mockito.when(accountClaimService.claimAccount(accountClaimDTO)).thenReturn(requestId);
+        when(accountClaimService.claimAccount(accountClaimDTO)).thenReturn(requestId);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -565,6 +568,43 @@ class AccountControllerTest {
                         .content(mapper.writeValueAsString(accountClaimDTO))
                 ).andExpect(status().isOk())
                 .andExpect(content().string(requestId.toString()));
+    }
+
+    @Test
+    void test_countEligibleBulkClaimAccounts() throws Exception {
+        final String template = "/api-registry/accounts.claim.bulk.eligible.count";
+        final Long count = 1L;
+
+        when(accountClaimService.countEligibleBulkClaimAccounts()).thenReturn(count);
+
+        mockMvc.perform(get(template)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(count.toString()));
+
+        verify(accountClaimService).countEligibleBulkClaimAccounts();
+    }
+
+    @Test
+    void test_sendBulkClaimInvitations() throws Exception {
+        final String template = "/api-registry/accounts.claim.bulk.send";
+        final int total = 3;
+        final int success = 2;
+        final int fail = 1;
+
+        BulkClaimResult result = new BulkClaimResult(total,success,fail);
+        when(accountClaimService.sendBulkClaimInvitations()).thenReturn(result);
+
+        mockMvc.perform(post(template)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total", is(total)))
+                .andExpect(jsonPath("$.successful", is(success)))
+                .andExpect(jsonPath("$.failed", is(fail)));
+
+        verify(accountClaimService).sendBulkClaimInvitations();
     }
 
     private void testLengthValidation(String parameter, int minCharsLength) throws Exception {
@@ -592,21 +632,21 @@ class AccountControllerTest {
 
     private void mockServiceResult(AccountProjection... results) {
         Page<AccountProjection> searchResult = Mockito.mock(Page.class);
-        Mockito.when(searchResult.getContent()).thenReturn(Arrays.asList(results));
-        Mockito.when(searchResult.getTotalElements()).thenReturn(Long.valueOf(results.length));
-        Mockito.when(accountService.search(any(), any(), eq(false))).thenReturn(searchResult);
+        when(searchResult.getContent()).thenReturn(Arrays.asList(results));
+        when(searchResult.getTotalElements()).thenReturn(Long.valueOf(results.length));
+        when(accountService.search(any(), any(), eq(false))).thenReturn(searchResult);
     }
 
     private AccountProjection mockAccount(MockAccountCommand command) {
         AccountProjection account = Mockito.mock(AccountProjection.class);
-        Mockito.when(account.getIdentifier()).thenReturn(command.identifier);
-        Mockito.when(account.getFullIdentifier()).thenReturn(command.fullIdentifier);
-        Mockito.when(account.getAccountName()).thenReturn(command.accountName);
-        Mockito.when(account.getTypeLabel()).thenReturn(command.accountType);
-        Mockito.when(account.getAccountHolderName()).thenReturn(command.accountHolderName);
-        Mockito.when(account.getAccountStatus()).thenReturn(command.accountStatus);
-        Mockito.when(account.getComplianceStatus()).thenReturn(command.complianceStatus);
-        Mockito.when(account.getBalance()).thenReturn(command.balance);
+        when(account.getIdentifier()).thenReturn(command.identifier);
+        when(account.getFullIdentifier()).thenReturn(command.fullIdentifier);
+        when(account.getAccountName()).thenReturn(command.accountName);
+        when(account.getTypeLabel()).thenReturn(command.accountType);
+        when(account.getAccountHolderName()).thenReturn(command.accountHolderName);
+        when(account.getAccountStatus()).thenReturn(command.accountStatus);
+        when(account.getComplianceStatus()).thenReturn(command.complianceStatus);
+        when(account.getBalance()).thenReturn(command.balance);
 
         return account;
     }

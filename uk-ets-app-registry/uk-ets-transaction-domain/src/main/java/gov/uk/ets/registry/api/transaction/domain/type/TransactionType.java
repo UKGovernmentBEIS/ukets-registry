@@ -1166,7 +1166,7 @@ public enum TransactionType {
      * @return The collection of the transaction types.
      */
     public static Set<TransactionType> tasksAccessibleOnlyToAdmin() {
-        return Stream.of(TransactionType.values())
+        return Stream.of(values())
             .filter(Predicate.not(TransactionType::isAccessibleToAR))
             .collect(Collectors.toSet());
     }
@@ -1177,7 +1177,7 @@ public enum TransactionType {
      * @return The collection of the transaction types.
      */
     public static Set<TransactionType> transactionTypesAvailableToAdmin() {
-        return Stream.of(TransactionType.values())
+        return Stream.of(values())
             .filter(TransactionType::isOptionAvailableToAdmin)
             .collect(Collectors.toSet());
     }
@@ -1188,7 +1188,7 @@ public enum TransactionType {
      * @return The collection of the transaction types.
      */
     public static Set<TransactionType> transactionTypesAvailableToAR() {
-        return Stream.of(TransactionType.values())
+        return Stream.of(values())
             .filter(TransactionType::isOptionAvailableToAR)
             .collect(Collectors.toSet());
     }
@@ -1199,7 +1199,7 @@ public enum TransactionType {
      * @return The collection of the transaction types.
      */
     public static Set<TransactionType> transactionTypesAvailableToAuthority() {
-        return Stream.of(TransactionType.values())
+        return Stream.of(values())
             .filter(TransactionType::isOptionAvailableToAuthority)
             .collect(Collectors.toSet());
     }
@@ -1228,7 +1228,7 @@ public enum TransactionType {
      * @return true/false
      */
     public boolean isIssuance() {
-        return TransactionType.IssueOfAAUsAndRMUs.equals(this) || TransactionType.IssueAllowances.equals(this);
+        return IssueOfAAUsAndRMUs.equals(this) || IssueAllowances.equals(this);
     }
 
     /**
@@ -1308,7 +1308,7 @@ public enum TransactionType {
     }
 
     public static List<TransactionType> getReversalTransactionTypes() {
-        return Stream.of(TransactionType.values())
+        return Stream.of(values())
         		     .filter(TransactionType::isReversalTransaction)
         		     .collect(Collectors.toList());
     }

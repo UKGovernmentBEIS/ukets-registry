@@ -1,6 +1,5 @@
 import { initialState, reducer } from './itl-notices.reducer';
 import { Notice } from '@kp-administration/itl-notices/model';
-import { RegistryDbEnvirnomentalActivityEnum } from '../../../../../e2e/src/util/test-data/registry-db/registry-level/model/types/registry-db-envirnomental-activity.enum';
 import {
   getNoticeSuccess,
   noticesLoaded,
@@ -16,7 +15,7 @@ const mockNotices: Notice[] = [
     actionDueDate: new Date(),
     commitPeriod: 1,
     content: 'Test content',
-    lulucfactivity: RegistryDbEnvirnomentalActivityEnum.REVEGETATION,
+    lulucfactivity: 'REVEGETATION',
     messageDate: new Date(),
     status: 'TRANSACTION_PROPOSAL_PENDING',
     type: 'COMMITMENT_PERIOD_RESERVE',

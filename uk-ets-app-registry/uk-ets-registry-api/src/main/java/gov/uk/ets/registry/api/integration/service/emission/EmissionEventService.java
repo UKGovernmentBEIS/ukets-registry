@@ -3,6 +3,8 @@ package gov.uk.ets.registry.api.integration.service.emission;
 import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_ID_HEADER;
 
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.EmissionsUpdatedEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.emissionstable.messaging.UpdateOfVerifiedEmissionsEvent;
@@ -13,6 +15,7 @@ import gov.uk.ets.registry.api.integration.consumer.OperationEvent;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
@@ -37,6 +40,7 @@ public class EmissionEventService {
     private final EventService eventService;
     private final EmissionEventValidator validator;
     private final EmissionAuditService emissionAuditService;
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     @Transactional
     public List<IntegrationEventError> process(AccountEmissionsUpdateEvent event, Map<String, Object> headers, SourceSystem sourceTopic) {
@@ -88,6 +92,14 @@ public class EmissionEventService {
 
         emissionsEntryRepository.save(newEntry);
         emissionAuditService.logChanges(existingEntry.orElse(null), newEntry, sourceSystem);
+        //Also insert an event to reporting_metrics_outbox
+        reportingMetricsEventService.processEvent(EmissionsUpdatedEvent
+                    .builder()
+                    .accountIdentifier(accountRepository.findByCompliantEntityIdentifier(compliantId).orElseThrow().getIdentifier())
+                    .year(Year.of((int)year))
+                    .oldEmissionsValue(existingEntry.map(EmissionsEntry::getEmissions).orElse(null))
+                    .newEmissionsValue(reportableEmissions)
+                    .build());
         publishUpdateOfVerifiedEmissionsEvent(newEntry);
 
         Object oldValue = existingEntry.map(EmissionsEntry::getEmissions).map(Object::toString).orElse("No emissions");

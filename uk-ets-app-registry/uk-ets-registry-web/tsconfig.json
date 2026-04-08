@@ -11,6 +11,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "typeRoots": ["node_modules/@types"],
+    "types": ["jest"],
     "lib": ["es2018", "dom"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -102,7 +103,8 @@
       "@guidance/*": ["src/app/guidance/*"],
       "@google-analytics/*": ["src/app/google-analytics/*"],
       "@generate-logs/*": ["src/app/generate-logs/*"],
-      "@claim-account/*": ["src/app/claim-account/*"]
+      "@claim-account/*": ["src/app/claim-account/*"],
+      "@bulk-claim-account/*": ["src/app/bulk-claim-account/*"]
     },
     "useDefineForClassFields": false
   },

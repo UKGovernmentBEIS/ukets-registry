@@ -128,7 +128,6 @@
                 <version>${maven.checkstyle.plugin}</version>
                 <configuration>
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
@@ -157,9 +156,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
-                    <targetJdk>11</targetJdk>
+                    <targetJdk>${java.version}</targetJdk>
                     <excludeRoots>
                         <excludeRoot>target/generated-sources/java</excludeRoot>
                     </excludeRoots>
@@ -224,7 +222,6 @@
                 <version>${maven.checkstyle.plugin}</version>
                 <configuration>
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
@@ -242,9 +239,8 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>${maven.pmd.plugin}</version>
                 <configuration>
-                    <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
-                    <targetJdk>11</targetJdk>
+                    <targetJdk>${java.version}</targetJdk>
                     <excludes>
                         <exclude>**/generated/*.java</exclude>
                         <exclude>**/generated-sources/*.java</exclude>

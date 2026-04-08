@@ -27,6 +27,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.42</version>
         </dependency>
         <!-- Only needed because of compile-time error-->
         <dependency>
@@ -53,7 +54,11 @@
             <artifactId>mockito-inline</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+		    <groupId>net.bytebuddy</groupId>
+		    <artifactId>byte-buddy</artifactId>
+		    <version>1.18.5</version>
+		</dependency>
 
     </dependencies>
 

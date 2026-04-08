@@ -276,14 +276,6 @@ public class EmissionsTableContentValidationWrapper {
 
 	}
 
-	private boolean isLastEmissionYearEqualCurrentYear(
-	        Optional<Integer> lastYearVerifiedEmissionsOptional) {
-		if (lastYearVerifiedEmissionsOptional.isPresent()) {
-			return lastYearVerifiedEmissionsOptional.get() == this.currentYear;
-		}
-		return false;
-	}
-
 	private void validateEmissionQuantity(int rowNum, String emissionQuantity,
 	        String year,String compliantEntityId) {
 

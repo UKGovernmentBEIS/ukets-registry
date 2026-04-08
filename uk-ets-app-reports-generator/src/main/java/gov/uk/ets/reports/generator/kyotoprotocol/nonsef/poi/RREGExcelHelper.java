@@ -261,13 +261,11 @@ public class RREGExcelHelper {
                 } else {
                     cell.setCellValue(Double.parseDouble(value));
                 }
-                cell.setCellType(Cell.CELL_TYPE_NUMERIC);
             } catch (ParseException e) {
                 log.error("Error getCellType : " + e.toString());
             }
         } else {
             cell.setCellValue(value);
-            cell.setCellType(Cell.CELL_TYPE_STRING);
         }
         return cell;
     }
@@ -288,8 +286,6 @@ public class RREGExcelHelper {
             cell.setCellValue(Long.parseLong(value));
             cell.setCellStyle(getNormalStyle(workbook));
         }
-
-        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 
         return cell;
     }

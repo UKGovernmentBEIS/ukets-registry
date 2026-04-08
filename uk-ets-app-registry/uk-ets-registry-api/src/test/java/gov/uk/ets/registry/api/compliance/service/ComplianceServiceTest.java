@@ -31,6 +31,7 @@ import gov.uk.ets.registry.api.allocation.service.AllocationCalculationService;
 import gov.uk.ets.registry.api.allocation.type.AllocationClassification;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.common.exception.BusinessRuleErrorException;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.domain.ExcludeEmissionsEntry;
 import gov.uk.ets.registry.api.compliance.domain.StaticComplianceStatus;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
@@ -97,7 +98,9 @@ class ComplianceServiceTest {
     private AllocationEntryRepository allocationEntryRepository;
     @Mock
     private EmissionsTableService emissionsTableService;
-
+    @Mock
+    private ReportingMetricsEventService reportingMetricsEventService;
+    
     private ComplianceService complianceService;
 
     @BeforeEach
@@ -106,7 +109,7 @@ class ComplianceServiceTest {
         complianceService = new ComplianceService(accountService, eventService, userService,
             complianceEventService, excludeEmissionsRepository, emissionsEntryRepository,
             staticComplianceStatusRepository,transactionRepository,compliantEntityRepository,installationOwnershipRepository,
-                allocationCalculationService, allocationEntryRepository, emissionsTableService);
+                allocationCalculationService, allocationEntryRepository, emissionsTableService, reportingMetricsEventService);
     }
 
     @Test
@@ -564,6 +567,7 @@ class ComplianceServiceTest {
         Account account = new Account();
         account.setIdentifier(1234L);
         account.setCompliantEntity(installation);
+        final Date now = new Date();
 
         List<VerifiedEmissionsDTO> emissions = IntStream.rangeClosed(startYear, endYear-1)
             .boxed()
@@ -578,7 +582,7 @@ class ComplianceServiceTest {
         excludeEntry.setCompliantEntityId(compliantEntityId);
         excludeEntry.setExcluded(false);
         excludeEntry.setYear((long) endYear);
-        excludeEntry.setLastUpdated(new Date());
+        excludeEntry.setLastUpdated(now);
 
         Mockito.when(excludeEmissionsRepository.findByCompliantEntityId(compliantEntityId))
             .thenReturn(List.of(excludeEntry));
@@ -587,7 +591,10 @@ class ComplianceServiceTest {
             .getVerifiedEmissions();
 
         List<VerifiedEmissionsDTO> expected = new ArrayList<>(emissions);
-        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), null, null));
+        expected.add(new VerifiedEmissionsDTO(compliantEntityId, excludeEntry.getYear(), null,
+                        LocalDateTime.ofInstant(now.toInstant(), ZoneId.of("UTC"))
+                )
+        );
 
         assertIterableEquals(expected, result);
     }

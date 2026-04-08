@@ -21,7 +21,7 @@ import gov.uk.ets.registry.api.file.upload.error.FileNameNotValidException;
  */
 public class EmissionsTableExcelFilenameValidator {
 	
-	public enum EmissionsFilenameRegExpGroup {FILENAME,FILENAME_PREFIX,CONTENT_DATE,REGULATOR,MD5_CHECKSUM};
+	public enum EmissionsFilenameRegExpGroup {FILENAME,FILENAME_PREFIX,CONTENT_DATE,REGULATOR,MD5_CHECKSUM}
 	private static final Pattern EMISSIONS_TABLE_FILE_NAME_PATTERN = Pattern
 	        .compile(
 	                "^(UK_EMISSIONS)_(\\d{8})_(EA|NRW|SEPA|DAERA|OPRED)_(\\w{32})[_[\\w\\.]*]?$");

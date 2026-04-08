@@ -86,7 +86,6 @@ public class PasswordValidatorServiceControllerTest {
 				.content(mapper.writeValueAsString(request))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.score", is(0)));
+				.andExpect(status().isBadRequest());
 	}	
 }

@@ -64,7 +64,7 @@ public class AccountDTOFactory {
 
     private UserConversionService userConversionService;
 
-    private UserWorkContactRepository userWorkContactRepository;;
+    private UserWorkContactRepository userWorkContactRepository;
 
     private AuthorizedRepresentativeService authorizedRepresentativeService;
 

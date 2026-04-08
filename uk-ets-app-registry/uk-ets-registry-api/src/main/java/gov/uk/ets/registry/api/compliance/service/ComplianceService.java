@@ -14,6 +14,8 @@ import gov.uk.ets.registry.api.common.error.ErrorBody;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.common.exception.BusinessRuleErrorException;
 import gov.uk.ets.registry.api.common.exception.NotFoundException;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.EmissionsUpdatedEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.domain.ExcludeEmissionsEntry;
 import gov.uk.ets.registry.api.compliance.domain.StaticComplianceStatus;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
@@ -33,7 +35,6 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TransactionStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.TransactionType;
 import gov.uk.ets.registry.api.transaction.repository.TransactionRepository;
-import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
@@ -43,9 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -70,6 +71,7 @@ public class ComplianceService {
     private final AllocationCalculationService allocationCalculationService;
     private final AllocationEntryRepository allocationEntryRepository;
     private final EmissionsTableService emissionsTableService;
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     @Transactional
     public void updateExclusionStatus(Long accountIdentifier, OperatorEmissionsExclusionStatusChangeDTO patch) {
@@ -105,6 +107,14 @@ public class ComplianceService {
             // Update emissions to null
             EmissionsEntry emissionsEntry = createNullEmissionsEntry(account.getCompliantEntity().getIdentifier(), year);
             emissionsEntryRepository.save(emissionsEntry);
+            //TODO Also insert an event to reporting_metrics_outbox
+            reportingMetricsEventService.processEvent(EmissionsUpdatedEvent
+                        .builder()
+                        .accountIdentifier(account.getIdentifier())
+                        .year(Year.of(year.intValue()))
+                        .oldEmissionsValue(emissionsForThisYear.get())
+                        .newEmissionsValue(null)
+                        .build());
             emissionsTableService.publishUpdateOfVerifiedEmissionsEvent(emissionsEntry, new Date(), actorId);
         }
 
@@ -254,7 +264,7 @@ public class ComplianceService {
                 .stream().filter(Objects::nonNull).collect(toList());
 
         result.setTotalVerifiedEmissions(!totalVerifiedEmissions.isEmpty() ?
-                totalVerifiedEmissions.stream().collect(Collectors.summingLong(t -> t)) :
+                totalVerifiedEmissions.stream().collect(summingLong(t -> t)) :
                 null);
 
         // Query the transactions to find the total amounts
@@ -275,7 +285,7 @@ public class ComplianceService {
                     t, TransactionType.SurrenderAllowances,
                     TransactionStatus.COMPLETED))
             .flatMap(List::stream)
-            .collect(Collectors.summingLong(Transaction::getQuantity));
+            .collect(summingLong(Transaction::getQuantity));
 
         Long surrenderedReversed = accountIdentifiers.stream()
             .map(t -> transactionRepository
@@ -284,7 +294,7 @@ public class ComplianceService {
                     TransactionType.ReverseSurrenderAllowances,
                     TransactionStatus.COMPLETED))
             .flatMap(List::stream)
-            .collect(Collectors.summingLong(Transaction::getQuantity));
+            .collect(summingLong(Transaction::getQuantity));
 
         if (surrendered == 0 && surrenderedReversed == 0) {
             //We need to indicate the absence , see UKETS-6781
@@ -370,13 +380,39 @@ public class ComplianceService {
 
     private void mergeExcludedEntries(Long compliantEntityId,
                                       Map<Long, VerifiedEmissionsDTO> reportableEmissions) {
+
         excludeEmissionsRepository.findByCompliantEntityId(compliantEntityId)
-            .stream()
-            .filter(ExcludeEmissionsEntry::isExcluded)
-            .map(this::toVerifiedEmissionsDTO)
-            .collect(toMap(VerifiedEmissionsDTO::getYear, t -> t))
-            .forEach((key, value) -> reportableEmissions.merge(key, value,
-                (oldVal, newVal) -> newVal));
+                .forEach(excluded -> {
+
+                    VerifiedEmissionsDTO dto =
+                            reportableEmissions.get(excluded.getYear());
+
+                    if (dto == null) {
+                        dto = new VerifiedEmissionsDTO(
+                                excluded.getCompliantEntityId(),
+                                excluded.getYear(),
+                                null,
+                                null
+                        );
+                        reportableEmissions.put(excluded.getYear(), dto);
+                    }
+
+                    LocalDateTime exclusionDate = LocalDateTime.ofInstant(
+                            excluded.getLastUpdated().toInstant(),
+                            ZoneId.of("UTC"));
+
+                    dto.setLastUpdated(max(dto.getLastUpdated(), exclusionDate));
+
+                    if (excluded.isExcluded()) {
+                        dto.setReportableEmissions(EXCLUDED);
+                    }
+                });
+    }
+
+    private LocalDateTime max(LocalDateTime a, LocalDateTime b) {
+        if (a == null) return b;
+        if (b == null) return a;
+        return a.isAfter(b) ? a : b;
     }
 
     private void mergeEmissionsEntries(Long compliantEntityId,
@@ -386,19 +422,6 @@ public class ComplianceService {
             .collect(toMap(VerifiedEmissionsDTO::getYear, t -> t))
             .forEach((key, value) -> reportableEmissions.merge(key, value,
                 (oldVal, newVal) -> newVal));
-    }
-
-    private VerifiedEmissionsDTO toVerifiedEmissionsDTO(
-        ExcludeEmissionsEntry excluded) {
-        if (excluded.isExcluded()) {
-            return new VerifiedEmissionsDTO(excluded.getCompliantEntityId(),
-                excluded.getYear(), EXCLUDED, LocalDateTime.ofInstant(
-                excluded.getLastUpdated().toInstant(), ZoneId.of("UTC")));
-        }
-        return new VerifiedEmissionsDTO(excluded.getCompliantEntityId(),
-            excluded.getYear(), null, LocalDateTime.ofInstant(
-            excluded.getLastUpdated().toInstant(), ZoneId.of("UTC")));
-
     }
 
     private ComplianceStatusHistoryDTO toComplianceHistoryDTO(

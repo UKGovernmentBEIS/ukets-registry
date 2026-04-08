@@ -4,7 +4,6 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
-import gov.uk.ets.registry.api.allocation.configuration.AllocationConfigurationService;
 import gov.uk.ets.registry.api.allocation.data.AllocationSummary;
 import gov.uk.ets.registry.api.allocation.domain.AllocationStatus;
 import gov.uk.ets.registry.api.allocation.repository.AllocationStatusRepository;
@@ -32,8 +31,6 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static gov.uk.ets.registry.api.account.domain.QAccount.account;
 
 /**
  * Service layer for interacting with the account allocation.

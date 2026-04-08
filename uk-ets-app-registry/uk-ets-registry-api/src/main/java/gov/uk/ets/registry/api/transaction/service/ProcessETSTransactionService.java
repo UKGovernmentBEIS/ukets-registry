@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.TransactionFinalisationEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
@@ -55,6 +57,7 @@ public class ProcessETSTransactionService {
     private final AccountRepository accountRepository;
     private final AccountService accountService;
     private final TaskRepository taskRepository;
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     /**
      * Processes the transaction according to UKTL answer.
@@ -94,9 +97,18 @@ public class ProcessETSTransactionService {
                 .build());
 
         transactionService.process(transition);
-
+        //Also insert an event to reporting_metrics_outbox
+        reportingMetricsEventService.processEvent(TransactionFinalisationEvent
+                    .builder()
+                    .transactionIdentifier(transaction.getIdentifier())
+                    .transactionType(transaction.getType())
+                    .transactionStatus(transaction.getStatus())
+                    .acquiringAccountIdentifier(transaction.getAcquiringAccount() != null ? transaction.getAcquiringAccount().getAccountIdentifier() : null)
+                    .transferringAccountIdentifier(transaction.getTransferringAccount() != null ? transaction.getTransferringAccount().getAccountIdentifier() : null)
+                    .amount(transaction.getQuantity())
+                    .build());
         handleComplianceEvents(transaction);
-
+        
         if (TransactionType.BalanceInstallationTransferAllowances.equals(transaction.getType()) &&
             TransactionProcessState.FINALISE.equals(transition.getNextState())) {
             handleInstallationTransferActions(transaction.getTransferringAccount().getAccountIdentifier());

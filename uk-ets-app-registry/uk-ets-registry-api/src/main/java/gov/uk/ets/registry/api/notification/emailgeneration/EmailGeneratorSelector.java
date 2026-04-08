@@ -23,8 +23,8 @@ import gov.uk.ets.registry.usernotifications.GroupNotification;
  */
 public class EmailGeneratorSelector {
 
-    private static final String CREATE_ACCOUNT_IP_EMAIL_TEMPLATE = "integration-account-opening.ftl";;
-    private static final String UPDATE_ACCOUNT_IP_EMAIL_TEMPLATE = "user-details-update-integration-point.ftl";;
+    private static final String CREATE_ACCOUNT_IP_EMAIL_TEMPLATE = "integration-account-opening.ftl";
+    private static final String UPDATE_ACCOUNT_IP_EMAIL_TEMPLATE = "user-details-update-integration-point.ftl";
 
     /**
      * Private constructor.
@@ -197,6 +197,9 @@ public class EmailGeneratorSelector {
             case SEND_INVITATION_TO_CONTACTS:
                 return new AccountSendInvitationEmailGenerator(notificationProperties,
                         (AccountSendInvitationGroupNotification) groupNotification, freemarkerConfiguration, mailConfiguration);
+            case ACCOUNT_WITHHOLD_UPDATE:
+                return new AccountWithholdUpdateEmailGenerator(notificationProperties, (AccountWithholdUpdateGroupNotification) groupNotification,
+                        freemarkerConfiguration, mailConfiguration);
             default:
                 return new DoNothingEmailGenerator();
         }

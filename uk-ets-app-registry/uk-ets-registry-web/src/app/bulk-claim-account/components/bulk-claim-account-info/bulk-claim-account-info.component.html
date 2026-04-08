@@ -1,0 +1,23 @@
+<div
+  class="govuk-grid-row"
+  *ngIf="'urn:uk-ets-registry-api:account:bulk-claim' | protect | async"
+>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Bulk Claim Account</h1>
+    <p class="govuk-body">
+      This invitation will be sent to all eligible OHA, AOHA and MOHAs where
+      there are 0 ARs appointed to the account AND no pending Add AR tasks. The
+      invitation will be sent to the eligible contacts irrespective of whether
+      they have received an invitation before.
+    </p>
+    <button
+      (click)="onContinue()"
+      class="govuk-button"
+      data-module="govuk-button"
+      type="button"
+      id="send-invitation"
+    >
+      Send invitation
+    </button>
+  </div>
+</div>

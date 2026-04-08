@@ -19,24 +19,22 @@ public class PhoneNumberValidator {
                                      List<IntegrationEventErrorDetails> errors,
                                      boolean isMobile) {
 
-    if (!validateMandatoryCodeAndPhone(countryPhoneCode, phone, countryPhoneCodeFieldName, phoneFieldName, errors)) {
-      return;
+        validateMandatoryCodeAndPhone(countryPhoneCode, phone, countryPhoneCodeFieldName, phoneFieldName, errors);
     }
-  }
 
-  public void validateOptionalPhone(String countryPhoneCode,
+    public void validateOptionalPhone(String countryPhoneCode,
                                     String phone,
                                     String countryPhoneCodeFieldName,
                                     String phoneFieldName,
                                     List<IntegrationEventErrorDetails> errors,
                                     boolean isMobile) {
 
-    if (isBlank(countryPhoneCode) && isBlank(phone)) return;
+        if (isBlank(countryPhoneCode) && isBlank(phone)) {
+            return;
+        }
 
-    if (!validateMandatoryCodeAndPhone(countryPhoneCode, phone, countryPhoneCodeFieldName, phoneFieldName, errors)) {
-      return;
+        validateMandatoryCodeAndPhone(countryPhoneCode, phone, countryPhoneCodeFieldName, phoneFieldName, errors);
     }
-  }
 
   private boolean validateMandatoryCodeAndPhone(String countryPhoneCode,
                                                 String phone,

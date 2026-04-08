@@ -19,8 +19,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.parser.PdfTextExtractor;
+import org.openpdf.text.pdf.PdfReader;
+import org.openpdf.text.pdf.parser.PdfTextExtractor;
 
 import gov.uk.ets.reports.generator.config.PdfReportConfig;
 import gov.uk.ets.reports.generator.domain.TransactionDetailsReportData;

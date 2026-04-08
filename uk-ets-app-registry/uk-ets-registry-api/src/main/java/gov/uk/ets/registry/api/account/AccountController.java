@@ -1,34 +1,5 @@
 package gov.uk.ets.registry.api.account;
 
-import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_FULL_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_HOLDER_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.COMPLIANT_ENTITY_ID;
-import static gov.uk.ets.commons.logging.RequestParamType.DTO;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 import gov.uk.ets.commons.logging.MDCParam;
 import gov.uk.ets.commons.logging.RequestParamType;
 import gov.uk.ets.registry.api.account.domain.Account;
@@ -55,6 +26,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountHoldingsSummaryResultDTO
 import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
+import gov.uk.ets.registry.api.account.web.model.BulkClaimResult;
 import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.ValidateAccountDTO;
@@ -111,9 +83,29 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Handles requests for account management.
@@ -144,7 +136,7 @@ public class AccountController {
      * @return until this is implemented we will not return anything.
      */
     @PostMapping(value = "accounts.validate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<ValidateAccountDTO> validate(@RequestParam @MDCParam(ACCOUNT_FULL_ID) String accountFullIdentifier) {
+    public ResponseEntity<ValidateAccountDTO> validate(@RequestParam @MDCParam(RequestParamType.ACCOUNT_FULL_ID) String accountFullIdentifier) {
         Boolean isKyotoAccountType = null;
         Account account = accountService.getAccountFullIdentifier(accountFullIdentifier);
         if (account != null) {
@@ -165,7 +157,7 @@ public class AccountController {
      */
     @PostMapping(path = "accounts.propose", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public RequestDTO proposeAccount(@RequestBody @Valid @MDCParam(DTO) AccountDTO account) {
+    public RequestDTO proposeAccount(@RequestBody @Valid @MDCParam(RequestParamType.DTO) AccountDTO account) {
         accountValidator.validate(account);
         return accountService.proposeAccount(account);
     }
@@ -193,7 +185,7 @@ public class AccountController {
     @PostMapping(path = "accounts.close", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> closeAccount(
         @RuleInput(RuleInputType.ACCOUNT_FULL_ID)
-        @RequestParam @MDCParam(ACCOUNT_FULL_ID) String fullIdentifier,
+        @RequestParam @MDCParam(RequestParamType.ACCOUNT_FULL_ID) String fullIdentifier,
         @RequestBody @Valid AccountClosureDTO closureDTO) {
         Long taskIdentifier = accountService.closeAccount(fullIdentifier, closureDTO);
         return new ResponseEntity<>(taskIdentifier, HttpStatus.OK);
@@ -212,7 +204,7 @@ public class AccountController {
     })
     @PostMapping(path = "accounts.update.details", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccountDTO> updateAccountDetails(
-        @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @MDCParam(ACCOUNT_ID) Long identifier,
+        @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier,
         @Valid @RequestBody AccountDetailsDTO details) {
 
         accountValidator.validate(details);
@@ -276,7 +268,7 @@ public class AccountController {
     })
     @GetMapping(path = "accounts.get")
     public AccountDTO getAccount(@RequestParam @RuleInput(RuleInputType.ACCOUNT_ID)
-                                     @MDCParam(ACCOUNT_ID) Long accountId) {
+                                     @MDCParam(RequestParamType.ACCOUNT_ID) Long accountId) {
         return accountService.getAccountDTO(accountId);
     }
 
@@ -296,7 +288,7 @@ public class AccountController {
     })
     @GetMapping(path = "accounts.get.operator")
     public OperatorDTO getAccountOperator(
-        @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(ACCOUNT_ID) Long accountId) {
+        @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(RequestParamType.ACCOUNT_ID) Long accountId) {
         return accountService.getInstallationOrAircraftOperatorDTO(accountId);
     }
 
@@ -316,7 +308,7 @@ public class AccountController {
     })
     @PostMapping(path = "accounts-operator.update-details", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> updateAccountOperatorDetails(
-        @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(ACCOUNT_ID) @RequestParam Long accountIdentifier,
+        @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(RequestParamType.ACCOUNT_ID) @RequestParam Long accountIdentifier,
         @RuleInput(RuleInputType.ACCOUNT_OPERATOR_UPDATE) @Valid @RequestBody
             AccountOperatorDetailsUpdateDTO details) {
 
@@ -335,7 +327,7 @@ public class AccountController {
     })
     @GetMapping(path = "accounts.get.statuses")
     public List<AccountStatusActionOptionDTO> getAccountStatusAvailableActions(
-        @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(ACCOUNT_ID) Long accountId) {
+        @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(RequestParamType.ACCOUNT_ID) Long accountId) {
         return accountService.getAccountStatusAvailableActions(accountId);
     }
 
@@ -353,7 +345,7 @@ public class AccountController {
     })
     @PatchMapping(path = "accounts.update", consumes = MediaType.APPLICATION_JSON_VALUE)
     public AccountStatus patchAccountStatus(@RuleInput(RuleInputType.ACCOUNT_ID)
-                                            @RequestParam @MDCParam(ACCOUNT_ID) Long accountId,
+                                            @RequestParam @MDCParam(RequestParamType.ACCOUNT_ID) Long accountId,
                                             @Valid @RequestBody AccountStatusChangeDTO patch) {
 
         return accountService.updateAccountStatus(accountId, patch);
@@ -376,7 +368,7 @@ public class AccountController {
     })
     public AccountHoldingsSummaryResultDTO getAccountHoldings(
         @NotNull @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID)
-        @MDCParam(ACCOUNT_ID) Long identifier) {
+        @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier) {
 
         return accountService.getAccountHoldings(identifier);
     }
@@ -476,7 +468,7 @@ public class AccountController {
      */
     @GetMapping(path = "accounts.get.candidate-installation-transfer", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<InstallationSearchResultDTO>> getInstallations(
-            @RequestParam @MDCParam(COMPLIANT_ENTITY_ID) String installationId, @RequestParam(required = false) @MDCParam(ACCOUNT_HOLDER_ID) Long excludeAccountHolderIdentifier) {
+            @RequestParam @MDCParam(RequestParamType.COMPLIANT_ENTITY_ID) String installationId, @RequestParam(required = false) @MDCParam(RequestParamType.ACCOUNT_HOLDER_ID) Long excludeAccountHolderIdentifier) {
         List<InstallationSearchResultDTO> installations = accountService.findInstallationById(installationId, Optional.ofNullable(excludeAccountHolderIdentifier));
         ResponseEntity<List<InstallationSearchResultDTO>> result = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -495,7 +487,7 @@ public class AccountController {
      * @param operator the
      */
     @PostMapping(path = "account.validate.installation-transfer", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OperatorDTO validateOperator(@RequestBody @MDCParam(DTO) OperatorDTO operator) {
+    public OperatorDTO validateOperator(@RequestBody @MDCParam(RequestParamType.DTO) OperatorDTO operator) {
         accountService.validateOperator(operator);
         return accountService.getInstallationByIdentifier(operator.getIdentifier());
     }
@@ -602,7 +594,7 @@ public class AccountController {
     }
 
     /**
-     * Returns the transactions related to the queried account
+     * Returns the transactions related to the queried account.
      *
      * @param accountFullIdentifier The full identifier of the account
      * @param pageParameters        The {@link PageParameters} paging info
@@ -616,7 +608,7 @@ public class AccountController {
     })
     @GetMapping(path = "accounts.get.transactions")
     public SearchResponse<TransactionSearchResult> getAccountTransactions(
-        @Valid @RuleInput(RuleInputType.ACCOUNT_FULL_ID) @MDCParam(ACCOUNT_FULL_ID) String accountFullIdentifier,
+        @Valid @RuleInput(RuleInputType.ACCOUNT_FULL_ID) @MDCParam(RequestParamType.ACCOUNT_FULL_ID) String accountFullIdentifier,
         PageParameters pageParameters) {
         SearchResponse<TransactionSearchResult> response = new SearchResponse<>();
         PageableMapper pageableMapper =
@@ -643,7 +635,7 @@ public class AccountController {
     })
     @GetMapping(path = "/accounts.get.transactions.report")
     public ResponseEntity<Long> requestTransactionDetailsReport(
-        @Valid @RuleInput(RuleInputType.ACCOUNT_FULL_ID) @MDCParam(ACCOUNT_FULL_ID) String accountFullIdentifier) {
+        @Valid @RuleInput(RuleInputType.ACCOUNT_FULL_ID) @MDCParam(RequestParamType.ACCOUNT_FULL_ID) String accountFullIdentifier) {
       
         Long reportId = accountService.requestAccountTransactionDetailsReport(accountFullIdentifier);
             
@@ -659,7 +651,7 @@ public class AccountController {
     @Protected({SeniorAdminRule.class})
     @PostMapping(path = "/accounts.exclude.from.billing", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void excludeAccountFromBillingProcess(
-    		@NotNull @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(ACCOUNT_ID) Long identifier, @RequestBody AccountExclusionFromBillingRequestDTO request) {
+    		@NotNull @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier, @RequestBody AccountExclusionFromBillingRequestDTO request) {
         accountService.markAccountExcludedFromBilling(identifier, true, request.getExclusionRemarks());     
     }
     
@@ -672,7 +664,7 @@ public class AccountController {
     @Protected({SeniorAdminRule.class})
     @PostMapping(path = "/accounts.include.in.billing")
     public void includeAccountInBillingProcess(
-    		@NotNull @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(ACCOUNT_ID) Long identifier) {
+    		@NotNull @RequestParam @RuleInput(RuleInputType.ACCOUNT_ID) @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier) {
         accountService.markAccountExcludedFromBilling(identifier, false, null);
     }
 
@@ -689,7 +681,7 @@ public class AccountController {
     })
     @PostMapping(path = "/accounts.send.invitation")
     public ResponseEntity<String> sendInvitation(
-            @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @Parameter(description = "The account identifier", required = true) @MDCParam(ACCOUNT_ID) Long identifier,
+            @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @Parameter(description = "The account identifier", required = true) @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier,
             @Valid @RequestBody @Parameter(description = "The account contact send invitation dto ", required = true) AccountContactSendInvitationDTO sendInvitationDTO) {
 
         final String accountClaimCode = accountClaimService.sendInvitation(identifier, sendInvitationDTO);
@@ -702,5 +694,43 @@ public class AccountController {
 
         final Long requestId = accountClaimService.claimAccount(accountClaimDTO);
         return new ResponseEntity<>(requestId, HttpStatus.OK);
+    }
+
+    /**
+     * Counts all accounts that are eligible for bulk claim invitations.
+     *
+     * <p>An account is considered eligible if it satisfies all of the following conditions:
+     * <ul>
+     *   <li>It has a valid status (i.e. not PROPOSED, REJECTED or CLOSED)</li>
+     *   <li>Its registry account type is enabled for account claiming</li>
+     *   <li>It has no active Authorised Representatives (excluding role-based access)</li>
+     *   <li>It has no pending Authorised Representative addition tasks</li>
+     *   <li>It has at least one associated contact, either:
+     *       <ul>
+     *           <li>a METS account contact, or</li>
+     *           <li>an Account Holder Representative</li>
+     *       </ul>
+     *   </li>
+     * </ul>
+     *
+     * @return the number of accounts that meet the bulk claim eligibility criteria
+     */
+    @Protected({SeniorAdminRule.class})
+    @GetMapping(path = "/accounts.claim.bulk.eligible.count")
+    public ResponseEntity<Long> countEligibleBulkClaimAccounts() {
+
+        return new ResponseEntity<>(accountClaimService.countEligibleBulkClaimAccounts(), HttpStatus.OK);
+    }
+
+    /**
+     * Sends bulk invitations to all eligible accounts.
+     *
+     * @return total accounts, the number of accounts that the claim invitation was sent to and the number of accounts that failed to send the invitation.
+     */
+    @Protected({SeniorAdminRule.class})
+    @PostMapping("/accounts.claim.bulk.send")
+    public ResponseEntity<BulkClaimResult> sendBulkClaimInvitations() {
+        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -386,7 +386,7 @@ public enum AccountType {
      * @return an AccountType entry
      */
     public static AccountType get(String label) {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
                 .filter(accountType -> accountType.label.equals(label))
                 .findFirst().orElse(null);
     }
@@ -401,7 +401,7 @@ public enum AccountType {
      */
     public static AccountType get(RegistryAccountType registryAccountType,
                                   KyotoAccountType kyotoAccountType) {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> accountType.registryType == registryAccountType
                 && accountType.kyotoType == kyotoAccountType)
             .findFirst().orElse(null);
@@ -413,7 +413,7 @@ public enum AccountType {
      * @return the Kyoto government types.
      */
     public static List<AccountType> getAllKyotoGovernmentTypes() {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> accountType.kyotoType.isGovernment() && accountType.kyoto).collect(
                 Collectors.toList());
     }
@@ -424,7 +424,7 @@ public enum AccountType {
      * @return the registry government types.
      */
     public static List<AccountType> getAllRegistryGovernmentTypes() {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> accountType.registryType.isGovernment() && !accountType.kyoto)
             .collect(Collectors.toList());
     }
@@ -437,7 +437,7 @@ public enum AccountType {
      */
     public static AccountType parse(String input) {
         try {
-            return AccountType.valueOf(input);
+            return valueOf(input);
         } catch (IllegalArgumentException | NullPointerException exc) {
             return null;
         }
@@ -450,33 +450,33 @@ public enum AccountType {
      * @return some account types
      */
     public static List<AccountType> of(KyotoAccountType... kyotoAccountType) {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(accountType -> Arrays.asList(kyotoAccountType).contains(accountType.kyotoType))
             .collect(Collectors.toList());
     }
 
     public static List<AccountType> getCentralTypes() {
-        return List.of(AccountType.UK_TOTAL_QUANTITY_ACCOUNT,
-            AccountType.UK_AUCTION_ACCOUNT,
-            AccountType.UK_ALLOCATION_ACCOUNT,
-            AccountType.UK_NEW_ENTRANTS_RESERVE_ACCOUNT,
-            AccountType.UK_MARKET_STABILITY_MECHANISM_ACCOUNT,
-            AccountType.UK_GENERAL_HOLDING_ACCOUNT);
+        return List.of(UK_TOTAL_QUANTITY_ACCOUNT,
+            UK_AUCTION_ACCOUNT,
+            UK_ALLOCATION_ACCOUNT,
+            UK_NEW_ENTRANTS_RESERVE_ACCOUNT,
+            UK_MARKET_STABILITY_MECHANISM_ACCOUNT,
+            UK_GENERAL_HOLDING_ACCOUNT);
     }
 
     public static List<AccountType> getReadOnlyCentralTypes() {
-        return List.of(AccountType.UK_SURRENDER_ACCOUNT,
-                       AccountType.UK_DELETION_ACCOUNT);
+        return List.of(UK_SURRENDER_ACCOUNT,
+                       UK_DELETION_ACCOUNT);
     }
     
 	public static List<AccountType> getTypesWithBillingDetails() {
-		return List.of(AccountType.PERSON_HOLDING_ACCOUNT, AccountType.TRADING_ACCOUNT);
-	};
+		return List.of(PERSON_HOLDING_ACCOUNT, TRADING_ACCOUNT);
+	}
 
 	public static List<AccountType> getTypesWithSalesContactDetails() {
-		return List.of(AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT,
-                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT,
-				AccountType.TRADING_ACCOUNT);
+		return List.of(AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, OPERATOR_HOLDING_ACCOUNT,
+                MARITIME_OPERATOR_HOLDING_ACCOUNT,
+				TRADING_ACCOUNT);
 	}
 
     /**
@@ -498,7 +498,7 @@ public enum AccountType {
     }
 
     public boolean isOHAorAOHA() {
-        return AccountType.OPERATOR_HOLDING_ACCOUNT.equals(this) ||
+        return OPERATOR_HOLDING_ACCOUNT.equals(this) ||
                AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.equals(this);
     }
 
@@ -508,7 +508,7 @@ public enum AccountType {
      * @return a list with ETS account types.
      */
     public static List<AccountType> getEtsAccountTypes() {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(at -> at.kyoto == null || !at.kyoto)
             .collect(Collectors.toList());
     }
@@ -519,7 +519,7 @@ public enum AccountType {
      * @return a list with ETS account types.
      */    
     public static List<AccountType> getEtsExceptCentralAccountTypes() {
-        return Stream.of(AccountType.values())
+        return Stream.of(values())
             .filter(at -> (at.kyoto == null || !at.kyoto) 
             		&& !getCentralTypes().contains(at) && !getReadOnlyCentralTypes().contains(at))
             .collect(Collectors.toList());
@@ -532,6 +532,6 @@ public enum AccountType {
      * @return true if the account type is CP independent, false otherwise.
      */
     public static boolean isCpIndependent(AccountType type) {
-        return getEtsAccountTypes().contains(type) || AccountType.PERSON_HOLDING_ACCOUNT.equals(type);
+        return getEtsAccountTypes().contains(type) || PERSON_HOLDING_ACCOUNT.equals(type);
     }
 }

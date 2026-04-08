@@ -5,7 +5,6 @@ import gov.uk.ets.registry.api.allocation.type.AllocationType;
 import gov.uk.ets.registry.api.transaction.domain.type.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashSet;

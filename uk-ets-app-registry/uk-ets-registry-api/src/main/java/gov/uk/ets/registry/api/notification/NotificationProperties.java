@@ -143,4 +143,8 @@ public class NotificationProperties {
     @NestedConfigurationProperty
     @Valid
     private AccountSendInvitationNotificationProperties sendInvitation;
+
+    @NestedConfigurationProperty
+    @Valid
+    private AccountWithholdUpdateNotificationProperties withholdUpdate;
 }

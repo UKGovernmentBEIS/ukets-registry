@@ -12,6 +12,7 @@ import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.allocation.domain.AllocationYear;
 import gov.uk.ets.registry.api.allocation.type.AllocationType;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
@@ -54,12 +55,14 @@ class ProcessETSTransactionServiceTest {
     AccountService accountService;
     @Mock
     TaskRepository taskRepository;
+    @Mock
+    ReportingMetricsEventService reportingMetricsEventService;
 
     @BeforeEach
     void setUp() {
         processETSTransactionService = new ProcessETSTransactionService(transactionService, eventService,
             transactionMessageService, complianceEventService, accountRepository, accountService,
-            taskRepository);
+            taskRepository, reportingMetricsEventService);
     }
 
     @Test

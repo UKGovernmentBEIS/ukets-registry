@@ -19,7 +19,6 @@ import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
-import gov.uk.ets.registry.api.task.web.model.RequestDocumentUploadTaskDetailsDTO;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;

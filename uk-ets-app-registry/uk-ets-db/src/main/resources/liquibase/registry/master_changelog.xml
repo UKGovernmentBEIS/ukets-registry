@@ -86,7 +86,7 @@
     <include file="changelogs/v5.19.0/changelog_v5_19_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.22.0/changelog_v5_22_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.24.0/changelog_v5_24_0.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelogs/v5.25.0/changelog_v5_25_0.xml" relativeToChangelogFile="true"/>
     <!-- Include here new files -->
 
     <!-- This changeSet should be executed at the end-->
@@ -99,4 +99,13 @@
         </sql>
     </changeSet>
 
+    <changeSet id="5_25_0_RUNTIME_USER_PRIVILEGES_SCHEMA_REPORTING_METRICS" author="P35036" context="migrate">
+        <comment>Grants privileges to ${runtime-user} on the tables and sequences that created.</comment>
+        <sql>
+        	grant usage on schema reporting_metrics to ${runtime-user};
+            grant select, insert, update, delete, truncate, references, trigger on all tables in schema reporting_metrics to
+            ${runtime-user};
+            grant all privileges on all sequences in schema reporting_metrics to ${runtime-user};
+        </sql>
+    </changeSet>  
 </databaseChangeLog>

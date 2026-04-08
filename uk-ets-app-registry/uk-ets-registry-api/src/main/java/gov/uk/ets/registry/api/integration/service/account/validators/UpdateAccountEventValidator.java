@@ -1,7 +1,6 @@
 package gov.uk.ets.registry.api.integration.service.account.validators;
 
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
-import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
@@ -15,6 +14,8 @@ import gov.uk.ets.registry.api.account.validation.FYVEValidationException;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ import static org.hibernate.validator.internal.util.StringHelper.isNullOrEmptySt
 
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class UpdateAccountEventValidator {
     private final AccountService accountService;
     private final AccountOperatorUpdateService accountOperatorUpdateService;
@@ -38,13 +40,6 @@ public class UpdateAccountEventValidator {
 
     @Value("${emissions-maritime-starting-year}")
     private Integer maritimeStartingYear;
-
-    private static final Set<AccountType> UPDATABLE_ACCOUNT_TYPES =
-        Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-                AccountType.OPERATOR_HOLDING_ACCOUNT,
-                AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
-                AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
-        )));
 
     @Qualifier("updateAccountValidator")
     private final CommonAccountValidator updateAccountValidator;
@@ -316,7 +311,7 @@ public class UpdateAccountEventValidator {
             accountOperatorUpdateService.validateIfFYVECanBeUpdated(registryId, firstYearOfVerifiedEmissions);
         } catch (AccountNotFoundValidationException ex) {
             // Already handled by operatorType validation logic do NOT add error
-            return;
+        	log.debug("Unhandled AccountNotFoundValidationException.");
         } catch (FYVEValidationException ex) {
             errors.add(new IntegrationEventErrorDetails(
                     IntegrationEventError.ERROR_0315,

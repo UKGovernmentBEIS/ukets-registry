@@ -24,14 +24,14 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.versions.plugin>2.7</maven.versions.plugin>
         <maven.checkstyle.plugin>3.1.0</maven.checkstyle.plugin>
         <maven.pmd.plugin>3.15.0</maven.pmd.plugin>
-        <maven.spotbugs.plugin>4.5.2.0</maven.spotbugs.plugin>
-        <maven.javadoc.plugin>3.1.1</maven.javadoc.plugin>
+        <maven.spotbugs.plugin>4.9.8.2</maven.spotbugs.plugin>
+        <maven.javadoc.plugin>3.12.0</maven.javadoc.plugin>
         <maven.project.info.reports.plugin>3.0.0</maven.project.info.reports.plugin>
-        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
         <failsafeArgLine>--illegal-access=permit</failsafeArgLine>
         <surefireArgLine>--illegal-access=permit</surefireArgLine>
         <commons.discovery.version>0.2</commons.discovery.version>
@@ -44,7 +44,6 @@
         <itl.common.types.version>0.5.0-SNAPSHOT</itl.common.types.version>
         <uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
         <jacoco.skip>true</jacoco.skip>
-        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
     </properties>
 
     <profiles>

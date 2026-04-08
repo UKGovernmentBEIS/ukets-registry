@@ -26,7 +26,7 @@ public enum ReconciliationStatus {
      * Retrieves the statuses depicting a pending reconciliation.
      * @return some statuses.
      */
-    public static final List<ReconciliationStatus> getPendingStatuses() {
+    public static List<ReconciliationStatus> getPendingStatuses() {
         return List.of(INITIATED);
     }
 
@@ -34,7 +34,7 @@ public enum ReconciliationStatus {
      * Retrieves the statuses depicting a completed reconciliation.
      * @return some statuses.
      */
-    public static final List<ReconciliationStatus> getFinalStatuses() {
+    public static List<ReconciliationStatus> getFinalStatuses() {
         return List.of(INCONSISTENT, COMPLETED);
     }
 

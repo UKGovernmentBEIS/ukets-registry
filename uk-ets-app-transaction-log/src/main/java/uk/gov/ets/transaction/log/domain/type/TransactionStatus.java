@@ -96,6 +96,14 @@ public enum TransactionStatus {
     public int getCode() {
         return code;
     }
+    
+    /**
+     * Returns the label.
+     * @return the label.
+     */
+    public String getLabel() {
+        return label;
+    }    
 
     /**
      * Parses the status from the provided code.

@@ -175,7 +175,7 @@ public enum UserRole {
 
     public static List<String> getRolesForRoleBasedAccess() {
         List<UserRole> list = new ArrayList<>(adminRoles);
-        list.add(UserRole.AUTHORITY_USER);
+        list.add(AUTHORITY_USER);
         return list.stream()
                    .map(UserRole::getKeycloakLiteral)
                    .collect(toList());

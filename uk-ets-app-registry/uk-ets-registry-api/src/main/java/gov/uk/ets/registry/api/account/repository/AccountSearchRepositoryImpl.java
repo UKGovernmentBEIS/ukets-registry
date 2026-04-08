@@ -16,6 +16,7 @@ import gov.uk.ets.registry.api.account.shared.AccountProjection;
 import gov.uk.ets.registry.api.account.shared.AccountPropertyPath;
 import gov.uk.ets.registry.api.account.shared.QAccountProjection;
 import gov.uk.ets.registry.api.allocation.type.AllocationClassification;
+import gov.uk.ets.registry.api.common.reporting.metrics.domain.QAccountMetrics;
 import gov.uk.ets.registry.api.common.search.OptionalBooleanBuilder;
 import gov.uk.ets.registry.api.common.search.Search;
 import gov.uk.ets.registry.api.compliance.domain.QExcludeEmissionsEntry;
@@ -42,6 +43,7 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
     private static final QAccountAccess accountAccess = QAccountAccess.accountAccess;
     private static final QUser user = QUser.user;
     private static final QExcludeEmissionsEntry excludeEmissionsEntry = QExcludeEmissionsEntry.excludeEmissionsEntry;
+    private static final QAccountMetrics accountMetrics = QAccountMetrics.accountMetrics;
 
 
     @PersistenceContext
@@ -54,7 +56,8 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
         {AccountPropertyPath.ACCOUNT_TYPE_LABEL, account},
         {AccountPropertyPath.ACCOUNT_HOLDER_NAME, holder},
         {AccountPropertyPath.ACCOUNT_STATUS, account},
-        {AccountPropertyPath.ACCOUNT_COMPLIANCE_STATUS, account},
+        {AccountPropertyPath.ACCOUNT_COMPLIANCE_STATUS, accountMetrics},
+        {AccountPropertyPath.ACCOUNT_SURRENDER_BALANCE, accountMetrics},
         {AccountPropertyPath.ACCOUNT_BALANCE, account}
     }).collect(Collectors.toMap(
         data -> (String) data[0],
@@ -81,6 +84,8 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
                  .on(getAccountHolderNameCondition(filter.getAccountHolderName())) :
             query.leftJoin(account.accountHolder, holder);
 
+        query = query.leftJoin(accountMetrics).on(account.identifier.eq(accountMetrics.identifier));        
+        
         BooleanExpression permitOrMonitoringPlanExpr = null;
         BooleanExpression complianceExpr = null;
 
@@ -163,7 +168,7 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
             account.billingAddressSameAsAccountHolderAddress,
             account.checkDigits,
             account.commitmentPeriodCode,
-            account.complianceStatus,
+            accountMetrics.dynamicComplianceStatus,
             account.compliantEntity.id,
             account.compliantEntity.identifier,
             account.contact.id,
@@ -186,7 +191,8 @@ public class AccountSearchRepositoryImpl implements AccountSearchRepository {
             holder.noRegNumjustification,
             holder.registrationNumber,
             holder.type,
-            compliantEntity.regulator
+            compliantEntity.regulator,
+            accountMetrics.surrenderBalance
         );
     }
 

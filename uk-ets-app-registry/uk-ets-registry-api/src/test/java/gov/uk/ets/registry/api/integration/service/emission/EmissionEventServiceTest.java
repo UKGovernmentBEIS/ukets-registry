@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.emissionstable.messaging.UpdateOfVerifiedEmissionsEvent;
@@ -39,13 +40,15 @@ class EmissionEventServiceTest {
     private EmissionEventValidator validator;
     @Mock
     private EmissionAuditService emissionAuditService;
+    @Mock
+    private ReportingMetricsEventService reportingMetricsEventService;
 
     private EmissionEventService service;
 
     @BeforeEach
     public void setup() {
         service = new EmissionEventService(emissionsEntryRepository, complianceEventService,
-            accountRepository, eventService, validator, emissionAuditService);
+            accountRepository, eventService, validator, emissionAuditService, reportingMetricsEventService);
     }
 
     @Test

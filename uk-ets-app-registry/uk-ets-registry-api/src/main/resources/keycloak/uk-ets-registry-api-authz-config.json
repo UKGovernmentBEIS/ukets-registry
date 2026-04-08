@@ -141,6 +141,30 @@
       ]
     },
     {
+      "name": "Account Resource - Counts all the accounts that are eligible for bulk account claiming",
+      "ownerManagedAccess": false,
+      "displayName": "Account Resource - Counts all the accounts that are eligible for bulk account claiming",
+      "attributes": {},
+      "uris": ["/api-registry/accounts.claim.bulk.eligible.count"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account:bulk-claim"
+        }
+      ]
+    },
+    {
+      "name": "Account Resource - Sends bulk invitations to all eligible accounts",
+      "ownerManagedAccess": false,
+      "displayName": "Account Resource - Sends bulk invitations to all eligible accounts",
+      "attributes": {},
+      "uris": ["/api-registry/accounts.claim.bulk.send"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:account:bulk-claim"
+        }
+      ]
+    },
+    {
       "name": "Issuance KP Units resource",
       "ownerManagedAccess": false,
       "displayName": "Issuance KP Units resource",
@@ -1226,7 +1250,10 @@
       "scopes": [
         {
           "name": "urn:uk-ets-registry-api:page:dashboard:regulatorNoticeMenuItem:view"
-        }
+        },
+		{
+		  "name": "urn:uk-ets-registry-api:actionForAnyAdmin"
+		}		
       ]
     },
     {
@@ -2532,7 +2559,18 @@
         "scopes": "[\"urn:uk-ets-registry-api:account:claim\"]",
         "applyPolicies": "[\"Any Non Registry Administrator Policy\", \"Non Authority User Policy\"]"
       }
-    }
+    },
+	{
+	  "name": "Bulk Account Claim Scope Permission",
+	  "description": "Defines who can trigger the bulk claim account(s) on the registry",
+	  "type": "scope",
+	  "logic": "POSITIVE",
+	  "decisionStrategy": "UNANIMOUS",
+	  "config": {
+	    "scopes": "[\"urn:uk-ets-registry-api:account:bulk-claim\"]",
+	    "applyPolicies": "[\"Senior Registry Administrator Policy\"]"
+	  }
+	}	
   ],
   "scopes": [
     {
@@ -2786,7 +2824,10 @@
     },
     {
       "name": "urn:uk-ets-registry-api:account:claim"
-    }
+    },
+	{
+	  "name": "urn:uk-ets-registry-api:account:bulk-claim"
+	}	
   ],
   "decisionStrategy": "UNANIMOUS"
 }

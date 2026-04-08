@@ -155,7 +155,6 @@ public class RREG3ExcelHelper extends RREGExcelHelper {
         Cell cell = row.createCell(countColumn);
         cell.setCellStyle(getNormalStyle(getWorkbook()));
         cell.setCellValue(Long.parseLong(item.getNotificationIdentifier()));
-        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 
         // Notification Date
         cell = row.createCell(countColumn + 1);

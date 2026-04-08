@@ -12,7 +12,6 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
@@ -44,7 +43,6 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections.CollectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -147,7 +145,7 @@ public class AccountOpeningPdfGenerator {
 
         addRowSeparator(table, 1);
 
-        DetailsDTO details = accountDTO.getAccountHolder().getDetails();;
+        DetailsDTO details = accountDTO.getAccountHolder().getDetails();
         DetailsDTO changedDetails = null;
         if(isAccountHolderChanged){
             details = Optional.ofNullable(accountDTO.getOldAccountHolder()).map(AccountHolderDTO::getDetails).orElse(null);
@@ -218,7 +216,7 @@ public class AccountOpeningPdfGenerator {
         PdfPTable table = createTable(isAccountHolderChanged);
         createSectionTitle(document, "Organisation details", 14);
 
-        DetailsDTO details = accountDTO.getAccountHolder().getDetails();;
+        DetailsDTO details = accountDTO.getAccountHolder().getDetails();
         DetailsDTO changedDetails = null;
         if(isAccountHolderChanged){
             details = Optional.ofNullable(accountDTO.getOldAccountHolder()).map(AccountHolderDTO::getDetails).orElse(null);

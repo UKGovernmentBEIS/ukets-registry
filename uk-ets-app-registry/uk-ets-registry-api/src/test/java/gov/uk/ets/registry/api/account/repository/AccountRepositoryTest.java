@@ -1,11 +1,24 @@
 package gov.uk.ets.registry.api.account.repository;
 
 import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
+import gov.uk.ets.registry.api.account.domain.MetsAccountContact;
+import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
+import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
+import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
+import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsAccountContactType;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.OperatorType;
 import gov.uk.ets.registry.api.common.model.types.Status;
+import gov.uk.ets.registry.api.task.domain.Task;
+import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
+import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
@@ -19,8 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -536,6 +551,479 @@ public class AccountRepositoryTest {
         assertThat(accounts).isEmpty();
     }
 
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountEligibleAccountWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountEligibleMaritimeAccountWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT, AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountEligibleAircraftAccountWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithInactiveARWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        AccountAccess access = new AccountAccess();
+        access.setAccount(account);
+        access.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        access.setState(AccountAccessState.REMOVED);
+
+        entityManager.persist(access);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithRoleBasedAccessWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        AccountAccess access = new AccountAccess();
+        access.setAccount(account);
+        access.setRight(AccountAccessRight.ROLE_BASED);
+        access.setState(AccountAccessState.ACTIVE);
+
+        entityManager.persist(access);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithApprovedTaskWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Task task = new Task();
+        task.setAccount(account);
+        task.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        task.setStatus(RequestStateEnum.APPROVED);
+
+        entityManager.persist(task);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithOtherTaskTypeWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Task task = new Task();
+        task.setAccount(account);
+        task.setType(RequestType.AUTHORIZED_REPRESENTATIVE_RESTORE_REQUEST);
+        task.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        entityManager.persist(task);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithMetsAndRegistryContactWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        final AccountHolder accountHolder = getAccountHolder();
+
+        entityManager.persist(accountHolder);
+
+        final AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
+        entityManager.persist(accountHolderRepresentative);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithRegistryContactWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        final AccountHolder accountHolder = getAccountHolder();
+
+        entityManager.persist(accountHolder);
+
+        final AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
+        entityManager.persist(accountHolderRepresentative);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldExcludeAccountWithActiveARWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        AccountAccess access = new AccountAccess();
+        access.setAccount(account);
+        access.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        access.setState(AccountAccessState.ACTIVE);
+
+        entityManager.persist(access);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(0L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldExcludeAccountWithPendingTaskWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Task task = new Task();
+        task.setAccount(account);
+        task.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        task.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        entityManager.persist(task);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(0L, result);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AccountStatus.class, names = {"CLOSED", "REJECTED", "PROPOSED"})
+    void countAccountsWithoutActiveARsAndPendingTasks_WithContacts_shouldExcludeInvalidStatuses(AccountStatus status) {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, status);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(0L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldExcludeWhenOneOfMultipleARsIsActiveWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        // inactive AR
+        AccountAccess inactive = new AccountAccess();
+        inactive.setAccount(account);
+        inactive.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        inactive.setState(AccountAccessState.REMOVED);
+        entityManager.persist(inactive);
+
+        // active AR → should exclude
+        AccountAccess active = new AccountAccess();
+        active.setAccount(account);
+        active.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        active.setState(AccountAccessState.ACTIVE);
+        entityManager.persist(active);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(0L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldExcludeWhenOneOfMultipleTasksIsPendingWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        // approved task
+        Task approved = new Task();
+        approved.setAccount(account);
+        approved.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        approved.setStatus(RequestStateEnum.APPROVED);
+        entityManager.persist(approved);
+
+        // pending task → should exclude
+        Task pending = new Task();
+        pending.setAccount(account);
+        pending.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        pending.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+        entityManager.persist(pending);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(0L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldExcludeAccountWithoutContactsWithContacts() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        entityManager.persist(account);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(0L, result);
+    }
+
+    @Test
+    void findAccountIdentifier_shouldReturnEligibleAccount() {
+        Account account = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1, result.size());
+        assertThat(result).containsExactly(account.getIdentifier());
+    }
+
+    @Test
+    void findAccountIdentifier_shouldExcludeAccountWithActiveAR() {
+        Account account = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        AccountAccess access = new AccountAccess();
+        access.setAccount(account);
+        access.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        access.setState(AccountAccessState.ACTIVE);
+
+        entityManager.persist(access);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findAccountIdentifier_shouldExcludeAccountWithPendingTask() {
+        Account account = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        Task task = new Task();
+        task.setAccount(account);
+        task.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        task.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        entityManager.persist(task);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findAccountIdentifier_shouldExcludeAccountWithoutContacts() {
+        Account account = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        entityManager.persist(account);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void findAccountIdentifier_shouldReturnAccountWithRegistryContactOnly() {
+        Account account = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        AccountHolder accountHolder = getAccountHolder();
+        entityManager.persist(accountHolder);
+
+        AccountHolderRepresentative rep = getAccountHolderRepresentative(accountHolder);
+        entityManager.persist(rep);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(1, result.size());
+        assertThat(result).containsExactly(account.getIdentifier());
+    }
+
+    @Test
+    void findAccountIdentifier_shouldReturnMultipleEligibleAccounts() {
+        Account acc1 = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        Account acc2 = getOperatorHoldingAccount(2L,
+                RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+                AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        entityManager.persist(acc1);
+        entityManager.persist(acc2);
+
+        entityManager.persist(getMetsAccountContact(acc1));
+        entityManager.persist(getMetsAccountContact(acc2));
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+        );
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(acc1.getIdentifier()));
+        assertTrue(result.contains(acc2.getIdentifier()));
+    }
+
     private Installation getInstallation(String permitId) {
         Installation installation = new Installation();
         installation.setChangedRegulator(RegulatorType.OPRED);
@@ -586,5 +1074,39 @@ public class AccountRepositoryTest {
         return aircraft;
     }
 
+    private AccountHolder getAccountHolder() {
+        AccountHolder accountHolder = new AccountHolder();
+        accountHolder.setName("An Account Holder");
+        accountHolder.setType(AccountHolderType.ORGANISATION);
+        accountHolder.setIdentifier(1L);
+
+        return accountHolder;
+    }
+
+    private AccountHolderRepresentative getAccountHolderRepresentative(AccountHolder accountHolder) {
+        AccountHolderRepresentative accountHolderRepresentative = new AccountHolderRepresentative();
+        accountHolderRepresentative.setFirstName("An Account Holder Representative");
+        accountHolderRepresentative.setAlsoKnownAs("aka");
+        accountHolderRepresentative.setAccountContactType(AccountContactType.PRIMARY);
+        accountHolderRepresentative.setLastName("Account Holder Representative last name");
+        accountHolderRepresentative.setAccountHolder(accountHolder);
+
+        return accountHolderRepresentative;
+    }
+
+    private MetsAccountContact getMetsAccountContact(Account account) {
+        return MetsAccountContact.builder()
+                .name("Mets Contact")
+                .emailAddress("email@email.com")
+                .phoneNumber1("0123456789")
+                .phoneNumber2("0987654321")
+                .countryCode1("30")
+                .countryCode2("31")
+                .operatorType(OperatorType.OPERATOR_ADMIN)
+                .contactTypes(Set.of(MetsAccountContactType.PRIMARY))
+                .invitedOn(LocalDateTime.now())
+                .account(account)
+                .build();
+    }
 
 }

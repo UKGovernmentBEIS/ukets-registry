@@ -27,6 +27,7 @@ import { TASK_DETAILS_PATH } from '@task-management/task-details/task-details.co
 import { REGULATOR_NOTICE_LIST_PATH } from '@regulator-notice-management/list';
 import { canActivateRegulatorNoticeList } from '@registry-web/regulator-notice-management/list/guards-and-resolvers';
 import { TASK_LIST_PATH } from '@task-management/task-list/task-list.const';
+import { BULK_CLAIM_ACCOUNT_BASE_PATH } from '@bulk-claim-account/model';
 
 const routes: Routes = [
   { path: 'under-construction', component: EmptyPageComponent },
@@ -88,6 +89,15 @@ const routes: Routes = [
     loadChildren: () =>
       import('./claim-account/claim-account.module').then(
         (m) => m.ClaimAccountModule
+      ),
+  },
+  {
+    path: BULK_CLAIM_ACCOUNT_BASE_PATH,
+    canActivate: [LoginGuard],
+    // canDeactivate: [clearClaimAccountGuard],
+    loadChildren: () =>
+      import('./bulk-claim-account/bulk-claim-account.module').then(
+        (m) => m.BulkClaimAccountModule
       ),
   },
   {

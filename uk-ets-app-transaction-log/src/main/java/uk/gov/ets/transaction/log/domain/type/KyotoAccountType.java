@@ -138,7 +138,7 @@ public enum KyotoAccountType {
      */
     public static KyotoAccountType parse(Integer code) {
         KyotoAccountType result = null;
-        Optional<KyotoAccountType> optional = Stream.of(KyotoAccountType.values())
+        Optional<KyotoAccountType> optional = Stream.of(values())
                 .filter(kyotoAccountType -> kyotoAccountType.code.equals(code))
                 .findFirst();
         if (optional.isPresent()) {

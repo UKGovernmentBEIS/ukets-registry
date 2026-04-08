@@ -55,6 +55,7 @@ import gov.uk.ets.registry.api.user.admin.web.UserSearchByNameResultDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.validation.constraints.Size;
@@ -299,7 +300,7 @@ public class TaskController {
         UploadedFile file = taskService.getRequestedTaskFile(input);
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(file.getFileName())
+            ContentDisposition.builder("attachment").filename(file.getFileName(), StandardCharsets.UTF_8)
                 .build().toString());
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }

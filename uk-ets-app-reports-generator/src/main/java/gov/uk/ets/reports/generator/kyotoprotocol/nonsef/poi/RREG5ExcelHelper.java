@@ -53,7 +53,6 @@ public class RREG5ExcelHelper extends RREGExcelHelper {
         cell = row.createCell(2);
         cell.setCellStyle(getNormalStyle(sheet.getWorkbook()));
         cell.setCellValue(line.getQuantity());
-        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 
         cell = row.createCell(3);
         cell.setCellStyle(getNormalCommaSeperatedStyle(sheet.getWorkbook()));

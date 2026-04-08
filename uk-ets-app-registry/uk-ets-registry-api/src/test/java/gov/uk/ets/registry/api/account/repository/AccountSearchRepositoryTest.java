@@ -14,6 +14,7 @@ import gov.uk.ets.registry.api.common.model.types.Status;
 import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper;
 import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper.AddAccountCommand;
 import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper.AddAccountHolderCommand;
+import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper.AddAccountMetricsToAccountCommand;
 import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper.AddAircraftEntityToAccountCommand;
 import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper.AddInstallationEntityToAccountCommand;
 import gov.uk.ets.registry.api.helper.persistence.AccountModelTestHelper.AddUserToAccountAccessCommand;
@@ -48,6 +49,7 @@ class AccountSearchRepositoryTest {
 
     AddAccountHolderCommand addAccountHolderCommand;
     AddAccountCommand addAccountCommand;
+    AddAccountMetricsToAccountCommand addAccountMetricsToAccountCommand;
     AddUserToAccountAccessCommand addAuthorizedRepresentativeToAccountCommand;
     AddInstallationEntityToAccountCommand addInstallationEntityToAccountCommand;
     AccountModelTestHelper.AddMaritimeEntityToAccountCommand addMaritimeEntityToAccountCommand;
@@ -77,6 +79,12 @@ class AccountSearchRepositoryTest {
             .build();
         Account account = helper.addAccount(addAccountCommand);
 
+        addAccountMetricsToAccountCommand = AddAccountMetricsToAccountCommand.builder()
+                .account(account)
+                .complianceStatus(ComplianceStatus.A)
+                .build();
+        helper.addMetricsToAccount(addAccountMetricsToAccountCommand);
+        
         addAuthorizedRepresentativeToAccountCommand =
             AddUserToAccountAccessCommand.builder()
                 .account(account)

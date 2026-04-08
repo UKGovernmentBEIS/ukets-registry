@@ -167,4 +167,5 @@ public enum GroupNotificationType {
     PAYMENT_COMPLETED,
 
     SEND_INVITATION_TO_CONTACTS,
+    ACCOUNT_WITHHOLD_UPDATE,
 }

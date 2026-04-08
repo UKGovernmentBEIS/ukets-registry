@@ -11,8 +11,8 @@ public enum DocumentsRequestType {
 			throw new RuntimeException("Failed to match a proper Documents Request Type.");
 		}
 		return switch (requestType) {
-		case AH_REQUESTED_DOCUMENT_UPLOAD -> DocumentsRequestType.ACCOUNT_HOLDER;
-		case AR_REQUESTED_DOCUMENT_UPLOAD -> DocumentsRequestType.USER;
+		case AH_REQUESTED_DOCUMENT_UPLOAD -> ACCOUNT_HOLDER;
+		case AR_REQUESTED_DOCUMENT_UPLOAD -> USER;
 		default -> throw new RuntimeException("Failed to match a proper Documents Request Type.");
 		};
 	}

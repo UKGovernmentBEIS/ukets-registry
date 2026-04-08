@@ -36,7 +36,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
@@ -228,7 +228,7 @@ public class UserInitiatedNotificationService {
             );
         // when updating an existing notification the notification definition is not retrieved (like when creating
         // a new one) so we need to fetch the tentative recipients here too.
-        Integer recipients = Optional.ofNullable(notification.getUploadedFile())
+        Integer recipients = ofNullable(notification.getUploadedFile())
             .map(this::calculateNumberOfRecipients)
             .orElseGet(() -> calculateNumberOfRecipients(notification.getDefinition().getType()));
         return sanitizeContent(mapper.toDto(notification, recipients));

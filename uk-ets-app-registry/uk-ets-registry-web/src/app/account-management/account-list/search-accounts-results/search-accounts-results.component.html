@@ -67,6 +67,7 @@
       >
         Surrender status
       </th>
+      <ng-container *ngIf="isAdmin; then th_surrenderBalance"> </ng-container>
       <th
         scope="col"
         appSortableColumn
@@ -105,6 +106,20 @@
           "
         >
           Operator ID
+        </th>
+      </ng-template>
+      <ng-template #th_surrenderBalance>
+        <th
+          scope="col"
+          appSortableColumn
+          [sortField]="'surrenderBalance'"
+          [sortDirection]="
+            sortParameters?.sortField === 'surrenderBalance'
+              ? sortParameters.sortDirection
+              : null
+          "
+        >
+          Surrender Balance
         </th>
       </ng-template>
       <ng-template #th_accountHolderName>
@@ -153,6 +168,7 @@
           {{ complianceStatusMap[account.complianceStatus].label }}
         </app-govuk-tag>
       </td>
+      <ng-container *ngIf="isAdmin; then td_surrenderBalance"> </ng-container>
       <td class="govuk-table__cell">
         {{ formatBalance(account.balance) | number }}
       </td>
@@ -164,6 +180,15 @@
       </ng-template>
       <ng-template #td_accountHolderName>
         <td class="govuk-table__cell">{{ account.accountHolderName }}</td>
+      </ng-template>
+      <ng-template #td_surrenderBalance>
+        <td class="govuk-table__cell">
+          {{
+            account.surrenderBalance !== undefined
+              ? (formatBalance(account.surrenderBalance) | number)
+              : '-'
+          }}
+        </td>
       </ng-template>
     </tr>
   </tbody>

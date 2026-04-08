@@ -118,6 +118,15 @@ public enum ITLReconciliationStatus {
         return code;
     }
     
+    /**
+     * Returns the migrated.
+     *
+     * @return the migrated.
+     */
+    public boolean getMigrated() {
+        return migrated;
+    }
+    
     public static Optional<ITLReconciliationStatus> fromCode(Integer code) {
     	return Optional.ofNullable(codeToEnum.get(code));
     }

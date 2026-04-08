@@ -133,7 +133,7 @@ public enum RegistryAccountType {
     public static RegistryAccountType parse(String input) {
         RegistryAccountType result;
         try {
-            result = RegistryAccountType.valueOf(input);
+            result = valueOf(input);
         } catch (Exception exc) {
             // nothing to log here
             result = null;
@@ -142,7 +142,7 @@ public enum RegistryAccountType {
     }
 
     public static List<RegistryAccountType> getETSRegistryAccountTypes() {
-        return Stream.of(RegistryAccountType.values())
+        return Stream.of(values())
             .filter(registryAccountType -> !registryAccountType.equals(NONE))
             .collect(Collectors.toList());
     }

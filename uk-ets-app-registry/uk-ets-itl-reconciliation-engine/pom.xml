@@ -174,7 +174,6 @@
                 <version>${maven.checkstyle.plugin}</version>
                 <configuration>
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
@@ -203,7 +202,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
                     <targetJdk>${java.version}</targetJdk>
                     <excludeRoots>
@@ -270,7 +268,6 @@
                 <version>${maven.checkstyle.plugin}</version>
                 <configuration>
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>

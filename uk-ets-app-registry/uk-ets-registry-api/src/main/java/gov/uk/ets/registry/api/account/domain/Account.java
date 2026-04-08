@@ -189,8 +189,11 @@ public class Account implements Serializable {
     private Contact contact;
 
     /**
-     * The compliance status
+     * The compliance status.
+     * 
+     * @deprecated Use the column dynamic_compliance_status from table account_metrics instead.
      */
+    @Deprecated(forRemoval = true)
     @Column(name = "compliance_status")
     @Enumerated(EnumType.STRING)
     private ComplianceStatus complianceStatus;

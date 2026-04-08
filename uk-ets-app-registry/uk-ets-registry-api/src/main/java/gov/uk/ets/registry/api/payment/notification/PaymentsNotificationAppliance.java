@@ -88,7 +88,7 @@ public class PaymentsNotificationAppliance {
                 .map(Task::getClaimedBy)
                 .map(claimant -> PaymentCompletedGroupNotification.builder()
                         .recipients(notificationService.findUserEmail(claimant.getUrid(), true))
-                        .requestId(result.getReferenceNumber())
+                        .requestId(Objects.toString(result.getReferenceNumber(), null))
                         .type(GroupNotificationType.PAYMENT_COMPLETED)
                         .build())
                 .ifPresent(groupNotificationClient::emitGroupNotification);

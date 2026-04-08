@@ -5,7 +5,6 @@ import java.util.Map;
 
 import freemarker.template.Configuration;
 import gov.uk.ets.registry.api.common.mail.MailConfiguration;
-import gov.uk.ets.registry.api.notification.emailgeneration.EmailGenerator.EmailSentence;
 import gov.uk.ets.registry.api.notification.integration.IntegrationDisabledNotification;
 import gov.uk.ets.registry.usernotifications.GroupNotification;
 import lombok.RequiredArgsConstructor;

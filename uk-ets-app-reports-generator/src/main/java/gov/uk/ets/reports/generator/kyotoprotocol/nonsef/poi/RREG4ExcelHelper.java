@@ -186,7 +186,6 @@ public class RREG4ExcelHelper extends RREGExcelHelper {
         Cell cell = row.createCell(countColumn);
         cell.setCellStyle(getNormalStyle(getWorkbook()));
         cell.setCellValue(Long.parseLong(item.getNotificationIdentifier()));
-        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 
 
         if (showNotificationType) {
@@ -258,7 +257,6 @@ public class RREG4ExcelHelper extends RREGExcelHelper {
         cell = row.createCell(8);
         cell.setCellStyle(getNormalStyle(getWorkbook()));
         cell.setCellValue(item.getQuantity());
-        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 
         autoSizeColumns(sheet, 9);
     }

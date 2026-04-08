@@ -460,8 +460,8 @@ public class TaskService {
         }
 
         if (task.getAccountNumber() != null) {
-           if((AUTHORIZED_REPRESENTATIVE_CRUD_LIST.contains(task.getTaskType()))&&
-                   (task.getRequestStatus().equals(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED))){
+            if (AUTHORIZED_REPRESENTATIVE_CRUD_LIST.contains(task.getTaskType()) &&
+                   task.getRequestStatus().equals(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED)) {
                    comment = (comment == null)
                            ? task.getAccountFullIdentifier()
                            : comment.concat("\n").concat(task.getAccountFullIdentifier());

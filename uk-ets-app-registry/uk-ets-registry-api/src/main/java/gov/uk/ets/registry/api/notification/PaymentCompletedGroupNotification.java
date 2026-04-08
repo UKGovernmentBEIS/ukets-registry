@@ -12,10 +12,10 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class PaymentCompletedGroupNotification extends EmailNotification {
 
-    private Long requestId;
+    private String requestId;
 
     @Builder
-    public PaymentCompletedGroupNotification(Set<String> recipients, GroupNotificationType type, Long requestId) {
+    public PaymentCompletedGroupNotification(Set<String> recipients, GroupNotificationType type, String requestId) {
         super(recipients, type, null, null, null);
         this.requestId = requestId;
     }

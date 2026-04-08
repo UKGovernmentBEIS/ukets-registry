@@ -16,17 +16,17 @@
 	<description>Service for validating passwords</description>
 
 	<properties>
-		<java.version>17</java.version>
-		<maven.checkstyle.plugin>3.1.1</maven.checkstyle.plugin>
+		<java.version>21</java.version>
+		<maven.checkstyle.plugin>3.6.0</maven.checkstyle.plugin>
 		<maven.checkstyle.plugin.configLocation>checkstyle-ukets.xml</maven.checkstyle.plugin.configLocation>
-		<maven.pmd.plugin>3.15.0</maven.pmd.plugin>
-		<maven.spotbugs.plugin>4.5.2.0</maven.spotbugs.plugin>
+		<maven.pmd.plugin>3.28.0</maven.pmd.plugin>
+		<maven.spotbugs.plugin>4.9.8.2</maven.spotbugs.plugin>
 		<apt.maven.plugin.version>1.1.3</apt.maven.plugin.version>
-		<jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+		<jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
 		<uk.ets.common.lib.version>1.0.1-SNAPSHOT</uk.ets.common.lib.version>
 		<zxcvbn.version>1.4.0</zxcvbn.version>
-		<checkstyle.version>8.45.1</checkstyle.version>
-		<springdoc.openapi.core.version>1.1.49</springdoc.openapi.core.version>
+		<checkstyle.version>13.2.0</checkstyle.version>
+		<springdoc.openapi.core.version>2.8.13</springdoc.openapi.core.version>
 	</properties>
 
 	<dependencies>
@@ -112,7 +112,7 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-core</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.openapi.core.version}</version>
         </dependency>		
 	</dependencies>
@@ -152,7 +152,6 @@
 				<version>${maven.checkstyle.plugin}</version>
 				<configuration>
 					<configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-					<encoding>UTF-8</encoding>
 					<consoleOutput>true</consoleOutput>
 					<failsOnError>true</failsOnError>
 					<linkXRef>false</linkXRef>
@@ -180,9 +179,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<sourceEncoding>utf-8</sourceEncoding>
 					<minimumTokens>100</minimumTokens>
-					<targetJdk>11</targetJdk>
+					<targetJdk>${java.version}</targetJdk>
 					<excludeRoots>
 						<excludeRoot>target/generated-sources/java</excludeRoot>
 					</excludeRoots>

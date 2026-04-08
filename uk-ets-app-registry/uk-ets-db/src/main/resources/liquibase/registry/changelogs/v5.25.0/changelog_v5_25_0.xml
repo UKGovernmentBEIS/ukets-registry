@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+  
+    <changeSet id="5_25_0_ADD_SCHEMA_REPORTING_METRICS" author="P35036" context="migrate">
+        <comment>Adds schema reporting metrics</comment>
+        <sql>
+				create schema if not exists reporting_metrics;                                                               
+        </sql>
+        <rollback>
+            <sql>
+                drop schema if exists reporting_metrics cascade;
+            </sql>
+        </rollback>
+    </changeSet>  
+    
+    <changeSet id="5_25_0_ADD_TABLE_ACCOUNT_METRICS" author="P35036" context="migrate">
+        <comment>Adds table account metrics on schema reporting_metrics</comment>
+        <sql>
+        
+            create sequence reporting_metrics.account_metrics_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;        
+        
+			create table reporting_metrics.account_metrics
+			(
+				id bigint not null primary key,
+			    account_identifier bigint not null,
+			    total_emissions bigint,
+			    quantity_surrendered bigint,
+			    quantity_reversed_surrendered bigint,
+			    surrender_balance bigint,
+			    dynamic_compliance_status varchar(40),
+			
+			    constraint "account_metrics_account_identifier"
+			        unique ("account_identifier")
+			);
+			
+			comment on table reporting_metrics.account_metrics is 'Stores aggregated data for the account entity';
+            comment on column reporting_metrics.account_metrics.account_identifier
+                is 'The business identifier of the account';
+            comment on column reporting_metrics.account_metrics.total_emissions
+                is 'The total emissions of the account';    
+            comment on column reporting_metrics.account_metrics.surrender_balance
+                is 'The net surrenders minus the total emissions of the account';
+            comment on column reporting_metrics.account_metrics.quantity_surrendered
+                is 'The total quantity of surrenders originating from the account';
+            comment on column reporting_metrics.account_metrics.quantity_reversed_surrendered
+                is 'The total quantity from reversal of surrenders';
+            comment on column reporting_metrics.account_metrics.dynamic_compliance_status
+                is 'The dynamic compliance status of the account';  
+                
+            create index "account_metrics_compl_idx" on reporting_metrics.account_metrics ("dynamic_compliance_status");
+            create index "account_metrics_surrender_bal_idx" on reporting_metrics.account_metrics ("surrender_balance");                                                                   
+        </sql>
+        <rollback>
+            <sql>
+               drop table if exists reporting_metrics.account_metrics cascade;
+               drop sequence if exists reporting_metrics.account_metrics_seq;
+            </sql>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="5_25_0_PROCESSED_REPORTING_METRICS_EVENT_TABLE_CREATION" author="P35036" context="migrate">
+
+        <comment>initial creation of processed account metrics event on schema reporting metrics</comment>
+        <sql>
+
+            create sequence reporting_metrics.processed_account_metrics_event_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            create table reporting_metrics.processed_account_metrics_event
+            (
+	            id bigint not null primary key,
+	            event_id uuid not null,
+	            payload jsonb not null,
+	            processed_on timestamp not null
+            );
+
+            comment on table reporting_metrics.processed_account_metrics_event is 'Stores the processed reporting metrics data entity';
+            comment on column reporting_metrics.processed_account_metrics_event.event_id is 'The reporting metrics data event payload unique identifier.';
+            comment on column reporting_metrics.processed_account_metrics_event.payload is 'The reporting metrics data event payload in json format';
+            
+            create index idx_processed_account_metrics_payload_gin on reporting_metrics.processed_account_metrics_event using gin(payload);
+            create unique index "processed_account_metrics_event_event_id_uq_idx" on reporting_metrics.processed_account_metrics_event (event_id);
+        </sql>
+
+        <rollback>
+            <sql>
+                drop table if exists reporting_metrics.processed_account_metrics_event cascade;
+                drop sequence if exists reporting_metrics.processed_account_metrics_event_seq;
+            </sql>
+        </rollback>
+
+    </changeSet>    
+
+    <changeSet id="5_25_0_REPORTING_METRICS_OUTBOX_TABLE_CREATION" author="P35036" context="migrate">
+
+        <comment>initial creation of reporting metrics outbox on default schema</comment>
+        <sql>
+
+            create sequence reporting_metrics_outbox_seq minvalue 0 maxvalue 999999999999999999 increment by 1 start with 1
+            cache 1 no cycle;
+
+            create table reporting_metrics_outbox
+            (
+	            id bigint not null primary key,
+	            event_id uuid not null,
+	            payload jsonb not null,
+	            generated_on timestamp not null,
+	            status varchar(20) not null
+            );
+
+            comment on table reporting_metrics_outbox is 'Reporting metrics data outbox entity';
+            comment on column reporting_metrics_outbox.event_id is 'The reporting metrics data event payload unique identifier.';
+            comment on column reporting_metrics_outbox.payload is 'The reporting metrics data event payload in json format';
+            comment on column reporting_metrics_outbox.status is 'The status can be either created or sent';
+            
+            create unique index "reporting_metrics_outbox_event_id_uq_idx" on reporting_metrics_outbox (event_id);
+            create index idx_reporting_metrics_outbox_payload_gin  on reporting_metrics_outbox using gin(payload);
+            create index "reporting_metrics_outbox_status_generated_on_idx" on reporting_metrics_outbox (status, generated_on);
+        </sql>
+
+        <rollback>
+            <sql>
+                drop table if exists "reporting_metrics_outbox" cascade;
+                drop sequence if exists reporting_metrics_outbox_seq;
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

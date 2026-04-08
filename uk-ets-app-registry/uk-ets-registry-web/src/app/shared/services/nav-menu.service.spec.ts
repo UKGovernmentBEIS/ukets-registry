@@ -43,7 +43,7 @@ describe('NavMenuService', () => {
   describe('Load menu permissions', () => {
     test('should retrieve all scopes', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
-      allMenuScopes.splice(6, 1);
+      allMenuScopes.splice(7, 1);
 
       //Mock hasScope
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
@@ -64,7 +64,7 @@ describe('NavMenuService', () => {
 
     test('Should retrieve only scopes that user has access to', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
-      allMenuScopes.splice(6, 1);
+      allMenuScopes.splice(7, 1);
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
       authApiServiceSpy.mockImplementation((scope, _) => {
         if (scope === 'urn:uk-ets-registry-api:issue-allowances:read') {
@@ -88,10 +88,10 @@ describe('NavMenuService', () => {
   describe('Get All unique scopes for menu', () => {
     test('should calculate unique scopes for navigation menu ', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
-      allMenuScopes.splice(6, 1);
+      allMenuScopes.splice(7, 1);
       const scopes = service.getAllUniqueScopesForMenu(false, true, true);
 
-      expect(scopes.length).toEqual(22);
+      expect(scopes.length).toEqual(23);
       expect(scopes.map((s) => s.name).sort()).toEqual(allMenuScopes);
     });
   });
@@ -99,7 +99,7 @@ describe('NavMenuService', () => {
   describe('Load menu permissions with environment variable to run for RAs only', () => {
     test('should retrieve all scopes', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
-      allMenuScopes.splice(4, 1);
+      allMenuScopes.splice(5, 1);
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
       authApiServiceSpy.mockImplementation((_, __) => {
         return of(true);
@@ -118,7 +118,7 @@ describe('NavMenuService', () => {
 
     test('Should retrieve only scopes that user has access to', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
-      allMenuScopes.splice(4, 1);
+      allMenuScopes.splice(5, 1);
       const authApiServiceSpy = jest.spyOn(authApiService, 'hasScope');
       authApiServiceSpy.mockImplementation((scope, _) => {
         if (scope === 'urn:uk-ets-registry-api:issue-allowances:read') {
@@ -142,10 +142,10 @@ describe('NavMenuService', () => {
   describe('Get All unique scopes for menu with environment variable to run for RAs only', () => {
     test('should calculate unique scopes for navigation menu ', () => {
       const allMenuScopes = Object.values(MENU_SCOPES).sort();
-      allMenuScopes.splice(4, 1);
+      allMenuScopes.splice(5, 1);
       const scopes = service.getAllUniqueScopesForMenu(true, true, true);
 
-      expect(scopes.length).toEqual(22);
+      expect(scopes.length).toEqual(23);
       expect(scopes.map((s) => s.name).sort()).toEqual(allMenuScopes);
     });
   });

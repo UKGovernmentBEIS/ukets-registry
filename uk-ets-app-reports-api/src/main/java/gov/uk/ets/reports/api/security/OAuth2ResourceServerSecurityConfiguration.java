@@ -87,7 +87,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
     }             
             
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authorize) -> authorize
               .requestMatchers(HttpMethod.POST,"/api-reports/reports.request.from.client", 
               "/api-reports/roles.add", 
@@ -110,14 +110,14 @@ public class OAuth2ResourceServerSecurityConfiguration {
                   .addHeaderWriter(new StaticHeadersWriter("X-Permitted-Cross-Domain-Policies", "none"))  
                   // without this there is an error concerning the cookies iframe (specifically this header is set to DENY)
                   .frameOptions(FrameOptionsConfig::sameOrigin)          
-                  .permissionsPolicy(p -> p.policy(SecurityHeaders.FEATURE_POLICY_HEADER))
+                  .permissionsPolicyHeader(p -> p.policy(SecurityHeaders.FEATURE_POLICY_HEADER))
             );
 
         return http.build();
     }
     
     @Bean
-    public OpaqueTokenIntrospector introspector() {
+    OpaqueTokenIntrospector introspector() {
         return new UkEtsOpaqueTokenIntrospector(tokenIntrospectionUri,resource, secret);
     }     
 
@@ -126,7 +126,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
     } 
     
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(applicationUrl));
         configuration.setAllowedMethods(List.of("*"));
@@ -138,7 +138,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
     }    
     
     @Bean
-    public AuthorizationsLoader authorizationsLoader(ObjectMapper mapper) {
+    AuthorizationsLoader authorizationsLoader(ObjectMapper mapper) {
         return new AuthorizationsLoader(mapper);
     }
     
@@ -151,7 +151,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
      */
     @Profile("!integrationTest")
     @Bean
-    public CommandLineRunner keycloakAuthorizationDataLoader(ObjectMapper mapper) {
+    CommandLineRunner keycloakAuthorizationDataLoader(ObjectMapper mapper) {
         return new CommandLineRunner() {
             @Autowired
             ApplicationContext context;

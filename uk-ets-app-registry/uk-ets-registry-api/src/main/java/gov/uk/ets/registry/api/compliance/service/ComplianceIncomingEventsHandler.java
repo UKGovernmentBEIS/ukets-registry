@@ -1,16 +1,13 @@
 package gov.uk.ets.registry.api.compliance.service;
 
-
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.DynamicComplianceStatusCalculatedEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.domain.StaticComplianceStatus;
 import gov.uk.ets.registry.api.compliance.messaging.events.incoming.ComplianceCalculationErrorEvent;
 import gov.uk.ets.registry.api.compliance.messaging.events.incoming.ComplianceResponseEvent;
@@ -19,7 +16,9 @@ import gov.uk.ets.registry.api.compliance.messaging.outbox.ComplianceOutboxRepos
 import gov.uk.ets.registry.api.compliance.repository.StaticComplianceStatusRepository;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +29,7 @@ public class ComplianceIncomingEventsHandler {
     private final CompliantEntityRepository compliantEntityRepository;
     private final EventService eventService;
     private final ComplianceOutboxRepository complianceOutboxRepository;
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     /**
      * Update account with calculated compliance status.
@@ -42,6 +42,12 @@ public class ComplianceIncomingEventsHandler {
             ));
         ComplianceStatus previousStatus = account.getComplianceStatus();
         account.setComplianceStatus(event.getStatus());
+        //TODO Also insert an event of type DynamicComplianceStatusCalculatedEvent to reporting_metrics_outbox
+        reportingMetricsEventService.processEvent(DynamicComplianceStatusCalculatedEvent
+                .builder()
+                .accountIdentifier(account.getIdentifier())
+                .dynamicComplianceStatus(event.getStatus())
+                .build());
         createAndPublishEvent(event,previousStatus);
         
     }

@@ -5,6 +5,7 @@ import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.service.AccountClaimProcessor;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountService;
@@ -76,6 +77,7 @@ public class AuthorisedRepresentativeUpdateTaskService
     private final PaymentTaskAutoCompletionService paymentTaskAutoCompletionService;
     private final AccountClaimService accountClaimService;
     private final AccountContactService accountContactService;
+    private final AccountClaimProcessor processor;
 
     @Override
     public Set<RequestType> appliesFor() {
@@ -215,7 +217,7 @@ public class AuthorisedRepresentativeUpdateTaskService
                 final AccountType accountType = AccountType.parse(accountDTO.getAccountType());
                 final RegistryAccountType regAccountType = accountType != null ? accountType.getRegistryType() : null;
                 final boolean accountClaimEnabled =
-                        accountClaimService.isAccountClaimEnabled(regAccountType);
+                        processor.isAccountClaimEnabled(regAccountType);
                 final boolean accountClaimApplicable =
                         isAccountClaimApplicableAdditionReject(accountId, accountIdentifier);
                 if (accountClaimEnabled && accountClaimApplicable) {
@@ -244,10 +246,10 @@ public class AuthorisedRepresentativeUpdateTaskService
 
         final Long pendingAuthorizedRepresentativeTasks = taskRepository.countPendingTasksByAccountIdInAndType(
                 List.of(accountId),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
         );
 
-        return  (accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 1);
+        return  accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 1;
     }
 
 

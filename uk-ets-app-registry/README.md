@@ -1,14 +1,14 @@
 # UK ETS Registry application
 
-The UK ETS Registry is a Java(SpringBoot) / Angular 8 based application.
+The UK ETS Registry is a Java(SpringBoot) / Angular based application.
 
 ## Required tools 
 Please make sure the following tools are installed and properly configured.
 
-- [Adopt OpenJDK 11 (LTS) HotSpot](https://adoptopenjdk.net/)
-- [Apache Maven 3.6.2](https://maven.apache.org/download.cgi)
+- [Adopt OpenJDK >=21 (LTS) HotSpot](https://adoptopenjdk.net/)
+- [Apache Maven](https://maven.apache.org/download.cgi)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) 
-- [NodeJS 10.16.3 LTS](https://nodejs.org/en/)
+- [NodeJS](https://nodejs.org/en/)
 - [Angular CLI](https://cli.angular.io/)
 
 ## Structure
@@ -19,10 +19,6 @@ web application development and build instructions.
 
 ## API application (backend)
 Please refer [here](uk-ets-registry-api/README.md) for information on the
-web application development and build instructions.
-
-## Executable Specifications
-Please refer [here](uk-ets-registry-specs/README.md) for information on the
 web application development and build instructions.
 
 ## Running the supporting services

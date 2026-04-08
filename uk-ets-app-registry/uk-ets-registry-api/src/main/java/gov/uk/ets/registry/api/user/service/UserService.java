@@ -256,7 +256,7 @@ public class UserService {
      */
     public List<User> findUsersByRoleNameAndState(List<String> userRoles, List<UserStatus> statuses) {
         return userRepository.findUsersByRoleNameAndState(userRoles, statuses);
-    };
+    }
 
     /**
      * Retrieves the user by its ID.
@@ -922,8 +922,9 @@ public class UserService {
 
 		final List<RequestType> blockingTaskTypes = List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,
 															RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST,
-															RequestType.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST, 
-															RequestType.AR_REQUESTED_DOCUMENT_UPLOAD);
+															RequestType.AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST,
+															RequestType.AR_REQUESTED_DOCUMENT_UPLOAD,
+                                                            RequestType.PRINT_ENROLMENT_LETTER_REQUEST);
 
 		if(CollectionUtils.isNotEmpty(taskRepository.findPendingTasksByTypesAndUser(blockingTaskTypes, urid))) {
 			throw new BusinessRuleErrorException(ErrorBody.from(REQUESTS_PENDING_APPROVAL_ERROR_MSG));

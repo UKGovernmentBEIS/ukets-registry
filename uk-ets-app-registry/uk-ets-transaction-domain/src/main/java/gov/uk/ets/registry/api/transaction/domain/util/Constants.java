@@ -132,7 +132,7 @@ public final class Constants {
     public static boolean isInboundTransaction(TransactionSummary transaction) {
         return TransactionType.ExternalTransfer.equals(transaction.getType()) &&
             StringUtils.hasText(transaction.getTransferringRegistryCode()) &&
-            !Constants.isInternalRegistry(transaction.getTransferringRegistryCode());
+            !isInternalRegistry(transaction.getTransferringRegistryCode());
     }
 
     /**
@@ -145,7 +145,7 @@ public final class Constants {
         return TransactionType.ExternalTransfer.equals(transaction.getType()) &&
             transaction.getTransferringAccount() != null &&
             StringUtils.hasText(transaction.getTransferringAccount().getAccountRegistryCode()) &&
-            !Constants.isInternalRegistry(transaction.getTransferringAccount().getAccountRegistryCode());
+            !isInternalRegistry(transaction.getTransferringAccount().getAccountRegistryCode());
     }
 
 

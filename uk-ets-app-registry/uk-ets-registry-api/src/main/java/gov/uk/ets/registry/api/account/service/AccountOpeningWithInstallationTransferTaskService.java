@@ -16,6 +16,8 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.Fou
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlySeniorRegistryAdminCanApproveTask;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.UniqueEmitterIdBusinessRule;
 import gov.uk.ets.registry.api.common.Mapper;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.InstallationTransferEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.compliance.messaging.ComplianceEventService;
 import gov.uk.ets.registry.api.compliance.messaging.events.outgoing.GetCurrentDynamicStatusEvent;
 import gov.uk.ets.registry.api.event.service.EventService;
@@ -81,6 +83,8 @@ public class AccountOpeningWithInstallationTransferTaskService
     private final RequestedDocsTaskService requestedDocsTaskService;
 
     private final OperatorEventService operatorEventService;
+    
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     @Override
     public UploadedFile getRequestedTaskFile(TaskFileDownloadInfoDTO infoDTO) {
@@ -159,6 +163,13 @@ public class AccountOpeningWithInstallationTransferTaskService
         sendAccountNotification(oldAccount.get(), newAccount, taskDTO.getCompletedDate());
 
         operatorEventService.updateOperator(newAccount.getCompliantEntity(), newAccount.getRegistryAccountType().name());
+        
+        //TODO Also insert an event to reporting_metrics_outbox
+        reportingMetricsEventService.processEvent(InstallationTransferEvent
+                    .builder()
+                    .transferringAccountIdentifier(oldAccount.get().getIdentifier())
+                    .acquiringAccountIdentifier(newAccount.getIdentifier())
+                    .build());
         return defaultResponseBuilder(taskDTO).build();
     }
 

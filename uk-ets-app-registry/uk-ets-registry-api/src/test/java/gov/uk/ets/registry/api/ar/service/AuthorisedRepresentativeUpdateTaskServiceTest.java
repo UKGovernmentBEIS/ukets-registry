@@ -18,6 +18,7 @@ import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.service.AccountClaimProcessor;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountService;
@@ -124,6 +125,8 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
     private AccountClaimService accountClaimService;
     @Mock
     private AccountContactService accountContactService;
+    @Mock
+    private AccountClaimProcessor accountClaimProcessor;
 
     ObjectMapper jacksonMapper = new ObjectMapper();
 
@@ -141,7 +144,7 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
         authorisedRepresentativeUpdateTaskService = new AuthorisedRepresentativeUpdateTaskService(accountService,
             userConversionService, userAdministrationService, accountAccessRepository, userService, taskRepository,
             authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper, taskARStatusRepository,paymentTaskAutoCompletionService,
-                accountClaimService, accountContactService);
+                accountClaimService, accountContactService, accountClaimProcessor);
     }
 
     @DisplayName("Retrieve authorise representative update values successfully.")
@@ -203,7 +206,7 @@ class AuthorisedRepresentativeUpdateTaskServiceTest {
             when(accountAccessRepository.finARsByAccount_Identifier(accountInfo.getIdentifier())).thenReturn(List.of(createAccountAccess(1L, AccountAccessState.REMOVED)));
             when(taskRepository.countPendingTasksByAccountIdInAndType(List.of(1L),
                     List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST))).thenReturn(1L);
-            when(accountClaimService.isAccountClaimEnabled(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT))
+            when(accountClaimProcessor.isAccountClaimEnabled(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT))
                     .thenReturn(true);
         }
 

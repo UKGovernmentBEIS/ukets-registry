@@ -22,7 +22,7 @@ public class PaymentDocumentsService {
     private final ConversionService conversionService;
     private final PaymentFileBuilder paymentInvoiceBuilder;
     
-    public enum PaymentFilePrefix { Invoice, Receipt};
+    public enum PaymentFilePrefix { Invoice, Receipt}
 
     @Transactional(readOnly = true)
     public byte[] previewInvoicePdf(Long requestId, @Valid PaymentDTO paymentDTO, Long subtaskId) throws Exception {

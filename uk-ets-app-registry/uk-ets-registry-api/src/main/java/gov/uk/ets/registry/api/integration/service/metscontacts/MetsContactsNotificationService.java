@@ -3,7 +3,7 @@ package gov.uk.ets.registry.api.integration.service.metscontacts;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.MetsAccountContact;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
-import gov.uk.ets.registry.api.account.service.AccountClaimService;
+import gov.uk.ets.registry.api.account.service.AccountClaimProcessor;
 import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountDTOFactory;
 import gov.uk.ets.registry.api.account.service.AccountGeneratorService;
@@ -30,8 +30,8 @@ public class MetsContactsNotificationService {
     private final AccountRepository accountRepository;
     private final MetsContactMapper metsContactMapper;
     private final AccountGeneratorService accountGeneratorService;
-    private final AccountClaimService accountClaimService;
     private final AccountService accountService;
+    private final AccountClaimProcessor processor;
 
     public void sendInvitation(MetsContactsEventOutcome outcome) throws NoSuchAlgorithmException {
 
@@ -41,7 +41,7 @@ public class MetsContactsNotificationService {
                 .findByFullIdentifier(accountIdentifier)
                 .orElseThrow(() -> new IllegalStateException("Account not found"));
 
-        if (accountClaimService.isAccountClaimEnabled(account.getRegistryAccountType())) {
+        if (processor.isAccountClaimEnabled(account.getRegistryAccountType())) {
             sendInvitation(account, metsContactMapper.convert(outcome.getEvent()));
         }
     }

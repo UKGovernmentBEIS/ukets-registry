@@ -17,7 +17,10 @@ import org.springframework.scheduling.TaskScheduler;
  * 
  * @author P35036
  * @since v3.7.0
+ * @deprecated as of Shedlock v7.6.0 and registry-api v5.25.0 
+ *     use net.javacrumbs.shedlock.core.LockingTaskExecutor.Task instead.
  */
+@Deprecated
 public interface ScheduledMigrator {
 
     int LOCK_AT_MOST_SECONDS = 60;
@@ -26,6 +29,7 @@ public interface ScheduledMigrator {
     /**
      * Schedule the provided migrator using the lockProvider & taskScheduler.
      */
+    @Deprecated
     default void schedule(LockProvider lockProvider,TaskScheduler taskScheduler,Migrator migrator) 
         throws Exception {
         LockableTaskScheduler lockableTaskScheduler = createScheduler(lockProvider,taskScheduler);
@@ -42,5 +46,6 @@ public interface ScheduledMigrator {
         return new LockableTaskScheduler(taskScheduler, lockManager);
     }
     
+    @Deprecated
     String getSchedulerLockName();
 }

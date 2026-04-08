@@ -8,6 +8,8 @@ import gov.uk.ets.registry.api.itl.reconciliation.repository.ITLReconciliationSt
 import gov.uk.ets.registry.api.itl.reconciliation.repository.ITLSnapshotBlockRepository;
 import gov.uk.ets.registry.api.itl.reconciliation.repository.ITLSnapshotLogRepository;
 import gov.uk.ets.registry.api.itl.reconciliation.type.ITLReconciliationStatus;
+
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -85,8 +87,19 @@ public class InitiateITLReconciliationService {
     private void createSnapshotScheduler(ITLSnapshotLog snapshotLog) {
         Instant lockAtMostUntil = snapshotLog.getSnapshotDatetime().toInstant().plus(5, ChronoUnit.MINUTES);
         Instant lockAtLeastUntil = snapshotLog.getSnapshotDatetime().toInstant();
+        Instant createdAt = Instant.now();
+        Duration lockAtMostFor = Duration.between(createdAt, lockAtMostUntil);
+        Duration lockAtLeastFor = Duration.between(createdAt, lockAtLeastUntil);
         LockConfigurationExtractor lockConfigurationExtractor =
-            (Runnable task) -> Optional.of(new LockConfiguration("ITLReconciliationSnapshotSchedulerLock",lockAtMostUntil,lockAtLeastUntil));
+              (Runnable task) -> Optional.of(
+                  new LockConfiguration(
+                      createdAt,
+                      "ITLReconciliationSnapshotSchedulerLock",
+                      lockAtMostFor,
+                      lockAtLeastFor
+               )
+           );
+
         LockManager lockManager = new DefaultLockManager(lockProvider,lockConfigurationExtractor);
         LockableTaskScheduler lockableTaskScheduler = new LockableTaskScheduler(taskScheduler,lockManager);
         lockableTaskScheduler.schedule(() -> takeSnapshotData(snapshotLog.getId()), snapshotLog.getSnapshotDatetime());

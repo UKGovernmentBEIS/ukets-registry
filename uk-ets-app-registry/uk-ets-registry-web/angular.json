@@ -132,32 +132,6 @@
           "options": {
             "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "uk-ets-registry-web:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "uk-ets-registry-web:serve:production"
-            },
-            "env": {
-              "protractorConfig": "e2e/protractor.conf.js",
-              "devServerTarget": ""
-            },
-            "remote": {
-              "protractorConfig": "e2e/protractor.conf.js",
-              "baseUrl": "https://e2e.ukets.net",
-              "devServerTarget": ""
-            },
-            "local": {
-              "protractorConfig": "e2e/protractor.conf.js",
-              "baseUrl": "http://ukets.docker.internal",
-              "devServerTarget": ""
-            }
-          }
         }
       }
     }

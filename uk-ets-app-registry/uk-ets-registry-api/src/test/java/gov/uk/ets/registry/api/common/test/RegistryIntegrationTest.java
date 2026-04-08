@@ -48,7 +48,8 @@ import org.springframework.test.context.TestPropertySource;
     "registry-aviation-exemption-response-topic",
     "aviation-registry-exemption-request-topic-dlt",
     "registry-installation-withhold-response-topic",
-    "installation-registry-withhold-request-topic-dlt"
+    "installation-registry-withhold-request-topic-dlt",
+    "ets.registry.reporting.metrics.event.topic",
 },
     brokerPropertiesLocation = "classpath:integration-test-application.properties",
     brokerProperties = "auto.create.topics.enable=true",

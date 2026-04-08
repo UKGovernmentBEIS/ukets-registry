@@ -5,6 +5,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.common.model.types.Status;
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArAccountDTO;
+import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.KyotoAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
@@ -390,4 +391,62 @@ public interface AccountRepository
     List<Account> findByAccountClaimCodeIsNull();
 
     List<Account> findByRegistryAccountTypeIn(List<RegistryAccountType> types);
+
+    @Query("""
+                SELECT COUNT(a)
+                FROM Account a
+                WHERE a.accountStatus NOT IN (
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.PROPOSED,
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.REJECTED,
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.CLOSED
+                )
+                AND a.registryAccountType IN :accountTypes
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM AccountAccess aa
+                    WHERE aa.account = a
+                    AND aa.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED
+                    AND aa.state = gov.uk.ets.registry.api.account.domain.types.AccountAccessState.ACTIVE
+                )
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM Task t
+                    WHERE t.account = a
+                    AND t.type IN :taskTypes
+                    AND t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED
+                )
+               AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
+                    EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep WHERE ah = a.accountHolder))
+            """)
+    Long countAccountsWithoutActiveARsAndPendingTasksWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
+                                                                  @Param("taskTypes") List<RequestType> taskTypes);
+
+    @Query("""
+                SELECT a.identifier
+                FROM Account a
+                WHERE a.accountStatus NOT IN (
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.PROPOSED,
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.REJECTED,
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.CLOSED
+                )
+                AND a.registryAccountType IN :accountTypes
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM AccountAccess aa
+                    WHERE aa.account = a
+                    AND aa.right <> gov.uk.ets.registry.api.account.domain.types.AccountAccessRight.ROLE_BASED
+                    AND aa.state = gov.uk.ets.registry.api.account.domain.types.AccountAccessState.ACTIVE
+                )
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM Task t
+                    WHERE t.account = a
+                    AND t.type IN :taskTypes
+                    AND t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED
+                )
+                AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
+                     EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep WHERE ah = a.accountHolder))
+            """)
+    List<Long> findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
+                                                                               @Param("taskTypes") List<RequestType> taskTypes);
 }

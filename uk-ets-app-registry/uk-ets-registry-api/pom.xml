@@ -317,7 +317,7 @@
             <groupId>uk.gov.ets</groupId>
             <artifactId>uk-ets-lib-reporting-commons-model</artifactId>
             <version>${uk-ets-lib-commons-reporting.version}</version>
-        </dependency>
+        </dependency>       
         <dependency>
             <groupId>uk.gov.netz</groupId>
             <artifactId>uk-netz-common-integration-model</artifactId>
@@ -415,7 +415,6 @@
                 <version>${maven.checkstyle.plugin}</version>
                 <configuration>
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
@@ -448,14 +447,18 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
-                    <targetJdk>17</targetJdk>
+                    <targetJdk>${java.version}</targetJdk>
+                    <excludes>
+                        <exclude>**/generated/*.java</exclude>
+                        <exclude>**/generated-sources/*.java</exclude>
+                    </excludes>
                     <excludeRoots>
+                        <excludeRoot>target/generated-sources</excludeRoot>
                         <excludeRoot>target/generated-sources/annotations</excludeRoot>
                     </excludeRoots>
                 </configuration>
-            </plugin>
+            </plugin>           
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
@@ -514,7 +517,6 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
@@ -526,23 +528,6 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>${maven.pmd.plugin}</version>
-                <configuration>
-                    <sourceEncoding>utf-8</sourceEncoding>
-                    <minimumTokens>100</minimumTokens>
-                    <targetJdk>17</targetJdk>
-                    <excludes>
-                        <exclude>**/generated/*.java</exclude>
-                        <exclude>**/generated-sources/*.java</exclude>
-                    </excludes>
-                    <excludeRoots>
-                        <excludeRoot>target/generated-sources</excludeRoot>
-                    </excludeRoots>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>

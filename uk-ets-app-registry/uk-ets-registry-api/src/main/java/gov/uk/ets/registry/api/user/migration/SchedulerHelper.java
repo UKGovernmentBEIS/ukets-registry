@@ -22,6 +22,11 @@ public class SchedulerHelper {
     private final LockProvider lockProvider;
     private final TaskScheduler taskScheduler;
     
+    /**
+     * 
+     * @deprecated use {@link #createLockConfiguration(String)} instead.
+     */
+    @Deprecated(forRemoval = true)
     public LockableTaskScheduler createScheduler(String shedlockName) {
         Instant createdAt = Instant.now();
         Duration lockAtMostFor = Duration.ofSeconds(LOCK_AT_MOST_SECONDS);
@@ -31,6 +36,18 @@ public class SchedulerHelper {
             new LockConfiguration(createdAt, shedlockName, lockAtMostFor, lockAtLeastFor);
         LockConfigurationExtractor lockConfigurationExtractor = (Runnable task) -> Optional.of(lockConfiguration);
         LockManager lockManager = new DefaultLockManager(lockProvider, lockConfigurationExtractor);
+        
         return new LockableTaskScheduler(taskScheduler, lockManager);
+    }
+    
+    /**
+     * Creates a new LockConfiguration named with the provided argument.
+     */
+    public LockConfiguration createLockConfiguration(String shedlockName) {
+        Instant createdAt = Instant.now();
+        Duration lockAtMostFor = Duration.ofSeconds(LOCK_AT_MOST_SECONDS);
+        Duration lockAtLeastFor = Duration.ofSeconds(LOCK_AT_LEAST_SECONDS);
+
+        return new LockConfiguration(createdAt, shedlockName, lockAtMostFor, lockAtLeastFor);
     }
 }

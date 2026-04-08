@@ -74,22 +74,22 @@ public enum AccountStatus {
     }
 
     public static boolean isClosedOrHasClosureRequests(AccountStatus status) {
-        return AccountStatus.CLOSURE_PENDING.equals(status) ||
-               AccountStatus.CLOSED.equals(status);
-    };
+        return CLOSURE_PENDING.equals(status) ||
+               CLOSED.equals(status);
+    }
 
     public boolean isTransferPending() {
-        return this == AccountStatus.TRANSFER_PENDING;
+        return this == TRANSFER_PENDING;
     }
 
     public boolean someTransactionsRestricted() {
-        return this == AccountStatus.SOME_TRANSACTIONS_RESTRICTED;
+        return this == SOME_TRANSACTIONS_RESTRICTED;
     }
     public boolean allTransactionsRestricted() {
-        return this == AccountStatus.ALL_TRANSACTIONS_RESTRICTED;
+        return this == ALL_TRANSACTIONS_RESTRICTED;
     }
 
     public boolean isSuspendedOrPartiallySuspended() {
-        return this == AccountStatus.SUSPENDED || this == AccountStatus.SUSPENDED_PARTIALLY;
+        return this == SUSPENDED || this == SUSPENDED_PARTIALLY;
     }
 }

@@ -1,7 +1,6 @@
 package gov.uk.ets.registry.api.accountholder.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
-import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
@@ -12,32 +11,23 @@ import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeAction
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderChangeDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderContactUpdateDTO;
 import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDTO;
-import gov.uk.ets.registry.api.accountholder.web.model.AccountHolderDetailsUpdateDiffDTO;
-import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.model.services.PersistenceService;
 import gov.uk.ets.registry.api.event.service.EventService;
-import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
-import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.FeatureDescriptor;
 import java.util.Date;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -177,29 +167,6 @@ public class AccountHolderUpdateService {
         taskEventService.createAndPublishTaskAndAccountRequestEvent(task, currentUser.getUrid());
 
         return task;
-    }
-
-    private static void copyAccountHolderDetailsProperties(AccountHolderDetailsUpdateDiffDTO src, AccountHolderDTO target) {
-        if (src.getAddress() != null) {
-            BeanUtils.copyProperties(src.getAddress(), target.getAddress(), getNullPropertyNames(src.getAddress()));
-        }
-        if (src.getEmailAddress() != null) {
-            BeanUtils.copyProperties(src.getEmailAddress(), target.getEmailAddress(), getNullPropertyNames(src.getEmailAddress()));
-        }
-        if (src.getPhoneNumber() != null) {
-            BeanUtils.copyProperties(src.getPhoneNumber(), target.getPhoneNumber(), getNullPropertyNames(src.getPhoneNumber()));
-        }
-        if (src.getDetails() != null) {
-            BeanUtils.copyProperties(src.getDetails(), target.getDetails(), getNullPropertyNames(src.getDetails()));
-        }
-    }
-
-    private static String[] getNullPropertyNames(Object source) {
-        final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
-        return Stream.of(wrappedSource.getPropertyDescriptors())
-                .map(FeatureDescriptor::getName)
-                .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
-                .toArray(String[]::new);
     }
 
     private Account retrieveAccountByIdentifier(Long accountIdentifier) {

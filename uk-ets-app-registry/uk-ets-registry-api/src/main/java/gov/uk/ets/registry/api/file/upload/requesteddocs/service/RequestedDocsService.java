@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
@@ -131,21 +130,15 @@ public class RequestedDocsService {
             if (userId != null) {
                 deleteUserFileEntity(fileId);
             }
-
-            Set<Long> totalFileUploadsSet = new HashSet<>();
-            if(totalFileUploads.length() > 0){
-                totalFileUploadsSet = Arrays.stream(totalFileUploads.split(","))
-                        .map(f -> Long.parseLong(f))
-                        .collect(Collectors.toSet());
-            }
-            removeFileFromDifference(taskRequestId, fileId, totalFileUploadsSet);
+            
+            removeFileFromDifference(taskRequestId, fileId);
         } catch (Exception exception) {
             throw new FileUploadException("Error while processing the file");
         }
 
     }
 
-    private void removeFileFromDifference(Long taskRequestId, Long fileId, Set<Long> totalFileUploads) {
+    private void removeFileFromDifference(Long taskRequestId, Long fileId) {
         if (taskRequestId != null) {
             Task task = taskRepository.findByRequestId(taskRequestId);
             RequestDocumentsTaskDifference difference = mapper.convertToPojo(task.getDifference(),
