@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.mockito.ArgumentCaptor;
 
 import org.mockito.Mock;
-import org.mockito.Mockito;;
+import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,9 +27,9 @@ import org.thymeleaf.context.Context;
 import uk.gov.ets.user.feedback.api.web.error.UkEtsUserFeedbackException;
 import uk.gov.ets.user.feedback.api.web.model.UserFeedbackRequest;
 
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)

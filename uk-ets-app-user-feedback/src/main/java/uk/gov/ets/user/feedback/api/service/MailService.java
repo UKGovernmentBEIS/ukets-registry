@@ -10,8 +10,8 @@ import org.thymeleaf.context.Context;
 import uk.gov.ets.user.feedback.api.web.error.UkEtsUserFeedbackException;
 import uk.gov.ets.user.feedback.api.web.model.UserFeedbackRequest;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Arrays;
 
 @Log4j2
