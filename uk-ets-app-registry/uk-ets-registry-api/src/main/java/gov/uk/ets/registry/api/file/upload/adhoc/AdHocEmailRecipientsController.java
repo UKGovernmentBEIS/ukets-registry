@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
+
 import static gov.uk.ets.registry.api.file.upload.services.FileUploadService.ERROR_WHILE_PROCESSING_THE_FILE;
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
@@ -46,7 +48,7 @@ public class AdHocEmailRecipientsController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(file.getFileName())
+            ContentDisposition.builder("attachment").filename(file.getFileName(), StandardCharsets.UTF_8)
                 .build().toString());
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }

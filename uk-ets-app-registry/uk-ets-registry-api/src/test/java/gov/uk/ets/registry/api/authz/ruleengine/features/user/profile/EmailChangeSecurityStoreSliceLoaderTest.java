@@ -81,7 +81,7 @@ class EmailChangeSecurityStoreSliceLoaderTest {
         given(emailChangeBooleanExpressionFactory.getCurrentUserPendingEmailChangesExpression()).willReturn(currentUserPendingEmailChangesExpression);
         given(taskRepository.count(currentUserPendingEmailChangesExpression)).willReturn(testCase.otherPendingEmailChangeByCurrentUserExists ? 1L : 0);
 
-        given(taskRepository.findChangeEmailTasksByNewEmail(newEmail)).willReturn(testCase.otherPendingEmailChangeWithSameNewEmailExists ? List.of(new Task()) : List.of());
+        given(taskRepository.findChangeEmailTasksByNewEmail(newEmail)).willReturn(testCase.otherPendingEmailChangeWithSameNewEmailExists ? 1L : 0L);
 
         given(userAdministrationService.userExists(any())).willReturn(testCase.otherUsersEmail);
 

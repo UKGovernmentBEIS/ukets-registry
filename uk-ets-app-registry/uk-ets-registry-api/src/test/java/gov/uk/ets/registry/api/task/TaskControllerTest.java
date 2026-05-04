@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gov.uk.ets.registry.api.accountaccess.service.AccountAccessService;
 import gov.uk.ets.registry.api.auditevent.web.AuditEventDTO;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
+import gov.uk.ets.registry.api.file.upload.services.FileNameResolver;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.task.service.TaskActionError;
 import gov.uk.ets.registry.api.task.service.TaskActionException;
@@ -18,6 +19,7 @@ import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.task.service.TaskService;
 import gov.uk.ets.registry.api.task.web.mappers.TaskSearchPageableMapper;
 import gov.uk.ets.registry.api.task.web.mappers.TaskSearchResultDTOMapper;
+import gov.uk.ets.registry.api.task.web.model.TaskFileDownloadInfoDTO;
 import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,12 +58,15 @@ public class TaskControllerTest {
     @Mock
     TaskEventService taskEventService;
 
+    @Mock
+    FileNameResolver fileNameResolver;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         controller =
             new TaskController(taskService, dtoMapper, pageableMapper,
-                taskEventService, userAdministrationService, accountAccessService);
+                taskEventService, userAdministrationService, accountAccessService, fileNameResolver);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(new TaskControllerAdvice())
             .build();
@@ -172,13 +177,14 @@ public class TaskControllerTest {
         file.setFileData(test);
         file.setId(1L);
         file.setFileName("test");
-        Mockito.when(taskService.getRequestedTaskFile(any())).thenReturn(file);
+        Mockito.when(taskService.getRequestedTaskFile(any(TaskFileDownloadInfoDTO.class))).thenReturn(file);
+        Mockito.when(fileNameResolver.resolveFileContentType(test, "test")).thenReturn(MediaType.APPLICATION_PDF_VALUE);
 
         mockMvc.perform(get("/api-registry/tasks.get.task-file")
                 .param("taskType", "AH_REQUESTED_DOCUMENT_UPLOAD")
                 .param("taskRequestId", "1")
                 .param("fileId", "1")
-                .accept(MediaType.APPLICATION_PDF_VALUE))
+                .accept(MediaType.APPLICATION_OCTET_STREAM_VALUE))
             .andExpect(status().isOk());
     }
 

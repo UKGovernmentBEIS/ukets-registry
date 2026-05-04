@@ -13,6 +13,7 @@ import gov.uk.ets.registry.api.document.management.web.model.DocumentDTO;
 import gov.uk.ets.registry.api.document.management.web.model.SaveDocumentDTO;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ContentDisposition;
@@ -73,7 +74,7 @@ public class DocumentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(document.getName()).build().toString());
+            ContentDisposition.builder("attachment").filename(document.getName(), StandardCharsets.UTF_8).build().toString());
 
         return new ResponseEntity<>(document.getData(), headers, HttpStatus.OK);
     }

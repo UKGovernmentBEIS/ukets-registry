@@ -941,6 +941,147 @@ class TaskRepositoryTest {
             RequestType.DELETE_TRUSTED_ACCOUNT_REQUEST, account.getId()).size());
     }
 
+    @Test
+    @DisplayName("Should find one pending AR addition request for a specific account.")
+    void shouldCountPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks() {
+        Account account = new Account();
+        account.setIdentifier(100001L);
+        entityManager.persist(account);
+
+        Task task1 = new Task();
+        task1.setRequestId(11111L);
+        task1.setAccount(account);
+        task1.setType(RequestType.ACCOUNT_OPENING_REQUEST);
+        task1.setStatus(RequestStateEnum.APPROVED);
+
+        Task task2 = new Task();
+        task2.setRequestId(11112L);
+        task2.setAccount(account);
+        task2.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        task2.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task3 = new Task();
+        task3.setRequestId(11113L);
+        task3.setAccount(account);
+        task3.setType(RequestType.ACCOUNT_HOLDER_UPDATE_DETAILS);
+        task3.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task4 = new Task();
+        task4.setRequestId(11114L);
+        task4.setAccount(account);
+        task4.setType(RequestType.ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS);
+        task4.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task5 = new Task();
+        task5.setRequestId(11115L);
+        task5.setAccount(account);
+        task5.setType(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD);
+        task5.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task6 = new Task();
+        task6.setRequestId(11116L);
+        task6.setAccount(account);
+        task6.setType(RequestType.REGULATOR_NOTICE);
+        task6.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        entityManager.persist(task1);
+        entityManager.persist(task2);
+        entityManager.persist(task3);
+        entityManager.persist(task4);
+        entityManager.persist(task5);
+        entityManager.persist(task6);
+
+        final Long actual = taskRepository.countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(account.getId());
+        assertEquals(1L, actual);
+    }
+
+    @Test
+    @DisplayName("Should find one pending AR removal request for a specific account.")
+    void shouldCountPendingTasksByAccountIdExcludingAHDocumentAndNoticesTasks() {
+        Account account = new Account();
+        account.setIdentifier(100001L);
+        entityManager.persist(account);
+
+        Task task1 = new Task();
+        task1.setRequestId(11111L);
+        task1.setAccount(account);
+        task1.setType(RequestType.ACCOUNT_OPENING_REQUEST);
+        task1.setStatus(RequestStateEnum.APPROVED);
+
+        Task task2 = new Task();
+        task2.setRequestId(11112L);
+        task2.setAccount(account);
+        task2.setType(RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST);
+        task2.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task3 = new Task();
+        task3.setRequestId(11113L);
+        task3.setAccount(account);
+        task3.setType(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD);
+        task3.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task4 = new Task();
+        task4.setRequestId(11114L);
+        task4.setAccount(account);
+        task4.setType(RequestType.REGULATOR_NOTICE);
+        task4.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        entityManager.persist(task1);
+        entityManager.persist(task2);
+        entityManager.persist(task3);
+        entityManager.persist(task4);
+
+        final Long actual = taskRepository.countPendingTasksByAccountIdExcludingAHDocumentAndNoticesTasks(account.getId());
+        assertEquals(1L, actual);
+    }
+
+    @Test
+    @DisplayName("Should find one pending AR suspend request for a specific account.")
+    void shouldCountPendingTasksByAccountIdAndRequestIdentifierNotEqual() {
+        Account account = new Account();
+        account.setIdentifier(100001L);
+        entityManager.persist(account);
+
+        Task task1 = new Task();
+        task1.setRequestId(11111L);
+        task1.setAccount(account);
+        task1.setType(RequestType.ACCOUNT_OPENING_REQUEST);
+        task1.setStatus(RequestStateEnum.APPROVED);
+
+        Task task2 = new Task();
+        task2.setRequestId(11112L);
+        task2.setAccount(account);
+        task2.setType(RequestType.AUTHORIZED_REPRESENTATIVE_SUSPEND_REQUEST);
+        task2.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task3 = new Task();
+        task3.setRequestId(11113L);
+        task3.setAccount(account);
+        task3.setType(RequestType.AH_REQUESTED_DOCUMENT_UPLOAD);
+        task3.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task4 = new Task();
+        task4.setRequestId(11114L);
+        task4.setAccount(account);
+        task4.setType(RequestType.REGULATOR_NOTICE);
+        task4.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        Task task5 = new Task();
+        task5.setRequestId(11115L);
+        task5.setAccount(account);
+        task5.setType(RequestType.AUTHORIZED_REPRESENTATIVE_SUSPEND_REQUEST);
+        task5.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+
+        entityManager.persist(task1);
+        entityManager.persist(task2);
+        entityManager.persist(task3);
+        entityManager.persist(task4);
+        entityManager.persist(task5);
+
+        final Long actual = taskRepository.countPendingTasksByAccountIdAndRequestIdentifierNotEqual(account.getId(), 11115L);
+        assertEquals(1L, actual);
+    }
+
     private static class SearchByFirstNameLastNameTestCase {
         private String errorMessage;
         private String term;

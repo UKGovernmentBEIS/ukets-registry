@@ -97,7 +97,7 @@ public class AccountHolderChangeValidationService {
         validatePendingTransactions(accountToBeChanged.getIdentifier());
 
         Long openTaskCount = taskRepository
-                .countPendingTasksByAccountIdExcludingAccountHolderTasks(accountToBeChanged.getId());
+                .countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(accountToBeChanged.getId());
 
         if (openTaskCount > 0) {
             throw AccountActionException.create(AccountActionError

@@ -216,6 +216,13 @@ public interface AccountRepository
     @Query(value = "select a from Account a  join fetch a.compliantEntity c where a.identifier = ?1")
     Optional<Account> findByAccountIdentifierWithCompliantEntity(Long identifier);
 
+    /**
+     * Retrieves an account by identifier and eagerly fetches its compliant entity using a left join.
+     * Use this when the account may not have a compliant entity and should still be returned.
+     */
+    @Query(value = "select a from Account a left join fetch a.compliantEntity c where a.identifier = ?1")
+    Optional<Account> findByAccountIdentifierFetchCompliantEntity(Long identifier);
+    
     @Query("select a                            " +
         "  from Account a                       " +
         "  where a.accountHolder.id = (         " +
@@ -392,14 +399,29 @@ public interface AccountRepository
 
     List<Account> findByRegistryAccountTypeIn(List<RegistryAccountType> types);
 
+    /**
+     * Retrieves the number of accounts that:
+     * Status is not PROPOSED, REJECTED, CLOSED, TRANSFER_PENDING
+     * Have a compliant entity
+     * Don't have any active authorized representatives
+     * Don't have any pending tasks that their type is in the provided list
+     * They have at least one METS or Registry contact and Registry contact email address is not the default email address.
+     *
+     * @param accountTypes registry account types
+     * @param taskTypes task types
+     * @param defaultEmail default email address of the account holder representative
+     * @return number of accounts that meet the criteria.
+     */
     @Query("""
                 SELECT COUNT(a)
                 FROM Account a
                 WHERE a.accountStatus NOT IN (
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.PROPOSED,
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.REJECTED,
-                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.CLOSED
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.CLOSED,
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.TRANSFER_PENDING
                 )
+                AND a.compliantEntity IS NOT NULL
                 AND a.registryAccountType IN :accountTypes
                 AND NOT EXISTS (
                     SELECT 1
@@ -417,18 +439,43 @@ public interface AccountRepository
                 )
                AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
                     EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep WHERE ah = a.accountHolder))
+               AND NOT EXISTS (
+                   SELECT 1
+                   FROM AccountHolder ah
+                   JOIN ah.accountHolderRepresentatives rep
+                   JOIN rep.contact c
+                   WHERE ah = a.accountHolder
+                   AND LOWER(c.emailAddress) = LOWER(:defaultEmail)
+                )
             """)
     Long countAccountsWithoutActiveARsAndPendingTasksWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
-                                                                  @Param("taskTypes") List<RequestType> taskTypes);
+                                                                  @Param("taskTypes") List<RequestType> taskTypes,
 
+                                                                  @Param("defaultEmail") String defaultEmail);
+
+    /**
+     * Retrieves all the accounts that:
+     * Status is not PROPOSED, REJECTED, CLOSED, TRANSFER_PENDING
+     * Have a compliant entity
+     * Don't have any active authorized representatives
+     * Don't have any pending tasks that their type is in the provided list
+     * They have at least one METS or Registry contact and Registry contact email address is not the default email address.
+     *
+     * @param accountTypes registry account types
+     * @param taskTypes task types
+     * @param defaultEmail default email address of the account holder representative
+     * @return account identifiers that meet the criteria.
+     */
     @Query("""
                 SELECT a.identifier
                 FROM Account a
                 WHERE a.accountStatus NOT IN (
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.PROPOSED,
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.REJECTED,
-                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.CLOSED
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.CLOSED,
+                    gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.TRANSFER_PENDING
                 )
+                AND a.compliantEntity IS NOT NULL
                 AND a.registryAccountType IN :accountTypes
                 AND NOT EXISTS (
                     SELECT 1
@@ -446,7 +493,16 @@ public interface AccountRepository
                 )
                 AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
                      EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep WHERE ah = a.accountHolder))
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM AccountHolder ah
+                    JOIN ah.accountHolderRepresentatives rep
+                    JOIN rep.contact c
+                    WHERE ah = a.accountHolder
+                    AND LOWER(c.emailAddress) = LOWER(:defaultEmail)
+                )
             """)
     List<Long> findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
-                                                                               @Param("taskTypes") List<RequestType> taskTypes);
+                                                                               @Param("taskTypes") List<RequestType> taskTypes,
+                                                                               @Param("defaultEmail") String defaultEmail);
 }

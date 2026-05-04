@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
 import { Observable } from 'rxjs';
-import { BulkClaimAccountResult } from '@bulk-claim-account/model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,8 +19,8 @@ export class BulkClaimAccountService {
     );
   }
 
-  public sendBulkAccountClaims(): Observable<BulkClaimAccountResult> {
-    return this.http.post<BulkClaimAccountResult>(
+  public sendBulkAccountClaims(): Observable<void> {
+    return this.http.post<void>(
       `${this.ukEtsRegistryApiBaseUrl}/accounts.claim.bulk.send`,
       {}
     );

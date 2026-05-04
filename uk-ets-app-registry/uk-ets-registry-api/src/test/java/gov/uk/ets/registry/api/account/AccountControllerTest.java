@@ -24,6 +24,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
 import gov.uk.ets.registry.api.account.domain.types.InstallationActivityType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
+import gov.uk.ets.registry.api.account.service.AccountClaimSchedulerService;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
@@ -125,14 +126,18 @@ class AccountControllerTest {
     @MockBean
     private AccountClaimService accountClaimService;
 
+    @MockBean
+    private AccountClaimSchedulerService accountClaimSchedulerService;
+
 
     private AuthorizationTestHelper authorizationTestHelper;
 
     @BeforeEach
     public void setup() {
         controller =
-            new AccountController(accountService, authorizationService, accountValidator,
-                                  accountOperatorUpdateService, transactionSearchResultMapper, accountClaimService);
+                new AccountController(accountService, authorizationService, accountValidator,
+                        accountOperatorUpdateService, transactionSearchResultMapper, accountClaimService,
+                        accountClaimSchedulerService);
         authorizationTestHelper = new AuthorizationTestHelper(authorizationService);
     }
 
@@ -589,22 +594,13 @@ class AccountControllerTest {
     @Test
     void test_sendBulkClaimInvitations() throws Exception {
         final String template = "/api-registry/accounts.claim.bulk.send";
-        final int total = 3;
-        final int success = 2;
-        final int fail = 1;
-
-        BulkClaimResult result = new BulkClaimResult(total,success,fail);
-        when(accountClaimService.sendBulkClaimInvitations()).thenReturn(result);
 
         mockMvc.perform(post(template)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.total", is(total)))
-                .andExpect(jsonPath("$.successful", is(success)))
-                .andExpect(jsonPath("$.failed", is(fail)));
+                .andExpect(status().isOk());
 
-        verify(accountClaimService).sendBulkClaimInvitations();
+        verify(accountClaimSchedulerService).scheduleBulkClaim();
     }
 
     private void testLengthValidation(String parameter, int minCharsLength) throws Exception {

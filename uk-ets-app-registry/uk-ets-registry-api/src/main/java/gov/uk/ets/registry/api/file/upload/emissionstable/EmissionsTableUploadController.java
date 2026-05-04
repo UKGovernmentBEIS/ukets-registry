@@ -5,6 +5,7 @@ import static gov.uk.ets.commons.logging.RequestParamType.FILE_ID;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import gov.uk.ets.commons.logging.MDCParam;
@@ -97,7 +98,7 @@ public class EmissionsTableUploadController {
         UploadedFile file = emissionsTableProcessor.getEmissionsTableErrorsFile(fileId);
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(file.getFileName())
+            ContentDisposition.builder("attachment").filename(file.getFileName(), StandardCharsets.UTF_8)
                 .build().toString());
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }

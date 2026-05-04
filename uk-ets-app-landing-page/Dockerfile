@@ -1,4 +1,4 @@
-FROM nginx:1.28
+FROM nginx:1.30
 ENV XAUTH $HOME/.Xauthority
 
 #RUN export 'http_proxy=http://153.89.205.10:8080' ;apt-get update

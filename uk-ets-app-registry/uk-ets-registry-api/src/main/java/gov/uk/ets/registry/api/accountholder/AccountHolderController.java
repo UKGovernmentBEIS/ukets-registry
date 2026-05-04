@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -315,7 +316,7 @@ public class AccountHolderController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(file.getFileName())
+            ContentDisposition.builder("attachment").filename(file.getFileName(), StandardCharsets.UTF_8)
                 .build().toString());
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }

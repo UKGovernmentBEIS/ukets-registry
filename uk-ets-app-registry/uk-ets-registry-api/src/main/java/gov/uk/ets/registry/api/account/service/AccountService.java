@@ -793,6 +793,20 @@ public class AccountService {
     }
 
     /**
+     * Returns AccountDTO without performing authorization checks.
+     * Intended ONLY for internal/system use (e.g. schedulers, batch jobs).
+     */
+    @Transactional(readOnly = true)
+    public AccountDTO getAccountDTOWithoutAuthorization(Long identifier) {
+        Account account = accountRepository.findByIdentifierWithAccountHolder(identifier)
+                .orElseThrow(() -> new UkEtsException(
+                        String.format("Account not found for identifier [%d]", identifier)
+                ));
+
+        return accountDTOFactory.createAccountForInvitation(account);
+    }
+
+    /**
      * Get Installation or Aircraft or Maritime operator account information
      *
      * @param identifier Account Identifier
@@ -1707,7 +1721,7 @@ public class AccountService {
 
     @Transactional
     public String sendInvitation(Long accountIdentifier, AccountContactSendInvitationDTO sendInvitationDTO) {
-        final AccountDTO accountDTO = this.getAccountDTO(accountIdentifier);
+        final AccountDTO accountDTO = this.getAccountDTOWithoutAuthorization(accountIdentifier);
         final Long accountId = accountRepository.findByIdentifier(accountIdentifier).map(Account::getId)
                 .orElseThrow(() -> new UkEtsException("Account not found"));
         if (isAccountClaimApplicable(accountId, accountIdentifier)) {

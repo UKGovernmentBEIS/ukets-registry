@@ -1210,7 +1210,7 @@ class AccountServiceTest {
 
         when(accountRepository.findByIdentifierWithAccountHolder(accountIdentifier)).thenReturn(Optional.of(account));
         when(accountRepository.findByIdentifier(accountIdentifier)).thenReturn(Optional.of(account));
-        when(accountDTOFactory.create(account)).thenReturn(accountDTO);
+        when(accountDTOFactory.createAccountForInvitation(account)).thenReturn(accountDTO);
         when(taskRepository.countPendingTasksByAccountIdInAndType(
                         List.of(accountId),
                         List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST))).thenReturn(0L);
@@ -1220,8 +1220,7 @@ class AccountServiceTest {
         accountService.sendInvitation(accountIdentifier, sendInvitationDTO);
 
         verify(accountRepository).findByIdentifierWithAccountHolder(accountIdentifier);
-        verify(accountDTOFactory).create(account);
-        verify(accountValidationService).checkAccountClosureRequestEligibility(account);
+        verify(accountDTOFactory).createAccountForInvitation(account);
         verify(accountContactService).sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO);
     }
 
@@ -1243,6 +1242,23 @@ class AccountServiceTest {
         assertEquals(requestId, result);
 
         verify(accountContactService, times(1)).claimAccount(dto);
+    }
+
+    @Test
+    @DisplayName("Retrieves an account without authorization")
+    void getAccountDTOWithoutAuthorization() {
+        Long accountId = 12345L;
+        Account account = new Account();
+        account.setIdentifier(accountId);
+        account.setAccountType("ETS - Trading account");
+        account.setAccountStatus(AccountStatus.OPEN);
+
+        when(accountRepository.findByIdentifierWithAccountHolder(accountId)).thenReturn(Optional.of(account));
+
+        accountService.getAccountDTOWithoutAuthorization(accountId);
+
+        verify(accountRepository).findByIdentifierWithAccountHolder(accountId);
+        verify(accountDTOFactory).createAccountForInvitation(account);
     }
 
     @Test

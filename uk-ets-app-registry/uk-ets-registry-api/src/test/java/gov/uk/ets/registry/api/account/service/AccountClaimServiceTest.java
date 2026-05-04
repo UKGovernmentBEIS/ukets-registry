@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -37,6 +38,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountClaimServiceTest {
+
+    private final String HELP_DESK_MAIL = "etregistryhelp@environment-agency.gov.uk";
 
     @Mock
     private AccountService accountService;
@@ -134,7 +137,8 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         )).thenReturn(5L);
         when(processor.getEnabledAccountTypes())
                 .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
@@ -145,7 +149,8 @@ public class AccountClaimServiceTest {
 
         verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
     }
 
@@ -154,7 +159,8 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         )).thenReturn(3L);
         when(processor.getEnabledAccountTypes())
                 .thenReturn(List.of(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT));
@@ -164,7 +170,8 @@ public class AccountClaimServiceTest {
         assertEquals(3L, result);
         verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
     }
 
@@ -173,7 +180,8 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         )).thenReturn(2L);
         when(processor.getEnabledAccountTypes())
                 .thenReturn(List.of(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT));
@@ -183,7 +191,8 @@ public class AccountClaimServiceTest {
         assertEquals(2L, result);
         verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
     }
 
@@ -199,7 +208,8 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 expectedTypes,
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         )).thenReturn(10L);
         when(processor.getEnabledAccountTypes())
                 .thenReturn(expectedTypes);
@@ -210,7 +220,8 @@ public class AccountClaimServiceTest {
 
         verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 expectedTypes,
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
     }
 
@@ -219,7 +230,8 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         )).thenReturn(0L);
         when(processor.getEnabledAccountTypes())
                 .thenReturn(List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT));
@@ -229,7 +241,8 @@ public class AccountClaimServiceTest {
         assertEquals(0L, result);
         verify(accountRepository).countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
     }
 
@@ -255,7 +268,8 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 anyList(),
-                anyList()
+                anyList(),
+                anyString()
         )).thenReturn(List.of());
 
         BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
@@ -281,10 +295,11 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 anyList(),
-                anyList()
+                anyList(),
+                anyString()
         )).thenReturn(List.of(accountIdentifier));
 
-        when(accountService.getAccountDTO(accountIdentifier)).thenReturn(dto);
+        when(accountService.getAccountDTOWithoutAuthorization(accountIdentifier)).thenReturn(dto);
 
         BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
 
@@ -309,10 +324,11 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 anyList(),
-                anyList()
+                anyList(),
+                anyString()
         )).thenReturn(List.of(accountIdentifier));
 
-        when(accountService.getAccountDTO(accountIdentifier))
+        when(accountService.getAccountDTOWithoutAuthorization(accountIdentifier))
                 .thenReturn(dto);
 
         doThrow(new AccountActionException())
@@ -344,10 +360,11 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 anyList(),
-                anyList()
+                anyList(),
+                anyString()
         )).thenReturn(List.of(accountIdentifier));
 
-        when(accountService.getAccountDTO(accountIdentifier)).thenReturn(dto);
+        when(accountService.getAccountDTOWithoutAuthorization(accountIdentifier)).thenReturn(dto);
 
         BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
 
@@ -372,7 +389,8 @@ public class AccountClaimServiceTest {
 
         when(accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 anyList(),
-                anyList()
+                anyList(),
+                anyString()
         )).thenReturn(List.of(identifier1, identifier2, identifier3));
 
         // identifier1 → success
@@ -390,9 +408,9 @@ public class AccountClaimServiceTest {
         when(dto3.getMetsContacts()).thenReturn(List.of());
         when(dto3.getRegistryContacts()).thenReturn(List.of());
 
-        when(accountService.getAccountDTO(identifier1)).thenReturn(dto1);
-        when(accountService.getAccountDTO(identifier2)).thenReturn(dto2);
-        when(accountService.getAccountDTO(identifier3)).thenReturn(dto3);
+        when(accountService.getAccountDTOWithoutAuthorization(identifier1)).thenReturn(dto1);
+        when(accountService.getAccountDTOWithoutAuthorization(identifier2)).thenReturn(dto2);
+        when(accountService.getAccountDTOWithoutAuthorization(identifier3)).thenReturn(dto3);
 
         doNothing()
                 .when(accountSendInvitationService)
@@ -408,7 +426,7 @@ public class AccountClaimServiceTest {
         assertEquals(1, result.getSuccessful());
         assertEquals(1, result.getFailed());
 
-        verify(accountService, times(3)).getAccountDTO(anyLong());
+        verify(accountService, times(3)).getAccountDTOWithoutAuthorization(anyLong());
         verify(accountSendInvitationService, times(2)).sendInvitation(anyLong(), any(AccountContactSendInvitationDTO.class));
     }
 }

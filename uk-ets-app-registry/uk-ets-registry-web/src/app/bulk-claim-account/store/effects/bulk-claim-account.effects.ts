@@ -50,13 +50,12 @@ export class BulkClaimAccountEffects {
       ofType(BulkClaimAccountActions.sendBulkClaimAccount),
       mergeMap(() => {
         return this.bulkClaimAccountService.sendBulkAccountClaims().pipe(
-          switchMap((result) => [
-            BulkClaimAccountActions.sendBulkClaimAccountSuccess({
-              result,
-            }),
+          switchMap(() => [
+            BulkClaimAccountActions.sendBulkClaimAccountSuccess(),
             BulkClaimAccountNavigationActions.navigateToBulkAccountClaimSubmitted(),
           ]),
           catchError((httpError) => {
+            console.log('Error sending bulk claim account:', httpError);
             return [
               BulkClaimAccountActions.sendBulkClaimAccountError(
                 httpError.error ||

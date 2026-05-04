@@ -141,7 +141,7 @@ class AccountHolderChangeValidationServiceTest {
 
         when(accountRepository.findByIdentifier(1L)).thenReturn(Optional.of(account));
         when(transactionRepository.countByRelatedAccountAndAndStatusIn(anyLong(), anyList())).thenReturn(0L);
-        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderTasks(anyLong())).thenReturn(0L);
+        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(anyLong())).thenReturn(0L);
         when(trustedAccountRepository.countAllByAccountIdentifierAndStatusIn(anyLong(), anyList())).thenReturn(0L);
         when(authorizedRepresentativeService.hasSuspendedAR(anyLong())).thenReturn(false);
         when(taskRepository.countPendingTasksByAccountIdInAndType(anyList(), anyList())).thenReturn(0L);
@@ -177,7 +177,7 @@ class AccountHolderChangeValidationServiceTest {
 
         when(accountRepository.findByIdentifier(1L)).thenReturn(Optional.of(account));
         when(transactionRepository.countByRelatedAccountAndAndStatusIn(anyLong(), anyList())).thenReturn(0L);
-        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderTasks(anyLong())).thenReturn(0L);
+        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(anyLong())).thenReturn(0L);
         when(trustedAccountRepository.countAllByAccountIdentifierAndStatusIn(anyLong(), anyList())).thenReturn(0L);
         when(authorizedRepresentativeService.hasSuspendedAR(anyLong())).thenReturn(false);
         when(taskRepository.countPendingTasksByAccountIdInAndType(anyList(), anyList())).thenReturn(0L);
@@ -209,7 +209,7 @@ class AccountHolderChangeValidationServiceTest {
 
         when(accountRepository.findByIdentifier(1L)).thenReturn(Optional.of(account));
         when(transactionRepository.countByRelatedAccountAndAndStatusIn(anyLong(), anyList())).thenReturn(0L);
-        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderTasks(anyLong())).thenReturn(0L);
+        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(anyLong())).thenReturn(0L);
         when(trustedAccountRepository.countAllByAccountIdentifierAndStatusIn(anyLong(), anyList())).thenReturn(0L);
         when(authorizedRepresentativeService.hasSuspendedAR(anyLong())).thenReturn(false);
         when(taskRepository.countPendingTasksByAccountIdInAndType(anyList(), anyList())).thenReturn(0L);
@@ -243,7 +243,7 @@ class AccountHolderChangeValidationServiceTest {
 
         when(accountRepository.findByIdentifier(1L)).thenReturn(Optional.of(account));
         when(transactionRepository.countByRelatedAccountAndAndStatusIn(eq(1L), anyList())).thenReturn(0L);
-        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderTasks(eq(99L))).thenReturn(0L);
+        when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(eq(99L))).thenReturn(0L);
         when(trustedAccountRepository.countAllByAccountIdentifierAndStatusIn(eq(1L), anyList())).thenReturn(0L);
         when(authorizedRepresentativeService.hasSuspendedAR(eq(1L))).thenReturn(false);
         when(taskRepository.countPendingTasksByAccountIdInAndType(anyList(), anyList())).thenReturn(0L);

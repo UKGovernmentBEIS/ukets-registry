@@ -7,8 +7,7 @@ export const bulkClaimAccountReducerFeatureKey = 'bulk-claim-account';
 
 export interface BulkClaimAccountState {
   numberOfAffectedAccounts: number;
-  succesfullySendInvitations: number;
-  failedToSendInvitations: number;
+  result: string;
 }
 
 const initialState: BulkClaimAccountState = getInitialState();
@@ -21,14 +20,9 @@ const bulkClaimAccountReducer = createReducer(
       state.numberOfAffectedAccounts = numberOfAffectedAccounts;
     }
   ),
-  mutableOn(
-    BulkClaimAccountActions.sendBulkClaimAccountSuccess,
-    (state, { result }) => {
-      // state.numberOfAffectedAccounts = result.total;
-      state.succesfullySendInvitations = result.successful;
-      state.failedToSendInvitations = result.failed;
-    }
-  ),
+  mutableOn(BulkClaimAccountActions.sendBulkClaimAccountSuccess, (state) => {
+    state.result = 'Bulk claim account sent successfully.';
+  }),
   mutableOn(BulkClaimAccountActions.clearBulkClaimAccountRequest, (state) => {
     resetState(state);
   })
@@ -40,15 +34,12 @@ export function reducer(state: BulkClaimAccountState, action: Action) {
 
 function resetState(state: WritableDraft<BulkClaimAccountState>) {
   state.numberOfAffectedAccounts = getInitialState().numberOfAffectedAccounts;
-  state.succesfullySendInvitations =
-    getInitialState().succesfullySendInvitations;
-  state.failedToSendInvitations = getInitialState().failedToSendInvitations;
+  state.result = getInitialState().result;
 }
 
 function getInitialState(): BulkClaimAccountState {
   return {
     numberOfAffectedAccounts: 0,
-    succesfullySendInvitations: 0,
-    failedToSendInvitations: 0,
+    result: '',
   };
 }

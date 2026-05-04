@@ -141,7 +141,7 @@ public class TransferValidationService {
 		// delayed,
 		// the installation transfer cannot be triggered.
 		Long openTasksForAccountToBeTransferredCount = taskRepository
-				.countPendingTasksByAccountIdExcludingAccountHolderTasks(accountToBeTransferred.getId());
+				.countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(accountToBeTransferred.getId());
 
 		if (openTasksForAccountToBeTransferredCount > 0) {
 			throw AccountActionException.create(AccountActionError

@@ -18,11 +18,19 @@ export class ExportFileService {
    *
    * @param header the content-disposition header
    */
-  getContentDispositionFilename(header: string) {
-    return header
-      .split(';')[1]
-      .trim()
-      .split('=')[1]
-      .replace(/"/g, '');
+  getContentDispositionFilename(header: string | null): string {
+    if (!header) return 'download';
+
+    const filenameStarMatch = header.match(/filename\*\s*=\s*UTF-8''([^;]+)/i);
+    if (filenameStarMatch) {
+      return decodeURIComponent(filenameStarMatch[1]);
+    }
+
+    const filenameMatch = header.match(/filename\s*=\s*"?([^";]+)"?/i);
+    if (filenameMatch) {
+      return filenameMatch[1];
+    }
+
+    return 'download';
   }
 }

@@ -5,6 +5,7 @@ import gov.uk.ets.commons.logging.RequestParamType;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountFilter;
 import gov.uk.ets.registry.api.account.domain.UnitBlockFilter;
+import gov.uk.ets.registry.api.account.service.AccountClaimSchedulerService;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountOperatorUpdateService;
 import gov.uk.ets.registry.api.account.service.AccountService;
@@ -26,7 +27,6 @@ import gov.uk.ets.registry.api.account.web.model.AccountHoldingsSummaryResultDTO
 import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
-import gov.uk.ets.registry.api.account.web.model.BulkClaimResult;
 import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.ValidateAccountDTO;
@@ -127,6 +127,7 @@ public class AccountController {
     private final AccountOperatorUpdateService accountOperatorUpdateService;
     private final TransactionSearchResultMapper resultMapper;
     private final AccountClaimService accountClaimService;
+    private final AccountClaimSchedulerService accountClaimSchedulerService;
 
 
     /**
@@ -729,8 +730,8 @@ public class AccountController {
      */
     @Protected({SeniorAdminRule.class})
     @PostMapping("/accounts.claim.bulk.send")
-    public ResponseEntity<BulkClaimResult> sendBulkClaimInvitations() {
-        BulkClaimResult result = accountClaimService.sendBulkClaimInvitations();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<Void> sendBulkClaimInvitations() {
+        accountClaimSchedulerService.scheduleBulkClaim();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

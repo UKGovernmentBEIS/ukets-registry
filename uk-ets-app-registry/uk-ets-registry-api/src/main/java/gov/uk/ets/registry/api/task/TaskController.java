@@ -36,6 +36,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.view.UsersCa
 import gov.uk.ets.registry.api.common.search.PageParameters;
 import gov.uk.ets.registry.api.common.search.SearchResponse;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
+import gov.uk.ets.registry.api.file.upload.services.FileNameResolver;
 import gov.uk.ets.registry.api.task.domain.types.TaskUpdateAction;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.task.service.TaskService;
@@ -98,6 +99,8 @@ public class TaskController {
     private final UserAdministrationService userAdministrationService;
 
     private final AccountAccessService accountAccessService;
+
+    private final FileNameResolver fileNameResolver;
 
     /*
      * Retrieves a task based on its task ID.
@@ -275,7 +278,7 @@ public class TaskController {
         UploadedFile file = taskService.getTaskFileById(fileId);
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(file.getFileName())
+            ContentDisposition.builder("attachment").filename(file.getFileName(), StandardCharsets.UTF_8)
                 .build().toString());
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }
@@ -293,15 +296,17 @@ public class TaskController {
             AdminCanPerformActionsForAccountBasedTasksThatHasAccessRule.class,
             AuthorityCanPerformActionsForAccountBasedTasksThatHasAccessRule.class
     })
-    @GetMapping(path = "/tasks.get.task-file", produces = MediaType.APPLICATION_PDF_VALUE)
+    @GetMapping(path = "/tasks.get.task-file", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> getTaskFile(@RuleInput(RuleInputType.TASK_FILE) @MDCParam(DTO)
                                                           TaskFileDownloadInfoDTO input) {
         HttpHeaders headers = new HttpHeaders();
         UploadedFile file = taskService.getRequestedTaskFile(input);
+        final String contentType = fileNameResolver.resolveFileContentType(file.getFileData(), file.getFileName());
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
             ContentDisposition.builder("attachment").filename(file.getFileName(), StandardCharsets.UTF_8)
                 .build().toString());
+        headers.add(CONTENT_TYPE, contentType);
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }
 

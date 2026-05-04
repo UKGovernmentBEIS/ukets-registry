@@ -1,5 +1,4 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { BulkClaimAccountResult } from '@registry-web/bulk-claim-account/model';
 
 export const BulkClaimAccountActions = createActionGroup({
   source: 'BulkClaimAccount',
@@ -12,9 +11,7 @@ export const BulkClaimAccountActions = createActionGroup({
     }>(),
     'Count Eligible Bulk Claim Accounts Error': props<{ message: string }>(),
     'Send Bulk Claim Account': emptyProps(),
-    'Send Bulk Claim Account Success': props<{
-      result: BulkClaimAccountResult;
-    }>(),
+    'Send Bulk Claim Account Success': emptyProps(),
     'Send Bulk Claim Account Error': props<{ message: string }>(),
   },
 });

@@ -104,7 +104,7 @@ class TransferValidationServiceTest {
 				.thenReturn(Optional.of(accountToBeTransferred));
 		when(transactionRepository.countByRelatedAccountAndAndStatusIn(accountToBeTransferred.getIdentifier(),
 				TransactionStatus.getPendingStatuses())).thenReturn(0L);
-		when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderTasks(accountToBeTransferred.getId()))
+		when(taskRepository.countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(accountToBeTransferred.getId()))
 				.thenReturn(0L);
 		when(trustedAccountRepository.countAllByAccountIdentifierAndStatusIn(accountToBeTransferred.getIdentifier(),
 				List.of(TrustedAccountStatus.PENDING_ACTIVATION))).thenReturn(1L);

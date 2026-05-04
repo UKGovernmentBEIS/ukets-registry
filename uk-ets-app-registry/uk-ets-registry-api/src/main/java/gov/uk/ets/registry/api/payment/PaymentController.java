@@ -24,6 +24,8 @@ import gov.uk.ets.registry.api.payment.web.model.PaymentTaskCompleteResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ContentDisposition;
@@ -106,7 +108,7 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename("payment-invoice.pdf")
+            ContentDisposition.builder("attachment").filename("payment-invoice.pdf", StandardCharsets.UTF_8)
                 .build().toString());
         headers.setContentLength(pdfBytes.length);
         
@@ -127,7 +129,7 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename("registry-receipt-" + paymentUUID + ".pdf")
+            ContentDisposition.builder("attachment").filename("registry-receipt-" + paymentUUID + ".pdf", StandardCharsets.UTF_8)
                 .build().toString());
         headers.setContentLength(pdfBytes.length);
 

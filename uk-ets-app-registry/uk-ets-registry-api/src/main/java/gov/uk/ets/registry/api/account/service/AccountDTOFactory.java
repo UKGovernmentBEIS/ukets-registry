@@ -128,6 +128,27 @@ public class AccountDTOFactory {
         return accountDTO;
     }
 
+    @Transactional(readOnly = true)
+    public AccountDTO createAccountForInvitation(Account account) {
+        if (account == null) {
+            throw new IllegalArgumentException("Unable to create AccountDTO from null account");
+        }
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setIdentifier(account.getIdentifier());
+        accountDTO
+                .setAccountType(account.getRegistryAccountType() != RegistryAccountType.NONE ?
+                        account.getRegistryAccountType().name() :
+                        account.getKyotoAccountType().name());
+        setupAccountDetailsDTO(accountDTO, account);
+        setupOperator(accountDTO, account);
+        AccountType accountType = AccountType.get(account.getRegistryAccountType(), account.getKyotoAccountType());
+        accountDTO.setAccountType(accountType.name());
+        setUpAccountContacts(accountDTO, account);
+        accountDTO.setAccountClaimCode(account.getAccountClaimCode());
+
+        return accountDTO;
+    }
+
     public List<MetsContactDTO> createMetsContacts(Long accountIdentifier) {
         final List<MetsAccountContact> metsAccountContacts =
                 accountContactRepository.findByAccountIdentifier(accountIdentifier);
@@ -232,6 +253,16 @@ public class AccountDTOFactory {
                     accountDetailsDTO.setAddress(conversionService.getAddressFromContact(contact));
                     accountDetailsDTO.setBillingContactDetails(conversionService.getBillingDetailsFromContact(contact));
                 });
+        accountDTO.setAccountDetails(accountDetailsDTO);
+    }
+
+    private void setupAccountDetailsDTO(AccountDTO accountDTO, Account account) {
+        AccountDetailsDTO accountDetailsDTO = new AccountDetailsDTO();
+        accountDetailsDTO.setName(account.getAccountName());
+        accountDetailsDTO.setPublicAccountIdentifier(account.getPublicIdentifier());
+        accountDetailsDTO.setAccountType(account.getAccountType());
+        accountDetailsDTO.setAccountNumber(account.getFullIdentifier());
+        setupAccountHolderDTO(accountDTO, accountDetailsDTO, account);
         accountDTO.setAccountDetails(accountDetailsDTO);
     }
 

@@ -70,7 +70,7 @@ public class AccountSecurityStoreSliceLoader {
                     businessSecurityStore.getTask().getRequestId()));
         } else {
             accountSecurityStoreSlice.setPendingTasks(taskRepository
-                .countPendingTasksByAccountIdExcludingAHDocumentTask(account.getId()));
+                .countPendingTasksByAccountIdExcludingAHDocumentAndNoticesTasks(account.getId()));
         }
 
         accountSecurityStoreSlice

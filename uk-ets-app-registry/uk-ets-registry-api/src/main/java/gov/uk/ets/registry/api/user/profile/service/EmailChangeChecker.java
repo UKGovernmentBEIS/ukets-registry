@@ -47,7 +47,7 @@ public class EmailChangeChecker {
      * @return The flag
      */
     public boolean pendingRequestsWithSameNewEmail(String newEmail) {
-        return !taskRepository.findChangeEmailTasksByNewEmail(newEmail).isEmpty();
+        return !(taskRepository.findChangeEmailTasksByNewEmail(newEmail) == 0);
     }
 
     /**

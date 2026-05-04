@@ -15,6 +15,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.domain.types.RegulatorType;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsAccountContactType;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.OperatorType;
+import gov.uk.ets.registry.api.common.model.entities.Contact;
 import gov.uk.ets.registry.api.common.model.types.Status;
 import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
@@ -49,6 +50,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
         "spring.jpa.hibernate.ddl-auto=create"
 })
 public class AccountRepositoryTest {
+
+    private final String HELP_DESK_MAIL = "etregistryhelp@environment-agency.gov.uk";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -555,6 +558,11 @@ public class AccountRepositoryTest {
     void countAccountsWithoutActiveARsAndPendingTasks_shouldCountEligibleAccountWithContacts() {
         Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
 
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         MetsAccountContact metsContact = getMetsAccountContact(account);
@@ -562,7 +570,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -571,6 +580,12 @@ public class AccountRepositoryTest {
     @Test
     void countAccountsWithoutActiveARsAndPendingTasks_shouldCountEligibleMaritimeAccountWithContacts() {
         Account account = getOperatorHoldingAccount(1L, RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT, AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         MetsAccountContact metsContact = getMetsAccountContact(account);
@@ -578,7 +593,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -588,6 +604,11 @@ public class AccountRepositoryTest {
     void countAccountsWithoutActiveARsAndPendingTasks_shouldCountEligibleAircraftAccountWithContacts() {
         Account account = getOperatorHoldingAccount(1L, RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
 
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         MetsAccountContact metsContact = getMetsAccountContact(account);
@@ -595,7 +616,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -604,6 +626,12 @@ public class AccountRepositoryTest {
     @Test
     void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithInactiveARWithContacts() {
         Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         AccountAccess access = new AccountAccess();
@@ -618,7 +646,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -627,6 +656,12 @@ public class AccountRepositoryTest {
     @Test
     void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithRoleBasedAccessWithContacts() {
         Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         AccountAccess access = new AccountAccess();
@@ -641,7 +676,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -650,6 +686,12 @@ public class AccountRepositoryTest {
     @Test
     void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithApprovedTaskWithContacts() {
         Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         MetsAccountContact metsContact = getMetsAccountContact(account);
@@ -664,7 +706,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -673,6 +716,12 @@ public class AccountRepositoryTest {
     @Test
     void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithOtherTaskTypeWithContacts() {
         Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+        
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         MetsAccountContact metsContact = getMetsAccountContact(account);
@@ -687,7 +736,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -704,6 +754,11 @@ public class AccountRepositoryTest {
         final AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
         entityManager.persist(accountHolderRepresentative);
 
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         account.setAccountHolder(accountHolder);
         entityManager.persist(account);
 
@@ -712,7 +767,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -729,12 +785,18 @@ public class AccountRepositoryTest {
         final AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
         entityManager.persist(accountHolderRepresentative);
 
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         account.setAccountHolder(accountHolder);
         entityManager.persist(account);
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1L, result);
@@ -757,7 +819,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(0L, result);
@@ -780,7 +843,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(0L, result);
@@ -797,7 +861,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(0L, result);
@@ -828,7 +893,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(0L, result);
@@ -859,7 +925,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(0L, result);
@@ -873,7 +940,8 @@ public class AccountRepositoryTest {
 
         Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(0L, result);
@@ -886,6 +954,11 @@ public class AccountRepositoryTest {
                 AccountType.OPERATOR_HOLDING_ACCOUNT,
                 AccountStatus.OPEN);
 
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         entityManager.persist(account);
 
         MetsAccountContact metsContact = getMetsAccountContact(account);
@@ -893,7 +966,8 @@ public class AccountRepositoryTest {
 
         List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1, result.size());
@@ -921,7 +995,8 @@ public class AccountRepositoryTest {
 
         List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertThat(result).isEmpty();
@@ -948,7 +1023,8 @@ public class AccountRepositoryTest {
 
         List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertThat(result).isEmpty();
@@ -965,7 +1041,8 @@ public class AccountRepositoryTest {
 
         List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertThat(result).isEmpty();
@@ -978,6 +1055,11 @@ public class AccountRepositoryTest {
                 AccountType.OPERATOR_HOLDING_ACCOUNT,
                 AccountStatus.OPEN);
 
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+        
         AccountHolder accountHolder = getAccountHolder();
         entityManager.persist(accountHolder);
 
@@ -989,7 +1071,8 @@ public class AccountRepositoryTest {
 
         List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(1, result.size());
@@ -1008,6 +1091,16 @@ public class AccountRepositoryTest {
                 AccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT,
                 AccountStatus.OPEN);
 
+        String permitId_1 = "12345".toUpperCase();
+        Installation installation_1 = getInstallation(permitId_1);
+        acc1.setCompliantEntity(installation_1);
+        entityManager.persist(installation_1);
+        
+        String permitId_2 = "123456".toUpperCase();
+        Installation installation_2 = getInstallation(permitId_2);
+        acc2.setCompliantEntity(installation_2);
+        entityManager.persist(installation_2);
+        
         entityManager.persist(acc1);
         entityManager.persist(acc2);
 
@@ -1016,12 +1109,142 @@ public class AccountRepositoryTest {
 
         List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT),
-                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
         );
 
         assertEquals(2, result.size());
         assertTrue(result.contains(acc1.getIdentifier()));
         assertTrue(result.contains(acc2.getIdentifier()));
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldCountAccountWithRegistryContactWithContactsNoHelpDeskMail() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        final AccountHolder accountHolder = getAccountHolder();
+
+        entityManager.persist(accountHolder);
+
+        final Contact contact = getContact("email@email.com");
+        entityManager.persist(contact);
+
+        AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
+        accountHolderRepresentative.setContact(contact);
+        entityManager.persist(accountHolderRepresentative);
+
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
+        );
+
+        assertEquals(1L, result);
+    }
+
+    @Test
+    void countAccountsWithoutActiveARsAndPendingTasks_shouldExcludeAccountWithRegistryContactWithContactsAndHelpDeskMail() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        final AccountHolder accountHolder = getAccountHolder();
+
+        entityManager.persist(accountHolder);
+
+        final Contact contact = getContact(HELP_DESK_MAIL);
+        entityManager.persist(contact);
+
+        AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
+        accountHolderRepresentative.setContact(contact);
+        entityManager.persist(accountHolderRepresentative);
+
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        Long result = accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
+        );
+
+        assertEquals(0L, result);
+    }
+
+    @Test
+    void findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts_shouldCountAccountWithRegistryContactWithContactsNoHelpDeskMail() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        final AccountHolder accountHolder = getAccountHolder();
+
+        entityManager.persist(accountHolder);
+
+        final Contact contact = getContact("email@email.com");
+        entityManager.persist(contact);
+
+        AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
+        accountHolderRepresentative.setContact(contact);
+        entityManager.persist(accountHolderRepresentative);
+
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
+        );
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(account.getIdentifier()));
+    }
+
+    @Test
+    void findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts_shouldExcludeAccountWithRegistryContactWithContactsAndHelpDeskMail() {
+        Account account = getOperatorHoldingAccount(1L, RegistryAccountType.OPERATOR_HOLDING_ACCOUNT, AccountType.OPERATOR_HOLDING_ACCOUNT, AccountStatus.OPEN);
+
+        final AccountHolder accountHolder = getAccountHolder();
+
+        entityManager.persist(accountHolder);
+
+        final Contact contact = getContact(HELP_DESK_MAIL);
+        entityManager.persist(contact);
+
+        AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
+        accountHolderRepresentative.setContact(contact);
+        entityManager.persist(accountHolderRepresentative);
+
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
+        );
+
+        assertThat(result).isEmpty();
     }
 
     private Installation getInstallation(String permitId) {
@@ -1107,6 +1330,17 @@ public class AccountRepositoryTest {
                 .invitedOn(LocalDateTime.now())
                 .account(account)
                 .build();
+    }
+
+    private Contact getContact(String email) {
+        Contact contact = new Contact();
+        contact.setContactName("contact name");
+        contact.setEmailAddress(email);
+        contact.setPhoneNumber1("0123456789");
+        contact.setCountryCode1("30");
+        contact.setCity("city");
+
+        return contact;
     }
 
 }

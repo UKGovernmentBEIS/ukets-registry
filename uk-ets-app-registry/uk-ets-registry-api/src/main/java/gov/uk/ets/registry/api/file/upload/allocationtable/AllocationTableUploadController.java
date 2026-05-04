@@ -13,6 +13,7 @@ import gov.uk.ets.registry.api.file.upload.services.FileUploadProcessor;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ContentDisposition;
@@ -87,7 +88,7 @@ public class AllocationTableUploadController {
         UploadedFile file = allocationTableProcessor.getUploadedFileErrors(fileId);
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-                    ContentDisposition.builder("attachment").filename(file.getFileName())
+                    ContentDisposition.builder("attachment").filename(file.getFileName(), StandardCharsets.UTF_8)
                                       .build().toString());
         return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }

@@ -25,6 +25,8 @@ public class AccountClaimService {
 
     private final static String ERROR_MESSAGE = "Account claim is not enabled for this account type.";
 
+    private final static String HELP_DESK_EMAIL = "etregistryhelp@environment-agency.gov.uk";
+
     private final AccountService accountService;
 
     private final AccountRepository accountRepository;
@@ -64,9 +66,8 @@ public class AccountClaimService {
 
         return accountRepository.countAccountsWithoutActiveARsAndPendingTasksWithContacts(
                 enabledAccountTypes,
-                List.of(
-                        RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST
-                )
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_EMAIL
         );
     }
 
@@ -82,8 +83,8 @@ public class AccountClaimService {
         List<Long> accountIdentifiers =
                 accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                         enabledAccountTypes,
-                        List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)
-                );
+                        List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                        HELP_DESK_EMAIL);
 
         int success = 0;
         int failed = 0;
@@ -91,7 +92,7 @@ public class AccountClaimService {
         for (Long identifier : accountIdentifiers) {
 
             try {
-                AccountDTO accountDTO = accountService.getAccountDTO(identifier);
+                AccountDTO accountDTO = accountService.getAccountDTOWithoutAuthorization(identifier);
 
                 AccountContactSendInvitationDTO dto =
                         AccountContactSendInvitationDTO.builder()

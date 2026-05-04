@@ -31,14 +31,14 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
+import java.time.ZoneId;
+import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +60,7 @@ public class RegulatorNoticeTaskService implements TaskTypeService<RegulatorNoti
     public RegulatorNoticeTaskDetailsDTO getDetails(TaskDetailsDTO taskDetailsDTO) {
         RegulatorNoticeTaskDetailsDTO response = new RegulatorNoticeTaskDetailsDTO(taskDetailsDTO);
 
-        final Account account = accountRepository.findByAccountIdentifierWithCompliantEntity(Long.parseLong(taskDetailsDTO.getAccountNumber()))
+        final Account account = accountRepository.findByAccountIdentifierFetchCompliantEntity(Long.parseLong(taskDetailsDTO.getAccountNumber()))
                 .orElseThrow(() -> AccountActionException.create(
                         AccountActionError.build("Account does not exist.")));
         final AccountHolder accountHolder =
@@ -78,18 +78,20 @@ public class RegulatorNoticeTaskService implements TaskTypeService<RegulatorNoti
         response.setAccountHolderIdentifier(accountHolder.getIdentifier());
 
         CompliantEntity compliantEntity = account.getCompliantEntity();
-
-        response.setOperatorId(compliantEntity.getIdentifier());
-        if (RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.equals(account.getRegistryAccountType())) {
-            Installation installation = (Installation) Hibernate.unproxy(account.getCompliantEntity());
-            response.setPermitOrMonitoringPlanIdentifier(installation.getPermitIdentifier());
-        } else if (RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.equals(account.getRegistryAccountType())) {
-            AircraftOperator aircraftOperator = (AircraftOperator) Hibernate.unproxy(account.getCompliantEntity());
-            response.setPermitOrMonitoringPlanIdentifier(aircraftOperator.getMonitoringPlanIdentifier());
-        } else if (RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.equals(account.getRegistryAccountType())) {
-            MaritimeOperator maritimeOperator = (MaritimeOperator) Hibernate.unproxy(account.getCompliantEntity());
-            response.setPermitOrMonitoringPlanIdentifier(maritimeOperator.getMaritimeMonitoringPlanIdentifier());
+        if (compliantEntity != null) {
+            response.setOperatorId(compliantEntity.getIdentifier());
+            if (RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.equals(account.getRegistryAccountType())) {
+                Installation installation = (Installation) Hibernate.unproxy(compliantEntity);
+                response.setPermitOrMonitoringPlanIdentifier(installation.getPermitIdentifier());
+            } else if (RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT.equals(account.getRegistryAccountType())) {
+                AircraftOperator aircraftOperator = (AircraftOperator) Hibernate.unproxy(compliantEntity);
+                response.setPermitOrMonitoringPlanIdentifier(aircraftOperator.getMonitoringPlanIdentifier());
+            } else if (RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.equals(account.getRegistryAccountType())) {
+                MaritimeOperator maritimeOperator = (MaritimeOperator) Hibernate.unproxy(compliantEntity);
+                response.setPermitOrMonitoringPlanIdentifier(maritimeOperator.getMaritimeMonitoringPlanIdentifier());
+            }
         }
+
         return response;
     }
 

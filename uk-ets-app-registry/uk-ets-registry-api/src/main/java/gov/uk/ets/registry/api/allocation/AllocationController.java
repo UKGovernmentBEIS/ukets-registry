@@ -34,6 +34,8 @@ import gov.uk.ets.registry.api.common.search.PageableMapper;
 import gov.uk.ets.registry.api.common.search.SearchResponse;
 import gov.uk.ets.registry.api.transaction.checks.BusinessCheckResult;
 import jakarta.validation.Valid;
+
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -166,7 +168,7 @@ public class AllocationController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(filename)
+            ContentDisposition.builder("attachment").filename(filename, StandardCharsets.UTF_8)
                 .build().toString());
         return new ResponseEntity<>(requestAllocationService.getAllocationsFile(allocationYear, allocationCategory), headers,
             HttpStatus.OK);
@@ -188,7 +190,7 @@ public class AllocationController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
         headers.add(CONTENT_DISPOSITION,
-            ContentDisposition.builder("attachment").filename(filename)
+            ContentDisposition.builder("attachment").filename(filename, StandardCharsets.UTF_8)
                 .build().toString());
         return new ResponseEntity<>(allocationReportGenerator.generate(jobId), headers,
             HttpStatus.OK);

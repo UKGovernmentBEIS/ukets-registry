@@ -174,24 +174,26 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
 
     /**
      * Retrieve pending tasks for specific account excluding ACCOUNT_HOLDER_UPDATE_DETAILS,
-     * ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS and AH_REQUESTED_DOCUMENT_UPLOAD.
+     * ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS, AH_REQUESTED_DOCUMENT_UPLOAD and REGULATOR_NOTICE.
      */
     @Query("select count(t) from Task t " +
         "where t.account.id = ?1 " +
         "and t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED " +
         "and t.type not in (gov.uk.ets.registry.api.task.domain.types.RequestType.ACCOUNT_HOLDER_UPDATE_DETAILS,"
         + "gov.uk.ets.registry.api.task.domain.types.RequestType.ACCOUNT_HOLDER_PRIMARY_CONTACT_DETAILS,"
-        + "gov.uk.ets.registry.api.task.domain.types.RequestType.AH_REQUESTED_DOCUMENT_UPLOAD)")
-    Long countPendingTasksByAccountIdExcludingAccountHolderTasks(Long accountId);
+        + "gov.uk.ets.registry.api.task.domain.types.RequestType.AH_REQUESTED_DOCUMENT_UPLOAD,"
+        + "gov.uk.ets.registry.api.task.domain.types.RequestType.REGULATOR_NOTICE)")
+    Long countPendingTasksByAccountIdExcludingAccountHolderAndNoticesTasks(Long accountId);
 
     /**
-     * Retrieve pending tasks for specific account excluding the Account Holder document tasks.
+     * Retrieve pending tasks for specific account excluding the Account Holder document regulator notice tasks.
      */
     @Query("select count(t) from Task t " +
             "where t.account.id = ?1 " +
-            "and t.type <> gov.uk.ets.registry.api.task.domain.types.RequestType.AH_REQUESTED_DOCUMENT_UPLOAD " +
+            "and t.type not in (gov.uk.ets.registry.api.task.domain.types.RequestType.AH_REQUESTED_DOCUMENT_UPLOAD, " +
+            "gov.uk.ets.registry.api.task.domain.types.RequestType.REGULATOR_NOTICE) " +
             "and t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED ")
-    Long countPendingTasksByAccountIdExcludingAHDocumentTask(Long accountId);
+    Long countPendingTasksByAccountIdExcludingAHDocumentAndNoticesTasks(Long accountId);
 
     /**
      * Retrieve pending tasks for specific account excluding a task
@@ -199,7 +201,8 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
     @Query("select count(t) from Task t " +
         "where t.account.id = ?1 " +
         "and t.requestId <> ?2 " +
-        "and t.type <> gov.uk.ets.registry.api.task.domain.types.RequestType.AH_REQUESTED_DOCUMENT_UPLOAD " +
+        "and t.type not in (gov.uk.ets.registry.api.task.domain.types.RequestType.AH_REQUESTED_DOCUMENT_UPLOAD, " +
+        "gov.uk.ets.registry.api.task.domain.types.RequestType.REGULATOR_NOTICE) " +
         "and t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED ")
     Long countPendingTasksByAccountIdAndRequestIdentifierNotEqual(Long accountId, Long requestIdentifier);
 
@@ -248,11 +251,11 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
     /**
      * Retrieves change email tasks by the new email.
      */
-    @Query(value = "select * from task " +
+    @Query(value = "select count(*) from task " +
         " where status = 'SUBMITTED_NOT_YET_APPROVED' " +
         " and type = 'REQUESTED_EMAIL_CHANGE' " +
         " and cast(difference as json) ->> 'newEmail' = ?1", nativeQuery = true)
-    List<Task> findChangeEmailTasksByNewEmail(String newEmail);
+    Long findChangeEmailTasksByNewEmail(String newEmail);
 
     /**
      * Retrieves non completed payments tasks that need reminder.
