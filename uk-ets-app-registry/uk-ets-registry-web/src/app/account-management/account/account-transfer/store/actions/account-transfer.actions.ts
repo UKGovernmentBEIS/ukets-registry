@@ -1,9 +1,9 @@
 import { NavigationExtras, Params } from '@angular/router';
-import { createAction, props } from '@ngrx/store';
+import { createAction, emptyProps, props } from '@ngrx/store';
 import {
   AcquiringAccountHolderContactDetails,
   AcquiringAccountHolderContactWorkDetails,
-  AcquiringAccountHolderInfo,
+  AcquiringAccountTransferInfo,
   AcquiringOrganisationAddress,
   AcquiringOrganisationDetails,
   SelectedAccountTransferType,
@@ -38,6 +38,11 @@ export const setAccountTransferType = createAction(
   props<{ selectedAccountTransferType: SelectedAccountTransferType }>()
 );
 
+export const setAcquiringEmitterId = createAction(
+  '[Account Transfer] Set acquiring emitter ID',
+  props<{ acquiringEmitterId: string }>()
+);
+
 export const setAcquiringAccountHolderDetails = createAction(
   '[Account Transfer] Set Acquiring Organisation Details values',
   props<{ acquiringOrganisationDetails: AcquiringOrganisationDetails }>()
@@ -64,10 +69,11 @@ export const setAcquiringAccountHolderPrimaryContactWorkDetails = createAction(
   }>()
 );
 
-export const setPrimaryContactWorkAddressSameAsAccountHolderAddress = createAction(
-  '[Account Transfer] Set Primary Contact work address same as Account Holder address',
-  props<{ primaryContactWorkAddressSameAsAccountHolderAddress: boolean }>()
-);
+export const setPrimaryContactWorkAddressSameAsAccountHolderAddress =
+  createAction(
+    '[Account Transfer] Set Primary Contact work address same as Account Holder address',
+    props<{ primaryContactWorkAddressSameAsAccountHolderAddress: boolean }>()
+  );
 
 export const fetchLoadAndShowAcquiringAccountHolder = createAction(
   '[Account Transfer] Fetch, load and show acquiring account holder',
@@ -99,10 +105,19 @@ export const loadAcquiringAccountHolderContacts = createAction(
   props<{ accountHolderContactInfo: AccountHolderContactInfo }>()
 );
 
+export const fetchLoadAndShowPendingRegulatorNoticesTaskExists = createAction(
+  '[Account Transfer] Fetch, load and show pending regulator notices task exists'
+);
+
+export const fetchPendingRegulatorNoticesTaskExistsSuccess = createAction(
+  '[Account Transfer] Successful fetch pending regulator notices task exists',
+  props<{ pendingRegulatorNoticesTaskExists: boolean }>()
+);
+
 export const submitUpdateRequest = createAction(
   '[Account Transfer] Submit update request',
   props<{
-    acquiringAccountHolderInfo: AcquiringAccountHolderInfo;
+    acquiringAccountTransferInfo: AcquiringAccountTransferInfo;
   }>()
 );
 

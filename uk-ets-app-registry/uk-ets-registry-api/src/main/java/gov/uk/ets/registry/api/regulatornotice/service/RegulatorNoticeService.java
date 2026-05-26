@@ -85,4 +85,8 @@ public class RegulatorNoticeService {
         return regulatorNoticeRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new IllegalArgumentException("Regulator Notice with identifier " + identifier + " not found"));
     }
+
+    public boolean existsPendingNoticesByAccountId(Long accountIdentifier) {
+        return regulatorNoticeRepository.existsByAccount_IdentifierAndStatus(accountIdentifier, RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+    }
 }

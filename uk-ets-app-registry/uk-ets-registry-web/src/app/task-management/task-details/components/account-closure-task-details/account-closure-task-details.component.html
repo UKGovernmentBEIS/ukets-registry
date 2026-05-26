@@ -38,6 +38,14 @@
   </strong>
 </div>
 
+<div class="govuk-warning-text" *ngIf="taskDetails.pendingRegulatorNoticesTaskExists">
+  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-visually-hidden">Warning</span>
+    There are outstanding regulator notices for this account.
+  </strong>
+</div>
+
 <h1 class="govuk-heading-s">You will close the following account:</h1>
 
 <app-summary-list

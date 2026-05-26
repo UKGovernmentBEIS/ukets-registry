@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.regulatornotice;
 
+import gov.uk.ets.commons.logging.MDCParam;
 import gov.uk.ets.registry.api.common.search.PageParameters;
 import gov.uk.ets.registry.api.common.search.SearchResponse;
 import gov.uk.ets.registry.api.regulatornotice.service.RegulatorNoticeService;
@@ -19,7 +20,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,5 +68,17 @@ public class RegulatorNoticeController {
     @GetMapping(path = "regulator-notices.types", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> getRegulatorNoticeTypes() {
         return ResponseEntity.ok(regulatorNoticeService.getRegulatorNoticeTypes());
+    }
+    
+    /**
+     * A pending regulator-notice task is one in status SUBMITTED_NOT_YET_APPROVED.
+     * This method checks for such tasks.
+     * 
+     * @param accountId the account identifier.
+     * @return true if there are pending regulator-notices task(s) for the provided account and false otherwise.
+     */
+    @GetMapping("regulator-notices.get.pendingTaskExists")
+    public ResponseEntity<Boolean> getAccountRegulatorNoticeTaskExists(@RequestParam @MDCParam(ACCOUNT_ID) Long accountId) {
+        return ResponseEntity.ok(regulatorNoticeService.existsPendingNoticesByAccountId(accountId));
     }
 }

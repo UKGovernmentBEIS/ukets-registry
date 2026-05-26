@@ -39,6 +39,15 @@ public class PdfFormatter {
         return prepareParagraph(new Paragraph(phrase));
     }
 
+    public Paragraph labelWithBoldURLValue(String label, String urlValue) {
+        Phrase phrase = new Phrase();
+        phrase.add(new Chunk(label, FontFactory.getFont(FontFactory.HELVETICA, FONT_SIZE)));
+        Chunk linkChunk = new Chunk(urlValue, FontFactory.getFont(FontFactory.HELVETICA_BOLD, FONT_SIZE));
+        linkChunk.setAnchor(urlValue);
+        phrase.add(linkChunk);
+        return prepareParagraph(new Paragraph(phrase));
+    }
+
     public PdfPCell boldCell(String text) {
         PdfPCell cell = new PdfPCell(new Phrase(text, FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
         return prepareCell(cell);

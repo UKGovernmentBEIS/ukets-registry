@@ -16,6 +16,7 @@ public class AccountClosureTaskDetailsDTO extends TaskDetailsDTO {
     private String monitoringPlanId;
     private boolean noActiveAR;
     private boolean pendingAllocationTaskExists;
+    private boolean pendingRegulatorNoticesTaskExists;
     private AllocationClassification allocationClassification;
 
     public AccountClosureTaskDetailsDTO(TaskDetailsDTO taskDetailsDTO) {

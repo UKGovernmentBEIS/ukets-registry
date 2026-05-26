@@ -99,6 +99,7 @@ class AccountTransferServiceTest {
         AccountHolderDTO acquiringAccountHolder = new AccountHolderDTO();
         acquiringAccountHolder.setDetails(new DetailsDTO());
         request.setAcquiringAccountHolder(acquiringAccountHolder);
+        request.setAcquiringEmitterId("1234567");
 
         Long returnedTaskRequestId = accountTransferService.accountTransfer(request);
         Assert.assertEquals(taskRequestId, returnedTaskRequestId);

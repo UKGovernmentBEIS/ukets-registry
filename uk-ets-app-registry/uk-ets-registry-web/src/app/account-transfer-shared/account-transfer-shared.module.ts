@@ -7,6 +7,7 @@ import {
   AcquiringAccountHolderIndividualSummaryComponent,
   AcquiringAccountHolderOrganisationSummaryComponent,
   TransferringAccountHolderSummaryComponent,
+  TransferringAccountSummaryComponent,
 } from '@account-transfer-shared/components';
 
 @NgModule({
@@ -15,6 +16,7 @@ import {
     AcquiringAccountHolderOrganisationSummaryComponent,
     TransferringAccountHolderSummaryComponent,
     AcquiringAccountHolderContactSummaryComponent,
+    TransferringAccountSummaryComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -22,6 +24,7 @@ import {
     AcquiringAccountHolderOrganisationSummaryComponent,
     TransferringAccountHolderSummaryComponent,
     AcquiringAccountHolderContactSummaryComponent,
+    TransferringAccountSummaryComponent,
   ],
 })
 export class AccountTransferSharedModule {}

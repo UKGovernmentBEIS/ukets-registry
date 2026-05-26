@@ -5,6 +5,7 @@ import {
   clearAccountClosureState,
   fetchAccountAllocationForAccountClosureSuccess,
   fetchAccountPendingAllocationTaskExistsForAccountClosureSuccess,
+  fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosureSuccess,
   setClosureComment,
   setClosureCommentSuccess,
   submitClosureRequestSuccess,
@@ -19,6 +20,7 @@ export interface AccountClosureWizardState {
   submittedRequestIdentifier: string;
   allocations: AccountAllocation;
   pendingAllocationTaskExists: boolean;
+  pendingRegulatorNoticesTaskExists: boolean;
 }
 
 export const initialState: AccountClosureWizardState = {
@@ -50,6 +52,7 @@ export const initialState: AccountClosureWizardState = {
     totals: null,
   },
   pendingAllocationTaskExists: false,
+  pendingRegulatorNoticesTaskExists: false,
 };
 
 export const accountClosureWizardReducer = createReducer(
@@ -83,6 +86,13 @@ export const accountClosureWizardReducer = createReducer(
     fetchAccountPendingAllocationTaskExistsForAccountClosureSuccess,
     (state, { pendingAllocationTaskExists }) => {
       state.pendingAllocationTaskExists = pendingAllocationTaskExists;
+    }
+  ),
+  mutableOn(
+    fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosureSuccess,
+    (state, { pendingRegulatorNoticeTaskExists }) => {
+      state.pendingRegulatorNoticesTaskExists =
+        pendingRegulatorNoticeTaskExists;
     }
   )
 );

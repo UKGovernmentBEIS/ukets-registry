@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+	
+	<changeSet id="5_9_2_PUBLISH_R0044_REGISTRY_PARTICIPANTS_MOHA_REPORT" author="dimopoulosc" context="migrate">
+		<comment>Make "UK ETS Registry Participants (MOHA)" Report publishable</comment>
+		<sql>
+			insert into section (id, section_type, report_type, title, summary, display_order, display_type, published_on, last_updated, status)
+			values 
+			(nextval('section_seq'), 'ETS', 'R0044', 'UK ETS Registry Participants (MOHA)',
+			        'The report includes the Account Holders for Maritime Operator Holding Accounts of the UK Emissions Trading Registry.',
+					3, 'ONE_FILE_PER_YEAR', null, now(), null);
+					
+					
+			insert into publication_schedule (id, section_id, publication_frequency, start_date, next_report_date, every_x_days, generation_date)
+			values 
+            (nextval('publication_schedule_seq'), (select id from section where report_type = 'R0044'), 'DAILY',
+            date_trunc('day', current_timestamp) + interval '24 hours', date_trunc('day', current_timestamp) + interval '48 hours', null, null);
+		</sql>
+
+		<rollback>
+			<sql>
+			    DELETE FROM publication_schedule where section_id=(SELECT id FROM section where report_type='R0044');
+				DELETE FROM section where report_type='R0044';
+			</sql>
+		</rollback>
+	</changeSet>
+
+    <changeSet id="5_9_2_HTML_MIGRATOR_RERUN" author="dimopoulosc" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='PUBLICATION_SITE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>Forces the HTML publication migrator to run again.</comment>
+        <sql>
+            DELETE FROM migrator_history WHERE migrator_name  ='PUBLICATION_SITE_MIGRATOR';
+        </sql>
+    </changeSet>
+
+    <changeSet id="5_9_2_FIX_DISPLAY_ORDER" author="dimopoulosc" context="migrate">
+        <comment>Fix display order for ETS sections</comment>
+
+        <sql>
+
+            update section
+            set display_order = 4
+            where title = 'UK ETS Trading Accounts';
+
+            update section
+            set display_order = 5
+            where title = 'Compliance Report - Surrendered Emissions (only)';
+
+            update section
+            set display_order = 6
+            where title = 'Compliance 10 year report';
+
+            update section
+            set display_order = 7
+            where title = 'Transaction List';
+
+        </sql>
+
+        <rollback>
+            <sql>
+                update section
+                set display_order = 3
+                where title = 'UK ETS Trading Accounts';
+
+                update section
+                set display_order = 4
+                where title = 'Compliance Report - Surrendered Emissions (only)';
+
+                update section
+                set display_order = 5
+                where title = 'Compliance 10 year report';
+
+                update section
+                set display_order = 6
+                where title = 'Transaction List';
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

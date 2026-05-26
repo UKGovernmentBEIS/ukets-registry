@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiErrorHandlingService } from '@shared/services';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { AccountClosureApiService } from '@account-management/account/account-closure-wizard/services';
 import {
@@ -11,20 +11,15 @@ import {
   fetchAccountAllocationForAccountClosureSuccess,
   fetchAccountPendingAllocationTaskExistsForAccountClosure,
   fetchAccountPendingAllocationTaskExistsForAccountClosureSuccess,
+  fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosure,
+  fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosureSuccess,
   navigateTo,
   setClosureComment,
   setClosureCommentSuccess,
   submitClosureRequest,
   submitClosureRequestSuccess,
 } from '@account-management/account/account-closure-wizard/actions';
-import {
-  catchError,
-  exhaustMap,
-  map,
-  switchMap,
-  tap,
-  withLatestFrom,
-} from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, tap } from 'rxjs/operators';
 import {
   selectAccountDetails,
   selectAccountId,
@@ -36,6 +31,8 @@ import { of } from 'rxjs';
 import { errors } from '@shared/shared.action';
 import { selectClosureDetails } from '@account-management/account/account-closure-wizard/reducers';
 import { AccountAllocationService } from '@account-management/service/account-allocation.service';
+import { concatLatestFrom } from '@ngrx/operators';
+import { RegulatorNoticeApiService } from '@registry-web/regulator-notice-management/service';
 
 @Injectable({ providedIn: 'root' })
 export class AccountClosureEffects {
@@ -45,7 +42,8 @@ export class AccountClosureEffects {
     private store: Store,
     private router: Router,
     private accountClosureApiService: AccountClosureApiService,
-    private allocationService: AccountAllocationService
+    private allocationService: AccountAllocationService,
+    private regulatorNoticeApiService: RegulatorNoticeApiService
   ) {}
 
   navigateTo$ = createEffect(
@@ -63,7 +61,7 @@ export class AccountClosureEffects {
   cancelClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(cancelClicked),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) =>
         navigateTo({
           route: getRouteFromArray([
@@ -83,7 +81,7 @@ export class AccountClosureEffects {
   cancelAccountClosureRequest$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(cancelAccountClosureRequest),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) =>
         navigateTo({
           route: getRouteFromArray(['account', accountId]),
@@ -95,7 +93,7 @@ export class AccountClosureEffects {
   setClosureComment$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(setClosureComment),
-      withLatestFrom(this.store.select(selectAccountDetails)),
+      concatLatestFrom(() => this.store.select(selectAccountDetails)),
       map(([action, accountDetails]) => {
         return setClosureCommentSuccess({
           closureComment: action.closureComment,
@@ -108,7 +106,7 @@ export class AccountClosureEffects {
   proceedToFetchAllocation$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(setClosureCommentSuccess),
-      withLatestFrom(this.store.select(selectAccountId)),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return fetchAccountAllocationForAccountClosure({
           accountId: accountId,
@@ -120,7 +118,7 @@ export class AccountClosureEffects {
   proceedToFetchAccountPendingAllocationTaskExists$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(setClosureCommentSuccess),
-      withLatestFrom(this.store.select(selectAccountId)),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return fetchAccountPendingAllocationTaskExistsForAccountClosure({
           accountId: accountId,
@@ -183,10 +181,54 @@ export class AccountClosureEffects {
     }
   );
 
-  navigateToCheckClosureDetails$ = createEffect(() => {
+  proceedToFetchAccountPendingRegulatorNoticeTaskExists$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(fetchAccountAllocationForAccountClosureSuccess),
-      withLatestFrom(this.store.select(selectAccountId)),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
+      map(([, accountId]) => {
+        return fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosure({
+          accountId: accountId,
+        });
+      })
+    );
+  });
+
+  fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosure$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosure),
+        switchMap((action: { accountId: string }) => {
+          return this.regulatorNoticeApiService
+            .fetchPendingRegulatorNoticeTaskExists(action.accountId)
+            .pipe(
+              map((result) => {
+                return fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosureSuccess(
+                  {
+                    pendingRegulatorNoticeTaskExists: result,
+                  }
+                );
+              }),
+              catchError((error: HttpErrorResponse) => {
+                return of(
+                  errors({
+                    errorSummary: this.apiErrorHandlingService.transform(
+                      error.error
+                    ),
+                  })
+                );
+              })
+            );
+        })
+      );
+    }
+  );
+
+  navigateToCheckClosureDetails$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosureSuccess
+      ),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return navigateTo({
           route: getRouteFromArray([
@@ -206,7 +248,7 @@ export class AccountClosureEffects {
   submitClosureRequest$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(submitClosureRequest),
-      withLatestFrom(this.store.select(selectClosureDetails)),
+      concatLatestFrom(() => this.store.select(selectClosureDetails)),
       exhaustMap(([action, accountDetails]) => {
         return this.accountClosureApiService
           .closureRequest(
@@ -239,7 +281,7 @@ export class AccountClosureEffects {
   navigateToRequestSubmitted$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(submitClosureRequestSuccess),
-      withLatestFrom(this.store.select(selectAccountId)),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) =>
         navigateTo({
           route: getRouteFromArray([

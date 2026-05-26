@@ -13,6 +13,7 @@ import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountOwnership;
+import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.SalesContact;
 import gov.uk.ets.registry.api.account.domain.types.AccountOwnershipStatus;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
@@ -23,16 +24,19 @@ import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.service.TransferValidationService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.shared.AccountTransferDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferAction;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferActionType;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferTaskDetailsDTO;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.regulatornotice.service.RegulatorNoticeService;
 import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
 import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.web.model.TaskCompleteResponse;
@@ -84,6 +88,8 @@ class AccountTransferTaskServiceTest {
     @Mock
     private TransferValidationService transferValidationService;
     @Mock
+    private RegulatorNoticeService regulatorNoticeService;
+    @Mock
     private UserService userService;
     @Mock
     private EventService eventService;
@@ -128,6 +134,11 @@ class AccountTransferTaskServiceTest {
 								                .build() ;
         account.setSalesContact(salesContact);
 
+        Installation installation = new Installation();
+        installation.setEmitterId("378377");
+        installation.setIdentifier(2345L);
+        account.setCompliantEntity(installation);
+        
         when(accountHolderRepository.getAccountHolder(TEST_ACCOUNT_HOLDER_ID)).thenReturn(newAccountHolder);
 
         when(accountRepository.findByIdentifier(Long.valueOf(TEST_ACCOUNT_NUMBER))).thenReturn(Optional.of(account));
@@ -146,6 +157,9 @@ class AccountTransferTaskServiceTest {
         action.setAccountHolderDTO(
             AccountHolderDTO.builder().id(TEST_ACCOUNT_HOLDER_ID).details(new DetailsDTO()).build());
         action.setPreviousAccountStatus(AccountStatus.OPEN);
+        OperatorDTO operatorDTO = new OperatorDTO();
+        operatorDTO.setEmitterId("349238");
+        action.setInstallationDetails(operatorDTO);
         task.setAction(action);
         task.setAccountNumber(TEST_ACCOUNT_NUMBER);
     }
@@ -161,8 +175,16 @@ class AccountTransferTaskServiceTest {
         when(mapper.convertToPojo("difference", AccountTransferAction.class)).thenReturn(action);
 
         AccountHolderDTO originalAH = new AccountHolderDTO();
-        when(mapper.convertToPojo("before", AccountHolderDTO.class)).thenReturn(originalAH);
+        AccountTransferDTO accountTransferDTO = new AccountTransferDTO(originalAH,null);
+        when(mapper.convertToPojo("before", AccountTransferDTO.class)).thenReturn(accountTransferDTO);
 
+        Account account = new Account();
+        Installation inst = new Installation();
+        inst.setEmitterId("emitterID");
+        inst.setAccount(account);
+        account.setCompliantEntity(inst);
+        when(accountService.getAccount(111L)).thenReturn(account);        
+        
         AccountDTO accountDTO = new AccountDTO();
         AccountDetailsDTO detailsDTO = new AccountDetailsDTO();
         accountDTO.setAccountDetails(detailsDTO);
@@ -190,6 +212,13 @@ class AccountTransferTaskServiceTest {
         AccountHolderDTO originalAH = new AccountHolderDTO();
         when(accountConversionService.convert(accountHolder)).thenReturn(originalAH);
 
+        Account account = new Account();
+        Installation inst = new Installation();
+        inst.setEmitterId("emitterID");
+        inst.setAccount(account);
+        account.setCompliantEntity(inst);
+        when(accountService.getAccount(111L)).thenReturn(account);
+        
         AccountDTO accountDTO = new AccountDTO();
         AccountDetailsDTO detailsDTO = new AccountDetailsDTO();
         accountDTO.setAccountDetails(detailsDTO);

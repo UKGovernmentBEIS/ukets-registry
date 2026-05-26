@@ -11,6 +11,7 @@ import { AcquiringOrganisationDetailsAddressContainerComponent } from '@account-
 import { AcquiringPrimaryContactDetailsContainerComponent } from '@account-transfer/components/acquiring-primary-contact-details';
 import { AcquiringPrimaryContactWorkDetailsContainerComponent } from '@account-transfer/components/acquiring-primary-contact-work-details';
 import { CheckAccountTransferRequestResolver } from '@account-transfer/resolvers';
+import { SetEmitterIdContainerComponent } from '@account-transfer/components/set-emitter-id';
 
 export const routes: Routes = [
   {
@@ -49,9 +50,14 @@ export const routes: Routes = [
     component: CancelAccountTransferContainerComponent,
   },
   {
-    path: AccountTransferPathsModel.CHECK_ACCOUNT_TRANSFER,
+    path: AccountTransferPathsModel.SET_EMITTER_ID,
     canLoad: [LoginGuard],
     resolve: { goBackPath: CheckAccountTransferRequestResolver },
+    component: SetEmitterIdContainerComponent,
+  },
+  {
+    path: AccountTransferPathsModel.CHECK_ACCOUNT_TRANSFER,
+    canLoad: [LoginGuard],
     component: CheckAccountTransferContainerComponent,
   },
   {

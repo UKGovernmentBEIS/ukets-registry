@@ -5,6 +5,7 @@ export enum AccountTransferPathsModel {
   UPDATE_AH_ADDRESS = 'update-account-holder-address',
   UPDATE_PRIMARY_CONTACT = 'update-primary-contact',
   UPDATE_PRIMARY_CONTACT_WORK = 'update-primary-contact-work',
+  SET_EMITTER_ID = 'set-emitter-id',
   CHECK_ACCOUNT_TRANSFER = 'check-account-transfer',
   CANCEL_ACCOUNT_TRANSFER_REQUEST = 'cancel',
   REQUEST_SUBMITTED = 'request-submitted',
@@ -27,6 +28,7 @@ export const AccountTransferPathsMap = new Map<
     AccountTransferPathsModel.UPDATE_PRIMARY_CONTACT_WORK,
   ],
   ['check-account-transfer', AccountTransferPathsModel.CHECK_ACCOUNT_TRANSFER],
+  ['set-emitter-id', AccountTransferPathsModel.SET_EMITTER_ID],
   ['cancel', AccountTransferPathsModel.CANCEL_ACCOUNT_TRANSFER_REQUEST],
   ['request-submitted', AccountTransferPathsModel.REQUEST_SUBMITTED],
 ]);

@@ -23,7 +23,7 @@ import { FormatUkDatePipe } from '@shared/pipes';
     <app-summary-list
       [class]="'govuk-summary-list--no-border govuk-!-margin-bottom-9'"
       [summaryListItems]="getNewInstallationDetails()"
-      [title]="'Installation details'"
+      [title]="'New Installation details'"
     ></app-summary-list>
   `,
 })

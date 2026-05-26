@@ -18,6 +18,7 @@ import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
 import gov.uk.ets.registry.api.event.service.EventService;
 import gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableService;
+import gov.uk.ets.registry.api.regulatornotice.service.RegulatorNoticeService;
 import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
 import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
@@ -56,6 +57,7 @@ public class AccountClosureTaskService implements TaskTypeService<AccountClosure
     private final UserService userService;
     private final AllocationTableService allocationTableService;
     private final RequestAllocationService requestAllocationService;
+    private final RegulatorNoticeService regulatorNoticeService;
 
     private static final String REMOVAL_REASON = "account closure";
 
@@ -72,6 +74,7 @@ public class AccountClosureTaskService implements TaskTypeService<AccountClosure
             .convertToPojo(taskDetails.getDifference(), AccountClosureDTO.class);
 
         AccountDetailsDTO accountDetailsDTO = accountClosureDTO.getAccountDetails();
+
         if (accountDetailsDTO != null) {
             AccountType accountType = AccountType.get(accountDetailsDTO.getAccountType());
             accountDetailsDTO.setAccountTypeEnum(accountType);
@@ -108,6 +111,7 @@ public class AccountClosureTaskService implements TaskTypeService<AccountClosure
         response.setClosureComment(accountClosureDTO.getClosureComment());
         response.setAllocationClassification(accountClosureDTO.getAllocationClassification());
         response.setNoActiveAR(accountClosureDTO.isNoActiveAR());
+        response.setPendingRegulatorNoticesTaskExists(regulatorNoticeService.existsPendingNoticesByAccountId(Long.valueOf(taskDetails.getAccountNumber())));
         
         return response;
     }

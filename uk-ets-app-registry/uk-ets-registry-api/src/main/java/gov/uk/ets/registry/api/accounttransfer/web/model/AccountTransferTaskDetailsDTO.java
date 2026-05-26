@@ -12,7 +12,9 @@ public class AccountTransferTaskDetailsDTO extends TaskDetailsDTO {
 
     private AccountTransferAction action;
     private AccountHolderDTO currentAccountHolder;
+    private String currentEmitterId;
     private AccountDetailsDTO account;
+    private boolean pendingRegulatorNoticesTaskExists;
 
     public AccountTransferTaskDetailsDTO(TaskDetailsDTO taskDetailsDTO) {
         super(taskDetailsDTO);

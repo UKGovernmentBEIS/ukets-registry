@@ -41,6 +41,11 @@
       [label]="pendingAllocationTaskExistsLabel"
     >
     </app-account-closure-warnings>
+    <app-account-closure-warnings
+      *ngIf="pendingRegulatorNoticesTaskExists"
+      [label]="pendingRegulatorNoticesTaskExistsLabel"
+    >
+    </app-account-closure-warnings>
     <app-account-details-summary
       [isWizardOrientedFlag]="true"
       [accountHeadingSummary]="accountHeadingSummaryList"

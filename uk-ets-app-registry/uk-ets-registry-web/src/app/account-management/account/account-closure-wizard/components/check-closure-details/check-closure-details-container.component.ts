@@ -17,6 +17,7 @@ import {
   selectClosureComment,
   selectClosureDetails,
   selectPendingAllocationTaskExists,
+  selectPendingRegulatorNoticesTaskExists,
 } from '@account-management/account/account-closure-wizard/reducers';
 import { AccountClosureWizardPathsModel } from '@account-management/account/account-closure-wizard/models';
 import {
@@ -33,6 +34,9 @@ import {
       [authorisedRepresentatives]="authorisedRepresentatives$ | async"
       [allocationClassification]="allocationClassification$ | async"
       [pendingAllocationTaskExists]="pendingAllocationTaskExists$ | async"
+      [pendingRegulatorNoticesTaskExists]="
+        pendingRegulatorNoticesTaskExists$ | async
+      "
       [accountType]="accountType$ | async"
       (submitRequest)="onSubmit($event)"
       (navigateToEmitter)="navigateTo($event)"
@@ -49,6 +53,7 @@ export class CheckClosureDetailsContainerComponent implements OnInit {
   authorisedRepresentatives$: Observable<AuthorisedRepresentative[]>;
   accountType$: Observable<string>;
   pendingAllocationTaskExists$: Observable<boolean>;
+  pendingRegulatorNoticesTaskExists$: Observable<boolean>;
 
   constructor(
     private store: Store,
@@ -77,6 +82,9 @@ export class CheckClosureDetailsContainerComponent implements OnInit {
     );
     this.pendingAllocationTaskExists$ = this.store.select(
       selectPendingAllocationTaskExists
+    );
+    this.pendingRegulatorNoticesTaskExists$ = this.store.select(
+      selectPendingRegulatorNoticesTaskExists
     );
     this.accountType$ = this.store
       .select(selectAccount)

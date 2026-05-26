@@ -23,6 +23,7 @@ export interface AccountTransferRequest {
   existingAcquiringAccountHolderIdentifier?: number;
   acquiringAccountHolder?: AccountHolder;
   acquiringAccountHolderContactInfo?: AccountHolderContact;
+  acquiringEmitterId: string;
 }
 
 export type AcquiringAccountHolderInfo = Pick<
@@ -30,6 +31,14 @@ export type AcquiringAccountHolderInfo = Pick<
   | 'existingAcquiringAccountHolderIdentifier'
   | 'acquiringAccountHolder'
   | 'acquiringAccountHolderContactInfo'
+>;
+
+export type AcquiringAccountTransferInfo = Pick<
+  AccountTransferRequest,
+  | 'existingAcquiringAccountHolderIdentifier'
+  | 'acquiringAccountHolder'
+  | 'acquiringAccountHolderContactInfo'
+  | 'acquiringEmitterId'
 >;
 
 export type AcquiringOrganisationDetails = Pick<
@@ -48,3 +57,7 @@ export type AcquiringAccountHolderContactWorkDetails = Pick<
   AccountHolderContact,
   'positionInCompany' | 'address' | 'phoneNumber' | 'emailAddress'
 >;
+
+export interface SelectedEmitterType {
+  selectedEmitterId: string;
+}

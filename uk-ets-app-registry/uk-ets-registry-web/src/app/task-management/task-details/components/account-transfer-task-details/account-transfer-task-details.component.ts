@@ -69,12 +69,6 @@ export class AccountTransferTaskDetailsComponent implements OnInit {
         },
       },
       {
-        key: { label: 'Emitter ID' },
-        value: {
-          label: this.taskDetails.action.installationDetails?.emitterId,
-        },
-      },
-      {
         key: { label: 'Permit ID' },
         value: {
           label: this.taskDetails.action.installationDetails?.permit.id,

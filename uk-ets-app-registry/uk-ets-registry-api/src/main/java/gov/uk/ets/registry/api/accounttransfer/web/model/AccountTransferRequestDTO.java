@@ -24,4 +24,5 @@ public class AccountTransferRequestDTO {
     private Long existingAcquiringAccountHolderIdentifier;
     private AccountHolderDTO acquiringAccountHolder;
     private AccountHolderRepresentativeDTO acquiringAccountHolderContactInfo;
+    private String acquiringEmitterId;
 }

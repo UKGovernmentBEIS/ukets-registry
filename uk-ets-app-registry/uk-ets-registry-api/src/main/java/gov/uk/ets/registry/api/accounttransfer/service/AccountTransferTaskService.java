@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.accounttransfer.service;
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountOwnership;
+import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.AccountOwnershipStatus;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
@@ -11,6 +12,7 @@ import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.service.TransferValidationService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.shared.AccountTransferDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferAction;
 import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferTaskDetailsDTO;
@@ -23,6 +25,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.Fou
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlySeniorRegistryAdminCanApproveTask;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.regulatornotice.service.RegulatorNoticeService;
 import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
 import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.domain.types.EventType;
@@ -30,17 +33,19 @@ import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.service.TaskTypeService;
 import gov.uk.ets.registry.api.task.web.model.TaskCompleteResponse;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
+import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +61,7 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
     private final EventService eventService;
     private final UserService userService;
     private final AccountOwnershipRepository accountOwnershipRepository;
+    private final RegulatorNoticeService regulatorNoticeService;
 
     private static final String REMOVAL_REASON = "account transfer";
 
@@ -72,18 +78,24 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
         accountTransferAction =
             mapper.convertToPojo(taskDetails.getDifference(), AccountTransferAction.class);
 
-        AccountHolderDTO originalAH = Optional.ofNullable(taskDetails.getBefore())
-            .map(before -> mapper.convertToPojo(before, AccountHolderDTO.class))
+        AccountTransferDTO originalAccountTransferInfo = Optional.ofNullable(taskDetails.getBefore())
+            .map(before -> mapper.convertToPojo(before, AccountTransferDTO.class))
             .orElseGet(() -> { // fallback to the original logic
                 AccountHolder accountHolder =
                     accountHolderRepository.getAccountHolderOfAccount(Long.parseLong(taskDetails.getAccountNumber()));
-                return accountConversionService.convert(accountHolder);
+                AccountHolderDTO accountHolderDTO = accountConversionService.convert(accountHolder);
+                Account account = accountService.getAccount(Long.valueOf(taskDetails.getAccountNumber()));
+                response.setCurrentEmitterId(account.getCompliantEntity().getEmitterId());
+                AccountTransferDTO accountTransferDTO = new AccountTransferDTO(accountHolderDTO,account.getCompliantEntity().getEmitterId());
+                return accountTransferDTO;         
             });
         AccountDTO accountDTO = accountService.getAccountDTO(Long.valueOf(taskDetails.getAccountNumber()));
-
+        response.setPendingRegulatorNoticesTaskExists(regulatorNoticeService.existsPendingNoticesByAccountId(Long.valueOf(taskDetails.getAccountNumber())));
         response.setAction(accountTransferAction);
-        response.setCurrentAccountHolder(originalAH);
+        response.setCurrentAccountHolder(originalAccountTransferInfo.getAccountHolder());
         response.setAccount(accountDTO.getAccountDetails());
+        response.setCurrentEmitterId(originalAccountTransferInfo.getEmitterId());
+        
         return response;
     }
 
@@ -124,6 +136,14 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
             accountService.removeAccountArs(accountIdentifier, REMOVAL_REASON, currentUser);
             // the Sales contact details should be removed
             clearSalesContactDetails(account);
+            // Set the emitterId
+            if (EnumSet.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT).contains(account.getRegistryAccountType())) {
+
+                Object ce = Hibernate.unproxy(account.getCompliantEntity());
+                if (ce instanceof Installation installation) {
+                    installation.setEmitterId(action.getInstallationDetails().getEmitterId());
+                }
+            }
         }
 
         publishAccountEvent(taskOutcome, currentUser, accountIdentifier, oldAccountHolder.actualName(),

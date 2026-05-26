@@ -1,0 +1,28 @@
+<div appScreenReaderPageAnnounce [pageTitle]="getTitle()"></div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" aria-live="polite">
+    <span class="govuk-caption-xl">Request account transfer</span>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">
+      Enter the emitter ID
+    </h1>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+      <app-form-control-text
+        [label]="'Emitter ID'"
+        [hint]="'Enter text'"
+        [maxlength]="256"
+        [validationErrorMessage]="validationErrorMessage.emitterId"
+        controlName="emitterId"
+      />
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="submit"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

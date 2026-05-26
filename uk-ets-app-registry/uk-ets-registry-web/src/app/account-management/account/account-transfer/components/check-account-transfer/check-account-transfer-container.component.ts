@@ -7,7 +7,7 @@ import { canGoBack, errors } from '@shared/shared.action';
 import { Observable } from 'rxjs';
 import {
   AccountTransferPathsModel,
-  AcquiringAccountHolderInfo,
+  AcquiringAccountTransferInfo,
 } from '@account-transfer/model';
 import {
   cancelClicked,
@@ -16,7 +16,10 @@ import {
 import {
   selectAcquiringAccountHolder,
   selectAcquiringAccountHolderPrimaryContact,
+  selectPendingRegulatorNoticesTaskExists,
+  selectAcquiringEmitterId,
   selectTransferringAccountHolder,
+  selectTransferringEmitterId,
 } from '@account-transfer/store/reducers';
 import { ContactType } from '@shared/model/account-holder-contact-type';
 import { selectAllCountries } from '@shared/shared.selector';
@@ -26,11 +29,16 @@ import { AccountTransferActions } from '@account-transfer/store/actions';
 @Component({
   selector: 'app-check-account-transfer-container',
   template: `<app-check-account-transfer
+      [pendingRegulatorNoticesTaskExists]="
+        pendingRegulatorNoticesTaskExists$ | async
+      "
       [acquiringAccountHolder]="acquiringAccountHolder$ | async"
       [acquiringAccountHolderPrimaryContact]="
         acquiringAccountHolderPrimaryContact$ | async
       "
       [transferringAccountHolder]="transferringAccountHolder$ | async"
+      [transferringEmitterId]="transferringEmitterId$ | async"
+      [acquiringEmitterId]="acquiringEmitterId$ | async"
       (errorDetails)="onError($event)"
       (submitRequest)="onSubmit($event)"
       (clickChange)="navigateTo($event)"
@@ -42,11 +50,17 @@ import { AccountTransferActions } from '@account-transfer/store/actions';
 })
 export class CheckAccountTransferContainerComponent implements OnInit {
   countries$: Observable<IUkOfficialCountry[]>;
+  pendingRegulatorNoticesTaskExists$: Observable<boolean>;
   acquiringAccountHolder$: Observable<AccountHolder>;
   acquiringAccountHolderPrimaryContact$: Observable<AccountHolderContact>;
   transferringAccountHolder$: Observable<AccountHolder>;
+  transferringEmitterId$: Observable<string>;
+  acquiringEmitterId$: Observable<string>;
   primaryContactType = ContactType.PRIMARY;
-  constructor(private route: ActivatedRoute, private store: Store) {}
+  constructor(
+    private route: ActivatedRoute,
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
     this.store.dispatch(
@@ -54,7 +68,7 @@ export class CheckAccountTransferContainerComponent implements OnInit {
         goBackRoute: `/account/${this.route.snapshot.paramMap.get(
           'accountId'
         )}/${AccountTransferPathsModel.BASE_PATH}/${
-          this.route.snapshot.data.goBackPath
+          AccountTransferPathsModel.SET_EMITTER_ID
         }`,
         extras: { skipLocationChange: true },
       })
@@ -68,7 +82,14 @@ export class CheckAccountTransferContainerComponent implements OnInit {
     this.transferringAccountHolder$ = this.store.select(
       selectTransferringAccountHolder
     );
+    this.transferringEmitterId$ = this.store.select(
+      selectTransferringEmitterId
+    );
+    this.acquiringEmitterId$ = this.store.select(selectAcquiringEmitterId);
     this.countries$ = this.store.select(selectAllCountries);
+    this.pendingRegulatorNoticesTaskExists$ = this.store.select(
+      selectPendingRegulatorNoticesTaskExists
+    );
   }
 
   onCancel(): void {
@@ -77,8 +98,8 @@ export class CheckAccountTransferContainerComponent implements OnInit {
     );
   }
 
-  onSubmit(acquiringAccountHolderInfo: AcquiringAccountHolderInfo): void {
-    this.store.dispatch(submitUpdateRequest({ acquiringAccountHolderInfo }));
+  onSubmit(acquiringAccountTransferInfo: AcquiringAccountTransferInfo): void {
+    this.store.dispatch(submitUpdateRequest({ acquiringAccountTransferInfo }));
   }
 
   navigateTo(routePath: AccountTransferPathsModel): void {

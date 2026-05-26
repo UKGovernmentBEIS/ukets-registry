@@ -104,12 +104,12 @@ public class OperatorDTO implements Serializable {
     Long acquiringAccountHolderIdentifier;
 
     /**
-     * The IMO number for Matitime Operators
+     * The IMO number for Matitime Operators.
      */
     String imo;
 
     /**
-     * The emitter id
+     * The emitter id.
      */
     String emitterId;
 }

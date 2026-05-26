@@ -55,6 +55,7 @@ public class AccountTransferControllerTest {
         AccountHolderDTO acquiringAccountHolder = new AccountHolderDTO();
         acquiringAccountHolder.setId(1L);
         request.setAcquiringAccountHolder(acquiringAccountHolder);
+        request.setAcquiringEmitterId("1234567");
 
         Mockito.when(accountTransferService.accountTransfer(request))
             .thenReturn(taskRequestId);

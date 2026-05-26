@@ -25,6 +25,10 @@ import { AcquiringPrimaryContactDetailsContainerComponent } from '@account-trans
 import { AcquiringPrimaryContactWorkDetailsContainerComponent } from '@account-transfer/components/acquiring-primary-contact-work-details/acquiring-primary-contact-work-details-container.component';
 import { AccountHolderSharedModule } from '@registry-web/account-shared/account-holder-shared.module';
 import { AccountTransferRequestSubmittedComponent } from '@account-transfer/components/account-transfer-request-submitted';
+import {
+  SetEmitterIdComponent,
+  SetEmitterIdContainerComponent,
+} from '@account-transfer/components/set-emitter-id';
 
 @NgModule({
   declarations: [
@@ -39,6 +43,8 @@ import { AccountTransferRequestSubmittedComponent } from '@account-transfer/comp
     AcquiringPrimaryContactDetailsContainerComponent,
     AcquiringPrimaryContactWorkDetailsContainerComponent,
     AccountTransferRequestSubmittedComponent,
+    SetEmitterIdComponent,
+    SetEmitterIdContainerComponent,
   ],
   imports: [
     CommonModule,

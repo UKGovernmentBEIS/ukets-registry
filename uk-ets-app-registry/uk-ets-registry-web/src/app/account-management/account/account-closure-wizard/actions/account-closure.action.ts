@@ -30,6 +30,18 @@ export const fetchAccountPendingAllocationTaskExistsForAccountClosureSuccess =
     props<{ pendingAllocationTaskExists: boolean }>()
   );
 
+export const fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosure =
+  createAction(
+    '[Account Closure Wizard] Fetch Pending Regulator Notice Task',
+    props<{ accountId: string }>()
+  );
+
+export const fetchAccountPendingRegulatorNoticeTaskExistsForAccountClosureSuccess =
+  createAction(
+    '[Account Closure Wizard] Fetch Pending Regulator Notice Task Success',
+    props<{ pendingRegulatorNoticeTaskExists: boolean }>()
+  );
+
 export const fetchAccountAllocationForAccountClosure = createAction(
   '[Account Closure Wizard] Fetch allocation',
   props<{ accountId: string }>()

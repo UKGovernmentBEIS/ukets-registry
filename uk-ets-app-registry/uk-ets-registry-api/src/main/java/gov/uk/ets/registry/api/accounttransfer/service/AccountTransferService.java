@@ -9,6 +9,7 @@ import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
+import gov.uk.ets.registry.api.account.shared.AccountTransferDTO;
 import gov.uk.ets.registry.api.account.shared.InstallationAndAccountTransferError;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
@@ -27,15 +28,13 @@ import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
-import lombok.RequiredArgsConstructor;
-
-import org.hibernate.Hibernate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -61,12 +60,19 @@ public class AccountTransferService {
         Task task = new Task();
         task.setRequestId(persistenceService.getNextBusinessIdentifier(Task.class));
         Account account = accountService.getAccount(dto.getAccountIdentifier());
+        
+        if (!(Hibernate.unproxy(account.getCompliantEntity()) instanceof Installation)) {
+            throw AccountActionException.create(
+                    AccountActionError.build(InstallationAndAccountTransferError.TRANSFER_ONLY_OHAS.getMessage()));
+        }
+        
         task.setDifference(mapper.convertToJson(toAccountTransferAction(
                 dto, account.getAccountStatus(), account.getCompliantEntity())));
         task.setType(RequestType.ACCOUNT_TRANSFER);
 
         AccountHolderDTO originalAH = accountHolderService.getAccountHolder(account.getAccountHolder().getIdentifier());
-        task.setBefore(mapper.convertToJson(originalAH));
+        AccountTransferDTO originalAccountTransferInfo = new AccountTransferDTO(originalAH,account.getCompliantEntity().getEmitterId());
+        task.setBefore(mapper.convertToJson(originalAccountTransferInfo));
 
         account.setAccountStatus(AccountStatus.TRANSFER_PENDING);
 
@@ -93,12 +99,9 @@ public class AccountTransferService {
         action.setType(request.getAccountTransferType());
         action.setAccountHolderDTO(request.getAcquiringAccountHolder());
         action.setAccountHolderContactInfo(request.getAcquiringAccountHolderContactInfo());
-        action.setPreviousAccountStatus(status);
-        if (!(Hibernate.unproxy(compliantEntity) instanceof Installation)) {
-            throw AccountActionException.create(
-                    AccountActionError.build(InstallationAndAccountTransferError.TRANSFER_ONLY_OHAS.getMessage()));
-        }
+        action.setPreviousAccountStatus(status);        
         action.setInstallationDetails(toDto((Installation) Hibernate.unproxy(compliantEntity)));
+        action.getInstallationDetails().setEmitterId(request.getAcquiringEmitterId());
         return action;
     }
 
@@ -112,7 +115,7 @@ public class AccountTransferService {
             EventType.ACCOUNT_TASK_REQUESTED, what);
     }
     
-    OperatorDTO toDto(Installation entity) {
+    private OperatorDTO toDto(Installation entity) {
         OperatorDTO details = new OperatorDTO();
         details.setIdentifier(entity.getIdentifier());
         details.setType(OperatorType.INSTALLATION.name());
@@ -131,7 +134,6 @@ public class AccountTransferService {
         details.setPermit(permitDTO);
         details.setRegulator(entity.getRegulator());
         details.setChangedRegulator(entity.getChangedRegulator());
-        details.setEmitterId(entity.getEmitterId());
 
         return details;
     }

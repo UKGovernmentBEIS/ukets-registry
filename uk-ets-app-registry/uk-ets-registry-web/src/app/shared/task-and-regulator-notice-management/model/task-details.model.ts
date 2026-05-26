@@ -242,7 +242,9 @@ export interface AccountTransferTaskDetails extends TaskDetailsBase {
   taskType: RequestType.ACCOUNT_TRANSFER;
   action: AccountTransferAction;
   currentAccountHolder: AccountHolder;
+  currentEmitterId: string;
   account: AccountDetails;
+  pendingRegulatorNoticesTaskExists: boolean;
 }
 
 export interface AccountClosureTaskDetails extends TaskDetailsBase {
@@ -254,6 +256,7 @@ export interface AccountClosureTaskDetails extends TaskDetailsBase {
   allocationClassification: AllocationStatus;
   noActiveAR: boolean;
   pendingAllocationTaskExists: boolean;
+  pendingRegulatorNoticesTaskExists: boolean;
 }
 
 export interface UserDetailsUpdateTaskDetails extends TaskDetailsBase {

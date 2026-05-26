@@ -14,6 +14,7 @@
     <include file="changelogs/v4.14.0/changelog_v4_14_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v4.15.0/changelog_v4_15_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v4.16.0/changelog_v4_16_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.9.2/changelog_v5_9_2.xml" relativeToChangelogFile="true"/>
     <!-- Include here new files -->
 
     <!-- This changeSet should be executed at the end-->

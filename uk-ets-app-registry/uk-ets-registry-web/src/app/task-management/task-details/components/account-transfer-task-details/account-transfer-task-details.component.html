@@ -1,13 +1,21 @@
 <div class="govuk-grid-column-full">
+  <div
+    class="govuk-warning-text"
+    *ngIf="taskDetails.pendingRegulatorNoticesTaskExists"
+  >
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-visually-hidden">Warning</span>
+      There are outstanding regulator notices for this account.
+    </strong>
+  </div>
+
   <div class="govuk-grid-row">
     <hr class="govuk-section-break govuk-section-break--visible" />
   </div>
 
   <dl
-    class="
-      govuk-summary-list govuk-summary-list--no-border
-      govuk-!-margin-top-6
-    "
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-top-6"
   >
     <div class="govuk-summary-list__row">
       <h2 class="govuk-summary-list__key">Account details</h2>
@@ -32,16 +40,14 @@
     [summaryListItems]="getInstallationSummaryListItems()"
   ></app-summary-list>
 
-  <app-transferring-account-holder-summary
+  <app-transferring-account-summary
     [isSectionBreakVisible]="false"
     [transferringAccountHolder]="taskDetails?.currentAccountHolder"
-  ></app-transferring-account-holder-summary>
+    [emitterId]="taskDetails?.currentEmitterId"
+  ></app-transferring-account-summary>
 
   <dl
-    class="
-      govuk-summary-list govuk-summary-list--no-border
-      govuk-!-margin-top-6
-    "
+    class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-top-6"
   >
     <div class="govuk-summary-list__row">
       <h2 class="govuk-summary-list__key">Acquiring account holder</h2>
@@ -52,6 +58,14 @@
         {{ taskDetails?.action.accountHolderDTO.id }}
       </dd>
     </div>
+    @if (taskDetails?.action.installationDetails) {
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Emitter ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ taskDetails?.action.installationDetails.emitterId }}
+        </dd>
+      </div>
+    }
   </dl>
 
   <app-acquiring-account-holder-individual-summary
@@ -79,10 +93,7 @@
   </div>
 
   <hr
-    class="
-      govuk-section-break govuk-section-break--visible
-      govuk-!-margin-bottom-6
-    "
+    class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6"
   />
 
   <app-acquiring-account-holder-contact-summary

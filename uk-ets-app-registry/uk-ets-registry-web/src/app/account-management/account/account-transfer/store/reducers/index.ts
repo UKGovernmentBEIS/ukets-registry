@@ -8,8 +8,12 @@ import {
 
 export * from './account-transfer.reducer';
 
-export const selectAccountTransferState = createFeatureSelector<AccountTransferState>(
-  accountTransferFeatureKey
+export const selectAccountTransferState =
+  createFeatureSelector<AccountTransferState>(accountTransferFeatureKey);
+
+export const selectPendingRegulatorNoticesTaskExists = createSelector(
+  selectAccountTransferState,
+  (state) => state.pendingRegulatorNoticesTaskExists
 );
 
 export const selectAccountTransferType = createSelector(
@@ -47,7 +51,7 @@ export const selectSubmittedAccountTransferRequestIdentifier = createSelector(
   (state) => state.submittedRequestIdentifier
 );
 
-export const calculateGoBackPathFromCheckAccountTransferRequest = createSelector(
+export const selectGoBackPathFromCheckAccountTransferRequest = createSelector(
   selectAccountTransferState,
   (state) => {
     switch (state.updateType) {
@@ -68,4 +72,19 @@ export const selectPrimaryContactAddressSameAsAccountHolder = createSelector(
   selectAccountTransferState,
   (state) =>
     state.acquiringAccountHolderContactInfo?.isPrimaryAddressSameAsHolder
+);
+
+export const selectTransferringEmitterId = createSelector(
+  selectAccount,
+  (account) => account?.operator?.emitterId
+);
+
+export const selectAcquiringEmitterId = createSelector(
+  selectAccountTransferState,
+  (state) => state.acquiringEmitterId
+);
+
+export const selectCompliantEntityIdentifier = createSelector(
+  selectAccount,
+  (account) => (account != null ? account.operator?.identifier : null)
 );

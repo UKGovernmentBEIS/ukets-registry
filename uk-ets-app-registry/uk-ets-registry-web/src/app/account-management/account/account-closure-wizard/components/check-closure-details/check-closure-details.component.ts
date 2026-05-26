@@ -30,6 +30,8 @@ export class CheckClosureDetailsComponent implements OnInit {
   @Input()
   pendingAllocationTaskExists: boolean;
   @Input()
+  pendingRegulatorNoticesTaskExists: boolean;
+  @Input()
   authorisedRepresentatives: AuthorisedRepresentative[];
   @Input() accountType: string;
   @Output()
@@ -173,6 +175,10 @@ export class CheckClosureDetailsComponent implements OnInit {
 
   get pendingAllocationTaskExistsLabel(): string {
     return `There are outstanding allocation tasks for this account.`;
+  }
+
+  get pendingRegulatorNoticesTaskExistsLabel(): string {
+    return `There are outstanding regulator notices for this account.`;
   }
 
   get surrenderDeficitLabel(): string {

@@ -22,6 +22,11 @@ export const selectPendingAllocationTaskExists = createSelector(
   (state) => state.pendingAllocationTaskExists
 );
 
+export const selectPendingRegulatorNoticesTaskExists = createSelector(
+  selectAccountClosureState,
+  (state) => state.pendingRegulatorNoticesTaskExists
+);
+
 export const selectAllocationClassification = createSelector(
   selectAccountClosureState,
   (state) =>

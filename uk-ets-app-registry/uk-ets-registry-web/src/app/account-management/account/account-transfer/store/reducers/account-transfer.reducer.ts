@@ -16,6 +16,8 @@ export interface AccountTransferState {
   acquiringAccountHolder: AccountHolder;
   acquiringAccountHolderContactInfo: AccountHolderContactInfo;
   submittedRequestIdentifier: string;
+  pendingRegulatorNoticesTaskExists: boolean;
+  acquiringEmitterId: string;
 }
 
 export const initialState: AccountTransferState = {
@@ -23,10 +25,21 @@ export const initialState: AccountTransferState = {
   acquiringAccountHolder: null,
   acquiringAccountHolderContactInfo: null,
   submittedRequestIdentifier: null,
+  pendingRegulatorNoticesTaskExists: false,
+  acquiringEmitterId: null,
 };
-
 const accountStatusReducer = createReducer(
   initialState,
+  mutableOn(
+    AccountTransferActions.fetchPendingRegulatorNoticesTaskExistsSuccess,
+    (
+      state: Draft<AccountTransferState>,
+      { pendingRegulatorNoticesTaskExists }
+    ) => {
+      state.pendingRegulatorNoticesTaskExists =
+        pendingRegulatorNoticesTaskExists;
+    }
+  ),
   mutableOn(
     AccountTransferActions.setAccountTransferType,
     (state: Draft<AccountTransferState>, selectedAccountTransferType) => {
@@ -187,6 +200,12 @@ const accountStatusReducer = createReducer(
       state.submittedRequestIdentifier = requestId;
     }
   ),
+  mutableOn(
+    AccountTransferActions.setAcquiringEmitterId,
+    (state, { acquiringEmitterId }) => {
+      state.acquiringEmitterId = acquiringEmitterId;
+    }
+  ),
   mutableOn(AccountTransferActions.clearAccountTransferRequest, (state) => {
     resetState(state);
   })
@@ -205,4 +224,7 @@ function resetState(state) {
   state.acquiringAccountHolderContactInfo =
     initialState.acquiringAccountHolderContactInfo;
   state.submittedRequestIdentifier = initialState.submittedRequestIdentifier;
+  state.pendingRegulatorNoticesTaskExists =
+    initialState.pendingRegulatorNoticesTaskExists;
+  state.acquiringEmitterId = initialState.acquiringEmitterId;
 }

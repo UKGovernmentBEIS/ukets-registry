@@ -3,10 +3,12 @@ import { UK_ETS_REGISTRY_API_BASE_URL } from '@registry-web/app.tokens';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { AccountDetails } from '@shared/model/account';
 import { AllocationStatus } from '@account-management/account-list/account-list.model';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AccountClosureApiService {
   closeAccount: string;
+  regulatorNoticePendingTaskExistsApiUrl: string;
 
   constructor(
     @Inject(UK_ETS_REGISTRY_API_BASE_URL)
@@ -14,6 +16,7 @@ export class AccountClosureApiService {
     private httpClient: HttpClient
   ) {
     this.closeAccount = `${ukEtsRegistryApiBaseUrl}/accounts.close`;
+    this.regulatorNoticePendingTaskExistsApiUrl = `${this.ukEtsRegistryApiBaseUrl}/regulator-notices.get.pendingTaskExists`;
   }
 
   closureRequest(

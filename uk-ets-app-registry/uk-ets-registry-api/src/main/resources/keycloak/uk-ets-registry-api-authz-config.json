@@ -1268,6 +1268,18 @@
         }
       ]
     },
+	{
+	  "name": "Regulator notices pending tasks",
+	  "ownerManagedAccess": false,
+	  "displayName": "Regulator notices pending tasks",
+	  "attributes": {},
+	  "uris": ["/api-registry/regulator-notices.get.pendingTaskExists"],
+	  "scopes": [
+	    {
+	      "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
+	    }
+	  ]
+	},	
     {
       "name": "Regulator notices create",
       "ownerManagedAccess": false,

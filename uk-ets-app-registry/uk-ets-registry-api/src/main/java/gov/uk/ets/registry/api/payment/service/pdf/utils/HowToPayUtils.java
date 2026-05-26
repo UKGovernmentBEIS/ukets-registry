@@ -47,7 +47,7 @@ public class HowToPayUtils {
         if(paymentLink == null) {
             cell.addElement(formatter.labelWithBoldValue(LINK_LABEL, LINK_EMPTY_PLACE_HOLDER));
         } else {
-            cell.addElement(formatter.labelWithBoldValue(LINK_LABEL, paymentLink));
+            cell.addElement(formatter.labelWithBoldURLValue(LINK_LABEL, paymentLink));
         }
         cell.addElement(formatter.underLineParagraph(BANK_METHOD));
         cell.addElement(formatter.noteGrayParagraph(NOTE));

@@ -1,15 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
-import {
-  catchError,
-  exhaustMap,
-  map,
-  mergeMap,
-  tap,
-  withLatestFrom,
-} from 'rxjs/operators';
+import { catchError, exhaustMap, map, mergeMap, tap } from 'rxjs/operators';
 import { selectAccountId } from '@account-management/account/account-details/account.selector';
 import { ApiErrorHandlingService } from '@shared/services';
 import { getRouteFromArray } from '@shared/utils/router.utils';
@@ -23,10 +16,14 @@ import {
   fetchAcquiringAccountHolderContactsSuccess,
   fetchAcquiringAccountHolderSuccess,
   fetchLoadAndShowAcquiringAccountHolderContacts,
+  fetchLoadAndShowPendingRegulatorNoticesTaskExists,
+  fetchPendingRegulatorNoticesTaskExistsSuccess,
   loadAcquiringAccountHolder,
   loadAcquiringAccountHolderContacts,
 } from '@account-transfer/store/actions/account-transfer.actions';
 import { selectAccountTransferType } from '@account-transfer/store/reducers';
+import { concatLatestFrom } from '@ngrx/operators';
+import { RegulatorNoticeApiService } from '@regulator-notice-management/service';
 
 @Injectable()
 export class AccountTransferNavigationEffects {
@@ -35,7 +32,8 @@ export class AccountTransferNavigationEffects {
     private store: Store,
     private router: Router,
     private apiErrorHandlingService: ApiErrorHandlingService,
-    private accountTransferService: AccountTransferService
+    private accountTransferService: AccountTransferService,
+    private regulatorNoticeApiService: RegulatorNoticeApiService
   ) {}
 
   fetchLoadAndShowAcquiringAccountHolder$ = createEffect(() => {
@@ -92,6 +90,35 @@ export class AccountTransferNavigationEffects {
     );
   });
 
+  fetchLoadAndShowPendingRegulatorNoticesTaskExists$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        AccountTransferActions.fetchLoadAndShowPendingRegulatorNoticesTaskExists
+      ),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
+      mergeMap(([action, accountId]) => {
+        return this.regulatorNoticeApiService
+          .fetchPendingRegulatorNoticeTaskExists(accountId)
+          .pipe(
+            map((result) =>
+              fetchPendingRegulatorNoticesTaskExistsSuccess({
+                pendingRegulatorNoticesTaskExists: result,
+              })
+            ),
+            catchError((httpError: HttpErrorResponse) => {
+              return of(
+                errors({
+                  errorSummary: this.apiErrorHandlingService.transform(
+                    httpError.error
+                  ),
+                })
+              );
+            })
+          );
+      })
+    );
+  });
+
   fetchAcquiringAccountHolderSuccess$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.fetchAcquiringAccountHolderSuccess),
@@ -99,6 +126,7 @@ export class AccountTransferNavigationEffects {
         loadAcquiringAccountHolder({
           accountHolder: action.accountHolder,
         }),
+        fetchLoadAndShowPendingRegulatorNoticesTaskExists(),
         fetchLoadAndShowAcquiringAccountHolderContacts({
           identifier: action.accountHolder.id,
         }),
@@ -109,7 +137,7 @@ export class AccountTransferNavigationEffects {
   fetchAcquiringAccountHolderContactsSuccess$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.fetchAcquiringAccountHolderContactsSuccess),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       mergeMap(([action, accountId]) => [
         loadAcquiringAccountHolderContacts({
           accountHolderContactInfo: action.accountHolderContactInfo,
@@ -119,7 +147,7 @@ export class AccountTransferNavigationEffects {
             'account',
             accountId,
             AccountTransferPathsModel.BASE_PATH,
-            AccountTransferPathsModel.CHECK_ACCOUNT_TRANSFER,
+            AccountTransferPathsModel.SET_EMITTER_ID,
           ]),
           extras: {
             skipLocationChange: true,
@@ -132,7 +160,7 @@ export class AccountTransferNavigationEffects {
   cancelClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.cancelClicked),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([action, accountId]) =>
         AccountTransferActions.navigateTo({
           route: getRouteFromArray([
@@ -153,7 +181,7 @@ export class AccountTransferNavigationEffects {
   cancelAccountHolderUpdateRequest$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.cancelAccountTransferRequest),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       mergeMap(([, accountId]) => [
         AccountTransferActions.clearAccountTransferRequest(),
         AccountTransferActions.navigateTo({
@@ -178,7 +206,7 @@ export class AccountTransferNavigationEffects {
   navigateToActionWizard$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.setAccountTransferType),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([action, accountId]) => {
         switch (action.selectedAccountTransferType.selectedUpdateType) {
           case 'ACCOUNT_TRANSFER_TO_EXISTING_HOLDER':
@@ -206,10 +234,30 @@ export class AccountTransferNavigationEffects {
     );
   });
 
+  navigateToCheckAccountTransferWizard$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AccountTransferActions.setAcquiringEmitterId),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
+      map(([action, accountId]) => {
+        return AccountTransferActions.navigateTo({
+          route: getRouteFromArray([
+            'account',
+            accountId,
+            AccountTransferPathsModel.BASE_PATH,
+            AccountTransferPathsModel.CHECK_ACCOUNT_TRANSFER,
+          ]),
+          extras: {
+            skipLocationChange: true,
+          },
+        });
+      })
+    );
+  });
+
   navigateFromAccountHolderDetailsPage$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.setAcquiringAccountHolderDetails),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return AccountTransferActions.navigateTo({
           route: getRouteFromArray([
@@ -229,7 +277,7 @@ export class AccountTransferNavigationEffects {
   navigateFromAccountHolderAddressPage$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.setAcquiringAccountHolderAddress),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return AccountTransferActions.navigateTo({
           route: getRouteFromArray([
@@ -251,7 +299,7 @@ export class AccountTransferNavigationEffects {
       ofType(
         AccountTransferActions.setAcquiringAccountHolderPrimaryContactDetails
       ),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return AccountTransferActions.navigateTo({
           route: getRouteFromArray([
@@ -273,14 +321,14 @@ export class AccountTransferNavigationEffects {
       ofType(
         AccountTransferActions.setAcquiringAccountHolderPrimaryContactWorkDetails
       ),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return AccountTransferActions.navigateTo({
           route: getRouteFromArray([
             'account',
             accountId,
             AccountTransferPathsModel.BASE_PATH,
-            AccountTransferPathsModel.CHECK_ACCOUNT_TRANSFER,
+            AccountTransferPathsModel.SET_EMITTER_ID,
           ]),
           extras: {
             skipLocationChange: true,
@@ -293,23 +341,25 @@ export class AccountTransferNavigationEffects {
   submitUpdateRequest$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.submitUpdateRequest),
-      withLatestFrom(
+      concatLatestFrom(() => [
         this.store.select(selectAccountTransferType),
-        this.store.select(selectAccountId)
-      ),
+        this.store.select(selectAccountId),
+      ]),
       exhaustMap(([action, accountTransferType, acountIdentifier]) => {
         return this.accountTransferService
           .submitRequest({
             accountTransferType: accountTransferType,
             accountIdentifier: acountIdentifier,
             existingAcquiringAccountHolderIdentifier:
-              action.acquiringAccountHolderInfo
+              action.acquiringAccountTransferInfo
                 .existingAcquiringAccountHolderIdentifier,
             acquiringAccountHolder:
-              action.acquiringAccountHolderInfo.acquiringAccountHolder,
+              action.acquiringAccountTransferInfo.acquiringAccountHolder,
             acquiringAccountHolderContactInfo:
-              action.acquiringAccountHolderInfo
+              action.acquiringAccountTransferInfo
                 .acquiringAccountHolderContactInfo,
+            acquiringEmitterId:
+              action.acquiringAccountTransferInfo.acquiringEmitterId,
           })
           .pipe(
             map((data) => {
@@ -334,7 +384,7 @@ export class AccountTransferNavigationEffects {
   navigateToRequestSubmitted$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AccountTransferActions.submitUpdateRequestSuccess),
-      withLatestFrom(this.store.pipe(select(selectAccountId))),
+      concatLatestFrom(() => this.store.select(selectAccountId)),
       map(([, accountId]) => {
         return AccountTransferActions.navigateTo({
           route: getRouteFromArray([

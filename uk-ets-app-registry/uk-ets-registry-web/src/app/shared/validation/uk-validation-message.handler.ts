@@ -44,8 +44,8 @@ export class UkValidationMessageHandler {
           const childMessages = this.processMessages(c);
           Object.assign(messages, childMessages);
         } else {
-          // Only validate if there are validation messages for the control
-          if (this.validationMessages[controlKey]) {
+          // Only validate if there are errors and validation messages for the control
+          if (c.errors && this.validationMessages[controlKey]) {
             messages[controlKey] = this.mapErrorsToValidationMessages(
               c,
               controlKey

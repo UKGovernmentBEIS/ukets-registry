@@ -16,6 +16,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowJs": true,
+    "strict": false,
     "paths": {
       "@registry-web/*": ["src/app/*"],
       "@shared/*": ["src/app/shared/*"],
