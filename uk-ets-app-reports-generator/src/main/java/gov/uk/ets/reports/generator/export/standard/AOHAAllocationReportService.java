@@ -29,6 +29,7 @@ public class AOHAAllocationReportService implements ReportTypeService<AOHAAlloca
         data.add(reportData.getAccountHolderName());
         data.add(reportData.getAircraftOperatorId());
         data.add(reportData.getMonitoringPlanId());
+        data.add(reportData.getAccountStatus());
         data.add(reportData.getFirstYear());
         data.add(reportData.getRegulator());
         data.add(reportData.getEntitled());
@@ -43,9 +44,10 @@ public class AOHAAllocationReportService implements ReportTypeService<AOHAAlloca
 
     @Override
     public List<String> getReportHeaders(Long year) {
-        return List.of("Account Holder Name", "Aircraft Operator ID", "Monitoring plan ID",
+        return List.of("Account Holder Name", "Aircraft Operator ID", "Monitoring plan ID", "Account Status",
                 "First Year of Operation", "Regulator", "Allocation Entitlement_"+ year, "Allocation Delivered_"+ year,
-                "UKA Sales Contact Email", "UKA Sales Contact Phone", "1-99 UKAs", "100-999 UKAs", "1000+ UKAs");
+                "UKA Sales Contact Email", "UKA Sales Contact Phone", "Reported available to sell 1-99 UKAs",
+                "Reported available to sell 100-999 UKAs", "Reported available to sell 1000+ UKAs");
     }
 
     @Override

@@ -12,6 +12,7 @@ public class MOHAAllocationReportData extends ReportData {
     private String maritimeOperatorId;
     private String imo;
     private String maritimeMonitoringPlanId;
+    private String accountStatus;
     private String excludedForSchemeYear;
     private Integer firstYear;
     private Integer lastYear;

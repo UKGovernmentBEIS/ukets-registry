@@ -58,6 +58,7 @@ export class OverviewContainerComponent implements OnInit {
 
   readonly mainWizardRoute = MainWizardRoutes.TASK_LIST;
   readonly installationRoute = OperatorWizardRoutes.SELECT_REGULATED_ACTIVITY;
+  readonly installationTransferRoute = OperatorWizardRoutes.INSTALLATION;
   readonly aircraftOperatorRoute = OperatorWizardRoutes.AIRCRAFT_OPERATOR;
   readonly maritimeOperatorRoute = OperatorWizardRoutes.MARITIME_OPERATOR;
 
@@ -78,13 +79,17 @@ export class OverviewContainerComponent implements OnInit {
         );
       } else {
         this.operatorType$.pipe(take(1)).subscribe((type) => {
-          if (
-            type === OperatorType.INSTALLATION ||
-            type === OperatorType.INSTALLATION_TRANSFER
-          ) {
+          if (type === OperatorType.INSTALLATION) {
             this.store.dispatch(
               canGoBack({
                 goBackRoute: this.installationRoute,
+                extras: { skipLocationChange: true },
+              })
+            );
+          } else if (type === OperatorType.INSTALLATION_TRANSFER) {
+            this.store.dispatch(
+              canGoBack({
+                goBackRoute: this.installationTransferRoute,
                 extras: { skipLocationChange: true },
               })
             );

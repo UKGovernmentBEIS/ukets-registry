@@ -29,6 +29,7 @@ public class OHAAllocationReportService implements ReportTypeService<OHAAllocati
         data.add(reportData.getInstallationId());
         data.add(reportData.getInstallationName());
         data.add(reportData.getPermitIdentifier());
+        data.add(reportData.getAccountStatus());
         data.add(reportData.getActivityType());
         data.add(reportData.getFirstYear());
         data.add(reportData.getRegulator());
@@ -44,9 +45,10 @@ public class OHAAllocationReportService implements ReportTypeService<OHAAllocati
 
     @Override
     public List<String> getReportHeaders(Long year) {
-        return List.of("Account Holder Name", "Installation ID", "Installation Name", "Permit ID", "Regulated activity",
+        return List.of("Account Holder Name", "Installation ID", "Installation Name", "Permit ID", "Account Status", "Regulated activity",
                 "First Year of Operation", "Regulator", "Allocation Entitlement_"+ year, "Allocation Delivered_"+ year,
-                "UKA Sales Contact Email", "UKA Sales Contact Phone", "1-99 UKAs", "100-999 UKAs", "1000+ UKAs");
+                "UKA Sales Contact Email", "UKA Sales Contact Phone", "Reported available to sell 1-99 UKAs",
+                "Reported available to sell 100-999 UKAs", "Reported available to sell 1000+ UKAs");
     }
 
     @Override

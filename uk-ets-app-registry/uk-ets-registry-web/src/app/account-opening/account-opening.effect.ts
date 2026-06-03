@@ -304,7 +304,7 @@ export class AccountOpeningEffects {
   validateOperator = createEffect(() =>
     this.actions$.pipe(
       ofType(AccountOpeningOperatorActions.validateInstallationTransfer),
-      withLatestFrom(this.store.select(selectInitialPermitId)),
+      concatLatestFrom(() => this.store.select(selectInitialPermitId)),
       switchMap(([action, permitID]) => {
         const isPermitUnchanged =
           action.installationTransfer.permit.id === permitID;

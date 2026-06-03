@@ -7,6 +7,7 @@ import {
   OperatorType,
 } from '@shared/model/account/operator';
 import {
+  selectInstallationToBeTransferred,
   selectOperator,
   selectOperatorInputBackLink,
 } from '@account-opening/operator/operator.selector';
@@ -40,6 +41,7 @@ import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
         [title]="'Specify the installation details'"
         [headerTitle]="'Add the installation information'"
         [installation]="operator$ | async"
+        [installationToBeTransferred]="installationToBeTransferred$ | async"
         [accountHolder]="accountHolder$ | async"
         [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin$ | async"
         (installationTransferEmitter)="onContinueInstallationTransfer($event)"
@@ -52,6 +54,7 @@ import { isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
 })
 export class InstallationContainerComponent implements OnInit {
   operator$: Observable<Operator>;
+  installationToBeTransferred$: Observable<Operator>;
   accountHolder$: Observable<AccountHolder>;
   isSeniorOrJuniorAdmin$: Observable<boolean>;
 
@@ -67,6 +70,9 @@ export class InstallationContainerComponent implements OnInit {
 
   ngOnInit() {
     this.operator$ = this.store.select(selectOperator);
+    this.installationToBeTransferred$ = this.store.select(
+      selectInstallationToBeTransferred
+    );
     this.accountHolder$ = this.store.select(selectAccountHolder);
     this.isSeniorOrJuniorAdmin$ = this.store.select(isSeniorOrJuniorAdmin);
     this.store

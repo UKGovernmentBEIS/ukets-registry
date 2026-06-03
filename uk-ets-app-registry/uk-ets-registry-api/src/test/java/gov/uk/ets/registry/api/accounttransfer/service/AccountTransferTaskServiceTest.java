@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import gov.uk.ets.registry.api.account.domain.Account;
@@ -36,12 +38,14 @@ import gov.uk.ets.registry.api.accounttransfer.web.model.AccountTransferTaskDeta
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.regulatornotice.service.RegulatorNoticeService;
 import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
 import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
 import gov.uk.ets.registry.api.task.web.model.TaskCompleteResponse;
 import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
+import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
@@ -101,6 +105,8 @@ class AccountTransferTaskServiceTest {
     private AccountAccessRepository accountAccessRepository;
     @Mock
     private AuthorizedRepresentativeService authorizedRepresentativeService;
+    @Mock
+    private OperatorEventService operatorEventService;
 
     @InjectMocks
     private AccountTransferTaskService cut;
@@ -127,6 +133,7 @@ class AccountTransferTaskServiceTest {
         newAccountHolder.setAccounts(List.of(a1));
         AccountHolder oldAccountHolder = new AccountHolder();
         account.setAccountHolder(oldAccountHolder);
+        account.setRegistryAccountType(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT);
         SalesContact salesContact = SalesContact.builder()
 								                .emailAddress("dummy@trasys.gr")
 								                .phoneNumber("6909999999")
@@ -241,6 +248,7 @@ class AccountTransferTaskServiceTest {
 
         verify(account, times(2)).setAccountHolder(newAccountHolder); // first call is during setup
         verify(account, times(1)).setAccountStatus(action.getPreviousAccountStatus());
+        verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
     }
 
     @Test
@@ -258,6 +266,7 @@ class AccountTransferTaskServiceTest {
         cut.complete(task, taskOutcome, comment);
 
         verify(trustedAccountRepository, times(1)).deleteAll(List.of(ta1,ta2));
+        verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
     }
 
     @Test
@@ -279,6 +288,7 @@ class AccountTransferTaskServiceTest {
 
         verify(accountService, times(1)).createHolder(accountHolderDTO);
         verify(accountService, times(1)).addAccountHolderContact(newAccountHolder, primaryContact, true);
+        verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
 
 
     }
@@ -289,6 +299,7 @@ class AccountTransferTaskServiceTest {
 
         verify(accountService, never()).createHolder(any());
         verify(account, times(1)).setAccountStatus(action.getPreviousAccountStatus());
+        verifyNoInteractions(operatorEventService);
     }
 
     @Test
@@ -301,6 +312,7 @@ class AccountTransferTaskServiceTest {
         verify(accountOwnership, times(1)).setStatus(AccountOwnershipStatus.INACTIVE);
 
         verify(accountOwnershipRepository, times(1)).save(accountOwnershipCaptor.capture());
+        verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
         AccountOwnership newAccountOwnership = accountOwnershipCaptor.getValue();
         assertThat(newAccountOwnership.getAccount()).isEqualTo(account);
         assertThat(newAccountOwnership.getStatus()).isEqualTo(AccountOwnershipStatus.ACTIVE);
@@ -311,12 +323,14 @@ class AccountTransferTaskServiceTest {
     void shouldRemoveArs() {
         cut.complete(task, TaskOutcome.APPROVED, "");
         verify(accountService, times(1)).removeAccountArs(Long.valueOf(TEST_ACCOUNT_NUMBER), REMOVAL_REASON, currentUser);
+        verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
     }
 
     @Test
     void shouldClearSalesContactDetails() {
         cut.complete(task, TaskOutcome.APPROVED, "");
         assertNull(account.getSalesContact());
+        verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
     }
 
     @Test
@@ -326,5 +340,6 @@ class AccountTransferTaskServiceTest {
         assertThat(account.getSalesContact().getEmailAddress()).isEqualTo("dummy@trasys.gr");
         assertThat(account.getSalesContact().getPhoneNumber()).isEqualTo("6909999999");
         assertThat(account.getSalesContact().getPhoneNumberCountry()).isEqualTo("GR(30)");
+        verifyNoInteractions(operatorEventService);
     }
 }

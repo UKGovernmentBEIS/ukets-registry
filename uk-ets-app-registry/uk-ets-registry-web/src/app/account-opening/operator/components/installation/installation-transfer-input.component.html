@@ -32,15 +32,39 @@
           [inputFormatter]="operatorResultFormatter"
           [validationErrorMessage]="validationErrorMessage.identifier"
           controlName="identifier"
+          (input)="onIdentifierInput($event)"
           [maxlength]="256"
           [isNumber]="true"
           (resultItem)="onSelectFromSearch($event)"
         ></app-form-control-type-ahead>
       </fieldset>
 
+      @if (existingInstallationName) {
+        <dl class="govuk-summary-list govuk-summary-list--no-border">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Installation name</dt>
+            <dd class="govuk-summary-list__value">
+              {{ existingInstallationName }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">EmitterID</dt>
+            <dd class="govuk-summary-list__value">
+              {{ existingEmitterId }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">PermitID</dt>
+            <dd class="govuk-summary-list__value">
+              {{ existingPermitId }}
+            </dd>
+          </div>
+        </dl>
+      }
+
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <h1 class="govuk-fieldset__heading">Installation details</h1>
+          <h1 class="govuk-fieldset__heading">New Installation details</h1>
         </legend>
         <app-form-control-text
           [label]="' Installation name'"

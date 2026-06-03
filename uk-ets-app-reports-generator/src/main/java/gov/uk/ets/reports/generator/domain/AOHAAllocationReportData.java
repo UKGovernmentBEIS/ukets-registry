@@ -11,6 +11,7 @@ public class AOHAAllocationReportData extends ReportData {
     private String accountHolderName;
     private Long aircraftOperatorId;
     private String monitoringPlanId;
+    private String accountStatus;
     private Integer firstYear;
     private String regulator;
     private Integer entitled;

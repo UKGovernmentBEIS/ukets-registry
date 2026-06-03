@@ -29,6 +29,7 @@ public class MOHAAllocationReportService implements ReportTypeService<MOHAAlloca
         data.add(reportData.getMaritimeOperatorId());
         data.add(reportData.getImo());
         data.add(reportData.getMaritimeMonitoringPlanId());
+        data.add(reportData.getAccountStatus());
         data.add(reportData.getExcludedForSchemeYear());
         data.add(reportData.getFirstYear());
         data.add(reportData.getLastYear());
@@ -48,15 +49,16 @@ public class MOHAAllocationReportService implements ReportTypeService<MOHAAlloca
                 "Maritime Operator ID",
                 "Company IMO number",
                 "Emissions Monitoring Plan ID",
+                "Account Status",
                 "\"Excluded\" for scheme year",
                 "First Year of Operation",
                 "Last Year of Operation",
                 "Regulator",
                 "UKA Sales Contact Email",
                 "UKA Sales Contact Phone",
-                "1-99 UKAs",
-                "100-999 UKAs",
-                "1000+ UKAs");
+                "Reported available to sell 1-99 UKAs",
+                "Reported available to sell 100-999 UKAs",
+                "Reported available to sell 1000+ UKAs");
     }
 
     @Override

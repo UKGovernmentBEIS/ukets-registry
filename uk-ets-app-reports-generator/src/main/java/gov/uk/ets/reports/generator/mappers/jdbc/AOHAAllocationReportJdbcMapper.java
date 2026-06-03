@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class AOHAAllocationReportJdbcMapper
             "select     case when ah.type = 'ORGANISATION' or ah.type ='GOVERNMENT' then ah.name else CONCAT(ahr.first_name,' ',ahr.last_name) end as account_holder_name, \n" +
             "           ce.identifier as aircraft_operator_id, \n"+
             "           ao.monitoring_plan_identifier,  \n"+
+            "           case when ac.account_status = 'CLOSED' then 'CLOSED' else 'OPEN' end as account_status, \n"+
             "           ce.start_year as first_year_of_verified_emission_submission,  \n"+
             "           ce.regulator,  \n"+
             "           ac.sales_contact_email, \n"+
@@ -56,6 +58,7 @@ public class AOHAAllocationReportJdbcMapper
             "           account_holder_name, \n" +
             "           ce.identifier, \n" +
             "           ao.monitoring_plan_identifier,  \n" +
+            "           ac.account_status,  \n" +
             "           ce.start_year,  \n" +
             "           ce.regulator,  \n" +
             "           ac.sales_contact_email, \n"+
@@ -74,15 +77,27 @@ public class AOHAAllocationReportJdbcMapper
                 .accountHolderName(resultSet.getString("account_holder_name"))
                 .aircraftOperatorId(Util.getNullableLong(resultSet, "aircraft_operator_id"))
                 .monitoringPlanId(resultSet.getString("monitoring_plan_identifier"))
+                .accountStatus(resultSet.getString("account_status"))
                 .firstYear(resultSet.getInt("first_year_of_verified_emission_submission"))
                 .regulator(resultSet.getString("regulator"))
                 .allocated(resultSet.getInt("allocation"))
                 .entitled(resultSet.getInt("entitlement"))
-                .salesContactEmail(resultSet.getString("sales_contact_email"))
-                .salesContactPhone(StringUtils.isNotBlank(resultSet.getString("sales_contact_phone_number_country")) ?  StringUtils.trim(resultSet.getString("sales_contact_phone_number_country") + " " +resultSet.getString("sales_contact_phone_number")) : "")
-                .uka1To99(resultSet.getString("sales_contact_uka_1_99"))
-                .uka100To999(resultSet.getString("sales_contact_uka_100_999"))
-                .uka1000Plus(resultSet.getString("sales_contact_uka_1000_plus"))
+                .salesContactEmail(!Objects.equals(resultSet.getString("account_status"), "CLOSED") ?
+                        resultSet.getString("sales_contact_email") : "")
+                .salesContactPhone(getSalesContactPhoneNumber(resultSet.getString("account_status"),
+                        resultSet.getString("sales_contact_phone_number_country"),
+                        resultSet.getString("sales_contact_phone_number")))
+                .uka1To99(!Objects.equals(resultSet.getString("account_status"), "CLOSED") ?
+                        resultSet.getString("sales_contact_uka_1_99") : "")
+                .uka100To999(!Objects.equals(resultSet.getString("account_status"), "CLOSED") ?
+                        resultSet.getString("sales_contact_uka_100_999") : "")
+                .uka1000Plus(!Objects.equals(resultSet.getString("account_status"), "CLOSED") ?
+                        resultSet.getString("sales_contact_uka_1000_plus") : "")
                 .build();
+    }
+
+    private String getSalesContactPhoneNumber(String accountStatus, String salesContactPhoneNumberCountry, String salesContactPhoneNumber) {
+        return !Objects.equals(accountStatus, "CLOSED") ? (StringUtils.isNotBlank(salesContactPhoneNumberCountry) ?
+                StringUtils.trim(salesContactPhoneNumberCountry + " " + salesContactPhoneNumber) : "") : "";
     }
 }

@@ -25,6 +25,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.Fou
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlySeniorRegistryAdminCanApproveTask;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.event.service.EventService;
+import gov.uk.ets.registry.api.integration.service.operator.OperatorEventService;
 import gov.uk.ets.registry.api.regulatornotice.service.RegulatorNoticeService;
 import gov.uk.ets.registry.api.tal.domain.TrustedAccount;
 import gov.uk.ets.registry.api.tal.repository.TrustedAccountRepository;
@@ -62,6 +63,7 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
     private final UserService userService;
     private final AccountOwnershipRepository accountOwnershipRepository;
     private final RegulatorNoticeService regulatorNoticeService;
+    private final OperatorEventService operatorEventService;
 
     private static final String REMOVAL_REASON = "account transfer";
 
@@ -142,6 +144,7 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
                 Object ce = Hibernate.unproxy(account.getCompliantEntity());
                 if (ce instanceof Installation installation) {
                     installation.setEmitterId(action.getInstallationDetails().getEmitterId());
+                    operatorEventService.updateOperator(installation, account.getRegistryAccountType().name());
                 }
             }
         }

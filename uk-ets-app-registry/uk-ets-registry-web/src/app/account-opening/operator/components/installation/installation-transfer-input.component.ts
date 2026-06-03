@@ -1,9 +1,17 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { HttpParams } from '@angular/common/http';
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import {
+  Installation,
   InstallationActivityType,
   InstallationSearchResult,
   InstallationTransfer,
@@ -28,21 +36,71 @@ export class InstallationTransferInputComponent
   extends UkFormComponent
   implements OnInit
 {
-  @Input() installation: InstallationTransfer;
-  @Input() title: string;
-  @Input() headerTitle: string;
-  @Input() accountHolder: AccountHolder;
-  @Input() isSeniorOrJuniorAdmin: boolean;
+  @Input()
+  installation: InstallationTransfer;
+  @Input()
+  installationToBeTransferred: Installation;
+  @Input()
+  title: string;
+  @Input()
+  headerTitle: string;
+  @Input()
+  accountHolder: AccountHolder;
+  @Input()
+  isSeniorOrJuniorAdmin: boolean;
 
   @Output()
   readonly installationTransferEmitter = new EventEmitter<{
     installationTransfer: InstallationTransfer;
     acquiringAccountHolderIdentifier: number;
   }>();
+
   activityTypes = InstallationActivityType;
   regulatorOptions: Option[] = getOptionsFromMap(regulatorMap);
   requestParams: HttpParams = new HttpParams();
   searchByIdRequestUrl: string;
+
+  existingInstallationName: string;
+  existingEmitterId: string;
+  existingPermitId: string;
+
+  constructor(
+    protected formBuilder: UntypedFormBuilder,
+    private existingEmitterIdAsyncValidator: ExistingEmitterIdAsyncValidator,
+    private store: Store
+  ) {
+    super();
+    this.searchByIdRequestUrl = '/accounts.get.candidate-installation-transfer';
+  }
+
+  ngOnInit(): void {
+    super.ngOnInit();
+    const existingAccountHolder =
+      this.accountHolder !== undefined && this.accountHolder.id !== undefined;
+    if (existingAccountHolder) {
+      this.requestParams = new HttpParams().set(
+        'excludeAccountHolderIdentifier',
+        this.accountHolder.id
+      );
+    }
+    if (this.installationToBeTransferred) {
+      this.existingInstallationName = this.installationToBeTransferred.name;
+      this.existingEmitterId = this.installationToBeTransferred.emitterId;
+      this.existingPermitId = this.installationToBeTransferred.permit.id;
+    }
+  }
+
+  onIdentifierInput(event: any) {
+    if (
+      !event.target.value ||
+      event.target.value === '' ||
+      event.target.value.length <= 3
+    ) {
+      this.existingInstallationName = null;
+      this.existingEmitterId = null;
+      this.existingPermitId = null;
+    }
+  }
 
   protected getFormModel() {
     return {
@@ -107,38 +165,24 @@ export class InstallationTransferInputComponent
     });
   }
 
-  constructor(
-    protected formBuilder: UntypedFormBuilder,
-    private existingEmitterIdAsyncValidator: ExistingEmitterIdAsyncValidator,
-    private store: Store
-  ) {
-    super();
-    this.searchByIdRequestUrl = '/accounts.get.candidate-installation-transfer';
-  }
-
-  ngOnInit(): void {
-    super.ngOnInit();
-
-    const existingAccountHolder =
-      this.accountHolder !== undefined && this.accountHolder.id !== undefined;
-    if (existingAccountHolder) {
-      this.requestParams = new HttpParams().set(
-        'excludeAccountHolderIdentifier',
-        this.accountHolder.id
-      );
-    }
-  }
-
   activityTypeOptions(): Option[] {
     return Object.keys(this.activityTypes)
       .sort((a, b) => (this.activityTypes[a] > this.activityTypes[b] ? 1 : -1))
       .map((c) => ({ label: this.activityTypes[c], value: c }));
   }
 
+  /**
+   * Called from the typeahead component when an installation is selected from the search results.
+   * It updates the summary list with the selected installation's details and prepopulates emitter and permit IDs.
+   * @param result
+   */
   onSelectFromSearch(result: InstallationSearchResult) {
     const operator: InstallationTransfer = Object.assign({});
     operator.identifier = result.identifier;
     operator.emitterId = result.emitterId;
+    this.existingInstallationName = result.installationName;
+    this.existingEmitterId = result.emitterId;
+    this.existingPermitId = result.permitIdentifier;
     this.installation = operator;
     this.store.dispatch(
       AccountOpeningOperatorActions.initialPermitId({

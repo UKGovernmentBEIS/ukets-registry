@@ -12,6 +12,7 @@ public class OHAAllocationReportData extends ReportData {
     private Long installationId;
     private String installationName;
     private String permitIdentifier;
+    private String accountStatus;
     private String activityType;
     private Integer firstYear;
     private String regulator;
