@@ -3,71 +3,82 @@
 <body>
 <p>Dear ${contactFullName},</p>
 
-<p>You are being sent this email as you are a contact in the UK ETS METS system.</p>
+<p>You are receiving this email because you are listed as a contact in the UK Emissions Trading Scheme (ETS) METS system.</p>
 
-<p>A new Operator account has now been opened for you in the UK ETS Registry, and the account details are as follows:</p>
+<p>We have opened a new operator account for you in the UK ETS Registry:</p>
 
-<p>Operator Name: ${operatorName}<br/>
-    Account Type: ${accountType}<br/>
-    Registry Account Number: ${registryAccountNumber}<br/>
-    Emitter ID: ${emitterId}</p>
+<p><strong>Operator Name:</strong> ${operatorName}<br/>
+    <strong>Account Type:</strong> ${accountType}<br/>
+    <strong>Registry Account Number:</strong> ${registryAccountNumber}<br/>
+    <strong>Emitter ID:</strong> ${emitterId}</p>
 
-<p>Your account has been configured such that you only need to appoint one Authorised Representative in order to surrender allowances to meet your UK ETS obligations.</p>
+<p>Your account is set up so that only one Authorised Representative is needed to surrender allowances. You can change this later after you claim the account.</p>
 
-<p><strong>Actions you need to complete</strong></p>
+<p><strong>What you need to do</strong></p>
 
-<p>If you have received this email during the period 1st February – 30th April, and you have a requirement to surrender allowances by the 30th of April, you must complete these instructions as a matter of urgency.</p>
+<p>You must nominate an Authorised Representative to claim your account. We recommend you nominate a METS contact to keep things simple. This code may have been sent to more than one METS contact, but <strong>only one person can use it</strong> to claim the account.</p>
 
-<p>In order for the Registry account to be managed, the account must be claimed and an Authorised Representative appointed to it.</p>
+<p><strong>Important:</strong> If you received this email between 1 February and 30 April and need to surrender allowances by 30 April, you should complete this process as soon as possible.</p>
 
 <p><strong>THE CLAIM ACCOUNT CODE FOR THIS ACCOUNT IS: ${accountClaimCode}</strong></p>
 
-<p>To claim the account, your proposed Authorised Representative must:</p>
+<p>To claim the account, your nominated Authorised Representative must:</p>
 
 <ol>
-    <li>Create a Registry sign in (if they have not already done so) by navigating to the home page of the UK ETS Registry and selecting ‘Create sign in’.</li>
-    <li>Log in to the UK ETS Registry.</li>
-    <li>Navigate to ‘Accounts’ at the top of the page.</li>
-    <li>Select ‘Claim account’.</li>
-    <li>Enter the claim account code shown above.</li>
-    <li>Enter the METS Registry ID which can be found in the METS system.</li>
+    <li>Create a Registry sign-in (if needed) via the <a href="https://view-emissions-trading-registry.service.gov.uk/">UK ETS Registry homepage</a></li>
+    <li>Log in</li>
+    <li>Go to ‘Accounts’</li>
+    <li>Select ‘Claim account’</li>
+    <li>Enter the claim code above</li>
+    <li>Enter the UK ETS Registry ID — as shown in METS</li>
 </ol>
 
-<p>Please consider nominating yourself as an Authorised Representative, so that there is a single point of contact for both UK ETS METS and Registry matters.</p>
+<p>If the nominated Authorised Representative has not acted as a representative on any Registry account before, they will need to complete some additional steps:</p>
 
-<p>Please note that the claim account code provided in this email may have been sent to more than one contact we have for this operator. However, it can only be used by one person at a time to claim the account.</p>
+<ol start="7">
+    <li>Provide supporting documents when contacted by the UK Registry Administrator via the Registry or digital identity verification service. This will include photo ID (such as a passport) and may include proof of address.</li>
+    <li>Wait for approval from the Registry Administrator</li>
+    <li>Once approved, receive a Registry Activation Code (RAC) by email</li>
+    <li>Enter the RAC in the Registry.</li>
+</ol>
 
-<p>Once the account has been successfully claimed, a member of the Registry team will contact you to request any supporting documentation we may require in order to complete the appointment of your Authorised Representative.</p>
+<p><strong>Key information</strong></p>
 
-<p><strong>Important information</strong></p>
+<p>You can nominate one Authorised Representative (Surrender Only) for free. This role allows them to:</p>
 
-<p>You are entitled to nominate one Authorised Representative (with Surrender Only permission) for your Operator account free of charge, as this is included in the Emissions Monitoring Plan/Permit Application fee charged by your regulator.</p>
+<ul>
+    <li>Surrender allowances</li>
+    <li>Return allocation (if needed)</li>
+    <li>They cannot make other changes or perform transactions (such as transferring allowances out of the account).</li>
+</ul>
 
-<p>By default, your nominated Authorised Representative will be given the Surrender Only permission. This will enable your nominated Authorised Representative to complete their compliance actions in the Registry.</p>
+<p>You can request additional permissions or extra representatives later, but:</p>
 
-<p>The Surrender Only permission allows an Authorised Representative to complete a Surrender transaction only. A Return of Allocation transaction is also possible if this is required.</p>
+<ul>
+    <li>You’ll need to provide further documents (such as criminal record checks).</li>
+    <li>Fees will apply (see Section 17 of the <a href="https://www.gov.uk/government/publications/environment-agency-greenhouse-gas-emissions-charging-scheme-2021">charging scheme</a>).</li>
+    <li>Any changes must be reviewed and approved by the Registry Administrator.</li>
+</ul>
 
-<p>They will not be able to perform any other type of transaction or make amendments to the Trusted Account List.</p>
+<p><strong>Buying allowances</strong></p>
 
-<p>Changes to an Authorised Representative’s permissions may be requested with the Registry after the initial appointment has been completed. We will request additional supporting documentation as part of this process and additional fees will be charged.</p>
+<p>You can buy allowances before appointing a representative. You should allow enough time for:</p>
 
-<p>If you wish to have extra Authorised Representatives, you will be charged for each addition. The amount you will need to pay is detailed in Section 17 of our charging scheme which can be found at:
-    <a href="https://www.gov.uk/government/publications/environment-agency-greenhouse-gas-emissions-charging-scheme-2021">Environment Agency (greenhouse gas emissions) charging scheme - GOV.UK</a>.
-</p>
+<ul>
+    <li>Finding a supplier</li>
+    <li>Negotiations</li>
+    <li>Required checks (due diligence)</li>
+</ul>
 
-<p>If you need to purchase UK ETS allowances to meet your UK ETS surrender obligation, you can do this before the first Authorised Representative is appointed.</p>
+<p>Give your supplier your Registry Account Number so they can transfer allowances to your account.</p>
 
-<p>You will need to give your supplier the Registry Account Number set out above so they can arrange for your allowances to be delivered into the account.</p>
+<ul>
+    <li>Supplier details are in the <a href="https://reports.view-emissions-trading-registry.service.gov.uk/ets-reports.html">UK ETS Registry Public Reports</a> (GOV.UK)</li>
+</ul>
 
-<p>You can find details of suppliers in the UK ETS Registry Public Reports:
-    <a href="https://reports.view-emissions-trading-registry.service.gov.uk/ets-reports.html">UK Emissions Trading Registry - GOV.UK</a>
-</p>
+<p>Please allow time for transfer delays. It’s your responsibility to ensure allowances are in your account to surrender before the deadline: 30 April, 11:59pm (UK time).</p>
 
-<p>There are transaction delays within the Registry that may affect the delivery of allowances from your supplier to your account. It is your responsibility to ensure that sufficient allowances are delivered into your Operator account in time to surrender them by 11:59pm UK Time (UTC+1) on 30th April.</p>
-
-<p>If you have any questions regarding the claiming of your account or appointment of your Authorised Representatives, please contact us at
-    <a href="mailto: ${etrAddress}">UK Registry Helpdesk</a>.
-</p>
+<p>If you have any questions, please contact the UK Registry Helpdesk at <a href="mailto: ${etrAddress}">UK Registry Helpdesk</a>.</p>
 
 <p>Kind regards,<br/><br/>The Registry Team</p>
 

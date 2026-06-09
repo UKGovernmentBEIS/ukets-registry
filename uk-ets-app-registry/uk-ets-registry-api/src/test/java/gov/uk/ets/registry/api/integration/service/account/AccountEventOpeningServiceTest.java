@@ -26,6 +26,8 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.user.domain.UserRole;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,7 +104,9 @@ class AccountEventOpeningServiceTest {
         newAccount.setAccountType(AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT.name());
         newAccount.setAccountName("accountName");
 
-        Mockito.when(util.getCorrelationId(headers)).thenReturn("correlationId");
+        String correlationId = Long.toString(2878282L);
+        
+        Mockito.when(util.getCorrelationId(headers)).thenReturn(correlationId);
         Mockito.when(util.getOperatorType(headers)).thenReturn(operatorType);
         Mockito.when(eventValidator.validate(event, operatorType)).thenReturn(List.of());
         Mockito.when(accountEventMapper.convert(event, operatorType)).thenReturn(accountDTO);
@@ -123,7 +127,7 @@ class AccountEventOpeningServiceTest {
         Mockito.verify(uktlAccountNotifyMessageService, Mockito.times(1))
         .sendAccountOpeningNotification(AccountNotification.convert(newAccount));
         Mockito.verify(operatorEventService, Mockito.times(1))
-            .updateOperator(maritimeOperator, "MARITIME_OPERATOR_HOLDING_ACCOUNT", "correlationId");
+            .updateOperator(maritimeOperator, "MARITIME_OPERATOR_HOLDING_ACCOUNT", Optional.of(correlationId));
     }
 
     @Test
@@ -163,7 +167,9 @@ class AccountEventOpeningServiceTest {
         newAccount.setRegistryAccountType(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT);
         newAccount.setAccountName("accountName");
 
-        Mockito.when(util.getCorrelationId(headers)).thenReturn("correlationId");
+        String correlationId = Long.toString(677282L);
+        
+        Mockito.when(util.getCorrelationId(headers)).thenReturn(correlationId);
         Mockito.when(util.getOperatorType(headers)).thenReturn(operatorType);
         Mockito.when(eventValidator.validate(event, operatorType)).thenReturn(List.of());
         Mockito.when(accountEventMapper.convert(event, operatorType)).thenReturn(accountDTO);
@@ -186,7 +192,7 @@ class AccountEventOpeningServiceTest {
         Mockito.verify(complianceEventService, Mockito.times(1))
             .processEvent(any(CompliantEntityInitializationEvent.class));
         Mockito.verify(operatorEventService, Mockito.times(1))
-            .updateOperator(maritimeOperator, "MARITIME_OPERATOR_HOLDING_ACCOUNT", "correlationId");
+            .updateOperator(maritimeOperator, "MARITIME_OPERATOR_HOLDING_ACCOUNT", Optional.of(correlationId));
     }
 
 }

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -93,7 +94,7 @@ public class AccountEventOpeningService {
         sendAccountTransactionLogNotifications(newAccount);
         sendAccountComplianceNotifications(newAccount);
 
-        operatorEventService.updateOperator(newAccount.getCompliantEntity(), newAccount.getRegistryAccountType().name(), correlationId);
+        operatorEventService.updateOperator(newAccount.getCompliantEntity(), newAccount.getRegistryAccountType().name(), Optional.of(correlationId));
         return newAccount;
     }
     

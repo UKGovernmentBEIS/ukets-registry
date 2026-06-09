@@ -1,10 +1,8 @@
 package gov.uk.ets.publication.api.messaging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.uk.ets.reports.model.messaging.ReportGenerationEvent;
 import java.io.Serializable;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,13 +14,23 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.util.backoff.FixedBackOff;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.uk.ets.reports.model.messaging.ReportGenerationEvent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import uk.ets.lib.commons.kafkaconfig.KafkaConfigUtils;
 import uk.ets.lib.commons.kafkaconfig.KafkaConsumerConfig;
 import uk.ets.lib.commons.kafkaconfig.KafkaProducerConfig;
 import uk.ets.lib.commons.kafkaconfig.UkEtsKafkaConfigProperties;
 
 @Configuration
+@Log4j2
 @EnableKafka
 @RequiredArgsConstructor
 public class PublicationApiMessagingConfiguration {
@@ -66,13 +74,36 @@ public class PublicationApiMessagingConfiguration {
     }
 
     @Bean("publicationApiListenerContainerFactory")
-    public ConcurrentKafkaListenerContainerFactory<String, ReportGenerationEvent> kafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, ReportGenerationEvent> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, ReportGenerationEvent> factory =
             new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setCommonErrorHandler(publicationApiOutcomeListenerErrorHandler());
         return factory;
     }
+    
+    @Bean
+    DefaultErrorHandler publicationApiOutcomeListenerErrorHandler() {
 
+        // Skip bad messages immediately
+        DefaultErrorHandler handler = new DefaultErrorHandler(
+            (record, ex) -> {
+                // log and skip
+            	log.error("Skipping bad message: {}", record);
+            },
+            new FixedBackOff(0L, 0) // no retries
+        );
+
+
+        handler.addNotRetryableExceptions(
+            org.apache.kafka.common.errors.SerializationException.class,
+            org.springframework.kafka.support.serializer.DeserializationException.class
+        );
+        
+        return handler;
+    }
+    
+    
     @Bean
     public ConsumerFactory<String, ReportGenerationEvent> consumerFactory() {
         try (StringDeserializer stringDeserializer = new StringDeserializer()) {

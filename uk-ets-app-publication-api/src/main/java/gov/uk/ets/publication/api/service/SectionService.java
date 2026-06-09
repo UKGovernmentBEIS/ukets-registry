@@ -3,7 +3,23 @@ package gov.uk.ets.publication.api.service;
 import static gov.uk.ets.publication.api.Utils.convertByteAmountToHumanReadable;
 import static java.util.stream.Collectors.toList;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import gov.uk.ets.commons.s3.client.S3ClientService;
+import gov.uk.ets.commons.s3.client.UkEtsS3Exception;
 import gov.uk.ets.publication.api.domain.PublicationSchedule;
 import gov.uk.ets.publication.api.domain.ReportFile;
 import gov.uk.ets.publication.api.domain.Section;
@@ -24,21 +40,8 @@ import gov.uk.ets.publication.api.web.model.ReportFileDto;
 import gov.uk.ets.publication.api.web.model.SectionDto;
 import gov.uk.ets.reports.model.ReportStatus;
 import gov.uk.ets.reports.model.messaging.ReportGenerationEvent;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
@@ -346,17 +349,28 @@ public class SectionService {
         }
     }
     
+    /**
+     * The unpublish process should not block the rest 
+     * if the S3 files are missing.
+     * Mark the files as unpublished in the db and continue.
+     * @param file
+     */
     private void unpublishAction(ReportFile file) {
         // move file under /archive in S3 bucket
-        s3ClientService.copyFile(
-            bucketName, getFilePathFromSectionType(file.getSection(), file.getFileName()),
-            bucketName, UNPUBLISHED_FILES_ARCHIVE + getFilePathFromSectionType(
-                file.getSection(), LocalDateTime.now() + "_" + file.getFileName()));
+    	try {
+            // mark file as UNPUBLISHED in DB
+            file.setFileStatus(ReportPublicationStatus.UNPUBLISHED);
+            reportFilesRepository.save(file); 
+            s3ClientService.copyFile(
+                    bucketName, getFilePathFromSectionType(file.getSection(), file.getFileName()),
+                    bucketName, UNPUBLISHED_FILES_ARCHIVE + getFilePathFromSectionType(
+                        file.getSection(), LocalDateTime.now() + "_" + file.getFileName()));
 
-        s3ClientService.deleteFile(bucketName, getFilePathFromSectionType(file.getSection(), file.getFileName()));
-        // mark file as UNPUBLISHED in DB
-        file.setFileStatus(ReportPublicationStatus.UNPUBLISHED);
-        reportFilesRepository.save(file);
+            s3ClientService.deleteFile(bucketName, getFilePathFromSectionType(file.getSection(), file.getFileName()));   		
+    	} catch(UkEtsS3Exception e) {
+    		log.error("Could not unpublish report, maybe the s3key is missing.",e);
+    	}
+
     }
 
     /**
@@ -377,41 +391,51 @@ public class SectionService {
      * and triggers html update where applicable
      */
     private void processGeneratedReport(ReportGenerationEvent event) {
-        ReportFile file = reportFilesRepository.findById(event.getId())
-                                            .orElseThrow(() -> new UkEtsPublicationApiException(
-                                                String.format("Report with id %s not found.", event.getId())));
-        Section section = file.getSection();
-        // if display type is one file per year, use PENDING_PUBLICATION as intermediate status
-        file.setFileStatus(DisplayType.ONE_FILE_PER_YEAR.equals(section.getDisplayType())
-                ? ReportPublicationStatus.PENDING_PUBLICATION
-                : file.getFileStatus());
-        String fileLocation = event.getFileLocation();
-        file.setFileName(fileLocation.substring(fileLocation.lastIndexOf('/') + 1));
-        file.setFileLocation(
-                String.format("s3:%s/%s", bucketName, getFilePathFromSectionType(section, file.getFileName())));
-        file.setFileSize(convertByteAmountToHumanReadable(event.getFileSize() * 1024));
-        file.setGeneratedOn(event.getGenerationDate());
-        reportFilesRepository.save(file);
-        s3ClientService.copyFile(reportBucketName, file.getFileName(), bucketName,
-                getFilePathFromSectionType(section, file.getFileName()));
-
-        // if display type is one file per year, we need to check the entire batch
-        if (DisplayType.ONE_FILE_PER_YEAR.equals(section.getDisplayType())) {
-            batchPublication(file, section);
-        } else if (DisplayType.ONE_FILE.equals(section.getDisplayType())) {
-            findAndUnpublishFiles(section.getId(), null);
-            file.setFileStatus(ReportPublicationStatus.PUBLISHED);
-            file.setPublishedOn(LocalDateTime.now());
+    	log.info("Starting processing of completed generated report event {}", event);
+    	try {
+            ReportFile file = reportFilesRepository.findById(event.getId())
+                    .orElseThrow(() -> new UkEtsPublicationApiException(
+                        String.format("Report with id %s not found.", event.getId())));
+            Section section = file.getSection();
+            // if display type is one file per year, use PENDING_PUBLICATION as intermediate status
+            file.setFileStatus(DisplayType.ONE_FILE_PER_YEAR.equals(section.getDisplayType())
+					            ? ReportPublicationStatus.PENDING_PUBLICATION
+					            : file.getFileStatus());
+            String fileLocation = event.getFileLocation();
+            file.setFileName(fileLocation.substring(fileLocation.lastIndexOf('/') + 1));
+            file.setFileLocation(
+            String.format("s3:%s/%s", bucketName, getFilePathFromSectionType(section, file.getFileName())));
+            file.setFileSize(convertByteAmountToHumanReadable(event.getFileSize() * 1024));
+            file.setGeneratedOn(event.getGenerationDate());
             reportFilesRepository.save(file);
-            section.setStatus(SectionStatus.PUBLISHED);
-            sectionRepository.save(section);
-            s3ClientService.uploadHtmlFile(bucketName, getSectionPathFromSectionType(section),
-                                           htmlGenerator.generateSection(section));
-        }
+            log.info("File {} saved in repository",file);
+            //Copy in S3
+            s3ClientService.copyFile(reportBucketName, file.getFileName(), bucketName,
+            getFilePathFromSectionType(section, file.getFileName()));
+            
+            // if display type is one file per year, we need to check the entire batch
+            if (DisplayType.ONE_FILE_PER_YEAR.equals(section.getDisplayType())) {
+            	batchPublication(file, section);
+            } else if (DisplayType.ONE_FILE.equals(section.getDisplayType())) {
+	            findAndUnpublishFiles(section.getId(), null);
+	            file.setFileStatus(ReportPublicationStatus.PUBLISHED);
+	            file.setPublishedOn(LocalDateTime.now());
+	            reportFilesRepository.save(file);
+	            section.setStatus(SectionStatus.PUBLISHED);
+	            sectionRepository.save(section);
+	            s3ClientService.uploadHtmlFile(bucketName, getSectionPathFromSectionType(section),
+	                               htmlGenerator.generateSection(section));
+            }   		
+    	} catch (Exception e) {
+    		log.error(e.getMessage(), e);
+    	}
     }
 
     private void batchPublication(ReportFile file, Section section) {
         List<ReportFile> filesInBatch = reportFilesRepository.findByBatchId(file.getBatchId());
+        filesInBatch.forEach(f-> {
+        	log.info("File {} in batch.",f);        	
+        });
         boolean isBatchReadyForPublication = filesInBatch
                 .stream()
                 .allMatch(f -> ReportPublicationStatus.PENDING_PUBLICATION.equals(f.getFileStatus()));
@@ -426,10 +450,13 @@ public class SectionService {
             sectionRepository.save(section);
             s3ClientService.uploadHtmlFile(bucketName, getSectionPathFromSectionType(section),
                                            htmlGenerator.generateSection(section));
+        } else {
+        	log.info("Batch not ready for publication, not all statuses PENDING_PUBLICATION.");
         }
     }
 
     private void processFailedReport(ReportGenerationEvent event) {
+    	log.info("Starting processing of failed generated report event {}", event);
         ReportFile file = reportFilesRepository.findById(event.getId())
                                                  .orElseThrow(() -> new UkEtsPublicationApiException(
                                                      String.format("Report with id %s not found.", event.getId())));
