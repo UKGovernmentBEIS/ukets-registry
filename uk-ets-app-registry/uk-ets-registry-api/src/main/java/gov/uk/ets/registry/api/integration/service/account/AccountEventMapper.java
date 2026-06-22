@@ -188,15 +188,22 @@ public class AccountEventMapper {
     private AccountHolderDTO buildAccountHolderForUpdate(AccountHolderMessage msg) {
         AccountHolderDTO holder = new AccountHolderDTO();
         holder.setAddress(buildAddress(msg));
-        holder.setDetails(buildDetailsForUpdate(msg));
+        AccountHolderType type = AccountHolderType.valueOf(msg.getAccountHolderType());
+        holder.setDetails(buildDetailsForUpdate(msg,type));
         return holder;
     }
 
-    private DetailsDTO buildDetailsForUpdate(AccountHolderMessage msg) {
+    private DetailsDTO buildDetailsForUpdate(AccountHolderMessage msg, AccountHolderType type) {
         DetailsDTO details = new DetailsDTO();
         details.setName(msg.getName());
-        details.setRegistrationNumber(msg.getCompanyRegistrationNumber());
-        details.setNoRegistrationNumJustification(msg.getCrnJustification());
+        if (AccountHolderType.INDIVIDUAL.equals(type)) {
+            details.setLastName(msg.getName());
+            details.setFirstName(msg.getName());
+        } else if (Boolean.TRUE.equals(msg.getCrnNotExist())) {
+            details.setNoRegistrationNumJustification(msg.getCrnJustification());
+        } else {
+            details.setRegistrationNumber(msg.getCompanyRegistrationNumber());
+        }
         return details;
     }
 

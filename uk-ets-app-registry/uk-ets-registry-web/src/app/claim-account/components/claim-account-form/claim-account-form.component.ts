@@ -28,7 +28,7 @@ export class ClaimAccountFormComponent extends UkFormComponent {
         required: 'Enter the claim account code.',
       },
       registryId: {
-        required: 'Enter the METS Registry ID.',
+        required: 'Enter the UK ETS Registry ID.',
       },
     };
   }

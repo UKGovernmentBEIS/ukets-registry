@@ -14,19 +14,21 @@
       </div>
     </div>
   </div>
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-full">
     <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
       <fieldset class="govuk-fieldset">
         <app-form-control-text
           class="govuk-input--width-10"
           label="Claim account code"
+          [hint]="'This 12-digit alpha-numeric code is found in the email you received with the subject UK ETS Registry - claim account instructions'"
           [validationErrorMessage]="validationErrorMessage.accountClaimCode"
           controlName="accountClaimCode"
           autocomplete="off"
         />
         <app-form-control-text
           class="govuk-input--width-10"
-          label="METS Registry ID"
+          label="UK ETS Registry ID"
+          [hint]="'This UK ETS Registry ID is a 7-digit number available in the details section of your account in the METS system'"
           [validationErrorMessage]="validationErrorMessage.registryId"
           controlName="registryId"
           autocomplete="off"

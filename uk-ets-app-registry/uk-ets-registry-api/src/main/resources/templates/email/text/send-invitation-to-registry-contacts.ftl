@@ -1,19 +1,17 @@
 Dear ${contactFullName},
 
-You are receiving this email because you are listed as a contact in the UK Emissions Trading Scheme (ETS) METS system.
-
-We have opened a new operator account for you in the UK ETS Registry:
+You are receiving this email because you are the Primary Contact on the following UK ETS Registry account:
 
 Operator Name: ${operatorName}
 Account Type: ${accountType}
 Registry Account Number: ${registryAccountNumber}
 Emitter ID: ${emitterId}
 
-Your account is set up so that only one Authorised Representative is needed to surrender allowances. You can change this later after you claim the account.
+We are contacting you as there are currently no Authorised Representatives on the account.
 
 What you need to do
 
-You must nominate an Authorised Representative to claim your account. We recommend you nominate a METS contact to keep things simple. This code may have been sent to more than one METS contact, but only one person can use it to claim the account.
+You must nominate an Authorised Representative to claim your account. This code may have been sent to more than one METS contact, but only one person can use it to claim the account.
 
 Important: If you received this email between 1 February and 30 April and need to surrender allowances by 30 April, you should complete this process as soon as possible.
 

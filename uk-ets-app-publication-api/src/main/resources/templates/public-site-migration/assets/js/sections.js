@@ -11,7 +11,7 @@ function insertKpSections() {
 
 function insertEtsSections() {
   document.addEventListener("DOMContentLoaded", function () {
-    for (let id = 1; id <= 6; id++) {
+    for (let id = 1; id <= 7; id++) {
       document.getElementById("sections").innerHTML += load(
         `/ets-reports/section${id}/section${id}.html`
       );

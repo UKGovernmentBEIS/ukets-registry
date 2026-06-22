@@ -23,7 +23,7 @@ class AccountUpdatingEventConverterTest {
     }
 
     @Test
-    void testConvertAccountUpdatingEvent_MapsOnlyRequiredFields() {
+    void testConvertAccountUpdatingEvent_MapsOnlyRequiredFields_organisation_accountHolderType() {
         UpdateAccountDetailsMessage details = new UpdateAccountDetailsMessage();
         details.setRegistryId("12345");
         details.setAccountName("Updated account");
@@ -36,12 +36,14 @@ class AccountUpdatingEventConverterTest {
 
         AccountHolderMessage holderMessage = new AccountHolderMessage();
         holderMessage.setName("ACME Corp");
+        holderMessage.setCrnNotExist(false);
         holderMessage.setCompanyRegistrationNumber("CRN123");
         holderMessage.setCrnJustification("No CRN");
         holderMessage.setAddressLine1("10 Downing St");
         holderMessage.setTownOrCity("London");
         holderMessage.setCountry("UK");
         holderMessage.setPostalCode("SW1A 2AA");
+        holderMessage.setAccountHolderType("ORGANISATION");
 
         AccountUpdatingEvent event = new AccountUpdatingEvent();
         event.setAccountDetails(details);
@@ -71,7 +73,69 @@ class AccountUpdatingEventConverterTest {
         assertThat(holder.getDetails()).isNotNull();
         assertThat(holder.getDetails().getName()).isEqualTo("ACME Corp");
         assertThat(holder.getDetails().getRegistrationNumber()).isEqualTo("CRN123");
-        assertThat(holder.getDetails().getNoRegistrationNumJustification()).isEqualTo("No CRN");
+        assertThat(holder.getDetails().getNoRegistrationNumJustification()).isNull();
+
+        // Fields that should NOT be set on update
+        assertThat(dto.getAccountType()).isNull();
+        assertThat(dto.getTrustedAccountListRules()).isNull();
+        assertThat(dto.getAccountHolderContactInfo()).isNull();
+
+        // also verify that update-only mapper didn’t set defaults
+        assertThat(holder.getPhoneNumber()).isNull();
+        assertThat(holder.getEmailAddress()).isNull();
+    }
+
+    @Test
+    void testConvertAccountUpdatingEvent_MapsOnlyRequiredFields_individual_accountHolderType() {
+        UpdateAccountDetailsMessage details = new UpdateAccountDetailsMessage();
+        details.setRegistryId("12345");
+        details.setAccountName("Updated account");
+        details.setAccountType("INSTALLATION_SERVICE");
+        details.setFirstYearOfVerifiedEmissions(2025);
+        details.setInstallationName("Test Installation");
+        details.setInstallationActivityTypes(Set.of("UPSTREAM"));
+        details.setPermitId("PERMIT-001");
+        details.setRegulator(RegulatorType.OPRED.name());
+
+        AccountHolderMessage holderMessage = new AccountHolderMessage();
+        holderMessage.setName("ACME Corp");
+        holderMessage.setAddressLine1("10 Downing St");
+        holderMessage.setTownOrCity("London");
+        holderMessage.setCountry("UK");
+        holderMessage.setPostalCode("SW1A 2AA");
+        holderMessage.setAccountHolderType("INDIVIDUAL");
+
+        AccountUpdatingEvent event = new AccountUpdatingEvent();
+        event.setAccountDetails(details);
+        event.setAccountHolder(holderMessage);
+
+        AccountDTO dto = converter.convert(event, OperatorType.INSTALLATION);
+        // Fields that should be set
+        assertThat(dto.getIdentifier()).isEqualTo(12345L);
+        assertThat(dto.getOperator()).isNotNull();
+        assertThat(dto.getAccountHolder()).isNotNull();
+
+        // Operator mapping
+        OperatorDTO operator = dto.getOperator();
+        assertThat(operator.getType()).isEqualTo("INSTALLATION");
+        assertThat(operator.getFirstYear()).isEqualTo(2025);
+        assertThat(operator.getName()).isEqualTo("Test Installation");
+        assertThat(operator.getActivityTypes()).containsExactly(InstallationActivityType.UPSTREAM);
+        assertThat(operator.getPermit().getId()).isEqualTo("PERMIT-001");
+        assertThat(operator.getMonitoringPlan()).isNull();
+        assertThat(operator.getImo()).isNull();
+        assertThat(operator.getRegulator()).isEqualTo(RegulatorType.OPRED);
+
+        // AccountHolder mapping
+        AccountHolderDTO holder = dto.getAccountHolder();
+        assertThat(holder.getAddress()).isNotNull();
+        assertThat(holder.getAddress().getLine1()).isEqualTo("10 Downing St");
+        assertThat(holder.getDetails()).isNotNull();
+        assertThat(holder.getDetails().getName()).isEqualTo("ACME Corp");
+        assertThat(holder.getDetails().getFirstName()).isEqualTo("ACME Corp");
+        assertThat(holder.getDetails().getLastName()).isEqualTo("ACME Corp");
+        assertThat(holder.getDetails().getRegistrationNumber()).isNull();
+        assertThat(holder.getDetails().getNoRegistrationNumJustification()).isNull();
 
         // Fields that should NOT be set on update
         assertThat(dto.getAccountType()).isNull();
