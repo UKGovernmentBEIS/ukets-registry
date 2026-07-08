@@ -204,7 +204,7 @@ class AccountContactServiceTest {
     @DisplayName("claimAccount: success path adds AR and places update request")
     void test_claimAccount_success() {
 
-        final Long registryId = 100L;
+        final String registryId = "100";
         final Long accountId = 1L;
         final Long accountIdentifier = 2L;
         final String accountClaimCode = "ACC123456789";
@@ -218,7 +218,7 @@ class AccountContactServiceTest {
         account.setId(accountId);
         account.setIdentifier(accountIdentifier);
 
-        when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(registryId, accountClaimCode))
+        when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(Long.parseLong(registryId), accountClaimCode))
                 .thenReturn(Optional.of(account));
 
         when(accountAccessRepository.finARsByAccount_Identifier(accountIdentifier))
@@ -254,7 +254,7 @@ class AccountContactServiceTest {
                 .thenReturn(Optional.empty());
 
         AccountClaimDTO claimDTO = new AccountClaimDTO();
-        claimDTO.setRegistryId(1L);
+        claimDTO.setRegistryId("1");
         claimDTO.setAccountClaimCode("ACC000000000");
 
         final AccountActionException ex =
@@ -267,7 +267,7 @@ class AccountContactServiceTest {
     @DisplayName("claimAccount: fails when account already claimed-already existing AR")
     void test_claimAccount_alreadyClaimed_existingAR() {
 
-        final Long registryId = 100L;
+        final String registryId = "100";
         final Long accountId = 1L;
         final Long accountIdentifier = 2L;
         final String accountClaimCode = "ACC123456789";
@@ -280,7 +280,7 @@ class AccountContactServiceTest {
         account.setId(accountId);
         account.setIdentifier(accountIdentifier);
 
-        when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(registryId, accountClaimCode))
+        when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(Long.parseLong(registryId), accountClaimCode))
                 .thenReturn(Optional.of(account));
 
         AccountAccess access = new AccountAccess();
@@ -304,7 +304,7 @@ class AccountContactServiceTest {
     @DisplayName("claimAccount: fails when account already claimed-pending AR tasks")
     void test_claimAccount_alreadyClaimed_pendingARTasks() {
 
-        final Long registryId = 100L;
+        final String registryId = "100";
         final Long accountId = 1L;
         final Long accountIdentifier = 2L;
         final String accountClaimCode = "ACC123456789";
@@ -317,7 +317,7 @@ class AccountContactServiceTest {
         account.setId(accountId);
         account.setIdentifier(accountIdentifier);
 
-        when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(registryId, accountClaimCode))
+        when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(Long.parseLong(registryId), accountClaimCode))
                 .thenReturn(Optional.of(account));
 
         when(accountAccessRepository.finARsByAccount_Identifier(accountIdentifier))

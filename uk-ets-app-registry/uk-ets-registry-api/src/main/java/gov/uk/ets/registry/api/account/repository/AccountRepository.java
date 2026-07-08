@@ -438,15 +438,7 @@ public interface AccountRepository
                     AND t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED
                 )
                AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
-                    EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep WHERE ah = a.accountHolder))
-               AND NOT EXISTS (
-                   SELECT 1
-                   FROM AccountHolder ah
-                   JOIN ah.accountHolderRepresentatives rep
-                   JOIN rep.contact c
-                   WHERE ah = a.accountHolder
-                   AND LOWER(c.emailAddress) = LOWER(:defaultEmail)
-                )
+                    EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep JOIN rep.contact c WHERE ah = a.accountHolder AND LOWER(c.emailAddress) != LOWER(:defaultEmail)))
             """)
     Long countAccountsWithoutActiveARsAndPendingTasksWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
                                                                   @Param("taskTypes") List<RequestType> taskTypes,
@@ -492,15 +484,7 @@ public interface AccountRepository
                     AND t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED
                 )
                 AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
-                     EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep WHERE ah = a.accountHolder))
-                AND NOT EXISTS (
-                    SELECT 1
-                    FROM AccountHolder ah
-                    JOIN ah.accountHolderRepresentatives rep
-                    JOIN rep.contact c
-                    WHERE ah = a.accountHolder
-                    AND LOWER(c.emailAddress) = LOWER(:defaultEmail)
-                )
+                     EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep JOIN rep.contact c WHERE ah = a.accountHolder AND LOWER(c.emailAddress) != LOWER(:defaultEmail)))
             """)
     List<Long> findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
                                                                                @Param("taskTypes") List<RequestType> taskTypes,

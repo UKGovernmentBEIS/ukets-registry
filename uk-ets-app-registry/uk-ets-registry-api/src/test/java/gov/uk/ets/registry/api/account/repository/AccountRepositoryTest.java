@@ -782,7 +782,11 @@ public class AccountRepositoryTest {
 
         entityManager.persist(accountHolder);
 
+        final Contact contact = getContact("email@email.com");
+        entityManager.persist(contact);
+
         final AccountHolderRepresentative accountHolderRepresentative = getAccountHolderRepresentative(accountHolder);
+        accountHolderRepresentative.setContact(contact);
         entityManager.persist(accountHolderRepresentative);
 
         String permitId = "12345".toUpperCase();
@@ -1063,11 +1067,91 @@ public class AccountRepositoryTest {
         AccountHolder accountHolder = getAccountHolder();
         entityManager.persist(accountHolder);
 
+        final Contact contact = getContact("email@email.com");
+        entityManager.persist(contact);
+
         AccountHolderRepresentative rep = getAccountHolderRepresentative(accountHolder);
+        rep.setContact(contact);
         entityManager.persist(rep);
 
         account.setAccountHolder(accountHolder);
         entityManager.persist(account);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
+        );
+
+        assertEquals(1, result.size());
+        assertThat(result).containsExactly(account.getIdentifier());
+    }
+
+    @Test
+    void findAccountIdentifier_shouldReturnAccountWithRegistryAndMetsContact() {
+        Account account = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+
+        AccountHolder accountHolder = getAccountHolder();
+        entityManager.persist(accountHolder);
+
+        final Contact contact = getContact("email@email.com");
+        entityManager.persist(contact);
+
+        AccountHolderRepresentative rep = getAccountHolderRepresentative(accountHolder);
+        rep.setContact(contact);
+        entityManager.persist(rep);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
+
+        List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
+                List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),
+                List.of(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST),
+                HELP_DESK_MAIL
+        );
+
+        assertEquals(1, result.size());
+        assertThat(result).containsExactly(account.getIdentifier());
+    }
+
+    @Test
+    void findAccountIdentifier_shouldReturnAccountWithMetsContactAndRegistryContactWithHelpDeskMail() {
+        Account account = getOperatorHoldingAccount(1L,
+                RegistryAccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountType.OPERATOR_HOLDING_ACCOUNT,
+                AccountStatus.OPEN);
+
+        String permitId = "12345".toUpperCase();
+        Installation installation = getInstallation(permitId);
+        account.setCompliantEntity(installation);
+        entityManager.persist(installation);
+
+        AccountHolder accountHolder = getAccountHolder();
+        entityManager.persist(accountHolder);
+
+        final Contact contact = getContact(HELP_DESK_MAIL);
+        entityManager.persist(contact);
+
+        AccountHolderRepresentative rep = getAccountHolderRepresentative(accountHolder);
+        rep.setContact(contact);
+        entityManager.persist(rep);
+
+        account.setAccountHolder(accountHolder);
+        entityManager.persist(account);
+
+        MetsAccountContact metsContact = getMetsAccountContact(account);
+        entityManager.persist(metsContact);
 
         List<Long> result = accountRepository.findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(
                 List.of(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT),

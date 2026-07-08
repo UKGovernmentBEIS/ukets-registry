@@ -1,7 +1,7 @@
 package gov.uk.ets.registry.api.account.web.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +20,15 @@ public class AccountClaimDTO {
     @Size(max = 12, message = "Account Claim Code must not exceed 12 characters.")
     private String accountClaimCode;
 
-    @NotNull
-    private Long registryId;
+    @NotBlank
+    private String registryId;
+
+    @JsonIgnore
+    public Long getRegistryIdAsLong() {
+        try {
+            return Long.parseLong(registryId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Registry ID must be a valid numeric value: " + registryId);
+        }
+    }
 }

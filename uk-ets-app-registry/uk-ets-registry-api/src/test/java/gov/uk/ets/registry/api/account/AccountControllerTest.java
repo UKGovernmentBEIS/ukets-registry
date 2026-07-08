@@ -560,7 +560,7 @@ class AccountControllerTest {
 
         AccountClaimDTO accountClaimDTO = AccountClaimDTO.builder()
                 .accountClaimCode("ACC000000000")
-                .registryId(999L)
+                .registryId("999")
                 .build();
 
         when(accountClaimService.claimAccount(accountClaimDTO)).thenReturn(requestId);

@@ -89,7 +89,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.CollectionUtils;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -1232,7 +1231,7 @@ class AccountServiceTest {
 
         AccountClaimDTO dto = new AccountClaimDTO();
         dto.setAccountClaimCode("ABC123456789");
-        dto.setRegistryId(1L);
+        dto.setRegistryId("1");
 
         when(accountContactService.claimAccount(dto))
                 .thenReturn(requestId);

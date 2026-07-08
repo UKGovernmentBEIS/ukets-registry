@@ -21,7 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -78,14 +80,14 @@ public class AccountClaimServiceTest {
     @Test
     void claimAccount_shouldClaimAccount_whenInstallationAccountEnabled() {
         AccountClaimDTO dto = new AccountClaimDTO();
-        dto.setRegistryId(100L);
+        dto.setRegistryId("100");
         dto.setAccountClaimCode("CLAIM_CODE");
 
         Account account = new Account();
         account.setRegistryAccountType(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT);
 
         when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(
-                dto.getRegistryId(), dto.getAccountClaimCode()))
+                Long.parseLong(dto.getRegistryId()), dto.getAccountClaimCode()))
                 .thenReturn(Optional.of(account));
 
         when(accountService.claimAccount(dto)).thenReturn(99L);
@@ -98,26 +100,42 @@ public class AccountClaimServiceTest {
 
         verify(accountRepository)
                 .findByCompliantEntityIdentifierAndAccountClaimCode(
-                        dto.getRegistryId(), dto.getAccountClaimCode());
+                        Long.parseLong(dto.getRegistryId()), dto.getAccountClaimCode());
         verify(accountService).claimAccount(dto);
     }
 
     @Test
     void claimAccount_shouldClaimAccount_whenAccountTypeIsNull() {
         AccountClaimDTO dto = new AccountClaimDTO();
-        dto.setRegistryId(200L);
+        dto.setRegistryId("200");
         dto.setAccountClaimCode("INVALID");
 
         when(accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(
-                dto.getRegistryId(), dto.getAccountClaimCode()))
+                Long.parseLong(dto.getRegistryId()), dto.getAccountClaimCode()))
                 .thenReturn(Optional.empty());
 
         accountClaimService.claimAccount(dto);
 
         verify(accountRepository)
                 .findByCompliantEntityIdentifierAndAccountClaimCode(
-                        dto.getRegistryId(), dto.getAccountClaimCode());
+                        Long.parseLong(dto.getRegistryId()), dto.getAccountClaimCode());
         verify(accountService).claimAccount(dto);
+    }
+
+    @Test
+    void claimAccount_invalid_registryId_format_shouldThrowException() {
+        AccountClaimDTO dto = new AccountClaimDTO();
+        dto.setRegistryId("MA00095");
+        dto.setAccountClaimCode("CLAIM_CODE");
+
+        AccountActionException exception = assertThrows(
+                AccountActionException.class,
+                () -> accountClaimService.claimAccount(dto));
+
+        assertThat(exception.getMessage()).isEqualTo("The claim account code, or the METS Registry ID is incorrect.");
+
+        verifyNoInteractions(accountRepository);
+        verifyNoInteractions(accountService);
     }
 
     @Test

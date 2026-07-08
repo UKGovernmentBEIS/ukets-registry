@@ -191,6 +191,13 @@
                       UK ETS Public Reports
                     </a>
                   </li>
+                  <!-- 5. Maritime How to Comply -->
+                  <li>
+                    <a class="govuk-link govuk-!-font-size-19"
+                       href="https://www.gov.uk/guidance/uk-emissions-trading-scheme-for-maritime-how-to-comply">
+                      UK ETS for maritime: how to comply
+                    </a>
+                  </li>
                 </ul>
               </nav>
             </aside>

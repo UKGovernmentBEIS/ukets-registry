@@ -42,7 +42,15 @@ public class AccountClaimService {
 
     @Transactional
     public Long claimAccount(AccountClaimDTO accountClaimDTO) {
-        accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(accountClaimDTO.getRegistryId(), accountClaimDTO.getAccountClaimCode())
+        final Long registryId;
+        try {
+            registryId = accountClaimDTO.getRegistryIdAsLong();
+        } catch (IllegalArgumentException e) {
+            throw AccountActionException.create(
+                    AccountActionError.build("The claim account code, or the METS Registry ID is incorrect.")
+            );
+        }
+        accountRepository.findByCompliantEntityIdentifierAndAccountClaimCode(registryId, accountClaimDTO.getAccountClaimCode())
                 .ifPresent(account -> {
                     if (!processor.isAccountClaimEnabled(account.getRegistryAccountType())) {
                         throw AccountActionException.create(

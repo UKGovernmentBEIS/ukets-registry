@@ -168,7 +168,7 @@ public class AccountContactService {
 
         Account account = accountRepository
                 .findByCompliantEntityIdentifierAndAccountClaimCode(
-                        accountClaimDTO.getRegistryId(),
+                        accountClaimDTO.getRegistryIdAsLong(),
                         accountClaimDTO.getAccountClaimCode()
                 )
                 .orElseThrow(() -> AccountActionException.create(
