@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
  * The quantity of AAUs issued must not exceed allowed quantity for the Commitment Period.
  */
 @Service("check3011")
+@Deprecated(forRemoval = true)
 public class CheckIssuanceLevelOfAssignedAmountUnits extends ParentBusinessCheck {
 
     /**

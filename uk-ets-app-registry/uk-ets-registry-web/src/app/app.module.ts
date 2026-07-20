@@ -1,5 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationRef,
+  ErrorHandler,
+  NgModule,
+  DoBootstrap,
+} from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -14,6 +20,8 @@ import { StorageModule } from '@ngx-pwa/local-storage';
 import { environment } from 'src/environments/environment';
 import {
   PWNED_PASSWORDS_API_URL,
+  TIMEZONE,
+  UK_ETS_DEFAULT_LOCALE,
   UK_ETS_PASSWORD_VALIDATION_API_BASE_URL,
   UK_ETS_PUBLICATION_API_BASE_URL,
   UK_ETS_REGISTRY_API_BASE_URL,
@@ -159,6 +167,22 @@ const keycloakService = new KeycloakService();
       provide: UK_ETS_PUBLICATION_API_BASE_URL,
       useValue: environment.ukEtsPublicationApiBaseUrl,
     },
+    {
+      provide: TIMEZONE,
+      useFactory: () => {
+        try {
+          return typeof Intl !== 'undefined'
+            ? Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'Europe/London'
+            : 'Europe/London';
+        } catch {
+          return 'Europe/London';
+        }
+      },
+    },
+    {
+      provide: UK_ETS_DEFAULT_LOCALE,
+      useValue: 'en-gb', //This is dayjs locale, not angular locale.
+    },
     AuthApiService,
     DebounceClickService,
     {
@@ -220,8 +244,8 @@ const keycloakService = new KeycloakService();
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
-export class AppModule {
-  ngDoBootstrap(app) {
+export class AppModule implements DoBootstrap {
+  ngDoBootstrap(app: ApplicationRef): void {
     keycloakService
       .init(environment.keycloakOptions)
       .then(() => {

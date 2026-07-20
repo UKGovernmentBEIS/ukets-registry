@@ -1,6 +1,5 @@
 package gov.uk.ets.registry.api.integration.service;
 
-import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_ID_HEADER;
 
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.integration.consumer.SourceSystem;
@@ -8,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Component;
+
+import static uk.ets.lib.commons.kafkaconfig.KafkaConstants.CORRELATION_ID_HEADER;
 
 /**
  * Extended version of IntegrationHeadersUtil that supports new topic naming patterns:

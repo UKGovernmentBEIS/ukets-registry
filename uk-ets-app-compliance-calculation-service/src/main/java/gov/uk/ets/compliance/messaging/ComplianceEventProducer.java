@@ -21,7 +21,7 @@ public class ComplianceEventProducer {
     private final KafkaTemplate<String, Serializable> complianceKafkaTemplate;
 
     public ComplianceEventProducer(
-            @Value("${kafka.compliance.outcome.topic:compliance.outcome.topic}") String complianceOutcomeTopic,
+            @Value("${kafka.compliance.outcome.topic:registry-internal-compliance-outcome-topic}") String complianceOutcomeTopic,
             @Qualifier("complianceKafkaTemplate") KafkaTemplate<String, Serializable> complianceKafkaTemplate) {
         this.complianceOutcomeTopic = complianceOutcomeTopic;
         this.complianceKafkaTemplate = complianceKafkaTemplate;

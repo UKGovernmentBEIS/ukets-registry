@@ -14,14 +14,14 @@ Of course any other tool that can send messages to the local kafka broker the ap
 +
 [source,bash]
 ----
-kafkacat -L -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext
+kafkacat -L -b localhost:9093 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext
 ----
 
-. Send report request to report.request.topic
+. Send report request to registry-internal-report-request-topic
 
 [source,bash]
 ----
-kafkacat -P -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t report.request.topic -p 0 test-data/r0003.json
+kafkacat -P -b localhost:9093 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t report.request.topic -p 0 test-data/r0003.json
 ----
 
 ==== AWS CLI for local S3

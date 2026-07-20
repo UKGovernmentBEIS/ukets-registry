@@ -1,6 +1,5 @@
 package gov.uk.ets.registry.api.integration.service.emission;
 
-import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_ID_HEADER;
 
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.EmissionsUpdatedEvent;
@@ -28,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.netz.integration.model.emission.AccountEmissionsUpdateEvent;
 import uk.gov.netz.integration.model.error.IntegrationEventError;
+
+import static uk.ets.lib.commons.kafkaconfig.KafkaConstants.CORRELATION_ID_HEADER;
 
 @Log4j2
 @Service

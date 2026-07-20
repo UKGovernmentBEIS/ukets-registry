@@ -30,3 +30,9 @@ export const UK_ETS_UI_LOGS_API_BASE_URL = new InjectionToken<string>(
 export const UK_ETS_PUBLICATION_API_BASE_URL = new InjectionToken<string>(
   'UK_ETS_PUBLICATION_API_BASE_URL'
 );
+
+export const TIMEZONE = new InjectionToken<string>('TIMEZONE');
+
+export const UK_ETS_DEFAULT_LOCALE = new InjectionToken<string>(
+  'UK_ETS_DEFAULT_LOCALE'
+);

@@ -22,7 +22,7 @@ public class ReportGenerationCommandMessageListener {
      */
     @KafkaListener(
         containerFactory = "reportGenerationCommandConsumerFactory",
-        topics = "report.request.topic",
+        topics = "${kafka.report.request.topic:registry-internal-report-request-topic}",
         errorHandler = "reportGenerationCommandMessageListenerErrorHandler"
     )
     public void handleReportGenerationCommand(ReportGenerationCommand request) {

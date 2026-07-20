@@ -1,0 +1,35 @@
+= uk-ets-itl-reconciliation-engine (DEPRECATED)
+:toc: macro
+:toc-title: Table of Contents
+:caution-caption: ⚠️
+
+image:https://img.shields.io/badge/status-DEPRECATED-red.svg[Status, link="#-repository-status"]
+image:https://img.shields.io/badge/maintained%3F-no-red.svg[Maintained?, link="#-repository-status"]
+
+== ⚠️ Module Status: DEPRECATED & ARCHIVED
+
+[CAUTION]
+====
+*This Maven submodule is no longer active, maintained, or developed.* Following the decommissioning of the *Kyoto International Transaction Log (ITL)*, the reconciliation mechanisms between the UK registry and the ITL are obsolete. This code remains strictly for historical reference and architectural lineage. Its use or inclusion in active builds is *strongly discouraged*.
+====
+
+== 📋 Overview
+
+This module served as the core **Reconciliation Engine** for the UK Emissions Trading Scheme (UK ETS) registry's integration with the ITL. Its primary responsibility was to ensure data consistency between the local UK registry state and the Kyoto ITL by executing periodic reconciliation checks, verifying account balances, and processing automated reconciliation logs.
+
+With the ITL now permanently offline, this module has no functional purpose.
+
+== 🛠️ Build & Dependency Impact
+
+* *Parent POM:* This module should be commented out or removed from the `<modules>` section of the parent `pom.xml` to avoid unnecessary build overhead.
+* *Dependency Management:* Do not introduce `uk-ets-itl-reconciliation-engine` as a dependency in any new or existing services. 
+* *Artifacts:* No further versions of this artifact will be published to the internal artifact repository (e.g., Nexus/Artifactory).
+
+== 🛑 Maintenance Notice
+
+* **No Pull Requests:** Bug fixes, dependency bumps, or feature additions will not be accepted.
+* **Security Notice:** Vulnerability scanning is disabled for this module. The code may contain outdated dependencies and should *not* be deployed to any live environment.
+
+== 🏛️ Historical Context
+
+Reconciliation was a critical security and compliance requirement under the Kyoto Protocol framework to ensure the UK Registry stayed perfectly synchronized with the central UNFCCC log. Following the transition to the standalone UK ETS and the subsequent retirement of the ITL infrastructure, this engine was formally decommissioned.

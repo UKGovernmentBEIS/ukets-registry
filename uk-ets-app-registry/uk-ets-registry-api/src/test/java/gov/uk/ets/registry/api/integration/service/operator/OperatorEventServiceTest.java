@@ -1,7 +1,7 @@
 package gov.uk.ets.registry.api.integration.service.operator;
 
-import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_ID_HEADER;
-import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_PARENT_ID_HEADER;
+import static uk.ets.lib.commons.kafkaconfig.KafkaConstants.CORRELATION_ID_HEADER;
+import static uk.ets.lib.commons.kafkaconfig.KafkaConstants.CORRELATION_PARENT_ID_HEADER;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.Optional;
@@ -17,7 +17,6 @@ import gov.uk.ets.registry.api.integration.notification.IntegrationPointDisabled
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
-import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

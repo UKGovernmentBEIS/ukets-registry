@@ -30,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 @Log4j2
 @Service
 @AllArgsConstructor
+@Deprecated(forRemoval = true, since = "v5.33.0")
 public class ITLConversionService {
 
     /**

@@ -13,8 +13,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @KafkaListener(
     containerFactory = "domainEventConsumerFactory",
-    topics = "domain.event.topic",
-    groupId = "domain.event.consumer.group"
+    topics = "${kafka.domain.event.topic:registry-internal-domain-event-topic}",
+    groupId = "${kafka.domain.event.consumer.group-id:domain-event-consumer-registry-group}"
 )
 @RequiredArgsConstructor
 public class DomainEventConsumer {

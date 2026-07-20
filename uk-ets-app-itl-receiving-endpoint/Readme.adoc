@@ -1,41 +1,34 @@
-= uk-ets-app-itl-receiving-endpoint
+= uk-ets-app-itl-receiving-endpoint (DEPRECATED)
+:toc: macro
+:toc-title: Table of Contents
+:caution-caption: ⚠️
 
-This folder contains the source code for the uk-ets web services part where the Registry plays the role of ws-server.
-Many parts where hooked together manually after generating the sources via the wsdl2java maven plugin.
-The app is using the Apache Axis SOAP ("Simple Object Access Protocol") v1.4.
-XML configuration of the Spring Bean Kafka template is used in order to send messages to a Kafka topic.
+image:https://img.shields.io/badge/status-DEPRECATED-red.svg[Status, link="#-repository-status"]
+image:https://img.shields.io/badge/maintained%3F-no-red.svg[Maintained?, link="#-repository-status"]
 
-== Running uk-ets-app-itl-receiving-endpoint
+== ⚠️ Repository Status: DEPRECATED & ARCHIVED
 
-uk-ets-app-itl-receiving-endpoint is broken into a multi-module Maven project. To build the full project, use `mvn` at the command line like this:
+[CAUTION]
+====
+*This repository is no longer active, maintained, or developed.* Following the decommissioning of the *Kyoto International Transaction Log (ITL)*, this project has been officially retired. It remains online strictly for historical reference purposes. Its use in any production or active development environment is *strongly discouraged*.
+====
 
-[source,sh]
-----
-% ./mvn clean package
-----
+== 📋 Project Overview
 
-You can run the executable JAR file from the `uk-ets-itl-receiving-endpoint` project:
+This repository contained the component responsible for handling ITL integrations within the UK Emissions Trading Scheme (UK ETS) ecosystem. 
 
-[source,sh]
-----
-% ./mvn spring-boot:run
-----
+Specifically, this was the:
+* *uk-ets-app-itl-receiving-endpoint* (Handles incoming requests from the ITL)
 
-Once the application has started:
-- The wsdl can be found at http://127.0.0.1:${server.port}/itl-ws/services/RegistryPort?wsdl
 
-== uk-ets-app-itl-receiving-endpoint modules
+== 🛑 Critical Notice for Developers
 
-The multi-module Maven project is made up of the following modules:
+* *No Support:* Issues and Pull Requests will not be reviewed or merged.
+* *Security Advisory:* Dependencies are frozen and will *not* be updated. This code may contain known vulnerabilities; do not deploy it.
+* *Read-Only:* This repository is kept in a read-only state for archival compliance and engineering lineage.
 
- - `uk-ets-itl-ws-webapp` : The Axis web app that contains the Servlet which receives the SOAP messages from the ITL and sends them to Kafka. 
- - `uk-ets-itl-receiving-endpoint` : A spring boot application that will run that Axis war (the project above) in the embedded Tomcat .
+== 🏛️ Historical Context
 
-== Debugging uk-ets-app-itl-receiving-endpoint
+The Kyoto International Transaction Log (ITL) was a central system managed by the UNFCCC to validate transactions under the Kyoto Protocol. With the evolution of the UK ETS and the ultimate decommissioning of the ITL infrastructure, the services bridging the UK registry to the ITL became obsolete. 
 
-You can use remote debugging by using the following commands to startup the application in debug mode.
-
-[source.sh]
-----
-% cd uk-ets-itl-receiving-endpoint
-% mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" -Dorg.apache.commons.logging.LogFactory=org.apache.commons.logging.impl.LogFactoryImpl
+Thank you to everyone who contributed to the development and maintenance of this service during its active lifecycle.

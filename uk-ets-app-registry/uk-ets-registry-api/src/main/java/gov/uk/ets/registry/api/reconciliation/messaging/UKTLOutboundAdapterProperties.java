@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class UKTLOutboundAdapterProperties {
-    @Value("${kafka.reconciliation-uktl.question.topic:registry.originating.reconciliation.question.topic}")
+    @Value("${kafka.reconciliation-uktl.question.topic:registry-internal-registry-originating-reconciliation-question-topic}")
     private String reconciliationQuestionTopic;
 }

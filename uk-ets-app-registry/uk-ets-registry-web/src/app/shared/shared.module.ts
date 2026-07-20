@@ -75,6 +75,7 @@ import {
   NativeDateToUkDate,
   IsPastDatePipe,
   MaritimeOperatorPipe,
+  GdsDateTimeShortLocalPipe,
 } from '@shared/pipes';
 import { PaginatorComponent } from '@shared/search/paginator';
 import { ToggleButtonComponent } from '@shared/search/toggle-button/toggle-button.component';
@@ -294,6 +295,7 @@ import { UkCheckboxGroupItemComponent } from '@shared/form-controls/uk-checkbox-
     ArUpdateTypeComponent,
     AuthorisedRepresentativeUpdateTypePipe,
     GdsDateTimeShortPipe,
+    GdsDateTimeShortLocalPipe,
     GdsTimePipe,
     GdsTimeUTCPipe,
     GdsDateTimePipe,
@@ -469,6 +471,7 @@ import { UkCheckboxGroupItemComponent } from '@shared/form-controls/uk-checkbox-
     ArUpdateTypeComponent,
     AuthorisedRepresentativeUpdateTypePipe,
     GdsDateTimeShortPipe,
+    GdsDateTimeShortLocalPipe,
     GdsTimePipe,
     GdsTimeUTCPipe,
     GdsDateTimePipe,

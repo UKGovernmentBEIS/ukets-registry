@@ -1,0 +1,2 @@
+    uk.ets.lib.commons.kafkaclients.KafkaClientsConfiguration
+    uk.ets.lib.kafka.deadletter.DeadLetterConfig

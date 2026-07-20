@@ -92,7 +92,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
               .requestMatchers(HttpMethod.POST,"/api-reports/reports.request.from.client", 
               "/api-reports/roles.add", 
               "/api-reports/roles.remove").permitAll()
-              .requestMatchers(HttpMethod.GET,"/api-reports/actuator/health","/v3/api-docs").permitAll()
+              .requestMatchers(HttpMethod.GET,"/api-reports/actuator/health","/v3/api-docs/**","/swagger-ui/**").permitAll()
               .requestMatchers("/api-reports/**").hasAnyRole("ets_user")        
               .anyRequest()
               .authenticated())

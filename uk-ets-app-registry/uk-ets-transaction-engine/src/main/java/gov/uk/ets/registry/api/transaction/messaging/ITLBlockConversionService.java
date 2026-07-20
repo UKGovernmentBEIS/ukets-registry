@@ -24,6 +24,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Service
 @AllArgsConstructor
+@Deprecated(forRemoval = true, since = "v5.33.0")
 public class ITLBlockConversionService {
 
     /**

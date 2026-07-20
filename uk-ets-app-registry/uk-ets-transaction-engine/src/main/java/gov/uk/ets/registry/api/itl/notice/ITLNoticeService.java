@@ -47,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @AllArgsConstructor
+@Deprecated(forRemoval = true)
 public class ITLNoticeService {
 
     private final NoticeLogHistoryRepository noticeLogHistoryRepository;

@@ -114,7 +114,7 @@
         </dependency>
         <dependency>
             <groupId>uk.gov.ets</groupId>
-            <artifactId>uk-ets-itl-reconciliation-engine</artifactId>
+            <artifactId>uk-ets-itl-reconciliation-domain</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -273,11 +273,6 @@
         </dependency>
         <dependency>
             <groupId>uk.gov.ets</groupId>
-            <artifactId>uk-ets-lib-commons-cloudwatch-metrics</artifactId>
-            <version>${uk-ets-lib-commons.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.gov.ets</groupId>
             <artifactId>uk-ets-lib-commons-clamav-service</artifactId>
             <version>${uk-ets-lib-commons.version}</version>
         </dependency>
@@ -333,12 +328,6 @@
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
-        <dependency>
-            <groupId>software.amazon.msk</groupId>
-            <artifactId>aws-msk-iam-auth</artifactId>
-            <version>${aws-msk-iam-auth.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.javers</groupId>
             <artifactId>javers-core</artifactId>

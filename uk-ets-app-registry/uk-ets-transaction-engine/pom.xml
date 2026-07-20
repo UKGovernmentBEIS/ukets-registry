@@ -171,6 +171,11 @@
             <artifactId>uk-ets-lib-commons-kafka-configuration</artifactId>
             <version>${uk-ets-lib-commons.version}</version>
         </dependency>
+        <dependency>
+            <groupId>uk.gov.ets</groupId>
+            <artifactId>uk-ets-lib-commons-kafka-dead-letter</artifactId>
+            <version>${uk-ets-lib-commons.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

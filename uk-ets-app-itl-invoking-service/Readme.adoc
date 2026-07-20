@@ -1,3 +1,34 @@
-= uk-ets-app-itl-invoking-service
+= uk-ets-app-itl-invoking-service (DEPRECATED)
+:toc: macro
+:toc-title: Table of Contents
+:caution-caption: ⚠️
 
-This folder contains the source code for the ITL Web Service client.
+image:https://img.shields.io/badge/status-DEPRECATED-red.svg[Status, link="#-repository-status"]
+image:https://img.shields.io/badge/maintained%3F-no-red.svg[Maintained?, link="#-repository-status"]
+
+== ⚠️ Repository Status: DEPRECATED & ARCHIVED
+
+[CAUTION]
+====
+*This repository is no longer active, maintained, or developed.* Following the decommissioning of the *Kyoto International Transaction Log (ITL)*, this project has been officially retired. It remains online strictly for historical reference purposes. Its use in any production or active development environment is *strongly discouraged*.
+====
+
+== 📋 Project Overview
+
+This repository contained the component responsible for handling ITL integrations within the UK Emissions Trading Scheme (UK ETS) ecosystem. 
+
+Specifically, this was the:
+* *uk-ets-app-itl-invoking-service* (Invokes outbound requests to the ITL)
+
+
+== 🛑 Critical Notice for Developers
+
+* *No Support:* Issues and Pull Requests will not be reviewed or merged.
+* *Security Advisory:* Dependencies are frozen and will *not* be updated. This code may contain known vulnerabilities; do not deploy it.
+* *Read-Only:* This repository is kept in a read-only state for archival compliance and engineering lineage.
+
+== 🏛️ Historical Context
+
+The Kyoto International Transaction Log (ITL) was a central system managed by the UNFCCC to validate transactions under the Kyoto Protocol. With the evolution of the UK ETS and the ultimate decommissioning of the ITL infrastructure, the services bridging the UK registry to the ITL became obsolete. 
+
+Thank you to everyone who contributed to the development and maintenance of this service during its active lifecycle.

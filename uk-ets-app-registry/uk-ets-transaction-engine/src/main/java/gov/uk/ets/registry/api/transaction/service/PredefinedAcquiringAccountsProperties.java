@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "business.property.transaction.predefined.acquiring.account")
+@Deprecated(forRemoval = true)
 public class PredefinedAcquiringAccountsProperties {
 
     /**
@@ -39,25 +40,9 @@ public class PredefinedAcquiringAccountsProperties {
      * @return an account full identifier.
      */
     public String getAccount(ExternalPredefinedAccount externalPredefinedAccount) {
-        String result = null;
-        switch (externalPredefinedAccount) {
-            case CDM_SOP_ACCOUNT:
-                result = cdmSopAccount;
-                break;
-
-            case CDM_EXCESS_ISSUANCE_ACCOUNT_FOR_CP2:
-                result = cdmExcessIssuanceAccountForCP2;
-                break;
-
-            case CCS_NET_REVERSAL_CANCELLATION_ACCOUNT:
-                result = ccsNetReversalCancellationAccount;
-                break;
-
-            case CCS_NON_SUBMISSION_OF_VERIFICATION_REPORT_CANCELLATION_ACCOUNT:
-                result = ccsNonSubmissionOfVerificationReportCancellationAccount;
-        }
-
-        return result;
+        throw new UnsupportedOperationException(
+                "Kyoto ITL services have been permanently decommissioned. This method is no longer supported."
+            );
     }
 
 }

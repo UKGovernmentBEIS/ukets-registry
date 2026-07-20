@@ -23,7 +23,7 @@ class ReportingMetricsEventProducer {
     private final KafkaTemplate<String, Serializable> reportingMetricsKafkaTemplate;
 
     public ReportingMetricsEventProducer(
-        @Value("${kafka.ets.registry.reporting.metrics.event.topic:ets.registry.reporting.metrics.event.topic}") String etsRegistryReportingMetricsEventTopic,
+        @Value("${kafka.ets.registry.reporting.metrics.event.topic:registry-internal-reporting-metrics-event-topic}") String etsRegistryReportingMetricsEventTopic,
         @Qualifier("reportingMetricsKafkaTemplate")
             KafkaTemplate<String, Serializable> reportingMetricsKafkaTemplate) {
         this.etsRegistryReportingMetricsEventTopic = etsRegistryReportingMetricsEventTopic;

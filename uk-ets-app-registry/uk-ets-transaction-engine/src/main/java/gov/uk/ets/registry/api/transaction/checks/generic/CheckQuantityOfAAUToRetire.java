@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service("check3012")
 @BusinessCheckGrouping(groups = BusinessCheckGroup.UNITS)
+@Deprecated(forRemoval = true)
 public class CheckQuantityOfAAUToRetire extends ParentBusinessCheck {
 
     /**

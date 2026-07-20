@@ -12,16 +12,16 @@ Of course any other tool that can send messages to the local kafka broker the ap
 +
 [source,bash]
 ----
-kafkacat -L -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext
+kafkacat -L -b localhost:9093 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext
 ----
 
 . Send report request to compliance.events.in.topic
 
 [source,bash]
 ----
-kafkacat -P -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t compliance.events.in.topic -p 0 test-data/account-creation-event.json
+kafkacat -P -b localhost:9093 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t registry-internal-compliance-events-in-topic -p 0 test-data/account-creation-event.json
 
-kafkacat -P -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t compliance.events.in.topic -p 0 test-data/update-last-year-of-verified-emissions-event.json
+kafkacat -P -b localhost:9093 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t registry-internal-compliance-events-in-topic -p 0 test-data/update-last-year-of-verified-emissions-event.json
 
-kafkacat -P -b localhost:9092 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t compliance.events.in.topic -p 0 test-data/update-verified-emissions-event.json
+kafkacat -P -b localhost:9093 -X sasl.username=client -X sasl.password=password -Xsasl.mechanisms=SCRAM-SHA-512 -Xsecurity.protocol=sasl_plaintext -t registry-internal-compliance-events-in-topic -p 0 test-data/update-verified-emissions-event.json
 ----

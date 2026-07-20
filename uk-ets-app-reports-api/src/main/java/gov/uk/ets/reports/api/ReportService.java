@@ -38,7 +38,7 @@ public class ReportService {
 
     @Value("${aws.s3.reports.bucket.name}")
     private String bucketName;
-    @Value("${kafka.report.request.topic}")
+    @Value("${kafka.report.request.topic:registry-internal-report-request-topic}")
     private String reportRequestTopic;
     @Value("${reports.expiration.minutes}")
     private Long reportsExpirationInMinutes;

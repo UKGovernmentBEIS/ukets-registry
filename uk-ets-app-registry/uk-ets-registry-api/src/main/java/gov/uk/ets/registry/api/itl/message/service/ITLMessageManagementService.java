@@ -4,12 +4,12 @@ import java.util.Optional;
 
 import jakarta.validation.Valid;
 
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.uk.ets.registry.api.itl.message.ITLMessageService;
 import gov.uk.ets.registry.api.itl.message.domain.AcceptMessageLog;
 import gov.uk.ets.registry.api.itl.message.repository.ITLMessageRepository;
 import gov.uk.ets.registry.api.itl.message.web.model.ITLMessageSearchCriteria;
@@ -20,7 +20,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ITLMessageManagementService {
 
-	private final ITLMessageService messageService;
 	private final ITLMessageRepository messageRepository;
 
 	public Page<AcceptMessageLog> search(@Valid ITLMessageSearchCriteria criteria, Pageable pageable) {
@@ -32,8 +31,8 @@ public class ITLMessageManagementService {
 	}
 
     @Transactional
+    @Deprecated(forRemoval = true, since = "v5.32.0")
 	public ITLMessageSendResponse sendMessage(String messageContent) {
-		AcceptMessageLog acceptMessageLog =messageService.sendMessage(messageContent);
-		return ITLMessageSendResponse.builder().success(true).messageId(acceptMessageLog.getId()).build();
+    	throw new InvalidOperationException("ITL is disconnected.");
 	}
 }

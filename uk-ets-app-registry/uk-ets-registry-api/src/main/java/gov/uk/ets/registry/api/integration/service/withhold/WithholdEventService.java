@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_ID_HEADER;
+import static uk.ets.lib.commons.kafkaconfig.KafkaConstants.CORRELATION_ID_HEADER;
+
 
 @Log4j2
 @Service

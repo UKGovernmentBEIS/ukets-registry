@@ -38,7 +38,7 @@ class ComplianceOutboxServiceIntegrationTest extends BaseIntegrationTest {
     private static final Long TEST_COMPLIANT_ENTITY_ID_2 = 1234568L;
     private static final String TEST_URID = "UK123456789";
     private static final int FIRST_YEAR_OF_VERIFIED_EMISSION = 2021;
-    private static final String COMPLIANCE_EVENTS_IN_TOPIC = "compliance.events.in.topic";
+    private static final String COMPLIANCE_EVENTS_IN_TOPIC = "registry-internal-compliance-events-in-topic";
 
     @SpyBean
     ComplianceEventProducer producer;

@@ -38,7 +38,6 @@ import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import gov.uk.ets.registry.api.transaction.lock.RegistryLockProvider;
 import gov.uk.ets.registry.api.transaction.messaging.ITLBlockConversionService;
 import gov.uk.ets.registry.api.transaction.messaging.ITLConversionService;
-import gov.uk.ets.registry.api.transaction.messaging.ITLOutgoingMessageService;
 import gov.uk.ets.registry.api.transaction.messaging.UKTLOutgoingMessageService;
 import gov.uk.ets.registry.api.transaction.processor.ExternalTransferProcessor;
 import gov.uk.ets.registry.api.transaction.processor.InternalTransferProcessor;
@@ -71,9 +70,6 @@ class TransactionServiceTest {
 
     @Mock
     private TransactionPersistenceService transactionPersistenceService;
-
-    @Mock
-    private ITLOutgoingMessageService itlOutgoingMessageService;
 
     @Mock
     private UKTLOutgoingMessageService uktlOutgoingMessageService;
@@ -291,14 +287,6 @@ class TransactionServiceTest {
         when(transactionFactory.getTransactionProcessor(transaction.getType()))
             .thenReturn(externalTransferProcessor);
         transactionService.finaliseTransaction("GB12345", TaskOutcome.REJECTED, false);
-
-        when(transactionDelayService.isTransactionValidForDelay(transaction)).thenReturn(false);
-        transactionService.finaliseTransaction("GB12345", TaskOutcome.APPROVED, false);
-        verify(transactionDelayService, times(0)).calculateTransactionDelay(false);
-
-        when(transactionDelayService.isTransactionValidForDelay(transaction)).thenReturn(true);
-        transactionService.finaliseTransaction("GB12345", TaskOutcome.APPROVED, false);
-        verify(externalTransferProcessor, times(1)).delay(transaction);
 
     }
 

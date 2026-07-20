@@ -2,12 +2,8 @@ package gov.uk.ets.reports.generator.messaging;
 
 import gov.uk.ets.reports.model.messaging.ReportGenerationEvent;
 import java.io.Serializable;
-import java.util.concurrent.ExecutionException;
-
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ReportOutcomeMessageService {
 
 
-    @Value("${kafka.report.outcome.topic}")
+    @Value("${kafka.report.outcome.topic:registry-internal-report-outcome-topic}")
     private String reportOutcomeTopic;
 
     private final KafkaTemplate<String, Serializable> reportProducerTemplate;

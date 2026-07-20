@@ -29,7 +29,7 @@ import gov.uk.ets.keycloak.logger.CustomLogger;
 public class KafkaEventListenerProvider implements EventListenerProvider {
 
     private static final String CLIENT_ID = "keycloak-event-listener";
-    private static final String TOPIC = "keycloak.events.in";
+    private static final String TOPIC = "registry-internal-keycloak-events-in-topic";
     private static final String SENSITIVE_DATA_TEXT = "SENSITIVE DATA REMOVED";
     public static final List<String> SENSITIVE_DATA_LIST = List.of(SENSITIVE_DATA_TEXT);
     public static final List<String> SENSITIVE_USER_ATTRIBUTES = List.of(
@@ -118,23 +118,21 @@ public class KafkaEventListenerProvider implements EventListenerProvider {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
-        String kafkaAuthEnabled = System.getenv("KAFKA_AUTHENTICATION_ENABLED");
-        // with the default class loader we get error:
-        // javax.security.auth.login.LoginException: No LoginModule found
-        // this is the fix (workaround) found in various places:
-        // https://developer.jboss.org/thread/279980
-        // https://github.com/ermadan/kafkalytic/commit/5db5214d252d4bdef4616075ffb3236f7f9f7023
-        // https://stackoverflow.com/questions/57574901/kafka-java-client-classloader-doesnt-find-sasl-scram-login-class
+        String kafkaAuthEnabled = System.getenv().getOrDefault("KAFKA_AUTHENTICATION_ENABLED", "true");
+        
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
             if (kafkaAuthEnabled != null && kafkaAuthEnabled.equals("true")) {
-                props.put("security.protocol", "SASL_PLAINTEXT");
-                props.put("sasl.mechanism", "SCRAM-SHA-512");
-                props.put("sasl.jaas.config", System.getenv("KAFKA_SASL_JAAS_CONFIG"));
+                props.put("security.protocol", System.getenv().getOrDefault("KAFKA_SECURITY_PROTOCOL", "SASL_SSL"));
+                props.put("sasl.mechanism", System.getenv().getOrDefault("KAFKA_SASL_MECHANISM", "AWS_MSK_IAM"));
+                props.put("sasl.jaas.config",System.getenv().getOrDefault("KAFKA_SASL_JAAS_CONFIG", "software.amazon.msk.auth.iam.IAMLoginModule required;"));
+                props.put("sasl.client.callback.handler.class", System.getenv().getOrDefault("KAFKA_SASL_CLIENT_CALLBACK_HANDLER", "software.amazon.msk.auth.iam.IAMClientCallbackHandler"));
             }
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, Class.forName(StringSerializer.class.getName()));
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, Class.forName(StringSerializer.class.getName()));
+            props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+            props.put(ProducerConfig.ACKS_CONFIG, "all");
             stringStringKafkaProducer = new KafkaProducer<>(props);
         } catch (ClassNotFoundException e) {
             logError(e.getMessage(), e);

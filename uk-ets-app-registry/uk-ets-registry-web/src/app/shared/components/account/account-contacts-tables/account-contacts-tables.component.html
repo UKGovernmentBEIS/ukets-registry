@@ -34,7 +34,7 @@
             {{ contact.operatorType | metsContactOperatorType }}
           </td>
           <td class="govuk-table__cell">
-            {{ contact.invitedOn | gdsDateTimeShort }}
+            {{ contact.invitedOn | gdsDateTimeShortLocal }}
           </td>
         </tr>
       }
@@ -68,7 +68,7 @@
             {{ contact.contactType | registryContactType }}
           </td>
           <td class="govuk-table__cell">
-            {{ contact.invitedOn | gdsDateTimeShort }}
+            {{ contact.invitedOn | gdsDateTimeShortLocal }}
           </td>
         </tr>
       }

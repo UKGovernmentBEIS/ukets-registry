@@ -42,6 +42,7 @@
         <kafka.clients.version>3.7.1</kafka.clients.version>
         <jboss-logging.version>3.4.1.Final</jboss-logging.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <aws-msk-iam-auth.version>2.2.0</aws-msk-iam-auth.version>
     </properties>
 
     <dependencyManagement>

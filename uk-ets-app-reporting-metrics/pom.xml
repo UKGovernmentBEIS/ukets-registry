@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
+		<uk-ets-lib-commons.version>2.0.0-SNAPSHOT</uk-ets-lib-commons.version>
         <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
         <maven.spotbugs.plugin>4.9.8.2</maven.spotbugs.plugin>
         <maven.pmd.plugin>3.28.0</maven.pmd.plugin>
@@ -97,7 +97,12 @@
             <groupId>uk.gov.ets</groupId>
             <artifactId>uk-ets-lib-commons-logging</artifactId>
             <version>${uk-ets-lib-commons.version}</version>
-        </dependency>     		
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.ets</groupId>
+            <artifactId>uk-ets-lib-commons-kafka-dead-letter</artifactId>
+            <version>${uk-ets-lib-commons.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa-test</artifactId>

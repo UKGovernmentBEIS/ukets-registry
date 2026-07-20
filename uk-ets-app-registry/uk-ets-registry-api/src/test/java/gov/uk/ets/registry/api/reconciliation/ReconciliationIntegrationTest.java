@@ -55,14 +55,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @EmbeddedKafka(topics = {
-    "registry.originating.notification.topic",
+    "registry-internal-registry-originating-notification-topic",
     "proposal.notification.in",
     "itl.notices.in.topic",
-    "domain.event.topic",
+    "registry-internal-domain-event-topic",
     "group.notification.topic",
-    "registry.originating.reconciliation.question.topic",
-    "registry.originating.transaction.question.topic",
-    "txlog.originating.reconciliation.answer.topic",
+    "registry-internal-registry-originating-reconciliation-question-topic",
+    "registry-internal-registry-originating-transaction-question-topic",
+    "registry-integration-txlog-originating-reconciliation-answer-topic",
     "itl.originating.reconciliation.in.topic",
     "itl.originating.reconciliation.out.topic"
 },
@@ -134,7 +134,7 @@ public class ReconciliationIntegrationTest extends BaseIntegrationTest {
         consumer = new DefaultKafkaConsumerFactory<>(
             config, new StringDeserializer(),
             new JsonDeserializer<>(ReconciliationSummary.class, false)).createConsumer();
-        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, "registry.originating.reconciliation.question.topic");
+        embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, "registry-internal-registry-originating-reconciliation-question-topic");
         helper.clearAll();
     }
 
@@ -158,7 +158,7 @@ public class ReconciliationIntegrationTest extends BaseIntegrationTest {
         assertEquals(storedReconciliations.get(0).getIdentifier(),
             storedReconciliationHistories.get(0).getReconciliation().getIdentifier());
         ConsumerRecord<String, ReconciliationSummary> consumerRecord = KafkaTestUtils.getSingleRecord(consumer,
-            "registry.originating.reconciliation.question.topic");
+            "registry-internal-registry-originating-reconciliation-question-topic");
 
         assertNotNull(consumerRecord);
     }
@@ -228,7 +228,7 @@ public class ReconciliationIntegrationTest extends BaseIntegrationTest {
             {
                 try {
                     return kafkaTemplate
-                        .send("txlog.originating.reconciliation.answer.topic",
+                        .send("registry-integration-txlog-originating-reconciliation-answer-topic",
                             buildSummary(identifier, expectedFailedAccounts))
                         .get();
                 } catch (Exception e) {

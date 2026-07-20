@@ -1,7 +1,7 @@
 package gov.uk.ets.registry.api.integration.service.operator;
 
-import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_ID_HEADER;
-import static gov.uk.ets.registry.api.integration.config.KafkaConstants.CORRELATION_PARENT_ID_HEADER;
+import static uk.ets.lib.commons.kafkaconfig.KafkaConstants.CORRELATION_ID_HEADER;
+import static uk.ets.lib.commons.kafkaconfig.KafkaConstants.CORRELATION_PARENT_ID_HEADER;
 
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.common.error.UkEtsException;

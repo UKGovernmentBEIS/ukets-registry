@@ -39,29 +39,15 @@ file_env 'KEYCLOAK_ADMIN_PASSWORD'
 # Configuration #
 #################
 
-# Configure Kafka Authentication
+# Kafka Authentication
 if [ "${KAFKA_AUTHENTICATION_ENABLED:+set}" != set ]; then
-  echo "Environmental variable KAFKA_AUTHENTICATION_ENABLED is not set, skipping configuration"
+  echo "Environmental variable KAFKA_AUTHENTICATION_ENABLED is not set."
 
 elif [ "${KAFKA_AUTHENTICATION_ENABLED}" == "false" ]; then
-  echo "Environmental variable KAFKA_AUTHENTICATION_ENABLED is set  to false, skipping configuration"
-
-elif [ "${KAFKA_SASL_JAAS_CONFIG:+set}" != set ]; then
-  echo "Environmental variable KAFKA_SASL_JAAS_CONFIG is not set, \
-  generating it using KAFKA_CLIENT_USERNAME and KAFKA_CLIENT_PASSWORD..."
-  if [ "${KAFKA_CLIENT_USERNAME:+set}" != set ]; then
-    echo "ERROR: Environmental variable KAFKA_CLIENT_USERNAME is required. Startup aborted."
-    exit 2
-  fi
-  if [ "${KAFKA_CLIENT_PASSWORD:+set}" != set ]; then
-    echo "ERROR: Environmental variable KAFKA_CLIENT_PASSWORD is required. Startup aborted."
-    exit 2
-  fi
-
-  export KAFKA_SASL_JAAS_CONFIG="org.apache.kafka.common.security.scram.ScramLoginModule required \
-  username=\"${KAFKA_CLIENT_USERNAME}\" password=\"${KAFKA_CLIENT_PASSWORD}\";"
-
-  echo "Environmental variable KAFKA_SASL_JAAS_CONFIG generated"
+  echo "Environmental variable KAFKA_AUTHENTICATION_ENABLED is set  to false."
+ 
+elif [ "${KAFKA_AUTHENTICATION_ENABLED}" == "true" ]; then
+  echo "Environmental variable KAFKA_AUTHENTICATION_ENABLED is set  to true."
 fi
 
 ##################

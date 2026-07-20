@@ -1,12 +1,8 @@
 package uk.gov.ets.transaction.log.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +22,19 @@ import uk.gov.ets.transaction.log.messaging.types.TransactionNotification;
 import uk.gov.ets.transaction.log.repository.TransactionRepository;
 import uk.gov.ets.transaction.log.repository.UnitBlockRepository;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Log4j2
 public class TransactionService {
+
+    @Value("${kafka.transaction-uktl.answer.topic:registry-internal-txlog-originating-transaction-answer-topic}")
+    private String transactionAnswerTopic;
 
     private final TransactionRepository transactionRepository;
     
@@ -37,13 +42,11 @@ public class TransactionService {
     
     private final SplitUnitBlocksService splitBlocksService;
     
-    private final KafkaTemplate<String,TransactionAnswer> kafkaTemplate;
+    private final KafkaTemplate<String,TransactionAnswer> transactionKafkaTemplate;
 
     private final TransactionValidationService transactionValidationService;
 
     private final LimitService limitService;
-
-    public static final String TXLOG_ORIGINATING_TRANSACTION_ANSWER_TOPIC = "txlog.originating.transaction.answer.topic";
 
     @Transactional
     public void acceptTransactionProposal(TransactionNotification transactionProposal) {
@@ -158,7 +161,7 @@ public class TransactionService {
     private void sendUkTLTransactionAnswer(String transactionIdentifier, BusinessCheckResult result) {
         TransactionStatus status = result.success() ? TransactionStatus.CHECKED_NO_DISCREPANCY :
             TransactionStatus.CHECKED_DISCREPANCY;
-        kafkaTemplate.send(TXLOG_ORIGINATING_TRANSACTION_ANSWER_TOPIC, 
+        transactionKafkaTemplate.send(transactionAnswerTopic,
                 TransactionAnswer.
                 builder().
                 transactionIdentifier(transactionIdentifier).

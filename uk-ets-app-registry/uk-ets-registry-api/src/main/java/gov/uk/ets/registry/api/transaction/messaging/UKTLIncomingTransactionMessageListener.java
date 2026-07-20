@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @KafkaListener(
-    topics = "txlog.originating.transaction.answer.topic",
-    groupId = "group.transaction-uktl.group",
+    topics = "${txlog.originating.transaction.answer.topic:registry-internal-txlog-originating-transaction-answer-topic}",
+    groupId = "${kafka.transaction-uktl.consumer.group-id:transaction-uktl-registry-group}",
     containerFactory = "uktlTransactionConsumerFactory"
 )
 @RequiredArgsConstructor

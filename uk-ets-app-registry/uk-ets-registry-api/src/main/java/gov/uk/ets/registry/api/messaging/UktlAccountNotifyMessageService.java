@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class UktlAccountNotifyMessageService {
     private final KafkaTemplate<String, Serializable> producerTemplate;
 
-    @Value("${spring.kafka.template.uktl.notification.topic}")
+    @Value("${kafka.account.opening-uktl.question.topic}")
     private String transactionLogNotificationOut;
 
     public UktlAccountNotifyMessageService(

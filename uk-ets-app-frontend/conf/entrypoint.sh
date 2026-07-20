@@ -27,4 +27,9 @@ sed -i "s/REPLACE_ME_WITH_UILOGS_FQDN/$UILOGS/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_ACCOUNT_RECOVERY_API_FQDN/$ACCOUNT_RECOVERY_API/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_ACCOUNT_RECOVERY_WEB_FQDN/$ACCOUNT_RECOVERY_WEB/g" /etc/nginx/conf.d/ets.conf
 
+if [[ "$ENABLE_POSTGREST" == true ]]; then
+    sed -i '$i include /etc/nginx/conf.d/postgrest.location;' /etc/nginx/conf.d/ets.conf
+    sed -i "s/REPLACE_ME_WITH_POSTGREST_REGISTRY/$POSTGREST_REGISTRY/g" /etc/nginx/conf.d/postgrest.location
+fi
+
 exec nginx -g 'daemon off;'

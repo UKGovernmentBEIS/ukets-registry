@@ -47,6 +47,11 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.msk</groupId>
+            <artifactId>aws-msk-iam-auth</artifactId>
+            <version>${aws-msk-iam-auth.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

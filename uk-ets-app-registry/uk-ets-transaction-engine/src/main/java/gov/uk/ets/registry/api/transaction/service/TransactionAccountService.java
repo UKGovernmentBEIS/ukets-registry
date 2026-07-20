@@ -238,7 +238,9 @@ public class TransactionAccountService {
      * Returns the full identifier of SOP Adaptation Fund Account.
      *
      * @return an account full identifier.
+     * @deprecated after ITL- Kyoto discontinuation this method should not be used anymore.
      */
+    @Deprecated(forRemoval = true)
     public String getSopAccountFullIdentifier() {
         return predefinedAcquiringAccountsProperties.getCdmSopAccount();
     }

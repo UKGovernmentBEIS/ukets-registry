@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @KafkaListener(
     containerFactory = "keycloakEventConsumerFactory",
-    topics = "keycloak.events.in")
+    topics = "${kafka.registry-internal-keycloak-events-in-topic:registry-internal-keycloak-events-in-topic}")
 @RequiredArgsConstructor
 @Log4j2
 public class KeycloakEventListener {

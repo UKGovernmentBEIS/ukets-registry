@@ -23,15 +23,15 @@ import org.springframework.test.context.TestPropertySource;
 @Inherited
 @ActiveProfiles("integrationTest")
 @EmbeddedKafka(topics = {
-    "registry.originating.notification.topic",
+    "registry-internal-registry-originating-notification-topic",
     "proposal.notification.in",
-    "domain.event.topic",
+    "registry-internal-domain-event-topic",
     "group.notification.topic",
-    "registry.originating.reconciliation.question.topic",
-    "registry.originating.transaction.question.topic",
+    "registry-internal-registry-originating-reconciliation-question-topic",
+    "registry-internal-registry-originating-transaction-question-topic",
     "itl.originating.reconciliation.in.topic",
     "itl.originating.reconciliation.out.topic",
-    "compliance.events.in.topic",
+    "registry-internal-compliance-events-in-topic",
     "installation-account-emissions-updated-response-topic",
     "installation-account-emissions-updated-request-topic-dlt",
     "installation-account-created-request-topic",
@@ -49,7 +49,7 @@ import org.springframework.test.context.TestPropertySource;
     "aviation-registry-exemption-request-topic-dlt",
     "registry-installation-withhold-response-topic",
     "installation-registry-withhold-request-topic-dlt",
-    "ets.registry.reporting.metrics.event.topic",
+    "registry-internal-reporting-metrics-event-topic",
 },
     brokerPropertiesLocation = "classpath:integration-test-application.properties",
     brokerProperties = "auto.create.topics.enable=true",
@@ -60,12 +60,12 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:integration-test-application.properties", properties = {
     "mail.fromAddress=test@test.gr",
     "spring.application.name=registry-api",
-    "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+    "kafka.integration.bootstrap-servers=${spring.embedded.kafka.brokers}",
     "spring.kafka.consumer.bootstrap-servers=${spring.embedded.kafka.brokers}",
     "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
     "spring.kafka.admin.properties.bootstrap.servers=${spring.embedded.kafka.brokers}",
     "logging.level.root=INFO",
-    "kafka.authentication.enabled=false",
+    "kafka.integration.authentication.enabled=false",
     "spring.datasource.hikari.maximum-pool-size=5"
 })
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

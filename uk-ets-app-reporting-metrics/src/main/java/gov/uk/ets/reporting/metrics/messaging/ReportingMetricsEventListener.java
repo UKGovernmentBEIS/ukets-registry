@@ -10,7 +10,7 @@ import gov.uk.ets.reporting.metrics.service.AccountMetricsReportingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-@KafkaListener(topics = "${kafka.ets.registry.reporting.metrics.event.topic:ets.registry.reporting.metrics.event.topic}",
+@KafkaListener(topics = "${kafka.ets.registry.reporting.metrics.event.topic:registry-internal-reporting-metrics-event-topic}",
     containerFactory = "reportingMetricsListenerContainerFactory")
 @RequiredArgsConstructor
 @Service

@@ -48,14 +48,14 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.transaction.annotation.Transactional;
 
 @EmbeddedKafka(topics = {
-    "registry.originating.notification.topic",
+    "registry-internal-registry-originating-notification-topic",
     "proposal.notification.in",
     "itl.notices.in.topic",
-    "domain.event.topic",
+    "registry-internal-domain-event-topic",
     "group.notification.topic",
-    "registry.originating.reconciliation.question.topic",
-    "registry.originating.transaction.question.topic",
-    "txlog.originating.reconciliation.answer.topic"
+    "registry-internal-registry-originating-reconciliation-question-topic",
+    "registry-internal-registry-originating-transaction-question-topic",
+    "registry-internal-txlog-originating-reconciliation-answer-topic"
 },
     brokerPropertiesLocation = "classpath:integration-test-application.properties",
     brokerProperties = "auto.create.topics.enable=false",

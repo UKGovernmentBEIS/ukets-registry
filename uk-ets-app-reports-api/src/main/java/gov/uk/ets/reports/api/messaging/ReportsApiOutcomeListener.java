@@ -9,7 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 
-@KafkaListener(topics = "${kafka.report.outcome.topic:report.outcome.topic}",
+@KafkaListener(topics = "${kafka.report.outcome.topic:registry-internal-report-outcome-topic}",
     containerFactory = "reportsApiListenerContainerFactory")
 @RequiredArgsConstructor
 @Service

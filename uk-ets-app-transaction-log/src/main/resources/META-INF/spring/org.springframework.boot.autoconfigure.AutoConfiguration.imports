@@ -1,0 +1,3 @@
+gov.uk.ets.commons.logging.Config
+uk.gov.ets.transaction.log.messaging.config.KafkaConfig
+uk.ets.lib.kafka.deadletter.DeadLetterConfig

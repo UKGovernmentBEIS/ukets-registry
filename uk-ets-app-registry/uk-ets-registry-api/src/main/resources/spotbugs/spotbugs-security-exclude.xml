@@ -29,14 +29,6 @@
         <Bug pattern="CRLF_INJECTION_LOGS"/>
     </Match>
     <Match>
-        <Class name="gov.uk.ets.registry.api.integration.config.KafkaLoggingConsumerInterceptor"/>
-        <Bug pattern="CRLF_INJECTION_LOGS"/>
-    </Match>
-    <Match>
-        <Class name="gov.uk.ets.registry.api.integration.config.KafkaLoggingProducerListener"/>
-        <Bug pattern="CRLF_INJECTION_LOGS"/>
-    </Match>
-    <Match>
         <Class name="gov.uk.ets.registry.api.file.upload.allocationtable.services.AllocationTableExcelFileValidationService"/>
         <Bug pattern="WEAK_MESSAGE_DIGEST_MD5"/>
     </Match>

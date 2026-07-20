@@ -39,7 +39,6 @@ import gov.uk.ets.registry.api.transaction.lock.RegistryLockProvider;
 import gov.uk.ets.registry.api.transaction.lock.RegistryLockType;
 import gov.uk.ets.registry.api.transaction.messaging.ITLBlockConversionService;
 import gov.uk.ets.registry.api.transaction.messaging.ITLConversionService;
-import gov.uk.ets.registry.api.transaction.messaging.ITLOutgoingMessageService;
 import gov.uk.ets.registry.api.transaction.messaging.TransactionNotification;
 import gov.uk.ets.registry.api.transaction.messaging.UKTLOutgoingMessageService;
 import gov.uk.ets.registry.api.transaction.processor.TransactionProcessor;
@@ -98,11 +97,6 @@ public class TransactionService {
      * The persistence service for transactions.
      */
     private final TransactionPersistenceService transactionPersistenceService;
-
-    /**
-     * Service for sending messages to ITL.
-     */
-    private final ITLOutgoingMessageService itlOutgoingMessageService;
 
     /**
      * Service for sending messages to the UK ETS transaction log.
@@ -412,7 +406,17 @@ public class TransactionService {
         } else {
             transactionMessageService.saveOutgoingMessage(transaction, TransactionStatus.PROPOSED.name(),
                 TransactionSystem.ITL, proposalRequest);
-            itlOutgoingMessageService.sendProposalRequest(proposalRequest);
+            //TODO Replace this call with the service
+//            itlOutgoingMessageService.sendProposalRequest(proposalRequest);
+            NotificationRequest request = new NotificationRequest();
+            request.setTransactionIdentifier(transaction.getIdentifier());
+            request.setTransactionStatus(TransactionStatus.COMPLETED.getCode());
+            request.setFrom("ITL");
+            request.setTo("GB");
+            request.setMajorVersion(1);
+            request.setMinorVersion(1);
+            request.setEvaluationResult(null);
+            processReply(request);
         }
     }
 
@@ -476,8 +480,8 @@ public class TransactionService {
                 prepareNotificationRequestForTransactionCompletion(request.getTransactionIdentifier());
             transactionMessageService.saveOutgoingMessage(transaction, transactionStatus.name(), TransactionSystem.ITL,
                 notificationRequest);
-            itlOutgoingMessageService.sendNotificationRequest(
-                notificationRequest);
+//            itlOutgoingMessageService.sendNotificationRequest(
+//                notificationRequest);
         }
         saveITLErrors(request, transaction, nextStep);
     }
@@ -741,7 +745,7 @@ public class TransactionService {
             transactionMessageService.saveOutgoingMessage(transaction, transaction.getStatus().name(),
                 TransactionSystem.ITL, notificationRequest);
         }
-        itlOutgoingMessageService.sendNotificationRequest(notificationRequest);
+//        itlOutgoingMessageService.sendNotificationRequest(notificationRequest);
     }
 
     /**

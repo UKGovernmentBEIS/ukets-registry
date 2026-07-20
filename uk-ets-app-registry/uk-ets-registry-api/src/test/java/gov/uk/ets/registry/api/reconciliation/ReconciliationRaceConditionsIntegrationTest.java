@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,14 +39,14 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @Log4j2
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @EmbeddedKafka(topics = {
-        "registry.originating.notification.topic",
+        "registry-internal-registry-originating-notification-topic",
         "proposal.notification.in",
         "itl.notices.in.topic",
-        "domain.event.topic",
+        "registry-internal-domain-event-topic",
         "group.notification.topic",
-        "registry.originating.reconciliation.question.topic",
-        "registry.originating.transaction.question.topic",
-        "txlog.originating.reconciliation.answer.topic"
+        "registry-internal-registry-originating-reconciliation-question-topic",
+        "registry-internal-registry-originating-transaction-question-topic",
+        "registry-internal-txlog-originating-reconciliation-answer-topic"
 },
         brokerPropertiesLocation = "classpath:integration-test-application.properties",
         brokerProperties = "auto.create.topics.enable=false",

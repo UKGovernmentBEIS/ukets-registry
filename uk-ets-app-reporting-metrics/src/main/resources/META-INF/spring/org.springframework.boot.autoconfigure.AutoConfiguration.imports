@@ -1,0 +1,2 @@
+gov.uk.ets.commons.logging.Config
+uk.ets.lib.kafka.deadletter.DeadLetterConfig

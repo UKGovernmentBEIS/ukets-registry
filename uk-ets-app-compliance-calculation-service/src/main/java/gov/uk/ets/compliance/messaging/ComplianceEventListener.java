@@ -19,7 +19,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@KafkaListener(topics = "${kafka.compliance.events.in.topic:compliance.events.in.topic}",
+@KafkaListener(topics = "${kafka.compliance.events.in.topic:registry-internal-compliance-events-in-topic}",
         containerFactory = "complianceListenerContainerFactory")
 @RequiredArgsConstructor
 @Service

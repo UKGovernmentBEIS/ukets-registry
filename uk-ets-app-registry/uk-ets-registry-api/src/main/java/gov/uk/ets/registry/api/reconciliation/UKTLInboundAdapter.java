@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @KafkaListener(
-    topics = "${kafka.reconciliation-uktl.answer.topic:txlog.originating.reconciliation.answer.topic}",
+    topics = "${txlog.originating.reconciliation.answer.topic:registry-internal-txlog-originating-reconciliation-answer-topic}",
     containerFactory = "uktlReconciliationConsumerFactory"
 )
 @RequiredArgsConstructor

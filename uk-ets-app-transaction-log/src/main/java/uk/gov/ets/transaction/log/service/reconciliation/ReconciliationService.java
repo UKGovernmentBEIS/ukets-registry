@@ -21,7 +21,6 @@ import uk.gov.ets.transaction.log.messaging.types.ReconciliationEntrySummary;
 import uk.gov.ets.transaction.log.messaging.types.ReconciliationFailedEntrySummary;
 import uk.gov.ets.transaction.log.messaging.types.ReconciliationSummary;
 import uk.gov.ets.transaction.log.repository.ReconciliationRepository;
-import uk.gov.ets.transaction.log.repository.TransactionRepository;
 import uk.gov.ets.transaction.log.repository.UnitBlockRepository;
 
 @Service
@@ -29,14 +28,13 @@ import uk.gov.ets.transaction.log.repository.UnitBlockRepository;
 @RequiredArgsConstructor
 public class ReconciliationService {
 
-    @Value("${kafka.reconciliation-uktl.answer.topic:txlog.originating.reconciliation.answer.topic}")
+    @Value("${kafka.reconciliation-uktl.answer.topic:registry-internal-txlog-originating-reconciliation-answer-topic}")
     private String reconciliationAnswerTopic;
     private final UnitBlockRepository unitBlockRepository;
     private final ReconciliationRepository reconciliationRepository;
-    private final TransactionRepository transactionRepository;
     private final ObjectMapper objectMapper;
 
-    private final KafkaTemplate<String, ReconciliationSummary> kafkaTemplate;
+    private final KafkaTemplate<String, ReconciliationSummary> reconciliationKafkaTemplate;
 
     @Transactional
     public void performReconciliation(ReconciliationSummary registryReconciliationSummary) {
@@ -62,7 +60,7 @@ public class ReconciliationService {
 
         saveReconciliation(failedEntries, reconciliationStatus, summary);
 
-        kafkaTemplate.send(reconciliationAnswerTopic, summary);
+        reconciliationKafkaTemplate.send(reconciliationAnswerTopic, summary);
     }
 
 

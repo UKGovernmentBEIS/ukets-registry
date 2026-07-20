@@ -1,0 +1,7 @@
+location /registry-postgrest/ {
+    include /etc/nginx/global_headers.conf;
+    add_header Access-Control-Allow-Origin *;
+    set $api_postgrest REPLACE_ME_WITH_POSTGREST_REGISTRY;
+    rewrite ^/registry-postgrest(/.*)$ $1 break;
+    proxy_pass http://$api_postgrest;
+}

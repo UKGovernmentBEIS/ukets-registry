@@ -27,7 +27,7 @@ public class RegistryIncomingMessageListener {
     private final ReconciliationService reconciliationService;
 
     @KafkaListener(
-        topics = "registry.originating.notification.topic",
+        topics = "${registry.originating.account.question.topic:registry-internal-registry-originating-account-opening-question-topic}",
         containerFactory = "accountNotificationKafkaListenerContainerFactory")
     public void handle(AccountNotification accountNotification, Message<AccountNotification> message) {
         accountService.acceptAccountOpeningRequest(accountNotification);
@@ -35,14 +35,14 @@ public class RegistryIncomingMessageListener {
 
 
     @KafkaListener(
-        topics = "registry.originating.transaction.question.topic",
+        topics = "${registry.originating.transaction.question.topic:registry-internal-registry-originating-transaction-question-topic}",
         containerFactory = "transactionNotificationKafkaListenerContainerFactory")
     public void handle(TransactionNotification transactionNotification, Message<TransactionNotification> message) {
         transactionService.acceptTransactionProposal(transactionNotification);
     }
 
     @KafkaListener(
-        topics = "registry.originating.reconciliation.question.topic",
+        topics = "${registry.originating.reconciliation.question.topic:registry-internal-registry-originating-reconciliation-question-topic}",
         containerFactory = "reconciliationKafkaListenerContainerFactory")
     public void handle(ReconciliationSummary reconciliationSummary) {
         reconciliationService.performReconciliation(reconciliationSummary);

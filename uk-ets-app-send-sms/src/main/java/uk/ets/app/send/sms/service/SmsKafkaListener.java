@@ -14,7 +14,7 @@ public class SmsKafkaListener {
 
     private final SmsService service;
 
-    @KafkaListener(topics = "send.sms.topic", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "${send.sms.topic:registry-internal-send-sms-topic}", containerFactory = "kafkaListenerContainerFactory")
     public void sendSms(SmsNotification message) {
         try {
             log.info("Sending sms: {}", message);

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
  * The current date must be inside the valid carry over period.
  */
 @Service("check3002")
+@Deprecated(forRemoval = true)
 public class CheckValidDateCarryOverPeriod extends ParentBusinessCheck {
 
     @Value("${business.property.transaction.carry.over.startDate:01/01/2020 00:00:01}")

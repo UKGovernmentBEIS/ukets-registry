@@ -27,6 +27,19 @@
   },
   "loginTheme": "uk-ets-theme",
   "emailTheme": "uk-ets-theme",
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "subComponents": {},
+        "config": {
+          "kc.user.profile.config": [
+            "{\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"validations\":{\"length\":{\"min\":3,\"max\":255},\"username-prohibited-characters\":{},\"up-username-not-idn-homograph\":{}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"email\",\"displayName\":\"${email}\",\"validations\":{\"email\":{},\"length\":{\"max\":255}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"firstName\",\"displayName\":\"${firstName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"lastName\",\"displayName\":\"${lastName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false}],\"groups\":[{\"name\":\"user-metadata\",\"displayHeader\":\"User metadata\",\"displayDescription\":\"Attributes, which refer to user metadata\"}],\"unmanagedAttributePolicy\":\"ENABLED\"}"
+          ]
+        }
+      }
+    ]
+  }, 
   "users": [
     {
       "username": "service-account-uk-ets-registry-api",
@@ -116,7 +129,6 @@
       "webOrigins": ["*"],
       "protocolMappers": [
         {
-          "id": "fc18ce7e-a6bb-4b4d-bc82-171c0e30c40f",
           "name": "User state mapper",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
@@ -130,7 +142,6 @@
           }
         },
         {
-          "id": "4d5c027a-2b2f-49c1-8733-f70567c9a9a5",
           "name": "User urid mapper",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
@@ -145,7 +156,6 @@
           }
         },
         {
-          "id": "fd917c94-2a77-4154-939a-87c970a51d74",
           "name": "Audience for uk-ets-registry-api",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-audience-mapper",

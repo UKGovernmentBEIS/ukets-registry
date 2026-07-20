@@ -64,6 +64,7 @@ public class ServiceAccountAuthorizationService implements AccessTokenRetriever 
     private final KeycloakUserRepresentationRepository keycloakUserRepresentationRepository;
     private final KeycloakClientRepresentationRepository keycloakClientRepresentationRepository;
 
+    public static final String WEB_APP_KEYCLOAK_CLIENT_ID = "uk-ets-web-app";
     private static final String PASSWD_POLICY_VIOLATION = "password_policy_violation";
     private static final String PASSWD_POLICY_VIOLATION_MESSAGE =
         "Password does not conform to password policies.";
@@ -210,8 +211,8 @@ public class ServiceAccountAuthorizationService implements AccessTokenRetriever 
      * Triggers a Keycloak flow which sends an email to the user with a link to complete the specified actions.
      */
     public void triggerKeycloakExecuteActionsEmail(String iamIdentifier, String... actions) {
-        RealmResource client = getClient();
-        client.users().get(iamIdentifier).executeActionsEmail(Arrays.asList(actions));
+        RealmResource realm = getClient();
+        realm.users().get(iamIdentifier).executeActionsEmail(WEB_APP_KEYCLOAK_CLIENT_ID, null, Arrays.asList(actions));
     }
 
     /**

@@ -1,0 +1,6 @@
+uk.ets.lib.commons.kafkaclients.KafkaClientsConfiguration
+uk.ets.lib.kafka.deadletter.DeadLetterConfig
+uk.ets.lib.kafka.deadletter.IntegrationKafkaDeadLetterConfiguration
+gov.uk.ets.commons.logging.Config
+gov.uk.ets.commons.ratelimiter.Config
+gov.uk.ets.file.upload.services.ClamavService

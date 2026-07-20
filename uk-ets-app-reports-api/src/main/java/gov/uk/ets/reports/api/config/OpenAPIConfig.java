@@ -20,7 +20,7 @@ public class OpenAPIConfig {
     private BuildProperties buildProperties;
 
     @Bean
-    public OpenAPI reportsOpenAPI() {
+    OpenAPI reportsOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Reports API Documentation")
                 .description("Backend REST API documentation for the UK ETS Registry Reports application")

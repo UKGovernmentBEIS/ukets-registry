@@ -18,7 +18,7 @@ public class EmailListenerService {
 
     private final MailService mailService;
 
-    @KafkaListener(topics = "send.email.topic", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "${send.email.topic:registry-internal-send-email-topic}", containerFactory = "kafkaListenerContainerFactory")
     public void sendEmail(GroupNotification message) throws EmailException {
         try {
             mailService.sendMail(

@@ -31,7 +31,7 @@
 		<jacoco.skip>true</jacoco.skip>
 		<libphonenumber.version>8.12.14</libphonenumber.version>
 		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
-		<uk-ets-lib-commons.version>1.0.1-SNAPSHOT</uk-ets-lib-commons.version>
+		<uk-ets-lib-commons.version>2.0.0-SNAPSHOT</uk-ets-lib-commons.version>
 		<jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
         <springdoc.openapi.ui.version>2.8.13</springdoc.openapi.ui.version>    		
 	</properties>

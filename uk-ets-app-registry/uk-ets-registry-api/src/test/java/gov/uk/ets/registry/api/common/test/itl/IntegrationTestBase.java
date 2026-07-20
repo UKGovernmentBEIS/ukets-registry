@@ -1,7 +1,5 @@
 package gov.uk.ets.registry.api.common.test.itl;
 
-import static gov.uk.ets.registry.api.itl.reconciliation.messaging.ITLReconciliationMessagingConfiguration.DEFAULT_ITL_RECONCILIATION_OUT_TOPIC;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
@@ -10,7 +8,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.IsolationLevel;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -18,19 +15,13 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 @EmbeddedKafka(
     // this is needed only for the embedded kafka test utils (like consumeFromAnEmbeddedTopic)
-    topics = {
-        DEFAULT_ITL_RECONCILIATION_OUT_TOPIC
-    },
     count = 3,
     ports = {0, 0, 0},
     partitions = 3,
     controlledShutdown = true
 )
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(
