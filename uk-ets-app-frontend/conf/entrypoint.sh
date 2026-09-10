@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 rm -f /etc/nginx/conf.d/default.conf
 
-if [[ $ORCHESTRATOR == 'ecs' ]]; then
+if [ "$ORCHESTRATOR" = 'ecs' ]; then
 	sed -i '/listen/i resolver\ 169\.254\.169\.253\ valid\=10s\;' /etc/nginx/conf.d/ets.conf
-elif [[ $ORCHESTRATOR == 'swarm' ]]; then
-        sed -i '/listen/i resolver\ 127\.0\.0\.11\ valid\=10s\;' /etc/nginx/conf.d/ets.conf
+elif [ "$ORCHESTRATOR" = 'swarm' ]; then
+    sed -i '/listen/i resolver\ 127\.0\.0\.11\ valid\=10s\;' /etc/nginx/conf.d/ets.conf
 fi
 
 sed -i "s/REPLACE_ME_WITH_FQDN/$FQDN/g" /etc/nginx/conf.d/ets.conf
@@ -27,7 +27,7 @@ sed -i "s/REPLACE_ME_WITH_UILOGS_FQDN/$UILOGS/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_ACCOUNT_RECOVERY_API_FQDN/$ACCOUNT_RECOVERY_API/g" /etc/nginx/conf.d/ets.conf
 sed -i "s/REPLACE_ME_WITH_ACCOUNT_RECOVERY_WEB_FQDN/$ACCOUNT_RECOVERY_WEB/g" /etc/nginx/conf.d/ets.conf
 
-if [[ "$ENABLE_POSTGREST" == true ]]; then
+if [ "$ENABLE_POSTGREST" = true ]; then
     sed -i '$i include /etc/nginx/conf.d/postgrest.location;' /etc/nginx/conf.d/ets.conf
     sed -i "s/REPLACE_ME_WITH_POSTGREST_REGISTRY/$POSTGREST_REGISTRY/g" /etc/nginx/conf.d/postgrest.location
 fi

@@ -5,6 +5,7 @@ import { DomainEvent } from '@shared/model/event';
 import { FileDetails } from '@shared/model/file/file-details.model';
 import { UserUpdateDetailsType } from '@user-update/model';
 import { NavigationExtras, Params } from '@angular/router';
+import { UserAgentInfo } from '@user-agent/model';
 
 export const prepareNavigationToUserDetails = createAction(
   `[User Header Guard]
@@ -108,6 +109,14 @@ export const retrieveEnrolmentKeyDetailsSuccess = createAction(
 export const retrieveEnrolmentKeyDetailsError = createAction(
   '[User Details] Retrieve enrolment key details error',
   props<{ error?: any }>()
+);
+
+export const clearAgentDetailsUpdated = createAction(
+  '[User Details] Clear agent details updated flag'
+);
+
+export const clearCrcDetailsUpdated = createAction(
+  '[User Details] Clear crc details updated flag'
 );
 
 export const navigateTo = createAction(

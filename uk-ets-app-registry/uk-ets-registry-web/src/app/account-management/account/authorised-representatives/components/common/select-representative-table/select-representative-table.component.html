@@ -37,6 +37,8 @@
               </th>
               <th scope="col" class="govuk-table__header">AR status</th>
               <th scope="col" class="govuk-table__header">User status</th>
+              <th scope="col" class="govuk-table__header">Agent</th>
+              <th scope="col" class="govuk-table__header">CRC</th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
@@ -100,6 +102,30 @@
                 <app-govuk-tag [color]="userStatusMap[ar.user.status].color">
                   {{ userStatusMap[ar.user.status].label }}
                 </app-govuk-tag>
+              </td>
+              <td class="govuk-table__cell">
+                @if (ar.user?.status !== 'REGISTERED') {
+                  {{
+                    AGENT_TYPE_LABELS[ar.user?.agent || 'NO']?.label ??
+                      'Not available'
+                  }}
+                }
+              </td>
+              <td class="govuk-table__cell">
+                @if (ar.user?.status !== 'REGISTERED') {
+                  {{ CRC_LABELS[ar.user?.crc || 'false'].label }}
+                  @if (ar.user?.crc) {
+                    (Issuance date:
+                    {{
+                      ar.user?.crcIssuanceDate &&
+                      ar.user?.crcIssuanceDate.length > 0
+                        ? (ar.user?.crcIssuanceDate
+                          | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00'
+                          | gdsDateShort)
+                        : 'Not available'
+                    }})
+                  }
+                }
               </td>
             </tr>
           </tbody>

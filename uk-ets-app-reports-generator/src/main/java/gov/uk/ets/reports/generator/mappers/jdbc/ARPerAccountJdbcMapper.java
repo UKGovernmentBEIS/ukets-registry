@@ -9,6 +9,7 @@ import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,7 +38,10 @@ public class ARPerAccountJdbcMapper
             "       u.last_name,\n" +
             "       u.email,\n" +
             "       aa.state,\n" +
-            "       aa.access_right\n" +
+            "       aa.access_right,\n" +
+            "       case when u.crc = true then 'Yes' else 'No' end as crc,\n" +
+            "       u.crc_issuance_date as crc_issuance_date,\n" +
+            "       u.agent as agent\n" +
             "from account_holder ah,\n" +
             "     account a,\n" +
             "     account_access aa,\n" +
@@ -77,6 +81,10 @@ public class ARPerAccountJdbcMapper
                         .firstName(resultSet.getString(10))
                         .lastName(resultSet.getString(11))
                         .email(resultSet.getString(12))
+                        .crc(resultSet.getString(15))
+                        .crcIssuanceDate(resultSet.getString(16) != null ?
+                                LocalDateTime.parse(resultSet.getString(16), inputFormatter) : null)
+                        .agent(resultSet.getString(17))
                     .build())
                 .accountAccess(AccountAccess.builder()
                     .state(resultSet.getString(13))

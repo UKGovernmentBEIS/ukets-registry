@@ -47,23 +47,22 @@
       <dt class="govuk-summary-list__key">Email address</dt>
       <dd class="govuk-summary-list__value">
         {{ user.email }}
-        <div
-          *ngIf="
-            currentViewMode === viewMode.MY_PROFILE ||
-            (currentViewMode === viewMode.USER_DETAILS && isVisible)
-          "
-          class="govuk-!-margin-top-2"
-        >
+      </dd>
+      @if (
+        currentViewMode === viewMode.MY_PROFILE ||
+        (currentViewMode === viewMode.USER_DETAILS && isVisible)
+      ) {
+        <dd class="govuk-summary-list__actions">
           <a
             [routerLink]="[]"
             class="govuk-link govuk-link--no-visited-state"
             (click)="onClickEmailChange()"
             (keyup)="(onClickEmailChange)"
           >
-            {{ getEmailMessage() }}
+            Change<span class="govuk-visually-hidden"> email</span>
           </a>
-        </div>
-      </dd>
+        </dd>
+      }
     </div>
     <div
       class="govuk-summary-list__row"

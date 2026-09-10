@@ -5,6 +5,8 @@ export enum AuthRepTableColumns {
   WORK_CONTACT = 'Work contacts',
   AR_STATUS = 'AR status',
   USER_STATUS = 'User status',
+  USER_AGENT = 'Agent',
+  USER_CRC = 'Crc',
 }
 
 export interface CustomColumn {

@@ -30,6 +30,9 @@ public class UserPersonalInfo implements Serializable {
     private String recoveryPhoneNumber;
     private String recoveryEmailAddress;
     private String hideRecoveryMethodsNotification;
+    private String agent;
+    private String crc;
+    private String crcIssuanceDate;
     private String email;
 
     @QueryProjection
@@ -39,7 +42,7 @@ public class UserPersonalInfo implements Serializable {
     		String workStateOrProvince, String workCountry, String workCountryCode, String workPhoneNumber,
             String workMobileCountryCode, String workMobilePhoneNumber, String workAlternativeCountryCode,
             String workAlternativePhoneNumber, String noMobilePhoneNumberReason, String recoveryCountryCode,
-            String recoveryPhoneNumber, String recoveryEmailAddress, String hideRecoveryMethodsNotification, String email) {
+            String recoveryPhoneNumber, String recoveryEmailAddress, String hideRecoveryMethodsNotification, String agent, String crc, String crcIssuanceDate, String email) {
         this.urid = urid; 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -62,6 +65,9 @@ public class UserPersonalInfo implements Serializable {
         this.recoveryPhoneNumber = recoveryPhoneNumber;
         this.recoveryEmailAddress = recoveryEmailAddress;
         this.hideRecoveryMethodsNotification = hideRecoveryMethodsNotification;
+        this.agent = agent;
+        this.crc = crc;
+        this.crcIssuanceDate = crcIssuanceDate;
         this.email = email;
     }
 
@@ -90,6 +96,9 @@ public class UserPersonalInfo implements Serializable {
             ", recoveryPhoneNumber='" + recoveryPhoneNumber + '\'' +
             ", recoveryEmailAddress='" + recoveryEmailAddress + '\'' +
             ", hideRecoveryMethodsNotification='" + hideRecoveryMethodsNotification + '\'' +
+            ", agent='" + agent + '\'' +
+            ", crc='" + crc + '\'' +
+            ", crcIssuanceDate='" + crcIssuanceDate + '\'' +
             ", email='" + email + '\'' +
             '}';
     }

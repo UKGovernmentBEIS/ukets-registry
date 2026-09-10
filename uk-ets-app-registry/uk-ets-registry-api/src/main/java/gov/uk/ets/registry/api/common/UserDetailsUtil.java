@@ -1,20 +1,52 @@
 package gov.uk.ets.registry.api.common;
 
-import java.lang.reflect.Field;
-import java.util.Optional;
-import java.util.StringJoiner;
-
-import org.apache.commons.lang3.StringUtils;
-
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsUpdateField;
+import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.StringJoiner;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+
 
 @Log4j2
 public class UserDetailsUtil {
 
-	private UserDetailsUtil() {
-	}
+    public static final DateTimeFormatter CRC_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            .withZone(ZoneOffset.UTC);
+
+    private UserDetailsUtil() {
+    }
+    
+    public static final LocalDateTime userCRCIssuanceDateToDateTime(java.util.Date crcIssuanceDate) {
+        LocalDateTime crcDate = crcIssuanceDate
+                .toInstant()
+                .atZone(ZoneId.of("UTC"))
+                .toLocalDateTime()
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+        return crcDate;
+    }
+    
+    
+    public static final LocalDateTime userCRCIssuanceDateToDateTime(String crcIssuanceDate) {
+        LocalDateTime crcDate = Instant
+                .parse(crcIssuanceDate)
+                .atZone(ZoneId.of("UTC"))
+                .toLocalDateTime()
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+        return crcDate;
+    }
 
 	public static boolean majorUserDetailsUpdateRequested(UserDetailsDTO changedDto) {
 		for (Field f : changedDto.getClass().getDeclaredFields()) {

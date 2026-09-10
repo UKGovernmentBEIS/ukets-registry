@@ -1,0 +1,151 @@
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Last signed in</dt>
+    <dd class="govuk-summary-list__value">
+      {{
+        user?.attributes?.lastLoginDate &&
+        user.attributes.lastLoginDate.length > 0
+          ? (user.attributes.lastLoginDate[0]
+            | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00'
+            | gdsDateTimeShort)
+          : 'Not available'
+      }}
+    </dd>
+  </div>
+
+  <!-- Display Agent Details only in USER_DETAILS view mode and only for SRAs-JRAs -->
+  @if (isSeniorOrJuniorAdmin && currentViewMode === 'USER_DETAILS') {
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Agent</dt>
+      <dd class="govuk-summary-list__value">
+        {{ agentTypeLabel }}
+      </dd>
+      @if (isSeniorAdmin) {
+        <dd class="govuk-summary-list__actions">
+          <a
+            [routerLink]="[]"
+            class="govuk-link govuk-link--no-visited-state"
+            (click)="onClickAgentChange()"
+            (keyup)="(onClickAgentChange)"
+          >
+            Change<span class="govuk-visually-hidden"> agent</span>
+          </a>
+        </dd>
+      }
+    </div>
+
+    <!-- Public Agent Details -->
+    @if (agentType === 'YES_PUBLIC') {
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Company name</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            user?.attributes?.agentCompanyName &&
+            user.attributes.agentCompanyName.length > 0
+              ? user.attributes.agentCompanyName[0]
+              : ''
+          }}
+        </dd>
+        @if (isSeniorAdmin) {
+          <dd class="govuk-summary-list__actions">
+            <a
+              [routerLink]="[]"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="onClickAgentChange()"
+              (keyup)="(onClickAgentChange)"
+            >
+              Change<span class="govuk-visually-hidden"> agent</span>
+            </a>
+          </dd>
+        }
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Contact email address</dt>
+        <dd class="govuk-summary-list__value">
+          {{
+            user?.attributes?.agentEmailAddress &&
+            user.attributes.agentEmailAddress.length > 0
+              ? user.attributes.agentEmailAddress[0]
+              : ''
+          }}
+        </dd>
+        @if (isSeniorAdmin) {
+          <dd class="govuk-summary-list__actions">
+            <a
+              [routerLink]="[]"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="onClickAgentChange()"
+              (keyup)="(onClickAgentChange)"
+            >
+              Change<span class="govuk-visually-hidden"> agent</span>
+            </a>
+          </dd>
+        }
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Contact number</dt>
+        <dd class="govuk-summary-list__value">
+          <app-shared-phone-number
+            [countryCode]="
+              user.attributes.agentCountryCode
+                ? user.attributes.agentCountryCode[0]
+                : ''
+            "
+            [phoneNumber]="
+              user.attributes.agentPhoneNumber
+                ? user.attributes.agentPhoneNumber[0]
+                : ''
+            "
+          />
+        </dd>
+        @if (isSeniorAdmin) {
+          <dd class="govuk-summary-list__actions">
+            <a
+              [routerLink]="[]"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="onClickAgentChange()"
+              (keyup)="(onClickAgentChange)"
+            >
+              Change<span class="govuk-visually-hidden"> agent</span>
+            </a>
+          </dd>
+        }
+      </div>
+    }
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">CRC</dt>
+      <dd class="govuk-summary-list__value">
+        {{ crcLabel }}
+      </dd>
+      @if (isSeniorAdmin) {
+        <dd class="govuk-summary-list__actions">
+          <a
+            [routerLink]="[]"
+            class="govuk-link govuk-link--no-visited-state"
+            (click)="onClickCrcChange()"
+            (keyup)="(onClickCrcChange)"
+          >
+            Change<span class="govuk-visually-hidden"> crc</span>
+          </a>
+        </dd>
+      }
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">CRC Issuance Date</dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          user?.attributes?.crcIssuanceDate &&
+          user.attributes.crcIssuanceDate.length > 0
+            ? (user.attributes.crcIssuanceDate[0]
+              | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00'
+              | gdsDateShort)
+            : 'Not available'
+        }}
+      </dd>
+    </div>
+  }
+</dl>

@@ -9,7 +9,6 @@ import * as fromUserDetailsUpdate from '@user-update/reducers';
 import { UserDetailsUpdateWizardRoutingModule } from '@user-update/user-details-update-wizard-routing.module';
 import { EffectsModule } from '@ngrx/effects';
 import { UserDetailsUpdateEffects } from '@user-update/effects';
-import { UserHeaderGuard } from '@user-management/guards';
 import { UserDetailsUpdateApiService } from '@user-update/services';
 import {
   SelectTypeUserDetailsUpdateComponent,
@@ -71,6 +70,6 @@ import { UpdateUserMemorablePhraseContainerComponent } from '@user-update/compon
     EffectsModule.forFeature([UserDetailsUpdateEffects]),
     UserDetailsModule,
   ],
-  providers: [UserHeaderGuard, UserDetailsUpdateApiService, UserDetailService],
+  providers: [UserDetailsUpdateApiService, UserDetailService],
 })
 export class UserDetailsUpdateWizardModule {}

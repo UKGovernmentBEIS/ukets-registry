@@ -66,6 +66,9 @@ public class TaskListCurrentReportService implements ReportTypeService<TaskListC
         data.add(reportData.getUserID());
         data.add(reportData.getStatus());
         data.add(reportData.getLastSignedIn());
+        data.add(reportData.getCrc());
+        data.add(reportData.getCrcIssuanceDate());
+        data.add(reportData.getAgent());
 
         return data;
     }
@@ -101,7 +104,10 @@ public class TaskListCurrentReportService implements ReportTypeService<TaskListC
             "User",
             "User ID",
             "Status",
-            "Last Signed In"
+            "Last Signed In",
+            "CRC",
+            "CRC Issue Date",
+            "Agent"
         );
     }
 

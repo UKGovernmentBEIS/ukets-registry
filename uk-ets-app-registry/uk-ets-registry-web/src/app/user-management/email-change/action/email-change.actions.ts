@@ -19,6 +19,17 @@ export const navigateToEmailChangeWizard = createAction(
   }>()
 );
 
+export const navigateToCrcChangeWizard = createAction(
+  `[Crc Change] Prepare wizard by setting the urid and the go back url`,
+  props<{
+    urid: string;
+    caller: {
+      route: string;
+      extras?: NavigationExtras;
+    };
+  }>()
+);
+
 export const requestEmailChangeAction = createAction(
   '[Email Change Enter New Email form] request email change',
   props<{

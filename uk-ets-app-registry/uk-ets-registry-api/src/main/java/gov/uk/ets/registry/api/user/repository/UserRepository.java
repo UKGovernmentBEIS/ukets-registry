@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.user.repository;
 
+import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.file.upload.wrappers.BulkArUserDTO;
 import gov.uk.ets.registry.api.user.EnrolmentKeyDTO;
 import gov.uk.ets.registry.api.user.UserDTO;
@@ -191,4 +192,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<UserRoleDetails> findUsersByStatusAndRoleExcludingReportsUser(@Param("userStatus") UserStatus userStatus,
                                                                        @Param("roleNames") List<String> roleNames);
 
+
+    /**
+     * Retrieves users whose status is one of the provided statuses and who have
+     * at least one ACTIVE account access with one of the specified access rights.
+     *
+     * @param userStatuses the user statuses to match.
+     * @param accessRights the account access rights to match.
+     * @return the users satisfying the criteria.
+     */
+    @Query("""
+    SELECT DISTINCT u
+    FROM User u
+    JOIN AccountAccess aa ON aa.user = u
+    WHERE u.state IN :userStatuses
+    AND aa.state =
+        gov.uk.ets.registry.api.account.domain.types.AccountAccessState.ACTIVE
+    AND aa.right IN :accessRights
+""")
+    List<User> findUsersByStatusAndActiveAccountAccessRights(@Param("userStatuses") List<UserStatus> userStatuses,
+                                                  @Param("accessRights") List<AccountAccessRight> accessRights);
 }

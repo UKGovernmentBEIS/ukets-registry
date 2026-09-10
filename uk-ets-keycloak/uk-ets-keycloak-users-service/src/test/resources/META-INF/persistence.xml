@@ -48,7 +48,7 @@
 
     <properties>
       <!-- Configuring JDBC properties -->
-      <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test'"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;NON_KEYWORDS=VALUE"/>
       <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
 
       <!-- Hibernate properties -->

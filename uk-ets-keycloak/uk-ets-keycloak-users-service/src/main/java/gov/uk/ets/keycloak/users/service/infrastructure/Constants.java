@@ -156,4 +156,16 @@ public class Constants {
      * The flag for hiding recovery methods notification
      */
     public static final String HIDE_RECOVERY_METHODS_NOTIFICATION = "hideRecoveryMethodsNotification";
+    /**
+     * User attribute key for agent indicator/type.
+     */
+    public static final String AGENT = "agent";
+    /**
+     * The flag for crc submission.
+     */
+    public static final String CRC = "crc";
+    /**
+     * The flag for crc issuance date.
+     */
+    public static final String CRC_ISSUANCE_DATE = "crcIssuanceDate";
 }

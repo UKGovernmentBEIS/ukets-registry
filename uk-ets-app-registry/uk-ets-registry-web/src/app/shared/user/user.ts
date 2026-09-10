@@ -74,6 +74,9 @@ export interface IUser {
   recoveryCountryCode?: string;
   recoveryPhoneNumber?: string;
   recoveryEmailAddress?: string;
+  agent?: string;
+  crc?: string;
+  crcIssuanceDate?: string;
 }
 
 export class User implements IUser {
@@ -113,6 +116,9 @@ export class User implements IUser {
   recoveryCountryCode = '';
   recoveryPhoneNumber = '';
   recoveryEmailAddress = '';
+  agent = 'NO';
+  crc = 'false';
+  crcIssuanceDate = '';
 
   static updatePartially(user: User, partialUser: Partial<User>): IUser {
     return User.decode({ ...user, ...partialUser });

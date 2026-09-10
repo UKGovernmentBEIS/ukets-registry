@@ -38,7 +38,14 @@ public enum UserAttributes {
 	RECOVERY_COUNTRY_CODE("recoveryCountryCode"),
 	RECOVERY_PHONE_NUMBER("recoveryPhoneNumber"),
 	RECOVERY_EMAIL_ADDRESS("recoveryEmailAddress"),
-	HIDE_RECOVERY_METHODS_NOTIFICATION("hideRecoveryMethodsNotification");
+	HIDE_RECOVERY_METHODS_NOTIFICATION("hideRecoveryMethodsNotification"),
+	KEYCLOAK_ATTRIBUTE_CRC ("crc"),
+	KEYCLOAK_ATTRIBUTE_CRC_ISSUANCE_DATE("crcIssuanceDate"),
+	KEYCLOAK_ATTRIBUTE_AGENT("agent"),
+	KEYCLOAK_ATTRIBUTE_AGENT_COMPANY_NAME("agentCompanyName"),
+	KEYCLOAK_ATTRIBUTE_AGENT_EMAIL("agentEmailAddress"),
+	KEYCLOAK_ATTRIBUTE_AGENT_COUNTRY_CODE("agentCountryCode"),
+	KEYCLOAK_ATTRIBUTE_AGENT_PHONE_NUMBER("agentPhoneNumber");
 
 	private final String attributeName;
 

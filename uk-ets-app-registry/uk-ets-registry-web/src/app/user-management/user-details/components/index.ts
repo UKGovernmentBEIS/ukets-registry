@@ -6,3 +6,4 @@ export * from './identification-documentation/identification-documentation.compo
 export * from './personal-details/personal-details.component';
 export * from './registration-details/registration-details.component';
 export * from './work-contact-details/work-contact-details.component';
+export * from './user-summary/user-summary.component';

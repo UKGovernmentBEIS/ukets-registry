@@ -8,7 +8,9 @@ import { Observable } from 'rxjs';
 import { KeycloakUser } from '@shared/user/keycloak-user';
 import { Store } from '@ngrx/store';
 import {
+  selectAgentDetailsUpdated,
   selectARsInAccountDetails,
+  selectCrcDetailsUpdated,
   selectEnrolmentKeyDetails,
   selectUserDetails,
   selectUserDetailsPendingTasks,
@@ -27,7 +29,10 @@ import { FileDetails } from '@shared/model/file/file-details.model';
 import { fetchUserFile } from '@user-management/user-details/store/actions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomainEvent } from '@shared/model/event';
-import { navigateToEmailChangeWizard } from '@email-change/action/email-change.actions';
+import {
+  navigateToCrcChangeWizard,
+  navigateToEmailChangeWizard,
+} from '@email-change/action/email-change.actions';
 import { actionNavigateToEnterReason } from '@user-management/token-change/action/token-change.actions';
 import { navigateToPasswordChangeWizard } from '@user-management/password-change/action/password-change.actions';
 import { UserDetailsUpdateWizardPathsModel } from '@user-update/model';
@@ -41,15 +46,16 @@ import {
 import {
   clearDeleteFileName,
   enterDeleteFileWizard,
-} from '@registry-web/delete-file/wizard/actions/delete-file.actions';
-import { selectFileName } from '@registry-web/delete-file/wizard/reducers';
+} from '@delete-file/wizard/actions/delete-file.actions';
+import { selectFileName } from '@delete-file/wizard/reducers';
 import { navigateToUserProfile } from '@shared/shared.action';
 import { GoBackNavigationExtras } from '@shared/back-button';
 import {
   selectGoBackToListNavigationExtras,
   selectGoBackToListRoute,
 } from '@shared/shared.selector';
-import { recoveryMethodsActions } from '@registry-web/user-management/recovery-methods-change/store/recovery-methods-change.actions';
+import { recoveryMethodsActions } from '@user-management/recovery-methods-change/store/recovery-methods-change.actions';
+import { UserAgentInfo } from '@user-agent/model';
 
 @Component({
   selector: 'app-user-details-container',
@@ -69,6 +75,8 @@ export class UserDetailsContainerComponent implements OnInit {
   userHistory$: Observable<DomainEvent[]>;
   hasUserDetailsPendingTask$: Observable<boolean>;
   fileDeleted$: Observable<string>;
+  agentDetailsUpdated$: Observable<boolean>;
+  crcDetailsUpdated$: Observable<boolean>;
   initiatorUrid$: Observable<string>;
   deletedFile: FileDetails;
 
@@ -98,6 +106,20 @@ export class UserDetailsContainerComponent implements OnInit {
     this.fileDeleted$ = this.store.select(selectFileName);
     // show banner for 3 seconds
     setTimeout(() => this.store.dispatch(clearDeleteFileName()), 3000);
+
+    this.agentDetailsUpdated$ = this.store.select(selectAgentDetailsUpdated);
+    // show banner for 3 seconds
+    setTimeout(
+      () => this.store.dispatch(UserDetailsActions.clearAgentDetailsUpdated()),
+      3000
+    );
+
+    this.crcDetailsUpdated$ = this.store.select(selectCrcDetailsUpdated);
+    // show banner for 3 seconds
+    setTimeout(
+      () => this.store.dispatch(UserDetailsActions.clearCrcDetailsUpdated()),
+      3000
+    );
 
     this.viewMode = this.route.snapshot.url
       .map((s) => s.path)
@@ -155,6 +177,22 @@ export class UserDetailsContainerComponent implements OnInit {
           route: this.router.url,
         },
         urid,
+      })
+    );
+  }
+
+  startAgentChangeWizard(urid: string) {
+    this.store.dispatch(
+      UserDetailsActions.navigateTo({
+        route: `/user-details/${urid}/agent`,
+      })
+    );
+  }
+
+  startCrcChangeWizard(urid: string) {
+    this.store.dispatch(
+      UserDetailsActions.navigateTo({
+        route: `/user-details/${urid}/crc`,
       })
     );
   }

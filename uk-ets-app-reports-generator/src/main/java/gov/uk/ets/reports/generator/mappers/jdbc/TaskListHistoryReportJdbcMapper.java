@@ -7,6 +7,7 @@ import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -45,7 +46,10 @@ public class TaskListHistoryReportJdbcMapper
             "a.registry_account_type as account_type,\n" +
             "a.identifier as account_number,\n" +
             "case when u.known_as is null or u.known_as = '' then concat(u.first_name, ' ', u.last_name) else u.known_as end as user,\n" +
-            "u.urid as user_uid\n" +
+            "u.urid as user_uid,\n" +
+            "case when u.crc = true then 'Yes' else 'No' end as crc,\n" +
+            "u.crc_issuance_date as crc_issuance_date,\n" +
+            "u.agent as agent\n" +
             "FROM public.task as t\n" +
             "left join account a on a.id = t.account_id\n" +
             "left join users u on u.id = t.user_id\n" +
@@ -119,6 +123,10 @@ public class TaskListHistoryReportJdbcMapper
                 .accountNumber(rs.getString("account_number"))
                 .user(rs.getString("user"))
                 .userUid(rs.getString("user_uid"))
+                .crc(rs.getString("crc"))
+                .crcIssuanceDate(rs.getString("crc_issuance_date") != null ?
+                        LocalDateTime.parse(rs.getString("crc_issuance_date"), inputFormatter) : null)
+                .agent(rs.getString("agent"))
                 .build();
     }
 }

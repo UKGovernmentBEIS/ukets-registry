@@ -47,6 +47,20 @@
       <th
         scope="col"
         class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_AGENT)"
+      >
+        Agent
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_CRC)"
+      >
+        CRC
+      </th>
+      <th
+        scope="col"
+        class="govuk-table__header"
         *ngFor="let customColumn of customColumns"
       >
         {{ customColumn.columnName }}
@@ -153,6 +167,33 @@
         >
           {{ userStatusMap[authorisedRep.user.status]?.label }}
         </app-govuk-tag>
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_AGENT)"
+      >
+        @if (authorisedRep.user?.status !== 'REGISTERED') {
+          {{ AGENT_TYPE_LABELS[authorisedRep.user?.agent || 'NO'].label }}
+        }
+      </td>
+      <td
+        class="govuk-table__cell"
+        *ngIf="displayedColumns.includes(authRepTableColumns.USER_CRC)"
+      >
+        @if (authorisedRep.user?.status !== 'REGISTERED') {
+          {{ CRC_LABELS[authorisedRep.user?.crc].label }}
+          @if (authorisedRep.user?.crc) {
+            (Issuance date:
+            {{
+              authorisedRep.user?.crcIssuanceDate &&
+              authorisedRep.user?.crcIssuanceDate.length > 0
+                ? (authorisedRep.user?.crcIssuanceDate
+                  | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00'
+                  | gdsDateShort)
+                : 'Not available'
+            }})
+          }
+        }
       </td>
       <td class="govuk-table__cell" *ngFor="let customColumn of customColumns">
         {{ customColumn.columnValues[i] }}

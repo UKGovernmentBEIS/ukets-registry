@@ -33,8 +33,12 @@ import {
   RequestType,
   TaskOutcome,
 } from '@shared/task-and-regulator-notice-management/model';
-import { selectUrid } from '@user-management/user-details/store/reducers';
+import {
+  selectGoBackRoute,
+  selectUrid,
+} from '@user-management/user-details/store/reducers';
 import { TaskDetailsApiActions } from '@task-details/actions';
+import { concatLatestFrom } from '@ngrx/operators';
 
 @Injectable()
 export class UserDetailsEffect {
@@ -50,7 +54,7 @@ export class UserDetailsEffect {
   refreshCachedUserDetails$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TaskDetailsApiActions.completeTaskWithApprovalSuccess),
-      withLatestFrom(this.store.pipe(select(selectUrid))),
+      concatLatestFrom(() => this.store.select(selectUrid)),
       filter(([action, currentUrid]) => {
         return (
           (action.taskCompleteResponse?.taskDetailsDTO?.taskType ===
@@ -104,7 +108,7 @@ export class UserDetailsEffect {
   prepareNavigationToUserDetails$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(UserDetailsActions.prepareNavigationToUserDetails),
-      withLatestFrom(this.store.pipe(select(selectUrid))),
+      concatLatestFrom(() => this.store.select(selectUrid)),
       concatMap(([action, currentUrid]) => {
         // in case the user is trying to access the my profile page,
         // the urid for all requests should be the current logged in urid.
@@ -117,8 +121,18 @@ export class UserDetailsEffect {
           retrieveUserHistory(action),
           retrieveUserFiles(action),
           retrieveEnrolmentKeyDetails(action),
-          canGoBack({ goBackRoute: action.backRoute }),
+          //canGoBack({ goBackRoute: action.backRoute }),
         ];
+      })
+    );
+  });
+
+  prepareGoBackRoute$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(UserDetailsActions.retrieveUserSuccess),
+      concatLatestFrom(() => this.store.select(selectGoBackRoute)),
+      concatMap(([, goBackRoute]) => {
+        return [canGoBack({ goBackRoute })];
       })
     );
   });

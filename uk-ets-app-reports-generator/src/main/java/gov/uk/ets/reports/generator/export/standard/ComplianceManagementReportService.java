@@ -40,6 +40,7 @@ public class ComplianceManagementReportService implements ReportTypeService<Comp
         data.add(reportData.getOperatorId());
         data.add(reportData.getPermitOrMonitoringPlanId());
         data.add(reportData.getAccountHolderName());
+        data.add(reportData.getInstallationName());
         data.add(reportData.getAccountName());
         data.add(reportData.getAccountType());
         data.add(reportData.getAccountOpeningDate());
@@ -98,6 +99,7 @@ public class ComplianceManagementReportService implements ReportTypeService<Comp
             "Operator ID",
             "Permit/Monitoring Plan ID",
             "Account Holder Name",
+            "Installation Name",
             "Account Name",
             "Account Type",
             "Account Opening Date (UTC)",

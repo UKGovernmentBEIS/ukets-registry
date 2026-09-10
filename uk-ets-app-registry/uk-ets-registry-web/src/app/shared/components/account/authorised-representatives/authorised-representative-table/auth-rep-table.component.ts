@@ -8,7 +8,8 @@ import { userStatusMap } from '@shared/user';
 import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-documents-origin';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
 import { AuthorisedRepresentativesUpdateType } from '@authorised-representatives/model';
-import { authorisedRepresentativesData } from '../../../../../../stories/test-data';
+import { AGENT_TYPE_LABELS } from '@user-management/user-details/model';
+import { CRC_LABELS } from '@user-management/user-details/model/crc.model';
 
 @Component({
   selector: 'app-shared-authorised-representative-table',
@@ -44,6 +45,8 @@ export class AuthRepTableComponent {
   authRepTableColumns = AuthRepTableColumns;
   accountAccessStateMap = accountAccessStateMap;
   userStatusMap = userStatusMap;
+  AGENT_TYPE_LABELS = AGENT_TYPE_LABELS;
+  CRC_LABELS = CRC_LABELS;
 
   onUserRequestDocuments(recipientName: string, recipientUrid: string) {
     if (this.updateType && this.showRequestDocumentButton) {

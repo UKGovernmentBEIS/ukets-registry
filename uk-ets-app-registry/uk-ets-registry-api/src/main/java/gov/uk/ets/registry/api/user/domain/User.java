@@ -3,12 +3,6 @@ package gov.uk.ets.registry.api.user.domain;
 import gov.uk.ets.registry.api.auditevent.DomainObject;
 import gov.uk.ets.registry.api.common.model.services.converter.StringTrimConverter;
 import gov.uk.ets.registry.api.task.domain.Task;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -25,6 +19,13 @@ import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -117,6 +118,51 @@ public class User implements Serializable, DomainObject {
      */
     @Column(name = "enrolment_key_date")
     private Date enrolmentKeyDate;
+
+    /**
+     * The agent type.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "agent")
+    private AgentType agent;
+
+    /**
+     * The agent company name.
+     */
+    @Column(name = "agent_company_name")
+    private String agentCompanyName;
+
+    /**
+     * The agent email address.
+     */
+    @Convert(converter = StringTrimConverter.class)
+    @Column(name = "agent_email_address")
+    private String agentEmailAddress;
+
+    /**
+     * The agent phone number.
+     */
+    @Convert(converter = StringTrimConverter.class)
+    @Column(name = "agent_phone_number")
+    private String agentPhoneNumber;
+
+    /**
+     * The agent country code of phone number.
+     */
+    @Column(name = "agent_phone_number_country_code")
+    private String agentPhoneNumberCountryCode;
+
+    /**
+     * The criminal record check.
+     */
+    @Column(name = "crc")
+    private Boolean crc;
+
+    /**
+     * The criminal record check issuance date.
+     */
+    @Column(name = "crc_issuance_date")
+    private Date crcIssuanceDate;
 
     /**
      * The requests.

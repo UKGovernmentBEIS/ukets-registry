@@ -37,5 +37,12 @@ export interface KeycloakUser {
     recoveryPhoneNumber?: string[];
     recoveryEmailAddress?: string[];
     hideRecoveryMethodsNotification?: string[];
+    agent: string[];
+    agentCompanyName: string[];
+    agentEmailAddress: string[];
+    agentCountryCode: string[];
+    agentPhoneNumber: string[];
+    crc: string[];
+    crcIssuanceDate?: string[];
   };
 }

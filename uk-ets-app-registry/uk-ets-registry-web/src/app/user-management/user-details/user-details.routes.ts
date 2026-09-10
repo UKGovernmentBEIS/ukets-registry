@@ -3,22 +3,34 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { UserDetailsContainerComponent } from './components';
 import { UserStatusContainerComponent } from '@user-management/user-details/user-status/components/user-status-container/user-status-container.component';
-import { UserHeaderGuard } from '@user-management/guards';
 import { UserDetailsUpdateContainerComponent } from '@user-update/component/user-details-update';
 import { UserDetailsUpdateWizardPathsModel } from '@user-update/model';
 import { ClearUpdateUserDetailsGuard } from '@user-update/guards';
 import { UserStatusActionTypesGuard } from '@user-management/user-details/user-status/guards';
+import { UserAgentFormContainerComponent } from '@user-agent/components';
+import { clearUserAgentDetailsGuard } from '@user-agent/guards';
+import { initUserAgentDetailsResolver } from '@user-agent/resolvers';
+import { initUserDetailsResolver } from '@user-management/user-details/resolvers';
+import { UserCrcFormContainerComponent } from '@user-crc/components';
+import { initUserCrcDetailsResolver } from '@user-crc/resolvers';
+import { clearUserCrcDetailsGuard } from '@user-crc/guards';
 
 export const routes: Routes = [
   {
     path: 'my-profile',
-    canActivate: [LoginGuard, UserHeaderGuard],
+    canActivate: [LoginGuard],
     component: UserDetailsContainerComponent,
+    resolve: {
+      header: initUserDetailsResolver,
+    },
   },
   {
     path: ':urid',
-    canActivate: [LoginGuard, UserHeaderGuard],
+    canActivate: [LoginGuard],
     component: UserDetailsContainerComponent,
+    resolve: {
+      header: initUserDetailsResolver,
+    },
   },
   {
     path: '',
@@ -27,7 +39,6 @@ export const routes: Routes = [
     children: [
       {
         path: `:urid/${UserDetailsUpdateWizardPathsModel.BASE_PATH}`,
-        canActivate: [UserHeaderGuard],
         canDeactivate: [ClearUpdateUserDetailsGuard],
         loadChildren: () =>
           import(
@@ -43,12 +54,45 @@ export const routes: Routes = [
     children: [
       {
         path: ':urid/status',
-        canActivate: [UserHeaderGuard],
         canDeactivate: [UserStatusActionTypesGuard],
         loadChildren: () =>
           import('./user-status/user-status.module').then(
             (m) => m.UserStatusModule
           ),
+      },
+    ],
+  },
+  {
+    path: '',
+    canActivate: [LoginGuard],
+    component: UserAgentFormContainerComponent,
+    children: [
+      {
+        path: ':urid/agent',
+        canDeactivate: [clearUserAgentDetailsGuard],
+        resolve: {
+          userAgentDetails: initUserAgentDetailsResolver,
+        },
+        loadChildren: () =>
+          import('./user-agent/user-agent.module').then(
+            (m) => m.UserAgentModule
+          ),
+      },
+    ],
+  },
+  {
+    path: '',
+    canActivate: [LoginGuard],
+    component: UserCrcFormContainerComponent,
+    children: [
+      {
+        path: ':urid/crc',
+        canDeactivate: [clearUserCrcDetailsGuard],
+        resolve: {
+          userCrcDetails: initUserCrcDetailsResolver,
+        },
+        loadChildren: () =>
+          import('./user-crc/user-crc.module').then((m) => m.UserCrcModule),
       },
     ],
   },

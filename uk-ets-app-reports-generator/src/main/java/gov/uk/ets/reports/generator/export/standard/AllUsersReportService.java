@@ -56,6 +56,9 @@ public class AllUsersReportService implements ReportTypeService<AllUsersReportDa
         data.add(reportData.getKeycloakUser().getWorkPostCode());
         data.add(reportData.getKeycloakUser().getWorkTownOrCity());
         data.add(reportData.getKeycloakUser().getWorkStateOrProvince());
+        data.add(reportData.getKeycloakUser().getCrc());
+        data.add(reportData.getKeycloakUser().getCrcIssuanceDate());
+        data.add(reportData.getKeycloakUser().getAgent());
         return data;
     }
 
@@ -92,7 +95,10 @@ public class AllUsersReportService implements ReportTypeService<AllUsersReportDa
             "Work Address Line 3",
             "Work Postal Code or ZIP",
             "Work Town Or City",
-            "Work State Or Province"
+            "Work State Or Province",
+            "CRC",
+            "CRC Issue Date",
+            "Agent"
         );
     }
 

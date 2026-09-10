@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AccountSummaryComponent } from '@shared/components/transactions/account-summary/account-summary.component';
 import {
   RequestType,
@@ -13,7 +12,7 @@ import {
   AuthRepContactComponent,
   AuthRepTableComponent,
 } from '@shared/components/account/authorised-representatives';
-import { AccessRightsPipe } from '@shared/pipes';
+import { AccessRightsPipe, GdsDateShortPipe } from '@shared/pipes';
 import { AuthorisedRepresentativesUpdateTaskDetailsComponent } from '@task-details/components/authorise-representative-update';
 import { AuthorisedRepresentativesUpdateType } from '@authorised-representatives/model';
 import { PhoneNumberComponent } from '@shared/components/phone-number/phone-number.component';
@@ -22,7 +21,8 @@ import { MockProtectPipe } from '../../../../../testing/mock-protect.pipe';
 import { GovukTagComponent } from '@shared/govuk-components/govuk-tag';
 import { User } from '@shared/user';
 import { taskDetailsBase } from '@shared/task-and-regulator-notice-management/model/task-details.model.spec';
-import { ArDisplayNamePipe } from '@registry-web/shared/pipes/ar-display-name.pipe';
+import { ArDisplayNamePipe } from '@shared/pipes/ar-display-name.pipe';
+import { provideRouter } from '@angular/router';
 
 describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {
   let component: AuthorisedRepresentativesUpdateTaskDetailsComponent;
@@ -30,7 +30,8 @@ describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule, RouterTestingModule],
+      imports: [CommonModule],
+      providers: [provideRouter([])],
       declarations: [
         AuthorisedRepresentativesUpdateTaskDetailsComponent,
         AuthRepContactComponent,
@@ -44,6 +45,7 @@ describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {
         AccessRightsPipe,
         MockProtectPipe,
         ArDisplayNamePipe,
+        GdsDateShortPipe,
       ],
     }).compileComponents();
   }));
@@ -113,7 +115,7 @@ describe('AuthoriseRepresentativesUpdateTaskDetailsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  test('should create', () => {
     expect(component).toBeTruthy();
   });
 });

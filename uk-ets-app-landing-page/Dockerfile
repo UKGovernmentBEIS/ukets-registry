@@ -1,12 +1,7 @@
-FROM nginx:1.30
-ENV XAUTH $HOME/.Xauthority
+FROM nginx:1.30-alpine
 
-#RUN export 'http_proxy=http://153.89.205.10:8080' ;apt-get update
-RUN apt-get update
-RUN apt-get install -y apache2-utils
+RUN rm /etc/nginx/conf.d/default.conf /etc/nginx/nginx.conf
 
-RUN rm /etc/nginx/conf.d/default.conf
-RUN rm /etc/nginx/nginx.conf
 COPY confs/nginx.conf /etc/nginx/nginx.conf
 COPY confs/page.conf /etc/nginx/conf.d/page.conf
 
@@ -24,24 +19,16 @@ COPY uk-ets-landing-page-web /usr/share/nginx
 
 # serving /landing/
 COPY uk-ets-landing-page-web /usr/share/nginx/landing
-COPY resources/css /usr/share/nginx/landing/css
-COPY resources/img /usr/share/nginx/landing/img
-COPY resources/js /usr/share/nginx/landing/js
+COPY resources /usr/share/nginx/landing
 
 # serving /privacy/
 COPY uk-ets-privacy-page-web /usr/share/nginx/privacy
-COPY resources/css /usr/share/nginx/privacy/css
-COPY resources/img /usr/share/nginx/privacy/img
-COPY resources/js /usr/share/nginx/privacy/js
+COPY resources /usr/share/nginx/privacy
 
 # serving /accessibility/
 COPY uk-ets-accessibility-page-web /usr/share/nginx/accessibility
-COPY resources/css /usr/share/nginx/accessibility/css
-COPY resources/img /usr/share/nginx/accessibility/img
-COPY resources/js /usr/share/nginx/accessibility/js
+COPY resources /usr/share/nginx/accessibility
 
 # serving /contact-us/
 COPY uk-ets-contact-page-web /usr/share/nginx/contact-us
-COPY resources/css /usr/share/nginx/contact/css
-COPY resources/img /usr/share/nginx/contact/img
-COPY resources/js /usr/share/nginx/contact/js
+COPY resources /usr/share/nginx/contact

@@ -289,6 +289,7 @@ public class ComplianceManagementReportJdbcMapper
             .operatorId(rs.getLong("identifier"))
             .permitOrMonitoringPlanId(rs.getString("permit_or_monitoring_plan_id"))
             .accountHolderName(rs.getString("ah_name"))
+            .installationName(rs.getString("installation_name"))
             .accountName(rs.getString("account_name"))
             .accountType(rs.getString("account_type"))
             .accountOpeningDate(formatLocalDateTime(parseDate(rs.getString("account_opening_date"))))

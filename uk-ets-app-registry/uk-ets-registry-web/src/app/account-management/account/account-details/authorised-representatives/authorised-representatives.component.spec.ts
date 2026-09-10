@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import {
   AccessRightsPipe,
   AuthorisedRepresentativeUpdateTypePipe,
+  GdsDateShortPipe,
   ProtectPipe,
 } from '@shared/pipes';
 import { AuthApiService } from '@registry-web/auth/auth-api.service';
@@ -21,7 +22,7 @@ import { ARAccessRights } from '@shared/model/account';
 import { PhoneNumberComponent } from '@shared/components/phone-number/phone-number.component';
 import { ThreeLineAddressComponent } from '@shared/components/three-line-address/three-line-address.component';
 import { AuthorisedRepresentativesUpdateType } from '@authorised-representatives/model';
-import { ArDisplayNamePipe } from '@registry-web/shared/pipes/ar-display-name.pipe';
+import { ArDisplayNamePipe } from '@shared/pipes/ar-display-name.pipe';
 
 describe('AuthorisedRepresentativesComponent', () => {
   let component: AuthorisedRepresentativesComponent;
@@ -45,6 +46,7 @@ describe('AuthorisedRepresentativesComponent', () => {
         PhoneNumberComponent,
         ThreeLineAddressComponent,
         ArDisplayNamePipe,
+        GdsDateShortPipe,
       ],
       providers: [
         { provide: AuthApiService, useValue: MockAuthApiService },
@@ -101,6 +103,8 @@ describe('AuthorisedRepresentativesComponent', () => {
           state: 'REGISTERED',
           status: 'REGISTERED',
           memorablePhrase: '',
+          agent: 'NO',
+          crc: 'false',
         } as User,
         contact: {
           city: '',
@@ -125,7 +129,7 @@ describe('AuthorisedRepresentativesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  test('should create', () => {
     expect(component).toBeTruthy();
   });
 });

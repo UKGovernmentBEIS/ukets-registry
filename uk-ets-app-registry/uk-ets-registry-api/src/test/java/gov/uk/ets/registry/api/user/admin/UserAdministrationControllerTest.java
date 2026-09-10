@@ -2,6 +2,8 @@ package gov.uk.ets.registry.api.user.admin;
 
 import gov.uk.ets.registry.api.user.admin.service.AuthorityAdministrationService;
 import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
+import gov.uk.ets.registry.api.user.admin.web.model.UserAgentUpdateDTO;
+import gov.uk.ets.registry.api.user.admin.web.model.UserCRCUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsUpdateDTO;
 import gov.uk.ets.registry.api.user.service.UserService;
@@ -11,7 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -157,5 +162,35 @@ class UserAdministrationControllerTest {
         //then
         then(userService).should(times(1)).submitMajorUserDetailsUpdateRequest(urid, dto);
         then(userService).should(times(0)).submitMinorUserDetailsUpdateRequest(urid, dto);
+    }
+
+    @Test
+    @DisplayName("Update user agent")
+    void updateUserAgent() {
+        // given
+        String urid = "test-urid";
+        UserAgentUpdateDTO agentUpdateDTO = new UserAgentUpdateDTO();
+
+        // when
+        ResponseEntity<Void> response = controller.updateUserAgent(urid, agentUpdateDTO);
+
+        // then
+        then(userService).should(times(1)).updateUserAgent(eq(urid), eq(agentUpdateDTO));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    @DisplayName("Update user criminal record check")
+    void updateUserCRC() {
+        // given
+        String urid = "test-urid";
+        UserCRCUpdateDTO crcUpdateDTO = new UserCRCUpdateDTO();
+
+        // when
+        ResponseEntity<Void> response = controller.updateUserCRC(urid, crcUpdateDTO);
+
+        // then
+        then(userService).should(times(1)).updateUserCRC(eq(urid), eq(crcUpdateDTO));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }

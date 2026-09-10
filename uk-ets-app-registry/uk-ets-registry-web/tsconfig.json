@@ -37,6 +37,8 @@
         "src/app/user-management/user-details/user-details-update-wizard/*"
       ],
       "@email-change/*": ["src/app/user-management/email-change/*"],
+      "@user-agent/*": ["src/app/user-management/user-details/user-agent/*"],
+      "@user-crc/*": ["src/app/user-management/user-details/user-crc/*"],
       "@password-change/*": ["src/app/user-management/password-change/*"],
       "@trusted-account-list/*": [
         "src/app/account-management/account/trusted-account-list/*"

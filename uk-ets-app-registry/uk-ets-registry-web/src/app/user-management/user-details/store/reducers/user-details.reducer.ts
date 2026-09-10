@@ -5,6 +5,8 @@ import { KeycloakUser } from '@shared/user/keycloak-user';
 import { ArInAccount, EnrolmentKey } from '@user-management/user-details/model';
 import { DomainEvent } from '@shared/model/event';
 import { FileDetails } from '@shared/model/file/file-details.model';
+import { UserAgentActions } from '@user-agent/store';
+import { UserCrcActions } from '../../user-crc/store';
 
 export const userDetailsFeatureKey = 'userDetails';
 
@@ -16,6 +18,9 @@ export interface UserDetailsState {
   enrolmentKeyDetails: EnrolmentKey;
   userDetailsLoaded: boolean;
   hasUserDetailsUpdatePendingApproval: boolean;
+  agentDetailsUpdated: boolean;
+  crcDetailsUpdated: boolean;
+  goBackRoute: string;
 }
 
 export const initialState: UserDetailsState = {
@@ -57,6 +62,13 @@ export const initialState: UserDetailsState = {
       recoveryPhoneNumber: null,
       recoveryEmailAddress: null,
       hideRecoveryMethodsNotification: null,
+      agent: null,
+      agentCompanyName: null,
+      agentEmailAddress: null,
+      agentCountryCode: null,
+      agentPhoneNumber: null,
+      crc: null,
+      crcIssuanceDate: null,
     },
   },
   ARs: null,
@@ -65,6 +77,9 @@ export const initialState: UserDetailsState = {
   enrolmentKeyDetails: null,
   userDetailsLoaded: false,
   hasUserDetailsUpdatePendingApproval: false,
+  agentDetailsUpdated: false,
+  crcDetailsUpdated: false,
+  goBackRoute: null,
 };
 
 const userDetailsReducer = createReducer(
@@ -106,7 +121,25 @@ const userDetailsReducer = createReducer(
       state.hasUserDetailsUpdatePendingApproval =
         hasUserDetailsUpdatePendingApproval;
     }
-  )
+  ),
+  mutableOn(
+    UserDetailsActions.prepareNavigationToUserDetails,
+    (state, { urid, backRoute }) => {
+      state.goBackRoute = backRoute;
+    }
+  ),
+  mutableOn(UserAgentActions.requestUserAgentUpdateSuccess, (state) => {
+    state.agentDetailsUpdated = true;
+  }),
+  mutableOn(UserDetailsActions.clearAgentDetailsUpdated, (state) => {
+    state.agentDetailsUpdated = false;
+  }),
+  mutableOn(UserCrcActions.requestUserCrcUpdateSuccess, (state) => {
+    state.crcDetailsUpdated = true;
+  }),
+  mutableOn(UserDetailsActions.clearCrcDetailsUpdated, (state) => {
+    state.crcDetailsUpdated = false;
+  })
 );
 
 export function reducer(state: UserDetailsState | undefined, action: Action) {

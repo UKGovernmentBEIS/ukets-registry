@@ -15,7 +15,6 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { UserStatusEffects } from './store/effects';
 import { UserDetailService } from '@user-management/service';
-import { UserHeaderGuard } from '@user-management/guards/user-header.guard';
 import { UserStatusPipe } from './pipes/user-status.pipe';
 import { UserStatusContainerComponent } from './components/user-status-container/user-status-container.component';
 import { UserDetailsModule } from '@user-management/user-details/user-details.module';
@@ -41,7 +40,7 @@ import { UserDetailsModule } from '@user-management/user-details/user-details.mo
     EffectsModule.forFeature([UserStatusEffects]),
     UserDetailsModule,
   ],
-  providers: [UserDetailService, UserHeaderGuard],
+  providers: [UserDetailService],
   exports: [UserStatusPipe],
 })
 export class UserStatusModule {}

@@ -435,6 +435,21 @@
       ]
     },
     {
+      "name": "User Resource - Public Service Agent and CRC provision",
+      "ownerManagedAccess": false,
+      "displayName": "User Resource - Public Service Agent and CRC provision",
+      "attributes": {},
+      "uris": [
+        "/api-registry/admin/users.update.agent",
+        "/api-registry/admin/users.update.crc"
+      ],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+        }
+      ]
+    },
+    {
       "name": "Account Status Change Resource",
       "ownerManagedAccess": false,
       "displayName": "Account Status Change Resource",

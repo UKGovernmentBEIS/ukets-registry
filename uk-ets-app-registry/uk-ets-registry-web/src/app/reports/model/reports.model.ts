@@ -100,6 +100,8 @@ export enum ReportType {
   R0049 = 'R0049',
   R0050 = 'R0050',
   R0051 = 'R0051',
+  R0052 = 'R0052',
+  R0053 = 'R0053',
 }
 
 export const SEFYearOptions: Option[] = [
@@ -813,6 +815,20 @@ export const reportTypeMap: Record<ReportType, ReportTypeValue> = {
       },
     ],
     order: 47,
+  },
+  [ReportType.R0052]: {
+    label: 'Regulator Notices',
+    summary:
+      'A list of notices issued by regulators to operators, including the notice type, date and regulator.',
+    isStandard: true,
+    order: 48,
+  },
+  [ReportType.R0053]: {
+    label: 'UK ETS Service Agents',
+    summary:
+      'A list of agents who can provide the services of administering registry accounts on behalf of operators.',
+    isStandard: true,
+    order: 49,
   },
 };
 

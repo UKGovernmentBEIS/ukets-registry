@@ -54,4 +54,5 @@ public enum MigratorName {
     
     ACCOUNT_TRANSFER_EMITTER_ID_MIGRATOR,
 
+    USER_AGENT_CRC_MIGRATOR,
 }

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { UserDetailsRoutingModule } from './user-details.routes';
 import { UserDetailsEffect } from './store/effects';
 import * as fromUserDetails from './store/reducers';
-import { UserHeaderGuard } from '@user-management/guards/user-header.guard';
 import { UserDetailService } from '@user-management/service';
 import { RequestDocumentsModule } from '@request-documents/request-documents.module';
 import { ExportFileService } from '@shared/export-file/export-file.service';
@@ -15,6 +14,7 @@ import {
   RegistrationDetailsComponent,
   UserDetailsComponent,
   UserDetailsContainerComponent,
+  UserSummaryComponent,
   WorkContactDetailsComponent,
 } from '@user-management/user-details/components';
 import { CommonModule } from '@angular/common';
@@ -40,6 +40,7 @@ import { RecoveryMethodsChangeModule } from '../recovery-methods-change/recovery
     ArInAccountsContainerComponent,
     UserDetailsComponent,
     UserDetailsContainerComponent,
+    UserSummaryComponent,
     UserHeaderComponent,
   ],
   imports: [
@@ -62,7 +63,6 @@ import { RecoveryMethodsChangeModule } from '../recovery-methods-change/recovery
   providers: [
     UserDetailService,
     ExportFileService,
-    UserHeaderGuard,
     KeycloakUserDisplayNamePipe,
   ],
 })

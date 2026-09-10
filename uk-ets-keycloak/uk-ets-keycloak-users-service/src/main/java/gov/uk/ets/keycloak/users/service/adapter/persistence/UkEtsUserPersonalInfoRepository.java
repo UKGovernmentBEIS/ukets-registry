@@ -32,7 +32,10 @@ public class UkEtsUserPersonalInfoRepository implements UserPersonalInfoReposito
     private static final QUserAttributeEntity recoveryPhoneNumberAttribute = new QUserAttributeEntity("recoveryPhoneNumber");
     private static final QUserAttributeEntity recoveryEmailAddressAttribute = new QUserAttributeEntity("recoveryEmailAddress");
     private static final QUserAttributeEntity hideRecoveryMethodsNotificationAttribute = new QUserAttributeEntity("hideRecoveryMethodsNotification");
-
+    private static final QUserAttributeEntity agentAttribute = new QUserAttributeEntity("agent");
+    private static final QUserAttributeEntity crcAttribute = new QUserAttributeEntity("crc");
+    private static final QUserAttributeEntity crcIssuanceDateAttribute = new QUserAttributeEntity("crcIssuanceDate");
+    
     private final EntityManager entityManager;
     private final QUserPersonalInfo userPersonalInfo;
 
@@ -61,6 +64,9 @@ public class UkEtsUserPersonalInfoRepository implements UserPersonalInfoReposito
             recoveryPhoneNumberAttribute.value,
             recoveryEmailAddressAttribute.value,
             hideRecoveryMethodsNotificationAttribute.value,
+            agentAttribute.value,
+            crcAttribute.value,
+            crcIssuanceDateAttribute.value,
             userEntity.email
         );
     }
@@ -109,6 +115,12 @@ public class UkEtsUserPersonalInfoRepository implements UserPersonalInfoReposito
             .on(recoveryEmailAddressAttribute.name.eq(Constants.RECOVERY_EMAIL_ADDRESS))
             .leftJoin(userEntity.attributes, hideRecoveryMethodsNotificationAttribute)
             .on(hideRecoveryMethodsNotificationAttribute.name.eq(Constants.HIDE_RECOVERY_METHODS_NOTIFICATION))
+            .leftJoin(userEntity.attributes, agentAttribute)
+            .on(agentAttribute.name.eq(Constants.AGENT))
+            .leftJoin(userEntity.attributes, crcAttribute)
+            .on(crcAttribute.name.eq(Constants.CRC))
+            .leftJoin(userEntity.attributes, crcIssuanceDateAttribute)
+            .on(crcIssuanceDateAttribute.name.eq(Constants.CRC_ISSUANCE_DATE))
             .distinct().fetch();
     }
 }

@@ -50,4 +50,15 @@ public class SchedulerHelper {
 
         return new LockConfiguration(createdAt, shedlockName, lockAtMostFor, lockAtLeastFor);
     }
+    
+    /**
+     * Creates a new LockConfiguration named with the provided arguments.
+     */
+    public LockConfiguration createLockConfiguration(String shedlockName,long lockAtMostForMinutes,long lockAtLeastForMinutes) {
+        Instant createdAt = Instant.now();
+        Duration lockAtMostFor = Duration.ofMinutes(lockAtMostForMinutes);
+        Duration lockAtLeastFor = Duration.ofMinutes(lockAtLeastForMinutes);
+
+        return new LockConfiguration(createdAt, shedlockName, lockAtMostFor, lockAtLeastFor);
+    }
 }

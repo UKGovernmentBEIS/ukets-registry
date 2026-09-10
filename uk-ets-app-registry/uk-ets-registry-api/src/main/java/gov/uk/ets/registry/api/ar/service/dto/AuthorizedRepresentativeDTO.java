@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Data transfer object that describes an Authorised Representative
+ * Data transfer object that describes an Authorised Representative.
  */
 @Getter
 @Builder

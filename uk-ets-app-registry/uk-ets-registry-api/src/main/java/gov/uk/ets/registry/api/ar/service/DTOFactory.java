@@ -8,11 +8,13 @@ import gov.uk.ets.registry.api.ar.service.dto.ARUpdateActionDTO;
 import gov.uk.ets.registry.api.ar.service.dto.AuthorizedRepresentativeDTO;
 import gov.uk.ets.registry.api.ar.service.dto.WorkContactDetailsDTO;
 import gov.uk.ets.registry.api.user.UserDTO;
+import gov.uk.ets.registry.api.user.domain.AgentType;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserWorkContact;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -57,6 +59,9 @@ public class DTOFactory {
                 .lastName(userWorkContact.getLastName())
                 .alsoKnownAs(userWorkContact.getAlsoKnownAs())
                 .status(accountAccess.getUser().getState())
+                .agent(AgentType.valueOf(Optional.ofNullable(userWorkContact.getAgent()).orElse(AgentType.NO.toString())))
+                .crc(Boolean.valueOf(Optional.ofNullable(userWorkContact.getCrc()).orElse("false")))
+                .crcIssuanceDate(userWorkContact.getCrcIssuanceDate())
                 .build())
             .contact(getWorkContactDetailsDTO(userWorkContact))
             .build();
@@ -100,6 +105,9 @@ public class DTOFactory {
                 .lastName(userWorkContact.getLastName())
                 .alsoKnownAs(userWorkContact.getAlsoKnownAs())
                 .status(user.getState())
+                .agent(AgentType.valueOf(Optional.ofNullable(userWorkContact.getAgent()).orElse(AgentType.NO.toString())))
+                .crc(Boolean.valueOf(Optional.ofNullable(userWorkContact.getCrc()).orElse("false")))
+                .crcIssuanceDate(userWorkContact.getCrcIssuanceDate())
                 .build())
             .contact(getWorkContactDetailsDTO(userWorkContact))
             .build();

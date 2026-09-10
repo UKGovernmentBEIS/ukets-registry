@@ -1,5 +1,9 @@
 package gov.uk.ets.registry.api.user;
 
+import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
+import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.file.upload.domain.UploadedFile;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.domain.UserFile;
 import gov.uk.ets.registry.api.file.upload.types.FileStatus;
@@ -172,5 +176,108 @@ public class UserRepositoryTest {
                 UserRole.JUNIOR_REGISTRY_ADMINISTRATOR.getKeycloakLiteral());
         assertThat(results).extracting(UserRoleDetails::getStatus).containsOnly(UserStatus.ENROLLED);
 
+    }
+
+    @Test
+    public void test_findUsersByStatusAndActiveAccountAccessRights() {
+
+        Account account1 = new Account();
+        account1.setAccountName("Account One");
+        entityManager.persist(account1);
+
+        Account account2 = new Account();
+        account2.setAccountName("Account Two");
+        entityManager.persist(account2);
+
+        User matchingUser = new User();
+        matchingUser.setUrid("UK10001");
+        matchingUser.setState(UserStatus.ENROLLED);
+        entityManager.persist(matchingUser);
+
+        User wrongRightUser = new User();
+        wrongRightUser.setUrid("UK10002");
+        wrongRightUser.setState(UserStatus.ENROLLED);
+        entityManager.persist(wrongRightUser);
+
+        User inactiveAccessUser = new User();
+        inactiveAccessUser.setUrid("UK10003");
+        inactiveAccessUser.setState(UserStatus.ENROLLED);
+        entityManager.persist(inactiveAccessUser);
+
+        User wrongStatusUser = new User();
+        wrongStatusUser.setUrid("UK10004");
+        wrongStatusUser.setState(UserStatus.REGISTERED);
+        entityManager.persist(wrongStatusUser);
+
+        User multiAccessUser = new User();
+        multiAccessUser.setUrid("UK10005");
+        multiAccessUser.setState(UserStatus.ENROLLED);
+        entityManager.persist(multiAccessUser);
+
+        AccountAccess matchingAccess = new AccountAccess();
+        matchingAccess.setUser(matchingUser);
+        matchingAccess.setAccount(account1);
+        matchingAccess.setState(AccountAccessState.ACTIVE);
+        matchingAccess.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        entityManager.persist(matchingAccess);
+
+        AccountAccess wrongRightAccess = new AccountAccess();
+        wrongRightAccess.setUser(wrongRightUser);
+        wrongRightAccess.setAccount(account1);
+        wrongRightAccess.setState(AccountAccessState.ACTIVE);
+        wrongRightAccess.setRight(AccountAccessRight.READ_ONLY);
+        entityManager.persist(wrongRightAccess);
+
+        AccountAccess inactiveAccess = new AccountAccess();
+        inactiveAccess.setUser(inactiveAccessUser);
+        inactiveAccess.setAccount(account1);
+        inactiveAccess.setState(AccountAccessState.REMOVED);
+        inactiveAccess.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        entityManager.persist(inactiveAccess);
+
+        AccountAccess wrongStatusAccess = new AccountAccess();
+        wrongStatusAccess.setUser(wrongStatusUser);
+        wrongStatusAccess.setAccount(account1);
+        wrongStatusAccess.setState(AccountAccessState.ACTIVE);
+        wrongStatusAccess.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        entityManager.persist(wrongStatusAccess);
+
+        AccountAccess multiAccessValid = new AccountAccess();
+        multiAccessValid.setUser(multiAccessUser);
+        multiAccessValid.setAccount(account1);
+        multiAccessValid.setState(AccountAccessState.ACTIVE);
+        multiAccessValid.setRight(AccountAccessRight.INITIATE_AND_APPROVE);
+        entityManager.persist(multiAccessValid);
+
+        AccountAccess multiAccessInvalid = new AccountAccess();
+        multiAccessInvalid.setUser(multiAccessUser);
+        multiAccessInvalid.setAccount(account2);
+        multiAccessInvalid.setState(AccountAccessState.ACTIVE);
+        multiAccessInvalid.setRight(AccountAccessRight.READ_ONLY);
+        entityManager.persist(multiAccessInvalid);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        List<User> results = userRepository.findUsersByStatusAndActiveAccountAccessRights(
+                List.of(UserStatus.ENROLLED),
+                List.of(AccountAccessRight.INITIATE_AND_APPROVE)
+        );
+
+        assertThat(results).extracting(User::getUrid)
+                .containsExactlyInAnyOrder("UK10001", "UK10005");
+
+        assertThat(results).hasSize(2);
+    }
+
+    @Test
+    public void test_findUsersByStatusAndActiveAccountAccessRights_noMatches() {
+
+        List<User> results = userRepository.findUsersByStatusAndActiveAccountAccessRights(
+                List.of(UserStatus.ENROLLED),
+                List.of(AccountAccessRight.INITIATE_AND_APPROVE)
+        );
+
+        assertThat(results).isEmpty();
     }
 }

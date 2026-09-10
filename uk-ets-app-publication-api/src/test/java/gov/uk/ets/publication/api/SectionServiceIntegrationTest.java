@@ -119,7 +119,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         int allSectionsCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "section");
         assertThat(allSectionsCount).isEqualTo(4);
         assertThat(sections).hasSize(2);
-        assertThat(sections).extracting(SectionDto::getId).containsOnly(16L, 17L);
+        assertThat(sections).extracting(SectionDto::getId).containsOnly(17L, 18L);
         assertThat(sections).extracting(SectionDto::getTitle).containsOnly(TEST_TITLE_1, TEST_TITLE_2);
         assertThat(sections).extracting(SectionDto::getSummary).containsOnly(TEST_SUMMARY_1, TEST_SUMMARY_2);
         assertThat(sections).extracting(SectionDto::getReportType).containsOnly(ReportType.R0008, ReportType.R0009);
@@ -133,7 +133,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         int allSectionsCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "section");
         assertThat(allSectionsCount).isEqualTo(4);
         assertThat(sections).hasSize(2);
-        assertThat(sections).extracting(SectionDto::getId).containsOnly(18L, 19L);
+        assertThat(sections).extracting(SectionDto::getId).containsOnly(19L, 20L);
         assertThat(sections).extracting(SectionDto::getTitle).containsOnly(TEST_TITLE_1, TEST_TITLE_2);
         assertThat(sections).extracting(SectionDto::getSummary).containsOnly(TEST_SUMMARY_1, TEST_SUMMARY_2);
         assertThat(sections).extracting(SectionDto::getReportType).containsOnly(ReportType.R0010, ReportType.R0011);
@@ -148,9 +148,9 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @Test
     @Order(4)
     public void shouldRetrieveSectionDetails() {
-        SectionDto section = sectionService.getSection(17L);
+        SectionDto section = sectionService.getSection(18L);
 
-        assertThat(section).extracting(SectionDto::getId).isEqualTo(17L);
+        assertThat(section).extracting(SectionDto::getId).isEqualTo(18L);
         assertThat(section).extracting(SectionDto::getTitle).isEqualTo(TEST_TITLE_2);
         assertThat(section).extracting(SectionDto::getSummary).isEqualTo(TEST_SUMMARY_2);
         assertThat(section).extracting(SectionDto::getReportType).isEqualTo(ReportType.R0009);
@@ -171,7 +171,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         // new schedule
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE_PER_YEAR);
@@ -180,8 +180,8 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         request.setPublicationFrequency(PublicationFrequency.DAILY);
         request.setReportType(ReportType.R0044);
         sectionService.updateSection(request);
-        SectionDto section1 = sectionService.getSection(16L);
-        assertThat(section1).extracting(SectionDto::getId).isEqualTo(16L);
+        SectionDto section1 = sectionService.getSection(17L);
+        assertThat(section1).extracting(SectionDto::getId).isEqualTo(17L);
         assertThat(section1).extracting(SectionDto::getTitle).isEqualTo(UPDATED_TITLE);
         assertThat(section1).extracting(SectionDto::getSummary).isEqualTo(UPDATED_SUMMARY);
         assertThat(section1).extracting(SectionDto::getPublicationFrequency).isEqualTo(PublicationFrequency.DAILY);
@@ -194,8 +194,8 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         request.setEveryXDays(15);
         request.setReportType(ReportType.R0020);
         sectionService.updateSection(request);
-        SectionDto section2 = sectionService.getSection(16L);
-        assertThat(section2).extracting(SectionDto::getId).isEqualTo(16L);
+        SectionDto section2 = sectionService.getSection(17L);
+        assertThat(section2).extracting(SectionDto::getId).isEqualTo(17L);
         assertThat(section2).extracting(SectionDto::getPublicationFrequency).isEqualTo(PublicationFrequency.EVERY_X_DAYS);
         assertThat(section2).extracting(SectionDto::getEveryXDays).isEqualTo(15);
         assertThat(section2).extracting(SectionDto::getReportType).isEqualTo(ReportType.R0020); 
@@ -208,7 +208,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldUpdateSectionDetails_nextReportDateForNewSchedule() {
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE);
@@ -221,7 +221,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() 
                 -> new IllegalArgumentException("Section not found"));
         PublicationSchedule schedule = section.getPublicationSchedule();
-        assertThat(section).extracting(Section::getId).isEqualTo(16L);
+        assertThat(section).extracting(Section::getId).isEqualTo(17L);
         assertThat(schedule).extracting(PublicationSchedule::getPublicationFrequency).isEqualTo(PublicationFrequency.EVERY_X_DAYS);
         assertThat(schedule).extracting(PublicationSchedule::getEveryXDays).isEqualTo(15);
         LocalDateTime nextReportDate = schedule.getNextReportDate().truncatedTo(ChronoUnit.MINUTES);
@@ -234,7 +234,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldUpdateSectionDetails_nextReportDateDaily() {
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE);
@@ -247,7 +247,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() 
                 -> new IllegalArgumentException("Section not found"));
         PublicationSchedule schedule = section.getPublicationSchedule();
-        assertThat(section).extracting(Section::getId).isEqualTo(16L);
+        assertThat(section).extracting(Section::getId).isEqualTo(17L);
         assertThat(schedule).extracting(PublicationSchedule::getPublicationFrequency).isEqualTo(PublicationFrequency.DAILY);
         LocalDateTime nextReportDate = schedule.getNextReportDate().truncatedTo(ChronoUnit.MINUTES);
         // next report date should be today, two hours later
@@ -259,7 +259,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldUpdateSectionDetails_nextReportDateDaily2() {
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE);
@@ -272,7 +272,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() 
                 -> new IllegalArgumentException("Section not found"));
         PublicationSchedule schedule = section.getPublicationSchedule();
-        assertThat(section).extracting(Section::getId).isEqualTo(16L);
+        assertThat(section).extracting(Section::getId).isEqualTo(17L);
         assertThat(schedule).extracting(PublicationSchedule::getPublicationFrequency).isEqualTo(PublicationFrequency.DAILY);
         LocalDateTime nextReportDate = schedule.getNextReportDate().truncatedTo(ChronoUnit.MINUTES);
         // next report date should be tomorrow, two hours earlier
@@ -284,7 +284,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldUpdateSectionDetails_nextReportDateYearly() {
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE);
@@ -297,7 +297,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() 
                 -> new IllegalArgumentException("Section not found"));
         PublicationSchedule schedule = section.getPublicationSchedule();
-        assertThat(section).extracting(Section::getId).isEqualTo(16L);
+        assertThat(section).extracting(Section::getId).isEqualTo(17L);
         assertThat(schedule).extracting(PublicationSchedule::getPublicationFrequency).isEqualTo(PublicationFrequency.YEARLY);
         LocalDateTime nextReportDate = schedule.getNextReportDate().truncatedTo(ChronoUnit.MINUTES);
         
@@ -316,7 +316,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldUpdateSectionDetails_nextReportDateYearly2() {
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE);
@@ -329,7 +329,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() 
                 -> new IllegalArgumentException("Section not found"));
         PublicationSchedule schedule = section.getPublicationSchedule();
-        assertThat(section).extracting(Section::getId).isEqualTo(16L);
+        assertThat(section).extracting(Section::getId).isEqualTo(17L);
         assertThat(schedule).extracting(PublicationSchedule::getPublicationFrequency).isEqualTo(PublicationFrequency.YEARLY);
         LocalDateTime nextReportDate = schedule.getNextReportDate().truncatedTo(ChronoUnit.MINUTES);
         // next report date should be next year
@@ -341,7 +341,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldUpdateSectionDetails_nextReportDateEveryXDays() {
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE);
@@ -355,7 +355,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() 
                 -> new IllegalArgumentException("Section not found"));
         PublicationSchedule schedule = section.getPublicationSchedule();
-        assertThat(section).extracting(Section::getId).isEqualTo(16L);
+        assertThat(section).extracting(Section::getId).isEqualTo(17L);
         assertThat(schedule).extracting(PublicationSchedule::getPublicationFrequency).isEqualTo(PublicationFrequency.EVERY_X_DAYS);
         LocalDateTime nextReportDate = schedule.getNextReportDate().truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime startDate = now.getHour() == 23 
@@ -375,7 +375,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldUpdateSectionDetails_nextReportDateEveryXDays2() {
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE);
@@ -389,7 +389,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         Section section = sectionRepository.findById(request.getId()).orElseThrow(() 
                 -> new IllegalArgumentException("Section not found"));
         PublicationSchedule schedule = section.getPublicationSchedule();
-        assertThat(section).extracting(Section::getId).isEqualTo(16L);
+        assertThat(section).extracting(Section::getId).isEqualTo(17L);
         assertThat(schedule).extracting(PublicationSchedule::getPublicationFrequency).isEqualTo(PublicationFrequency.EVERY_X_DAYS);
         LocalDateTime nextReportDate = schedule.getNextReportDate().truncatedTo(ChronoUnit.MINUTES);
         if (now.getHour() == 00) {
@@ -407,7 +407,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         SortParameters sort = new SortParameters();
         sort.setSortDirection(Sort.Direction.DESC);
         sort.setSortField("fileName");
-        List<ReportFileDto> files = sectionService.getFiles(16L, sort);
+        List<ReportFileDto> files = sectionService.getFiles(17L, sort);
         
         int allSectionsCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "report_file");
         assertThat(allSectionsCount).isEqualTo(8);
@@ -438,7 +438,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         SortParameters sort = new SortParameters();
         sort.setSortDirection(Sort.Direction.DESC);
         sort.setSortField("fileName");
-        List<ReportFileDto> files = sectionService.getFiles(16L, sort);
+        List<ReportFileDto> files = sectionService.getFiles(17L, sort);
         assertThat(files).hasSize(1);
         assertThat(files).extracting(ReportFileDto::getApplicableForYear).containsOnly(2030);
         assertThat(files).extracting(ReportFileDto::getFileName).containsOnly(TEST_TITLE_2);
@@ -462,11 +462,11 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @Order(19)
     public void shouldFailToSubmitFile_sameNamePublishedInDifferentYear() {
         ReportFile newFile = new ReportFile();
-        newFile.setSection(sectionRepository.findById(17L).orElseThrow(()
+        newFile.setSection(sectionRepository.findById(18L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found")));
         newFile.setFileName(TEST_TITLE_2);
         ReportFile savedFile = reportFilesRepository.save(newFile);
-        FileInfoDto dto = new FileInfoDto(savedFile.getId(), TEST_TITLE_2, 2029, null, 17L);
+        FileInfoDto dto = new FileInfoDto(savedFile.getId(), TEST_TITLE_2, 2029, null, 18L);
         assertThrows(FileUploadException.class, () -> sectionService.submitFile(dto));
     }
     
@@ -474,17 +474,17 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @Order(20)
     public void shouldPublishFileAndUnpublishPrevious() {
         ReportFile newFile = new ReportFile();
-        newFile.setSection(sectionRepository.findById(17L).orElseThrow(()
+        newFile.setSection(sectionRepository.findById(18L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found")));
         newFile.setFileName(UPDATED_TITLE);
         ReportFile savedFile = reportFilesRepository.save(newFile);
-        FileInfoDto dto = new FileInfoDto(savedFile.getId(), UPDATED_TITLE, 2029, null, 17L);
+        FileInfoDto dto = new FileInfoDto(savedFile.getId(), UPDATED_TITLE, 2029, null, 18L);
         sectionService.submitFile(dto);
         // verify that published file is retrieved, and the previous file for 2029 is unpublished
         SortParameters sort = new SortParameters();
         sort.setSortDirection(Sort.Direction.DESC);
         sort.setSortField("fileName");
-        List<ReportFileDto> files = sectionService.getFiles(17L, sort);
+        List<ReportFileDto> files = sectionService.getFiles(18L, sort);
         assertThat(files).hasSize(2);
         assertThat(files).extracting(ReportFileDto::getApplicableForYear).containsOnly(2029, 2030);
         assertThat(files).extracting(ReportFileDto::getFileName).containsOnly(UPDATED_TITLE, TEST_TITLE_2); 
@@ -494,17 +494,17 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @Order(21)
     public void shouldPublishFileAndUnpublishPrevious_manyFiles() {
         ReportFile newFile = new ReportFile();
-        newFile.setSection(sectionRepository.findById(19L).orElseThrow(()
+        newFile.setSection(sectionRepository.findById(20L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found")));
         newFile.setFileName(MANY_FILES_UPDATED_TITLE);
         ReportFile savedFile = reportFilesRepository.save(newFile);
-        FileInfoDto dto = new FileInfoDto(savedFile.getId(), MANY_FILES_UPDATED_TITLE, 2021, null, 19L);
+        FileInfoDto dto = new FileInfoDto(savedFile.getId(), MANY_FILES_UPDATED_TITLE, 2021, null, 20L);
         sectionService.submitFile(dto);
         // unpublishing is determined based on filename, and both files have the same year,cp and version
         SortParameters sort = new SortParameters();
         sort.setSortDirection(Sort.Direction.DESC);
         sort.setSortField("fileName");
-        List<ReportFileDto> files = sectionService.getFiles(19L, sort);
+        List<ReportFileDto> files = sectionService.getFiles(20L, sort);
         assertThat(files).hasSize(2);
         assertThat(files).extracting(ReportFileDto::getFileName).containsOnly(MANY_FILES_UPDATED_TITLE, MANY_FILES_TITLE_2); 
     }
@@ -513,17 +513,17 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @Order(22)
     public void shouldPublishFile() {
         ReportFile newFile = new ReportFile();
-        newFile.setSection(sectionRepository.findById(18L).orElseThrow(()
+        newFile.setSection(sectionRepository.findById(19L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found")));
         newFile.setFileName(UPDATED_TITLE);
         ReportFile savedFile = reportFilesRepository.save(newFile);
-        FileInfoDto dto = new FileInfoDto(savedFile.getId(), UPDATED_TITLE, 2028, null, 18L);
+        FileInfoDto dto = new FileInfoDto(savedFile.getId(), UPDATED_TITLE, 2028, null, 19L);
         sectionService.submitFile(dto);
         // verify that published file is retrieved, and the previous file for 2029 is unpublished
         SortParameters sort = new SortParameters();
         sort.setSortDirection(Sort.Direction.DESC);
         sort.setSortField("fileName");
-        List<ReportFileDto> files = sectionService.getFiles(18L, sort);
+        List<ReportFileDto> files = sectionService.getFiles(19L, sort);
         assertThat(files).hasSize(3);
         assertThat(files).extracting(ReportFileDto::getApplicableForYear).containsOnly(2028, 2029, 2030);
         assertThat(files).extracting(ReportFileDto::getFileName).containsOnly(TEST_TITLE_1, TEST_TITLE_2, UPDATED_TITLE);      
@@ -582,7 +582,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     @Order(27)
     public void shouldProcessGeneratedReport_oneFile() {
         ReportFile newFile = new ReportFile();
-        newFile.setSection(sectionRepository.findById(16L).orElseThrow(()
+        newFile.setSection(sectionRepository.findById(17L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found")));
         newFile.setFileName(TEST_TITLE_1);
         ReportFile savedFile = reportFilesRepository.save(newFile);
@@ -605,14 +605,14 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         assertThat(updatedFile.getFileName()).isEqualTo("filename");
         assertThat(updatedFile.getFileSize()).isNotNull();
         // section should be in status published
-        Section section = sectionRepository.findById(16L).orElseThrow(()
+        Section section = sectionRepository.findById(17L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found"));
         assertThat(section.getStatus()).isEqualTo(SectionStatus.PUBLISHED);
         // any previously published files should be unpublished
         SortParameters sort = new SortParameters();
         sort.setSortDirection(Sort.Direction.DESC);
         sort.setSortField("fileName");
-        List<ReportFileDto> files = sectionService.getFiles(16L, sort);
+        List<ReportFileDto> files = sectionService.getFiles(17L, sort);
         assertThat(files).hasSize(1);
     }
     
@@ -621,14 +621,14 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
     public void shouldProcessGeneratedReport_oneFilePerYear() {
         // add two files with the same batch id
         ReportFile newFile1 = new ReportFile();
-        newFile1.setSection(sectionRepository.findById(18L).orElseThrow(()
+        newFile1.setSection(sectionRepository.findById(19L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found")));
         newFile1.setFileName(TEST_TITLE_1);
         newFile1.setApplicableForYear(2029);
         newFile1.setBatchId(BATCH_ID);
         ReportFile savedFile1 = reportFilesRepository.save(newFile1);
         ReportFile newFile2 = new ReportFile();
-        newFile2.setSection(sectionRepository.findById(18L).orElseThrow(()
+        newFile2.setSection(sectionRepository.findById(19L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found")));
         newFile2.setFileName(TEST_TITLE_1);
         newFile2.setApplicableForYear(2029);
@@ -657,7 +657,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         SortParameters sort = new SortParameters();
         sort.setSortDirection(Sort.Direction.DESC);
         sort.setSortField("fileName");
-        List<ReportFileDto> files = sectionService.getFiles(18L, sort);
+        List<ReportFileDto> files = sectionService.getFiles(19L, sort);
         assertThat(files).hasSize(3);
         
         // send event for second file in batch, batch should be published
@@ -680,11 +680,11 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         assertThat(updatedFile1.getFileName()).isEqualTo("filename");
         assertThat(updatedFile1.getFileSize()).isNotNull();
         // section should be in status published
-        Section updatedSection = sectionRepository.findById(18L).orElseThrow(()
+        Section updatedSection = sectionRepository.findById(19L).orElseThrow(()
                 -> new IllegalArgumentException("Section not found"));
         assertThat(updatedSection.getStatus()).isEqualTo(SectionStatus.PUBLISHED);
         // new files should be published and all previous ones unpublished
-        List<ReportFileDto> updatedFiles = sectionService.getFiles(18L, sort);
+        List<ReportFileDto> updatedFiles = sectionService.getFiles(19L, sort);
         assertThat(updatedFiles).hasSize(2);
     }
 
@@ -694,7 +694,7 @@ public class SectionServiceIntegrationTest extends BasePostgresFixture {
         // new schedule
         LocalDateTime now = LocalDateTime.now();
         SectionDto request = new SectionDto();
-        request.setId(16L);
+        request.setId(17L);
         request.setTitle(UPDATED_TITLE);
         request.setSummary(UPDATED_SUMMARY);
         request.setDisplayType(DisplayType.ONE_FILE_PER_YEAR);

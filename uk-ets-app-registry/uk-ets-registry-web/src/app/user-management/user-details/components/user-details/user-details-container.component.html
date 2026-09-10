@@ -20,6 +20,8 @@
   (downloadFileEmitter)="ondDownloadFile($event)"
   (deleteFileEmitter)="onDeleteFile($event)"
   (emailChange)="startEmailChangeWizard($event)"
+  (agentChange)="startAgentChangeWizard($event)"
+  (crcChange)="startCrcChangeWizard($event)"
   (tokenChange)="startTokenChangeWizard($event)"
   (passwordChange)="startPasswordChangeWizard($event)"
   (userDetailsUpdateEmitter)="goToUpdateUserDetails($event)"
@@ -32,6 +34,8 @@
   [isSeniorAdmin]="isSeniorAdmin$ | async"
   [initiatorUrid]="initiatorUrid$ | async"
   [fileDeleted]="fileDeleted$ | async"
+  [agentDetailsUpdated]="agentDetailsUpdated$ | async"
+  [crcDetailsUpdated]="crcDetailsUpdated$ | async"
   (navigate)="navigateToUserPage($event)"
   [isAdmin]="isAdmin$ | async"
 />

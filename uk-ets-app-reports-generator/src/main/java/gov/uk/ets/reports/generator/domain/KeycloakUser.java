@@ -43,5 +43,8 @@ public class KeycloakUser {
     private String workPostCode;
     private String workTownOrCity;
     private String workStateOrProvince;
+    private String crc;
+    private LocalDateTime crcIssuanceDate;
+    private String agent;
 
 }

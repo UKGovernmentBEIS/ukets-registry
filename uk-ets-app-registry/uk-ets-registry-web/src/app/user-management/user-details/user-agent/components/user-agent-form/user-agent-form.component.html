@@ -1,0 +1,89 @@
+<div appScreenReaderPageAnnounce pageTitle="Is this user an agent?"></div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Is this user an agent?</h1>
+    <form
+      (ngSubmit)="onContinue()"
+      [formGroup]="formGroup"
+      [appConnectForm]="_agentDetails"
+    >
+      <div class="govuk-fieldset" role="group">
+        <fieldset class="govuk-fieldset" role="group">
+          <fieldset class="govuk-fieldset govuk-!-margin-bottom-4">
+            <app-uk-radio-input
+              controlName="agentType"
+              [formRadioGroupInfo]="agentTypeRadioGroup()"
+              [validationErrorMessage]="this.validationErrorMessage.agentType"
+            />
+          </fieldset>
+          <ng-template #agentDetailsTemplate>
+            <div
+              formGroupName="agentDetails"
+              class="govuk-form-group"
+              [class.govuk-form-group--error]="showAgentDetailsError()"
+              id="agentDetails-label"
+            >
+              <!-- Agent company name -->
+              <div class="govuk-form-group">
+                <app-form-control-text
+                  [label]="'Company name'"
+                  [validationErrorMessage]="validationErrorMessage.companyName"
+                  [maxlength]="256"
+                  controlName="agentDetails.companyName"
+                />
+              </div>
+
+              <!-- Agent email -->
+              @if (showAgentDetailsError()) {
+                <p
+                  class="govuk-error-message"
+                  [attr.id]="'agentDetails-error-label'"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ validationErrorMessage.agentDetails }}
+                </p>
+              }
+              <div class="govuk-form-group">
+                <app-form-control-email
+                  class="govuk-!-margin-bottom-4"
+                  label="Contact e-mail address"
+                  [maxlength]="256"
+                  [validationErrorMessage]="validationErrorMessage.contactEmailAddress"
+                  controlName="agentDetails.contactEmailAddress"
+                />
+              </div>
+
+              <!-- Agent phone -->
+              @if (showAgentDetailsError()) {
+                <p
+                  class="govuk-error-message"
+                  [attr.id]="'salesContactDetails-error-label-2'"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ validationErrorMessage.salesContactDetails }}
+                </p>
+              }
+              <app-uk-phone-select
+                [phoneNumberLabel]="'Contact number'"
+                [phoneInfo]="_agentPhoneInfo"
+                [showErrors]="showErrors"
+                [countryCodes]="countryCodes"
+                [validationErrorMessages]="validationMessages.phone"
+                formControlName="phone"
+              />
+            </div>
+          </ng-template>
+        </fieldset>
+      </div>
+      <button
+        class="govuk-button"
+        data-module="govuk-button"
+        type="submit"
+        id="continue"
+      >
+        Continue
+      </button>
+    </form>
+  </div>
+</div>

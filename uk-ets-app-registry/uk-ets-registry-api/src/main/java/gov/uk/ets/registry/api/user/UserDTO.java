@@ -1,8 +1,11 @@
 package gov.uk.ets.registry.api.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import gov.uk.ets.registry.api.user.domain.AgentType;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
 import java.io.Serializable;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -108,4 +111,21 @@ public class UserDTO implements Serializable {
 
     @Email
     private String email;
+    
+    /**
+     * The agent type.
+     */
+    @Builder.Default
+    private AgentType agent = AgentType.NO;
+    
+    /**
+     * The crc.
+     */
+    @Builder.Default
+    private Boolean crc = false;
+    
+    /**
+     * The criminal record check issuance date.
+     */
+    private String crcIssuanceDate;
 }

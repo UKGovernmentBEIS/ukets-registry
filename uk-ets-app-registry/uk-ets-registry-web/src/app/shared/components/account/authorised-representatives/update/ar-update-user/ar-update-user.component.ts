@@ -34,6 +34,8 @@ export class ArUpdateUserComponent {
     AuthRepTableColumns.WORK_CONTACT,
     AuthRepTableColumns.AR_STATUS,
     AuthRepTableColumns.USER_STATUS,
+    AuthRepTableColumns.USER_AGENT,
+    AuthRepTableColumns.USER_CRC,
   ];
 
   updateTypes = AuthorisedRepresentativesUpdateType;

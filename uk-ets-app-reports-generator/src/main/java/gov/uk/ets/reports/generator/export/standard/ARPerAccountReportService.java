@@ -37,6 +37,9 @@ public class ARPerAccountReportService
         data.add(reportData.getUser().getFirstName());
         data.add(reportData.getUser().getLastName());
         data.add(reportData.getUser().getEmail());
+        data.add(reportData.getUser().getCrc());
+        data.add(reportData.getUser().getCrcIssuanceDate());
+        data.add(reportData.getUser().getAgent());
         data.add(reportData.getAccountAccess().getState());
         data.add(reportData.getAccountAccess().getAccessRights());
         return data;
@@ -46,8 +49,8 @@ public class ARPerAccountReportService
     public List<String> getReportHeaders(Long year) {
         return Stream
             .of("AH ID", "AH Name", "Account number", "Account name", "Account status",
-                "Account type", "User URID", "First name", "Last name", "Email", "AR status",
-                "Access rights").collect(Collectors.toList());
+                "Account type", "User URID", "First name", "Last name", "Email", "CRC", "CRC Issue Date", "Agent",
+                "AR status", "Access rights").collect(Collectors.toList());
     }
 
     @Override

@@ -63,8 +63,10 @@ public class KeycloakRestEndpointRepository<T> {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.set(HttpHeaders.AUTHORIZATION, "bearer " + token);
-        headers.set("X-Request-ID",
-                MDC.getMDCAdapter().get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase()));
+        String requestId = MDC.get(MDCWrapper.Attr.INTERACTION_IDENTIFIER.name().toLowerCase());
+        if (requestId != null) {
+            headers.set("X-Request-ID", requestId);
+        }
         return headers;
     }
 

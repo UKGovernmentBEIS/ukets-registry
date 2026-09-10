@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   AccessRightsPipe,
   AuthorisedRepresentativeUpdateTypePipe,
+  GdsDateShortPipe,
 } from '@shared/pipes';
 import { AuthRepContactComponent } from '@shared/components/account/authorised-representatives';
 import { PhoneNumberComponent } from '@shared/components/phone-number/phone-number.component';
@@ -18,24 +19,23 @@ describe('SelectRepresentativeTableComponent', () => {
   let component: SelectRepresentativeTableComponent;
   let fixture: ComponentFixture<SelectRepresentativeTableComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
-        declarations: [
-          SelectRepresentativeTableComponent,
-          AuthRepContactComponent,
-          PhoneNumberComponent,
-          ThreeLineAddressComponent,
-          AccessRightsPipe,
-          GovukTagComponent,
-          AuthorisedRepresentativeUpdateTypePipe,
-          ArDisplayNamePipe,
-        ],
-        providers: [{ provide: APP_BASE_HREF, useValue: '/' }],
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule, FormsModule, RouterModule.forRoot([])],
+      declarations: [
+        SelectRepresentativeTableComponent,
+        AuthRepContactComponent,
+        PhoneNumberComponent,
+        ThreeLineAddressComponent,
+        AccessRightsPipe,
+        GovukTagComponent,
+        AuthorisedRepresentativeUpdateTypePipe,
+        ArDisplayNamePipe,
+        GdsDateShortPipe,
+      ],
+      providers: [{ provide: APP_BASE_HREF, useValue: '/' }],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SelectRepresentativeTableComponent);
@@ -43,7 +43,7 @@ describe('SelectRepresentativeTableComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  test('should create', () => {
     expect(component).toBeTruthy();
   });
 });

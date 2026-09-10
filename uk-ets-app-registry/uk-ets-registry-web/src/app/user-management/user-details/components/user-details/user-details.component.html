@@ -2,6 +2,12 @@
   <app-banner [type]="BannerType.SUCCESS" *ngIf="fileDeleted">
     <span> {{ fileDeleted }} has been deleted </span>
   </app-banner>
+  <app-banner [type]="BannerType.SUCCESS" *ngIf="agentDetailsUpdated">
+    <span> The 'Agent' attribute has been updated </span>
+  </app-banner>
+  <app-banner [type]="BannerType.SUCCESS" *ngIf="crcDetailsUpdated">
+    <span> The 'CRC' attribute has been updated </span>
+  </app-banner>
 </div>
 <div class="govuk-width-container">
   <div class="govuk-grid-row">
@@ -62,23 +68,16 @@
           <span class="govuk-heading-l">{{
             user | keycloakUserDisplayName
           }}</span>
-          <dl class="govuk-summary-list govuk-summary-list--no-border">
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Last signed in</dt>
-              <dd class="govuk-summary-list__value">
-                {{
-                  user?.attributes?.lastLoginDate &&
-                  user.attributes.lastLoginDate.length > 0
-                    ? (user.attributes.lastLoginDate[0]
-                      | date: 'yyyy-MM-ddTHH:mm:ss.s+00:00'
-                      | gdsDateTimeShort)
-                    : 'Not available'
-                }}
-              </dd>
-            </div>
-          </dl>
+          <app-user-summary
+            [user]="user"
+            [isSeniorAdmin]="isSeniorAdmin"
+            [isSeniorOrJuniorAdmin]="isSeniorOrJuniorAdmin"
+            [currentViewMode]="currentViewMode"
+            (agentChange)="onAgentChange()"
+            (crcChange)="onCrcChange()"
+            *ngSwitchCase="'User details'"
+          />
         </div>
-
         <app-registration-details
           [user]="user"
           [isVisible]="isSeniorOrJuniorAdmin"

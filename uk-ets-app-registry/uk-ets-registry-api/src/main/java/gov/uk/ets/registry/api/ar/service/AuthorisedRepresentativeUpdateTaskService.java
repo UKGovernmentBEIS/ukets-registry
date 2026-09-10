@@ -15,6 +15,7 @@ import gov.uk.ets.registry.api.account.web.model.ContactDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateAction;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionType;
+import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.ARsCanBeOnlyNonSuspendedUser;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.AccountARsLimitShouldNotBeExceededRule;
@@ -43,19 +44,26 @@ import gov.uk.ets.registry.api.user.UserConversionService;
 import gov.uk.ets.registry.api.user.UserDTO;
 import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 import gov.uk.ets.registry.api.user.admin.service.UserStatusService;
+import gov.uk.ets.registry.api.user.domain.AgentType;
 import gov.uk.ets.registry.api.user.domain.User;
+import gov.uk.ets.registry.api.user.domain.UserAttributes;
 import gov.uk.ets.registry.api.user.service.UserService;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import jakarta.ws.rs.ClientErrorException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static gov.uk.ets.registry.api.task.domain.types.RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST;
+
 
 @Service
 @Log4j2
@@ -78,6 +86,7 @@ public class AuthorisedRepresentativeUpdateTaskService
     private final AccountClaimService accountClaimService;
     private final AccountContactService accountContactService;
     private final AccountClaimProcessor processor;
+    private final ServiceAccountAuthorizationService serviceAccountAuthorizationService;
 
     @Override
     public Set<RequestType> appliesFor() {
@@ -129,6 +138,7 @@ public class AuthorisedRepresentativeUpdateTaskService
         if (TaskOutcome.REJECTED.equals(taskOutcome) && taskDTO.getTaskType().equals(AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST)) {
             Account account = extractAccountEntity(taskDTO);
             triggerAccountClaim(taskDTO.getAccountInfo().getIdentifier(), account.getId(), false, account.getRegistryAccountType());
+            setUserAgentForAdditionReject(taskDTO.getNewUser().getUrid());
         }
 
         //UKETS-6528 Also complete child document subtasks
@@ -158,6 +168,7 @@ public class AuthorisedRepresentativeUpdateTaskService
                 setAccountAccessState(getARAccount(account, taskDTO.getCurrentUser().getUrid()),
                     AccountAccessState.REMOVED);
                 triggerAccountClaim(account.getIdentifier(), account.getId(), true, account.getRegistryAccountType());
+                setUserAgentForRemovalApprove(taskDTO.getCurrentUser().getUrid());
                 authorizedRepresentativeService
                     .removeKeycloakRoleIfNoOtherAccountAccess(taskDTO.getCurrentUser().getUrid(),
                         taskDTO.getCurrentUser().getUser().getKeycloakId());
@@ -250,6 +261,72 @@ public class AuthorisedRepresentativeUpdateTaskService
         );
 
         return  accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 1;
+    }
+
+    private void setUserAgentForRemovalApprove(String urid) {
+        User user = userService.getUserByUrid(urid);
+        final List<AccountAccess> accountAccesses = accountAccessRepository.findARsInAccountByUser(urid)
+                .stream()
+                .filter(access -> access.getState().equals(AccountAccessState.ACTIVE))
+                .toList();
+        final List<Task> pendingTasks = taskRepository.findPendingTasksByTypeAndUser(AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,urid);
+        if (accountAccesses.isEmpty() && pendingTasks.isEmpty()) {
+            updateUserAgent(user);
+            UserRepresentation userRepresentation = getKeycloakUser(user);
+            if (userRepresentation != null) {
+                updateAgentAttributes(userRepresentation);
+            }
+        }
+    }
+
+    private void setUserAgentForAdditionReject(String urid) {
+        User user = userService.getUserByUrid(urid);
+        final List<AccountAccess> accountAccesses = accountAccessRepository.findARsInAccountByUser(urid)
+                .stream()
+                .filter(access -> access.getState().equals(AccountAccessState.ACTIVE))
+                .toList();
+        final List<Task> pendingTasks = taskRepository.findPendingTasksByTypeAndUser(AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST,urid);
+        if (accountAccesses.isEmpty() && pendingTasks.size() == 1) {
+            updateUserAgent(user);
+            UserRepresentation userRepresentation = getKeycloakUser(user);
+            if (userRepresentation != null) {
+                updateAgentAttributes(userRepresentation);
+            }
+        }
+    }
+
+    private UserRepresentation getKeycloakUser(User user) {
+        try {
+            return serviceAccountAuthorizationService.getUser(user.getIamIdentifier());
+        } catch (ClientErrorException e) {
+            log.warn(
+                    "Could not retrieve Keycloak user. urid: {}, iamIdentifier: {}",
+                    user.getUrid(),
+                    user.getIamIdentifier(),
+                    e
+            );
+        }
+        return null;
+    }
+
+    private void updateAgentAttributes(UserRepresentation userRepresentation) {
+
+        Map<String, List<String>> attributes = userRepresentation.getAttributes();
+        attributes.put(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT.getAttributeName(), List.of(AgentType.NO.name()));
+        userRepresentation.getAttributes().remove(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_COMPANY_NAME.getAttributeName());
+        userRepresentation.getAttributes().remove(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_EMAIL.getAttributeName());
+        userRepresentation.getAttributes().remove(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_COUNTRY_CODE.getAttributeName());
+        userRepresentation.getAttributes().remove(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_PHONE_NUMBER.getAttributeName());
+
+        serviceAccountAuthorizationService.updateUserDetails(userRepresentation);
+    }
+
+    private void updateUserAgent(User user) {
+        user.setAgent(AgentType.NO);
+        user.setAgentCompanyName(null);
+        user.setAgentEmailAddress(null);
+        user.setAgentPhoneNumberCountryCode(null);
+        user.setAgentPhoneNumber(null);
     }
 
 

@@ -356,7 +356,11 @@ public class UserRegistrationService {
 		//Mark user as registered
 		userRepresentation.getAttributes().remove(UserAttributes.REGISTRATION_IN_PROGRESS.getName(), Arrays.asList(Boolean.TRUE.toString()));
 		userRepresentation.getAttributes().put(UserAttributes.REGISTERED_ON_DATE.getName(),
-			List.of(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)));
+				List.of(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)));
+		userRepresentation.getAttributes().put(UserAttributes.AGENT.getName(),
+				List.of("NO"));
+		userRepresentation.getAttributes().put(UserAttributes.CRC.getName(),
+				List.of(Boolean.FALSE.toString()));
 		update(userRepresentation);
 
 		return userRepresentation;

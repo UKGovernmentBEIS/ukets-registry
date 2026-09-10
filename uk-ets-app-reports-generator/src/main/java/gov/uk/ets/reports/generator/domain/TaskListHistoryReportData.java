@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @SuperBuilder
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -33,4 +35,7 @@ public class TaskListHistoryReportData extends ReportData {
     private String accountNumber;
     private String user;
     private String userUid;
+    private String crc;
+    private LocalDateTime crcIssuanceDate;
+    private String agent;
 }

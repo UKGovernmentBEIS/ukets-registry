@@ -1,7 +1,13 @@
 package gov.uk.ets.registry.api.user;
 
-import gov.uk.ets.registry.api.user.domain.User;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
+
+import gov.uk.ets.registry.api.user.domain.User;
 
 /**
  * Converts user management entities to transfer objects and vice versa.
@@ -22,6 +28,13 @@ public class UserConversionService {
         result.setFirstName(user.getFirstName());
         result.setLastName(user.getLastName());
         result.setAlsoKnownAs(user.getKnownAs());
+        result.setAgent(user.getAgent());
+        result.setCrc(user.getCrc());
+        if (Objects.nonNull(user.getCrcIssuanceDate())) {
+            OffsetDateTime crcIssuanceDate = OffsetDateTime.ofInstant(user.getCrcIssuanceDate().toInstant(), ZoneOffset.UTC);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SXXX");
+            result.setCrcIssuanceDate(crcIssuanceDate.format(formatter));
+        }
         return result;
     }
 

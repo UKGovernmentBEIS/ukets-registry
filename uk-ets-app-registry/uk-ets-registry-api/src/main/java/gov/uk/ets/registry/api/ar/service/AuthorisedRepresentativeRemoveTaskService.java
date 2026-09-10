@@ -5,6 +5,7 @@ import gov.uk.ets.registry.api.account.service.AccountClaimProcessor;
 import gov.uk.ets.registry.api.account.service.AccountClaimService;
 import gov.uk.ets.registry.api.account.service.AccountContactService;
 import gov.uk.ets.registry.api.account.service.AccountService;
+import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.authz.ruleengine.Protected;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.claim.SeniorAdminCanClaimTaskInitiatedByAdminRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.FourEyesPrincipleRule;
@@ -44,10 +45,14 @@ public class AuthorisedRepresentativeRemoveTaskService extends AuthorisedReprese
                                                      PaymentTaskAutoCompletionService paymentTaskAutoCompletionService,
                                                      AccountClaimService accountClaimService,
                                                      AccountContactService accountContactService,
-                                                     AccountClaimProcessor accountClaimProcessor) {
-        super(accountService, userConversionService, userAdministrationService, accountAccessRepository, userService,
-            taskRepository, authorizedRepresentativeService, userStateService, requestedDocsTaskService, mapper,taskARStatusRepository,paymentTaskAutoCompletionService,
-                accountClaimService, accountContactService, accountClaimProcessor);
+                                                     AccountClaimProcessor accountClaimProcessor,
+                                                     ServiceAccountAuthorizationService accountAuthorizationService) {
+
+        super(accountService, userConversionService, userAdministrationService, accountAccessRepository,
+                userService, taskRepository, authorizedRepresentativeService,
+                userStateService, requestedDocsTaskService, mapper,taskARStatusRepository,paymentTaskAutoCompletionService,
+                accountClaimService, accountContactService,
+                accountClaimProcessor, accountAuthorizationService);
     }
 
     @Override

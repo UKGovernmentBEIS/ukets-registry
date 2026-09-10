@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+    <changeSet id="5_33_0_ADD_SERVICE_AGENT_AND_CRC_TO_USER" author="dimopoulosc" context="migrate">
+        <comment>Add Service agent and CRC columns to users table</comment>
+        <sql>
+            ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "agent" VARCHAR(256) DEFAULT NULL;
+            ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "agent_company_name" VARCHAR(256) DEFAULT NULL;
+            ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "agent_email_address" VARCHAR(256) DEFAULT NULL;
+            ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "agent_phone_number" VARCHAR(256) DEFAULT NULL;
+            ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "agent_phone_number_country_code" VARCHAR(10) DEFAULT NULL;
+            ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "crc" BOOLEAN DEFAULT false;
+            ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "crc_issuance_date" TIMESTAMP DEFAULT NULL;
+
+            COMMENT ON COLUMN "users"."agent" IS 'Indicates if a user is a public agent, private agent or he is not an agent.';
+            COMMENT ON COLUMN "users"."agent_company_name" IS 'The agent company name.';
+            COMMENT ON COLUMN "users"."agent_email_address" IS 'The agent email address.';
+            COMMENT ON COLUMN "users"."agent_phone_number" IS 'The agent phone number.';
+            COMMENT ON COLUMN "users"."agent_phone_number_country_code" IS 'The agent phone number country code.';
+            COMMENT ON COLUMN "users"."crc" IS 'Indicates if the user has provided a criminal record check.';
+            COMMENT ON COLUMN "users"."crc_issuance_date" IS 'The criminal record check issuance date.';
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "users" DROP COLUMN IF EXISTS "agent";
+                ALTER TABLE "users" DROP COLUMN IF EXISTS "agent_company_name";
+                ALTER TABLE "users" DROP COLUMN IF EXISTS "agent_email_address";
+                ALTER TABLE "users" DROP COLUMN IF EXISTS "agent_phone_number";
+                ALTER TABLE "users" DROP COLUMN IF EXISTS "agent_phone_number_country_code";
+                ALTER TABLE "users" DROP COLUMN IF EXISTS "crc";
+                ALTER TABLE "users" DROP COLUMN IF EXISTS "crc_issuance_date";
+            </sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

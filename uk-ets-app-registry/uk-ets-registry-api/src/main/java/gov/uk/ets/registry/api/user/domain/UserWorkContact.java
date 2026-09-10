@@ -96,4 +96,16 @@ public class UserWorkContact {
      * The reason for not providing a mobile phone number
      */
     private String noMobilePhoneNumberReason;
+    /**
+     * The agent type.
+     */
+    private String agent;
+    /**
+     * If the user has submitted a criminal record.
+     */
+    private String crc;
+    /**
+     * Date of crc issuance.
+     */
+    private String crcIssuanceDate;
 }

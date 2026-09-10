@@ -1,6 +1,11 @@
 package gov.uk.ets.reports.generator.keycloak;
 
 import gov.uk.ets.reports.generator.domain.KeycloakUser;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -11,10 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +92,10 @@ public class KeycloakDbService {
             "       ua_wbaso2.value       as workBuildingAndStreetOptional2,\n" +
             "       ua_wpc.value          as workPostCode,\n" +
             "       ua_wtoc.value         as workTownOrCity, \n" +
-            "       ua_wsop.value         as workStateOrProvince\n" +
+            "       ua_wsop.value         as workStateOrProvince,\n" +
+            "       ua_crc.value          as crc,\n" +
+            "       ua_crcid.value        as crcIssuanceDate,\n" +
+            "       ua_agent.value        as agent\n" +
             "from user_entity ue\n" +
             "         left join user_attribute ua_urid on ue.id = ua_urid.user_id\n" +
             "    and ua_urid.name = 'urid'\n" +
@@ -145,6 +149,12 @@ public class KeycloakDbService {
             "    and ua_wtoc.name = 'workTownOrCity'\n" +
             "         left join user_attribute ua_wsop on ue.id = ua_wsop.user_id\n" +
             "    and ua_wsop.name = 'workStateOrProvince'\n" +
+            "         left join user_attribute ua_crc on ue.id = ua_crc.user_id\n" +
+            "    and ua_crc.name = 'crc'\n" +
+            "         left join user_attribute ua_crcid on ue.id = ua_crcid.user_id\n" +
+            "    and ua_crcid.name = 'crcIssuanceDate'\n" +
+            "         left join user_attribute ua_agent on ue.id = ua_agent.user_id\n" +
+            "    and ua_agent.name = 'agent'\n" +
             "where ua_urid.value is not null\n" +
             "order by urid;\n";
 
@@ -192,6 +202,10 @@ public class KeycloakDbService {
                 .workPostCode(rs.getString("workPostCode"))
                 .workTownOrCity(rs.getString("workTownOrCity"))
                 .workStateOrProvince(rs.getString("workStateOrProvince"))
+                .crc("true".equalsIgnoreCase(rs.getString("crc")) ? "Yes" : "No")
+                .crcIssuanceDate(rs.getString("crcIssuanceDate") != null ?
+                    LocalDateTime.parse(rs.getString("crcIssuanceDate")) : null)
+                .agent(rs.getString("agent"))
                 .build();
         }
     }

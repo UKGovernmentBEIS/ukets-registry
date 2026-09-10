@@ -16,6 +16,11 @@ export const areUserDetailsLoaded = createSelector(
   (state) => state.userDetailsLoaded
 );
 
+export const selectGoBackRoute = createSelector(
+  selectUserDetailsState,
+  (state) => state.goBackRoute
+);
+
 export const selectUserDetails = createSelector(
   selectUserDetailsState,
   (state) => state.userDetails
@@ -70,4 +75,14 @@ export const selectUserDetailsEmail = createSelector(
 export const selectUserDetailsPendingTasks = createSelector(
   selectUserDetailsState,
   (state) => state.hasUserDetailsUpdatePendingApproval
+);
+
+export const selectAgentDetailsUpdated = createSelector(
+  selectUserDetailsState,
+  (state) => state.agentDetailsUpdated
+);
+
+export const selectCrcDetailsUpdated = createSelector(
+  selectUserDetailsState,
+  (state) => state.crcDetailsUpdated
 );

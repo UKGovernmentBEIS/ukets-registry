@@ -11,6 +11,7 @@ import {
 import { KeycloakUser } from '@shared/user/keycloak-user';
 import * as SharedUtil from '@shared/shared.util';
 import {
+  AgentType,
   ArInAccount,
   EnrolmentKey,
   UserDetailsSideMenu,
@@ -20,8 +21,8 @@ import {
 import { FileDetails } from '@shared/model/file/file-details.model';
 import { DomainEvent } from '@shared/model/event';
 import { KeycloakUserDisplayNamePipe } from '@shared/pipes';
-import { BannerType } from '@registry-web/shared/banner/banner-type.enum';
-import { ActivatedRoute } from '@angular/router';
+import { BannerType } from '@shared/banner/banner-type.enum';
+import { UserAgentInfo } from '@user-agent/model';
 
 @Component({
   selector: 'app-user-details',
@@ -40,6 +41,8 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
   @Input() isSeniorAdmin: boolean;
   @Input() initiatorUrid: string;
   @Input() fileDeleted: string;
+  @Input() agentDetailsUpdated: boolean;
+  @Input() crcDetailsUpdated: boolean;
   @Input() isAdmin: boolean;
 
   canDeleteFile: boolean;
@@ -64,6 +67,8 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
     workMobilePhoneNumber: string;
   }>();
   @Output() readonly removeRecoveryPhone = new EventEmitter<void>();
+  @Output() readonly agentChange = new EventEmitter<string>();
+  @Output() readonly crcChange = new EventEmitter<string>();
 
   @ViewChild('recoveryMethods') targetElement: ElementRef;
 
@@ -119,6 +124,14 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
       file: $event,
       urid: this.user.attributes.urid[0],
     });
+  }
+
+  onAgentChange() {
+    this.agentChange.emit(this.user.attributes.urid[0]);
+  }
+
+  onCrcChange() {
+    this.crcChange.emit(this.user.attributes.urid[0]);
   }
 
   onEmailChange() {

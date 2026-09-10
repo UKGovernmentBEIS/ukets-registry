@@ -7,6 +7,8 @@ import { AuthorisedRepresentativesUpdateType } from '@authorised-representatives
 import { UkFormComponent } from '@shared/form-controls/uk-form.component';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { userStatusMap } from '@shared/user';
+import { AGENT_TYPE_LABELS } from '@user-management/user-details/model';
+import { CRC_LABELS } from '@user-management/user-details/model/crc.model';
 
 @Component({
   selector: 'app-select-representative-table',
@@ -27,6 +29,8 @@ export class SelectRepresentativeTableComponent
 
   accountAccessStateMap = accountAccessStateMap;
   userStatusMap = userStatusMap;
+  AGENT_TYPE_LABELS = AGENT_TYPE_LABELS;
+  CRC_LABELS = CRC_LABELS;
 
   constructor(protected formBuilder: UntypedFormBuilder) {
     super();

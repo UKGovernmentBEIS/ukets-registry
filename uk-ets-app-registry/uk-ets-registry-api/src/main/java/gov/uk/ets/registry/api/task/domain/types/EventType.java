@@ -81,6 +81,8 @@ public enum EventType {
     USER_MINOR_DETAILS_UPDATED(User.class),
     USER_RECOVERY_METHOD_UPDATED(User.class),
     USER_RECOVERY_METHOD_DELETED(User.class),
+    USER_CHANGE_AGENT(User.class),
+    USER_CHANGE_CRC(User.class),
     /**
      * NAP UploadedFile related.
      */

@@ -7,6 +7,7 @@ import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -51,8 +52,11 @@ public class TaskListCurrentReportJdbcMapper
         " a.compliance_status as dynamic_surrender_status,\n" +
         " case when u.known_as <> '' then u.known_as else concat_ws(' ', u.first_name, u.last_name) end as user,\n" +
         " u.urid as user_id,\n" +
-        " u.state as status\n" +
+        " u.state as status,\n" +
         " -- last_signed_id is populated using the KeycloakDbService at service layer\n" +
+        " case when u.crc = true then 'Yes' else 'No' end as crc,\n" +
+        " u.crc_issuance_date as crc_issuance_date,\n" +
+        " u.agent as agent\n" +
         " from task t \n" +
         " join users ui on t.initiated_by = ui.id \n" +
         " left join users uc on t.claimed_by = uc.id\n" +
@@ -69,12 +73,12 @@ public class TaskListCurrentReportJdbcMapper
         " ) uif on uif.user_id = t.initiated_by\n" +
         " -- User's task\n" +
         " left join lateral (\n" +
-        "  SELECT uu.id, uu.urid, uu.known_as, uu.first_name, uu.last_name, uu.state, count(1) as num_of_tasks\n" +
+        "  SELECT uu.id, uu.urid, uu.known_as, uu.first_name, uu.last_name, uu.state, count(1) as num_of_tasks, uu.crc, uu.crc_issuance_date, uu.agent\n" +
         "  from task_search_metadata tsm \n" +
         "  join task tt on tsm.task_id = tt.id\n" +
         "  join users uu on uu.urid = SUBSTRING(tsm.metadata_value, 0, POSITION(',' in tsm.metadata_value))\n" +
         "  where tsm.metadata_name = 'USER_ID_NAME_KNOWN_AS' and tt.status = 'SUBMITTED_NOT_YET_APPROVED'\n" +
-        "  group by uu.id, uu.urid, uu.known_as, uu.first_name, uu.last_name, uu.state" +
+        "  group by uu.id, uu.urid, uu.known_as, uu.first_name, uu.last_name, uu.state, uu.crc, uu.crc_issuance_date, uu.agent" +
         " ) u on t.user_id = u.id\n" +
         " -- AR nominations\n" +
         " left join lateral (\n" +
@@ -184,6 +188,10 @@ public class TaskListCurrentReportJdbcMapper
             .user(rs.getString("user"))
             .userID(rs.getString("user_id"))
             .status(rs.getString("status"))
+            .crc(rs.getString("crc"))
+            .crcIssuanceDate(rs.getString("crc_issuance_date") != null ?
+                LocalDateTime.parse(rs.getString("crc_issuance_date"), inputFormatter) : null)
+            .agent(rs.getString("agent"))
             .build();
     }
 

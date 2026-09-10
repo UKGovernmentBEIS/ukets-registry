@@ -1,10 +1,7 @@
-FROM nginx:1.30
-ENV XAUTH $HOME/.Xauthority
+FROM nginx:1.30-alpine
 
-RUN apt-get update
-RUN apt-get install -y apache2-utils
-RUN rm /etc/nginx/conf.d/default.conf
-RUN rm /etc/nginx/nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf /etc/nginx/nginx.conf
+
 COPY confs/nginx.conf /etc/nginx/nginx.conf
 COPY confs/page.conf /etc/nginx/conf.d/page.conf
 
@@ -32,6 +29,4 @@ COPY uk-ets-app-digital-dashboard-web/resources /usr/share/nginx/resources
 COPY uk-ets-app-digital-dashboard-web/resources /usr/share/nginx/assets
 COPY uk-ets-app-digital-dashboard-web/resources/img /usr/share/nginx/assets/fonts
 COPY uk-ets-app-digital-dashboard-web/resources/img /usr/share/nginx/assets/images
-COPY uk-ets-app-digital-dashboard-web/resources/css /usr/share/nginx/cookies/css
-COPY uk-ets-app-digital-dashboard-web/resources/img /usr/share/nginx/cookies/img
-COPY uk-ets-app-digital-dashboard-web/resources/js /usr/share/nginx/cookies/js
+COPY uk-ets-app-digital-dashboard-web/resources /usr/share/nginx/cookies

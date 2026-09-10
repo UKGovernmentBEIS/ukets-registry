@@ -88,6 +88,9 @@ class UkEtsUserPersonalInfoRepositoryTest {
                 .recoveryPhoneNumber("6987456321")
                 .recoveryEmailAddress("recovery@email.com")
                 .hideRecoveryMethodsNotification("true")
+                .agent("NO")
+                .crc("true")
+                .crcIssuanceDate("1970-01-01T00:00")
                 .build()
             );
         commands.forEach(command -> addData(command));
@@ -104,6 +107,9 @@ class UkEtsUserPersonalInfoRepositoryTest {
         assertEquals("6987456321", userPersonalInfo.getRecoveryPhoneNumber());
         assertEquals("recovery@email.com", userPersonalInfo.getRecoveryEmailAddress());
         assertEquals("true", userPersonalInfo.getHideRecoveryMethodsNotification());
+        assertEquals("NO", userPersonalInfo.getAgent());
+        assertEquals("true", userPersonalInfo.getCrc());
+        assertEquals("1970-01-01T00:00", userPersonalInfo.getCrcIssuanceDate());
     }
 
     private void addData(AddDataCommand command) {
@@ -132,6 +138,9 @@ class UkEtsUserPersonalInfoRepositoryTest {
         addAttribute(Constants.RECOVERY_PHONE_NUMBER, command.recoveryPhoneNumber, userEntity);
         addAttribute(Constants.RECOVERY_EMAIL_ADDRESS, command.recoveryEmailAddress, userEntity);
         addAttribute(Constants.HIDE_RECOVERY_METHODS_NOTIFICATION, command.hideRecoveryMethodsNotification, userEntity);
+        addAttribute(Constants.AGENT, command.agent, userEntity);
+        addAttribute(Constants.CRC, command.crc, userEntity);
+        addAttribute(Constants.CRC_ISSUANCE_DATE, command.crcIssuanceDate, userEntity);
     }
 
     private void addAttribute(String attributeName, String value, UserEntity userEntity) {
@@ -164,5 +173,8 @@ class UkEtsUserPersonalInfoRepositoryTest {
         private String recoveryEmailAddress;
         private String hideRecoveryMethodsNotification;
         private String workEmailAddress;
+        private String agent;
+        private String crc;
+        private String crcIssuanceDate;
     }
 }

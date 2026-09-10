@@ -49,6 +49,9 @@ public class TaskListHistoryReportService implements ReportTypeService<TaskListH
         data.add(reportData.getAccountNumber());
         data.add(reportData.getUser());
         data.add(reportData.getUserUid());
+        data.add(reportData.getCrc());
+        data.add(reportData.getCrcIssuanceDate());
+        data.add(reportData.getAgent());
 
         return data;
     }
@@ -78,7 +81,10 @@ public class TaskListHistoryReportService implements ReportTypeService<TaskListH
                 "Account Type",
                 "Account Number",
                 "User",
-                "User ID"
+                "User ID",
+                "CRC",
+                "CRC Issue Date",
+                "Agent"
         );
     }
 

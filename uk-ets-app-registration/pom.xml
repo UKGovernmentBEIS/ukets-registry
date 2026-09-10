@@ -29,7 +29,7 @@
 		<httpclient.version>4.5.13</httpclient.version>
 		<java.jwt.version>3.11.0</java.jwt.version>
 		<jacoco.skip>true</jacoco.skip>
-		<libphonenumber.version>8.12.14</libphonenumber.version>
+		<libphonenumber.version>9.0.38</libphonenumber.version>
 		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
 		<uk-ets-lib-commons.version>2.0.0-SNAPSHOT</uk-ets-lib-commons.version>
 		<jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>

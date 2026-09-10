@@ -118,11 +118,6 @@
 			<version>${uk-ets-lib-commons.version}</version>
 		</dependency>
         <dependency>
-            <groupId>uk.gov.ets</groupId>
-            <artifactId>uk-ets-lib-commons-cloudwatch-metrics</artifactId>
-            <version>${uk-ets-lib-commons.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.openapi.ui.version}</version>

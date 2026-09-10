@@ -9,7 +9,9 @@ public enum UserAttributes {
 
 	URID("urid"),
 	REGISTERED_ON_DATE("registeredOnDate"),
-	REGISTRATION_IN_PROGRESS("registration_in_progress");
+	REGISTRATION_IN_PROGRESS("registration_in_progress"),
+	AGENT("agent"),
+	CRC("crc");
 
 	
 	private final String name;

@@ -15,6 +15,8 @@ import gov.uk.ets.registry.api.user.admin.shared.EnrolledUserDTO;
 import gov.uk.ets.registry.api.user.admin.shared.KeycloakUserSearchCriteria;
 import gov.uk.ets.registry.api.user.admin.shared.KeycloakUserSearchPagedResults;
 import gov.uk.ets.registry.api.user.admin.shared.UserDetailsUpdateType;
+import gov.uk.ets.registry.api.user.admin.web.model.UserAgentUpdateDTO;
+import gov.uk.ets.registry.api.user.admin.web.model.UserCRCUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserStatusActionOptionDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserStatusChangeDTO;
@@ -164,5 +166,35 @@ public class UserAdministrationController {
 	public void validateUserUpdateRequest(@NotNull @RequestParam String urid, @NotNull @RequestParam UserDetailsUpdateType userDetailsUpdateType) {
 		userService.validateUserUpdateRequest(urid, userDetailsUpdateType);
 	}
+
+    /**
+     * Updates the user agent.
+     *
+     * @param urid The unique user business identifier.
+     * @param agentUpdateDTO The user agent update DTO.
+     */
+    @Protected(SeniorAdminRule.class)
+    @PatchMapping(path = "users.update.agent", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateUserAgent(@RequestParam @RuleInput(RuleInputType.URID) String urid,
+                                                @RequestBody @Valid UserAgentUpdateDTO agentUpdateDTO) {
+
+        userService.updateUserAgent(urid, agentUpdateDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Updates the user criminal record check.
+     *
+     * @param urid The unique user business identifier.
+     * @param crcUpdateDTO The user criminal record check update DTO.
+     */
+    @Protected(SeniorAdminRule.class)
+    @PatchMapping(path = "users.update.crc", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateUserCRC(@RequestParam @RuleInput(RuleInputType.URID) String urid,
+                                                @RequestBody @Valid UserCRCUpdateDTO crcUpdateDTO) {
+
+        userService.updateUserCRC(urid, crcUpdateDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

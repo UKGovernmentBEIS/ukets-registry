@@ -4,13 +4,11 @@ package gov.uk.ets.registry.api.user.service;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-
 import gov.uk.ets.lib.commons.security.oauth2.token.OAuth2ClaimNames;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AuthorisedRepresentativeDTO;
 import gov.uk.ets.registry.api.ar.domain.ARUpdateActionRepository;
 import gov.uk.ets.registry.api.authz.AuthorizationService;
-
 import gov.uk.ets.registry.api.authz.ServiceAccountAuthorizationService;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.UserDetailsUtil;
@@ -34,19 +32,36 @@ import gov.uk.ets.registry.api.task.printenrolmentletter.PrintEnrolmentLetterTas
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.task.service.TaskEventService;
 import gov.uk.ets.registry.api.task.web.model.UserDetailsUpdateTaskDetailsDTO;
-import gov.uk.ets.registry.api.user.*;
+import gov.uk.ets.registry.api.user.EnrolmentKeyDTO;
+import gov.uk.ets.registry.api.user.KeycloakUser;
+import gov.uk.ets.registry.api.user.UserActionError;
+import gov.uk.ets.registry.api.user.UserActionException;
+import gov.uk.ets.registry.api.user.UserConversionService;
+import gov.uk.ets.registry.api.user.UserDTO;
+import gov.uk.ets.registry.api.user.UserDeactivationDTO;
+import gov.uk.ets.registry.api.user.UserFileDTO;
+import gov.uk.ets.registry.api.user.UserGeneratorService;
 import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 import gov.uk.ets.registry.api.user.admin.shared.UserDetailsUpdateType;
+import gov.uk.ets.registry.api.user.admin.web.model.UserAgentUpdateDTO;
+import gov.uk.ets.registry.api.user.admin.web.model.UserCRCUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserStatusChangeResultDTO;
-import gov.uk.ets.registry.api.user.domain.*;
+import gov.uk.ets.registry.api.user.domain.AgentType;
+import gov.uk.ets.registry.api.user.domain.IamUserRole;
+import gov.uk.ets.registry.api.user.domain.User;
+import gov.uk.ets.registry.api.user.domain.UserAttributes;
+import gov.uk.ets.registry.api.user.domain.UserRole;
+import gov.uk.ets.registry.api.user.domain.UserRoleMapping;
+import gov.uk.ets.registry.api.user.domain.UserStatus;
+import gov.uk.ets.registry.api.user.domain.UserWorkContact;
+import gov.uk.ets.registry.api.user.domain.UserWorkContactRepository;
 import gov.uk.ets.registry.api.user.profile.recovery.web.RecoveryMethodUpdateRequest;
 import gov.uk.ets.registry.api.user.repository.UserRepository;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
 import gov.uk.ets.registry.usernotifications.GroupNotificationType;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,14 +72,24 @@ import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.constraints.NotNull;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 
@@ -155,6 +180,8 @@ public class UserService {
         user.setKnownAs(userDTO.getAlsoKnownAs());
         user.setDisclosedName(!StringUtils.isEmpty(userDTO.getAlsoKnownAs()) ? userDTO.getAlsoKnownAs() 
                 : Utils.concat(" ", userDTO.getFirstName(), userDTO.getLastName()));
+        user.setAgent(AgentType.NO);
+        user.setCrc(Boolean.FALSE);
         userRepository.save(user);
         String action = "User registered";
         eventService.createAndPublishEvent(user.getUrid(), user.getUrid(), "",
@@ -664,6 +691,113 @@ public class UserService {
         serviceAccountAuthorizationService.invalidateUserSessions(user.getIamIdentifier());
 
         return task.getRequestId();
+    }
+
+    @Transactional
+    public void updateUserAgent(String urid, UserAgentUpdateDTO dto) {
+        User user = userRepository.findByUrid(urid);
+        if (user == null) {
+            throw new UkEtsException(
+                    String.format("Requested update user agent details for user with id:%s which does not exist", urid));
+        }
+
+        UserRepresentation userRepresentation = userAdministrationService
+                .findByIamId(user.getIamIdentifier());
+        if (userRepresentation == null) {
+            throw new UkEtsException(
+                    String.format("The user %s does not exist in keycloak DB", user.getId()));
+        }
+
+        if (!isAgentUpdateValid(dto)) {
+            throw new BusinessRuleErrorException(
+                    ErrorBody.from("The provided agent details are inconsistent with the selected agent type."));
+        }
+
+        validatePhoneNumber(null, dto.getAgentPhoneNumberCountryCode(), null, dto.getAgentPhoneNumber());
+
+        if (userRepresentation.getAttributes() == null) {
+            userRepresentation.setAttributes(new HashMap<>());
+        }
+
+        userRepresentation.getAttributes().put(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT.getAttributeName(), Collections.singletonList(String.valueOf(dto.getAgent())));
+        user.setAgent(dto.getAgent());
+
+        userRepresentation.getAttributes().put(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_COMPANY_NAME.getAttributeName(), Collections.singletonList(dto.getAgentCompanyName()));
+        user.setAgentCompanyName(dto.getAgentCompanyName());
+
+        userRepresentation.getAttributes().put(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_EMAIL.getAttributeName(), Collections.singletonList(dto.getAgentEmailAddress()));
+        user.setAgentEmailAddress(dto.getAgentEmailAddress());
+
+        userRepresentation.getAttributes().put(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_COUNTRY_CODE.getAttributeName(), Collections.singletonList(dto.getAgentPhoneNumberCountryCode()));
+        user.setAgentPhoneNumberCountryCode(dto.getAgentPhoneNumberCountryCode());
+
+        userRepresentation.getAttributes().put(UserAttributes.KEYCLOAK_ATTRIBUTE_AGENT_PHONE_NUMBER.getAttributeName(), Collections.singletonList(dto.getAgentPhoneNumber()));
+        user.setAgentPhoneNumber(dto.getAgentPhoneNumber());
+
+        userRepository.save(user);
+        userAdministrationService.updateUserDetails(userRepresentation);
+
+        eventService.createAndPublishEvent(urid, this.getCurrentUser().getUrid(),dto.getAgent().getDescription(),
+                EventType.USER_CHANGE_AGENT, "Change Agent value");
+    }
+
+    private boolean isAgentUpdateValid(UserAgentUpdateDTO dto) {
+
+        boolean hasAllFields =
+                StringUtils.isNotBlank(dto.getAgentCompanyName())
+                        && StringUtils.isNotBlank(dto.getAgentEmailAddress())
+                        && StringUtils.isNotBlank(dto.getAgentPhoneNumberCountryCode())
+                        && StringUtils.isNotBlank(dto.getAgentPhoneNumber());
+
+        return AgentType.YES_PUBLIC.equals(dto.getAgent()) == hasAllFields;
+    }
+
+    @Transactional
+    public void updateUserCRC(String urid, UserCRCUpdateDTO dto) {
+        User user = userRepository.findByUrid(urid);
+        if (user == null) {
+            throw new UkEtsException(
+                    String.format("Requested update user CRC details for user with id:%s which does not exist", urid));
+        }
+
+        UserRepresentation userRepresentation = userAdministrationService
+                .findByIamId(user.getIamIdentifier());
+        if (userRepresentation == null) {
+            throw new UkEtsException(
+                    String.format("The user %s does not exist in keycloak DB", user.getId()));
+        }
+
+        validateCRCUpdate(dto);
+
+        userRepresentation.getAttributes().put(UserAttributes.KEYCLOAK_ATTRIBUTE_CRC.getAttributeName(), Collections.singletonList(String.valueOf(dto.isCrc())));
+        user.setCrc(dto.isCrc());
+
+        if (dto.getCrcIssuanceDate() != null) {
+            LocalDateTime crcIssuanceDateTime = UserDetailsUtil.userCRCIssuanceDateToDateTime(dto.getCrcIssuanceDate());
+            user.setCrcIssuanceDate(Date.from(crcIssuanceDateTime.toInstant(ZoneOffset.UTC)));
+            userRepresentation.getAttributes().put(UserAttributes.KEYCLOAK_ATTRIBUTE_CRC_ISSUANCE_DATE.getAttributeName(), Collections.singletonList(crcIssuanceDateTime.format(UserDetailsUtil.CRC_DATE_FORMATTER)));
+        } else {
+            userRepresentation.getAttributes().remove(UserAttributes.KEYCLOAK_ATTRIBUTE_CRC_ISSUANCE_DATE.getAttributeName());
+            user.setCrcIssuanceDate(null);        
+        }
+
+        userRepository.save(user);
+        userAdministrationService.updateUserDetails(userRepresentation);
+
+        eventService.createAndPublishEvent(urid, this.getCurrentUser().getUrid(),dto.isCrc() ? "Yes" : "No",
+                EventType.USER_CHANGE_CRC, "Change CRC value");
+    }
+
+    private void validateCRCUpdate(UserCRCUpdateDTO dto) {
+        final boolean isCRCValid = dto.isCrc() == (dto.getCrcIssuanceDate() != null && org.springframework.util.StringUtils.hasText(dto.getCrcIssuanceDate()));
+        if (!isCRCValid) {
+            throw new BusinessRuleErrorException(
+                    ErrorBody.from("The provided CRC issuance date is inconsistent with the selected CRC status."));
+        }
+        if (dto.getCrcIssuanceDate() != null &&  UserDetailsUtil.userCRCIssuanceDateToDateTime(dto.getCrcIssuanceDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
+            throw new BusinessRuleErrorException(
+                    ErrorBody.from("The provided CRC issuance date cannot be in the future."));
+        }
     }
     
     /**

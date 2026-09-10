@@ -31,9 +31,12 @@ import gov.uk.ets.registry.api.task.web.model.TaskDetailsDTO;
 import gov.uk.ets.registry.api.task.web.model.UserDetailsUpdateTaskDetailsDTO;
 import gov.uk.ets.registry.api.user.admin.service.UserAdministrationService;
 import gov.uk.ets.registry.api.user.admin.shared.UserDetailsUpdateType;
+import gov.uk.ets.registry.api.user.admin.web.model.UserAgentUpdateDTO;
+import gov.uk.ets.registry.api.user.admin.web.model.UserCRCUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserDetailsUpdateDTO;
 import gov.uk.ets.registry.api.user.admin.web.model.UserStatusChangeResultDTO;
+import gov.uk.ets.registry.api.user.domain.AgentType;
 import gov.uk.ets.registry.api.user.domain.IamUserRole;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserRoleMapping;
@@ -1108,5 +1111,268 @@ public class UserServiceTest {
         boolean result = userService.isSeniorOrJuniorAdminUser(user);
 
         assertFalse(result);
+    }
+
+    @Test
+    @DisplayName("Update user agent, user does not exist, expected to fail.")
+    void test_updateUserAgentUserDoesNotExist() {
+        when(userRepository.findByUrid("urid")).thenReturn(null);
+
+        UserAgentUpdateDTO dto = new UserAgentUpdateDTO();
+
+        UkEtsException exception = assertThrows(
+                UkEtsException.class,
+                () -> userService.updateUserAgent("urid", dto));
+
+        assertThat(exception.getMessage()).contains("does not exist");
+    }
+
+    @Test
+    @DisplayName("Update user agent, keycloak representation does not exist, expected to fail.")
+    void test_updateUserAgentUserRepresentationDoesNotExist() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(null);
+
+        UserAgentUpdateDTO dto = new UserAgentUpdateDTO();
+
+        UkEtsException exception = assertThrows(
+                UkEtsException.class,
+                () -> userService.updateUserAgent("urid", dto));
+
+        assertThat(exception.getMessage()).contains("does not exist in keycloak DB");
+    }
+
+    @Test
+    @DisplayName("Update user agent with agent=YES_PUBLIC but missing mandatory fields, expected to fail.")
+    void test_updateUserAgentInvalidAgentDetails() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(createUserRepresentation());
+
+        UserAgentUpdateDTO dto = new UserAgentUpdateDTO();
+        dto.setAgent(AgentType.YES_PUBLIC);
+
+        BusinessRuleErrorException exception = assertThrows(
+                BusinessRuleErrorException.class,
+                () -> userService.updateUserAgent("urid", dto));
+
+        assertTrue(exception.getErrorBody().getErrorDetails().getFirst().toString()
+                .contains("The provided agent details are inconsistent with the selected agent type."));
+    }
+
+    @Test
+    @DisplayName("Update user agent with invalid phone number, expected to fail.")
+    void test_updateUserAgentInvalidPhoneNumber() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(createUserRepresentation());
+
+        UserAgentUpdateDTO dto = new UserAgentUpdateDTO();
+        dto.setAgent(AgentType.YES_PUBLIC);
+        dto.setAgentCompanyName("Test Company");
+        dto.setAgentEmailAddress("agent@test.com");
+        dto.setAgentPhoneNumberCountryCode("invalid");
+        dto.setAgentPhoneNumber("ager345t6wrg");
+
+        BusinessRuleErrorException exception = assertThrows(
+                BusinessRuleErrorException.class,
+                () -> userService.updateUserAgent("urid", dto));
+
+        assertTrue(exception.getErrorBody().getErrorDetails().getFirst().getMessage()
+                .contains("Invalid phone number format"));
+    }
+
+    @Test
+    @DisplayName("Update user agent, expected to pass.")
+    void test_updateUserAgentSuccess() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        UserRepresentation userRep = createUserRepresentation();
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(userRep);
+
+        UserAgentUpdateDTO dto = new UserAgentUpdateDTO();
+        dto.setAgent(AgentType.YES_PUBLIC);
+        dto.setAgentCompanyName("Test Company");
+        dto.setAgentEmailAddress("agent@test.com");
+        dto.setAgentPhoneNumberCountryCode("30");
+        dto.setAgentPhoneNumber("6999999999");
+
+        userService.updateUserAgent("urid", dto);
+
+        assertEquals(AgentType.YES_PUBLIC, user.getAgent());
+        assertEquals("Test Company", user.getAgentCompanyName());
+        assertEquals("agent@test.com", user.getAgentEmailAddress());
+
+        ArgumentCaptor<User> userArgument = ArgumentCaptor.forClass(User.class);
+        verify(userRepository, times(1)).save(userArgument.capture());
+        assertEquals("Test Company", userArgument.getValue().getAgentCompanyName());
+
+        ArgumentCaptor<UserRepresentation> repArgument = ArgumentCaptor.forClass(UserRepresentation.class);
+        verify(userAdministrationService, times(1)).updateUserDetails(repArgument.capture());
+        assertEquals("Test Company", repArgument.getValue().getAttributes().get("agentCompanyName").getFirst());
+        assertEquals("agent@test.com", repArgument.getValue().getAttributes().get("agentEmailAddress").getFirst());
+
+        verify(eventService, times(1)).createAndPublishEvent(
+                eq("urid"), anyString(), eq(AgentType.YES_PUBLIC.getDescription()),
+                eq(EventType.USER_CHANGE_AGENT), eq("Change Agent value"));
+    }
+
+
+    @Test
+    @DisplayName("Update user CRC, user does not exist, expected to fail.")
+    void test_updateUserCRCUserDoesNotExist() {
+        when(userRepository.findByUrid("urid")).thenReturn(null);
+
+        UserCRCUpdateDTO dto = new UserCRCUpdateDTO();
+
+        UkEtsException exception = assertThrows(
+                UkEtsException.class,
+                () -> userService.updateUserCRC("urid", dto));
+
+        assertThat(exception.getMessage()).contains("does not exist");
+    }
+
+    @Test
+    @DisplayName("Update user CRC, keycloak representation does not exist, expected to fail.")
+    void test_updateUserCRCUserRepresentationDoesNotExist() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(null);
+
+        UserCRCUpdateDTO dto = new UserCRCUpdateDTO();
+
+        UkEtsException exception = assertThrows(
+                UkEtsException.class,
+                () -> userService.updateUserCRC("urid", dto));
+
+        assertThat(exception.getMessage()).contains("does not exist in keycloak DB");
+    }
+
+    @Test
+    @DisplayName("Update user CRC with crc=true but no issuance date, expected to fail.")
+    void test_updateUserCRCInconsistentStatus() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(createUserRepresentation());
+
+        UserCRCUpdateDTO dto = new UserCRCUpdateDTO();
+        dto.setCrc(true);
+        dto.setCrcIssuanceDate(null);
+
+        BusinessRuleErrorException exception = assertThrows(
+                BusinessRuleErrorException.class,
+                () -> userService.updateUserCRC("urid", dto));
+
+        assertTrue(exception.getErrorBody().getErrorDetails().getFirst().toString()
+                .contains("The provided CRC issuance date is inconsistent with the selected CRC status."));
+    }
+
+    @Test
+    @DisplayName("Update user CRC with a future issuance date, expected to fail.")
+    void test_updateUserCRCFutureIssuanceDate() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(createUserRepresentation());
+
+        UserCRCUpdateDTO dto = new UserCRCUpdateDTO();
+        dto.setCrc(true);
+        dto.setCrcIssuanceDate(LocalDateTime.now().plusDays(1L).format(UserDetailsUtil.CRC_DATE_FORMATTER));
+
+        BusinessRuleErrorException exception = assertThrows(
+                BusinessRuleErrorException.class,
+                () -> userService.updateUserCRC("urid", dto));
+
+        assertTrue(exception.getErrorBody().getErrorDetails().getFirst().toString()
+                .contains("The provided CRC issuance date cannot be in the future."));
+    }
+    
+    @Test
+    @DisplayName("Update user CRC without an issuance date, expected to fail.")
+    void test_updateUserCRCWithoutIssuanceDate() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(createUserRepresentation());
+
+        UserCRCUpdateDTO dto = new UserCRCUpdateDTO();
+        dto.setCrc(true);
+        //dto.setCrcIssuanceDate(null);
+
+        BusinessRuleErrorException exception = assertThrows(
+                BusinessRuleErrorException.class,
+                () -> userService.updateUserCRC("urid", dto));
+
+        assertTrue(exception.getErrorBody().getErrorDetails().getFirst().toString()
+                .contains("The provided CRC issuance date is inconsistent with the selected CRC status."));
+    }
+
+    @Test
+    @DisplayName("Update user CRC, expected to pass.")
+    void test_updateUserCRCSuccess() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        UserRepresentation userRep = createUserRepresentation();
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(userRep);
+
+        LocalDateTime issuanceDate = LocalDateTime.now().minusSeconds(1000000L);
+        UserCRCUpdateDTO dto = new UserCRCUpdateDTO();
+        dto.setCrc(true);
+        dto.setCrcIssuanceDate(issuanceDate.format(UserDetailsUtil.CRC_DATE_FORMATTER));
+
+        userService.updateUserCRC("urid", dto);
+
+        assertTrue(user.getCrc());
+        assertEquals(issuanceDate.withHour(0).withMinute(0).withSecond(0).withNano(0), LocalDateTime.ofInstant(user.getCrcIssuanceDate().toInstant(),ZoneId.of("UTC")));
+
+        ArgumentCaptor<User> userArgument = ArgumentCaptor.forClass(User.class);
+        verify(userRepository, times(1)).save(userArgument.capture());
+        assertTrue(userArgument.getValue().getCrc());
+
+        ArgumentCaptor<UserRepresentation> repArgument = ArgumentCaptor.forClass(UserRepresentation.class);
+        verify(userAdministrationService, times(1)).updateUserDetails(repArgument.capture());
+        assertEquals("true", repArgument.getValue().getAttributes().get("crc").getFirst());
+
+        verify(eventService, times(1)).createAndPublishEvent(
+                eq("urid"), anyString(), eq("Yes"),
+                eq(EventType.USER_CHANGE_CRC), eq("Change CRC value"));
+    }
+
+    @Test
+    @DisplayName("Update user CRC to false with no issuance date, expected to pass.")
+    void test_updateUserCRCSuccessFalse() {
+        User user = new User();
+        user.setUrid("urid");
+        user.setIamIdentifier(TEST_USER_ID);
+        when(userRepository.findByUrid("urid")).thenReturn(user);
+        when(userAdministrationService.findByIamId(TEST_USER_ID)).thenReturn(createUserRepresentation());
+
+        UserCRCUpdateDTO dto = new UserCRCUpdateDTO();
+        dto.setCrc(false);
+        dto.setCrcIssuanceDate(null);
+
+        userService.updateUserCRC("urid", dto);
+
+        assertFalse(user.getCrc());
+        verify(eventService, times(1)).createAndPublishEvent(
+                eq("urid"), anyString(), eq("No"),
+                eq(EventType.USER_CHANGE_CRC), eq("Change CRC value"));
     }
 }
