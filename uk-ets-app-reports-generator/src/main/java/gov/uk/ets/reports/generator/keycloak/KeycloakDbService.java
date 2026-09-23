@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static gov.uk.ets.reports.generator.mappers.ReportDataMapper.crcDateFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class KeycloakDbService {
@@ -167,6 +169,7 @@ public class KeycloakDbService {
             long createdOn = rs.getLong("createdOn");
             String registeredOn = rs.getString("registeredOn");
             String lastLoginOn = rs.getString("lastLoginOn");
+            String crcIssuanceDate = rs.getString("crcIssuanceDate");
             return KeycloakUser.builder()
                 .urid(rs.getString("urid"))
                 .keycloakUserId(rs.getString("userKeycloakId"))
@@ -203,10 +206,13 @@ public class KeycloakDbService {
                 .workTownOrCity(rs.getString("workTownOrCity"))
                 .workStateOrProvince(rs.getString("workStateOrProvince"))
                 .crc("true".equalsIgnoreCase(rs.getString("crc")) ? "Yes" : "No")
-                .crcIssuanceDate(rs.getString("crcIssuanceDate") != null ?
-                    LocalDateTime.parse(rs.getString("crcIssuanceDate")) : null)
+                .crcIssuanceDate(crcIssuanceDate != null ? parseCrcIssuanceDate(crcIssuanceDate) : null)
                 .agent(rs.getString("agent"))
                 .build();
         }
+    }
+
+    private static LocalDateTime parseCrcIssuanceDate(String value) {
+        return LocalDateTime.parse(value, crcDateFormatter);
     }
 }

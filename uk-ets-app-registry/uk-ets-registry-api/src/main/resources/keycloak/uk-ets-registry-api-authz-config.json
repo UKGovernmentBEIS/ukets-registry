@@ -279,7 +279,8 @@
       "attributes": {},
       "uris": [
         "/api-registry/accounts.close",
-        "/api-registry/allocations.get.pendingTaskExists"
+        "/api-registry/allocations.get.pendingTaskExists",
+        "/api-registry/regulator-notices.get.pendingTaskExists"
       ],
       "scopes": [
         {

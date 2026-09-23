@@ -26,6 +26,18 @@ public interface ReportDataMapper<T extends ReportData> {
     DateTimeFormatter prettyDateFormatter =
         DateTimeFormatter.ofPattern("d MMMM yyyy", new Locale.Builder().setLanguage("en").setRegion("EN").build());
 
+
+    DateTimeFormatter crcDateFormatter =
+            new DateTimeFormatterBuilder()
+                    .appendPattern("uuuu-MM-dd'T'HH:mm:ss")
+                    .optionalStart()
+                    .appendFraction(ChronoField.NANO_OF_SECOND, 1, 9, true)
+                    .optionalEnd()
+                    .optionalStart()
+                    .appendLiteral('Z')
+                    .optionalEnd()
+                    .toFormatter(Locale.ROOT);
+
     List<T> mapData(ReportQueryInfoWithMetadata reportQueryInfo);
 
     /**
