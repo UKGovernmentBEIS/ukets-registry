@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 
 @SuperBuilder
 @Data
@@ -34,5 +36,13 @@ public class ComplianceManagementReportData extends ComplianceReportData {
     Boolean fourEyesTalTransactions;
     Boolean transactionsOffTheTalAllowed;
     Boolean fourEyesSurrenderReturnOfExcessAllocation;
+    LocalDateTime firstInvitationDate;
+    LocalDateTime lastInvitationDate;
+    LocalDateTime firstAddARCreatedDate;
+    LocalDateTime firstAddARApprovedDate;
+    Long daysBetweenAccountCreationAndFirstAddAR;
+    Long daysBetweenAddARCreationAndApproval;
+    Long daysBetweenAccountCreationAndFirstAddARApproval;
+    Long numberOfDisabledContacts;
 }
 

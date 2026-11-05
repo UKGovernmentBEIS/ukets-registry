@@ -1216,11 +1216,11 @@ class AccountServiceTest {
 
         AccountContactSendInvitationDTO sendInvitationDTO = new AccountContactSendInvitationDTO();
 
-        accountService.sendInvitation(accountIdentifier, sendInvitationDTO);
+        accountService.sendInvitation(accountIdentifier, sendInvitationDTO, true);
 
         verify(accountRepository).findByIdentifierWithAccountHolder(accountIdentifier);
         verify(accountDTOFactory).createAccountForInvitation(account);
-        verify(accountContactService).sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO);
+        verify(accountContactService).sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO, true);
     }
 
     @Test

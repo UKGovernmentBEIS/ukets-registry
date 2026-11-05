@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="5_35_0_ADD_FIRST_INVITATION_DATE_COLUMN_TO_COMPLIANT_ENTITY" author="dimopoulosc" context="migrate">
+        <comment>Add First invitation date column to compliant entity table</comment>
+        <sql>
+            ALTER TABLE "compliant_entity" ADD COLUMN "first_invitation_date" TIMESTAMP DEFAULT NULL;
+            COMMENT ON COLUMN "compliant_entity"."first_invitation_date" IS 'Date that first invitation for account claim was sent to the account.';
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "compliant_entity" DROP COLUMN IF EXISTS "first_invitation_date";
+            </sql>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="5_35_0_ADD_INVITATION_REQUIRED_COLUMN_TO_METS_ACCOUNT_CONTACTS_TABLE" author="dimopoulosc" context="migrate">
+        <comment>Add invitation required column to mets account contacts.</comment>
+        <sql>
+            alter table mets_account_contact add column if not exists invitation_required boolean default false;
+        </sql>
+        <rollback>
+            <sql>
+                alter table mets_account_contact drop column if exists invitation_required;
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

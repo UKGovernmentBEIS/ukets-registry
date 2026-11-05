@@ -403,6 +403,7 @@ public interface AccountRepository
      * Retrieves the number of accounts that:
      * Status is not PROPOSED, REJECTED, CLOSED, TRANSFER_PENDING
      * Have a compliant entity
+     * Auto send claim invitation is enabled
      * Don't have any active authorized representatives
      * Don't have any pending tasks that their type is in the provided list
      * They have at least one METS or Registry contact and Registry contact email address is not the default email address.
@@ -415,6 +416,7 @@ public interface AccountRepository
     @Query("""
                 SELECT COUNT(a)
                 FROM Account a
+                JOIN a.compliantEntity ce
                 WHERE a.accountStatus NOT IN (
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.PROPOSED,
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.REJECTED,
@@ -422,6 +424,7 @@ public interface AccountRepository
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.TRANSFER_PENDING
                 )
                 AND a.compliantEntity IS NOT NULL
+                AND ce.autoSendClaimInvitationEnabled = true
                 AND a.registryAccountType IN :accountTypes
                 AND NOT EXISTS (
                     SELECT 1
@@ -437,8 +440,8 @@ public interface AccountRepository
                     AND t.type IN :taskTypes
                     AND t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED
                 )
-               AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
-                    EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep JOIN rep.contact c WHERE ah = a.accountHolder AND LOWER(c.emailAddress) != LOWER(:defaultEmail)))
+               AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a AND mac.invitationStatus = true) OR
+                    EXISTS (SELECT 1 FROM AccountRepresentativeInvitation ari JOIN ari.accountHolderRepresentative rep JOIN rep.contact c WHERE ari.account = a AND ari.invitationStatus = true AND LOWER(c.emailAddress) != LOWER(:defaultEmail)))
             """)
     Long countAccountsWithoutActiveARsAndPendingTasksWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
                                                                   @Param("taskTypes") List<RequestType> taskTypes,
@@ -449,6 +452,7 @@ public interface AccountRepository
      * Retrieves all the accounts that:
      * Status is not PROPOSED, REJECTED, CLOSED, TRANSFER_PENDING
      * Have a compliant entity
+     * Auto send claim invitation is enabled
      * Don't have any active authorized representatives
      * Don't have any pending tasks that their type is in the provided list
      * They have at least one METS or Registry contact and Registry contact email address is not the default email address.
@@ -461,6 +465,7 @@ public interface AccountRepository
     @Query("""
                 SELECT a.identifier
                 FROM Account a
+                JOIN a.compliantEntity ce
                 WHERE a.accountStatus NOT IN (
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.PROPOSED,
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.REJECTED,
@@ -468,6 +473,7 @@ public interface AccountRepository
                     gov.uk.ets.registry.api.transaction.domain.type.AccountStatus.TRANSFER_PENDING
                 )
                 AND a.compliantEntity IS NOT NULL
+                AND ce.autoSendClaimInvitationEnabled = true
                 AND a.registryAccountType IN :accountTypes
                 AND NOT EXISTS (
                     SELECT 1
@@ -483,8 +489,8 @@ public interface AccountRepository
                     AND t.type IN :taskTypes
                     AND t.status = gov.uk.ets.registry.api.task.domain.types.RequestStateEnum.SUBMITTED_NOT_YET_APPROVED
                 )
-                AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a) OR
-                     EXISTS (SELECT 1 FROM AccountHolder ah JOIN ah.accountHolderRepresentatives rep JOIN rep.contact c WHERE ah = a.accountHolder AND LOWER(c.emailAddress) != LOWER(:defaultEmail)))
+                AND (EXISTS (SELECT 1 FROM MetsAccountContact mac WHERE mac.account = a AND mac.invitationStatus = true) OR
+                     EXISTS (SELECT 1 FROM AccountRepresentativeInvitation ari JOIN ari.accountHolderRepresentative rep JOIN rep.contact c WHERE ari.account = a AND ari.invitationStatus = true AND LOWER(c.emailAddress) != LOWER(:defaultEmail)))
             """)
     List<Long> findAccountIdentifierWithoutActiveARsAndPendingTaskWithContacts(@Param("accountTypes") List<RegistryAccountType> accountTypes,
                                                                                @Param("taskTypes") List<RequestType> taskTypes,

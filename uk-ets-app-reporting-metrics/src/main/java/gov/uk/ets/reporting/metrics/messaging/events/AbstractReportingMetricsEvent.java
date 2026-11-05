@@ -24,7 +24,10 @@ import lombok.experimental.SuperBuilder;
     @JsonSubTypes.Type(value = EmissionsUpdatedEvent.class, name = "UPDATE_OF_VERIFIED_EMISSIONS"),
     @JsonSubTypes.Type(value = TransactionFinalisationEvent.class, name = "TRANSACTION_FINALISATION"),
     @JsonSubTypes.Type(value = DynamicComplianceStatusCalculatedEvent.class, name = "RECALCULATE_DYNAMIC_STATUS"),
-    @JsonSubTypes.Type(value = InstallationTransferEvent.class, name = "INSTALLATION_TRANSFER")
+    @JsonSubTypes.Type(value = InstallationTransferEvent.class, name = "INSTALLATION_TRANSFER"),
+    @JsonSubTypes.Type(value = AccountClaimInvitationSentEvent.class, name = "ACCOUNT_CLAIM_INVITATION_SENT"),
+    @JsonSubTypes.Type(value = AccountClaimCompletionEvent.class, name = "ACCOUNT_CLAIM_COMPLETION"),
+    @JsonSubTypes.Type(value = AccountClaimInitiatedEvent.class, name = "ACCOUNT_CLAIM_INITIATED")
 })
 @SuperBuilder
 @EqualsAndHashCode

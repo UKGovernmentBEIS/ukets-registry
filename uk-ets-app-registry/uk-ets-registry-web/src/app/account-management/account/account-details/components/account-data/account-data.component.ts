@@ -97,6 +97,7 @@ export class AccountDataComponent implements OnInit {
   @Input() compliantEntityIdentifier: number;
   @Input() fileDeleted: string;
   @Input() isCancelPendingActivationSuccessDisplayed: boolean;
+  @Input() autoSendInvitationStatusUpdated: boolean;
   @Input() selectedTrustedAccountDescription: string;
   @Input() configuration: Configuration[];
 

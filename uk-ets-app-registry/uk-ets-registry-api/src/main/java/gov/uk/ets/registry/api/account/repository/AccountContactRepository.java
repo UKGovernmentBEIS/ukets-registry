@@ -17,4 +17,7 @@ public interface AccountContactRepository extends JpaRepository<MetsAccountConta
     @Transactional
     void deleteByAccount(Account account);
 
+    @Transactional(readOnly = true)
+    Long countByAccount_IdentifierAndInvitationStatus(Long accountIdentifier, boolean invitationStatus);
+
 }

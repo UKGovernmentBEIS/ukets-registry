@@ -18,7 +18,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.uk.ets.commons.logging.Config;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.domain.types.ComplianceStatus;
@@ -43,11 +70,11 @@ import gov.uk.ets.registry.api.account.web.model.AccountOperatorDetailsUpdateDTO
 import gov.uk.ets.registry.api.account.web.model.AccountStatusAction;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusActionOptionDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
-import gov.uk.ets.registry.api.account.web.model.BulkClaimResult;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.PermitDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactChangeInvitationStatusDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.account.web.model.search.AccountTypeOption;
 import gov.uk.ets.registry.api.auditevent.web.AuditEventDTO;
@@ -65,31 +92,7 @@ import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
 import gov.uk.ets.registry.api.transaction.web.mapper.TransactionSearchResultMapper;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Builder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.info.BuildProperties;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = AccountController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
@@ -540,7 +543,7 @@ class AccountControllerTest {
                 .registryContacts(Set.of())
                 .build();
 
-        when(accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO)).thenReturn(accountClaimCode);
+        when(accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO, true)).thenReturn(accountClaimCode);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -601,6 +604,29 @@ class AccountControllerTest {
                 .andExpect(status().isOk());
 
         verify(accountClaimSchedulerService).scheduleBulkClaim();
+    }
+
+    @Test
+    void test_changeContactsInvitationStatus() throws Exception {
+        final String template = "/api-registry/accounts.change.contacts.invitation.status";
+
+        final Long accountIdentifier = 1000L;
+
+        AccountContactChangeInvitationStatusDTO accountContactChangeInvitationStatusDTO = AccountContactChangeInvitationStatusDTO.builder()
+                .metsContacts(List.of())
+                .registryContacts(List.of())
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mockMvc.perform(post(template)
+                        .param("identifier", accountIdentifier.toString())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(accountContactChangeInvitationStatusDTO))
+                ).andExpect(status().isOk());
+
+        verify(accountClaimService).changeContactsInvitationStatus(accountIdentifier, accountContactChangeInvitationStatusDTO);
     }
 
     private void testLengthValidation(String parameter, int minCharsLength) throws Exception {

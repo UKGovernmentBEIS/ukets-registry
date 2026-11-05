@@ -1,23 +1,24 @@
 package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
+import gov.uk.ets.registry.api.account.repository.AccountClaimRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
 import gov.uk.ets.registry.api.account.shared.AccountActionError;
 import gov.uk.ets.registry.api.account.shared.AccountActionException;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AccountClaimProcessor {
 
     private final AccountRepository accountRepository;
+    private final AccountClaimRepository accountClaimRepository;
     private final AccountService accountService;
 
     @Value("${aviation.account.claim.enabled}")
@@ -30,7 +31,8 @@ public class AccountClaimProcessor {
     private boolean maritimeAccountClaimEnabled;
 
     public String processSendInvitation(Long accountIdentifier,
-                                      AccountContactSendInvitationDTO dto) {
+                                        AccountContactSendInvitationDTO dto,
+                                        boolean isManual) {
 
         RegistryAccountType type = accountRepository.findByIdentifier(accountIdentifier)
                 .map(Account::getRegistryAccountType)
@@ -42,7 +44,7 @@ public class AccountClaimProcessor {
             );
         }
 
-        return accountService.sendInvitation(accountIdentifier, dto);
+        return accountService.sendInvitation(accountIdentifier, dto, isManual);
     }
 
     public boolean isAccountClaimEnabled(RegistryAccountType type) {
@@ -54,6 +56,10 @@ public class AccountClaimProcessor {
             case MARITIME_OPERATOR_HOLDING_ACCOUNT -> maritimeAccountClaimEnabled;
             default -> false;
         };
+    }
+    
+    public Boolean isAccountClaimProcess(Long requestId) {
+        return accountClaimRepository.findByRequestId(requestId).isPresent();
     }
 
     public List<RegistryAccountType> getEnabledAccountTypes() {

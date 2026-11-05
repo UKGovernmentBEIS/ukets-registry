@@ -2,13 +2,14 @@ package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
-import gov.uk.ets.registry.api.account.domain.MetsAccountContact;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
+import gov.uk.ets.registry.api.account.domain.AccountRepresentativeInvitation;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.MaritimeOperator;
+import gov.uk.ets.registry.api.account.domain.MetsAccountContact;
 import gov.uk.ets.registry.api.account.domain.SalesContact;
 import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
@@ -30,6 +31,8 @@ import gov.uk.ets.registry.api.authz.AuthorizationService;
 import gov.uk.ets.registry.api.authz.Scope;
 import gov.uk.ets.registry.api.common.ConversionService;
 import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
+import gov.uk.ets.registry.api.integration.changelog.domain.IntegrationChangeLog;
+import gov.uk.ets.registry.api.integration.changelog.repository.IntegrationChangeLogRepository;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.transaction.domain.data.TrustedAccountListRulesDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountType;
@@ -38,20 +41,19 @@ import gov.uk.ets.registry.api.user.UserConversionService;
 import gov.uk.ets.registry.api.user.UserDTO;
 import gov.uk.ets.registry.api.user.domain.UserWorkContact;
 import gov.uk.ets.registry.api.user.domain.UserWorkContactRepository;
-import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Hibernate;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @AllArgsConstructor
@@ -75,6 +77,8 @@ public class AccountDTOFactory {
     private final AccountContactRepository accountContactRepository;
 
     private final AccountRepresentativeInvitationRepository accountRepresentativeInvitationRepository;
+    
+    private final IntegrationChangeLogRepository integrationChangeLogRepository;
 
     @Transactional(readOnly = true)
     public AccountDTO create(Account account) {
@@ -191,6 +195,7 @@ public class AccountDTOFactory {
                 .phoneNumber(contact.getPhoneNumber())
                 .contactType(type)
                 .invitedOn(contact.getInvitedOn())
+                .invitationStatus(contact.isInvitationStatus())
                 .build();
     }
 
@@ -214,6 +219,7 @@ public class AccountDTOFactory {
                 .contactTypes(metsAccountContact.getContactTypes())
                 .operatorType(metsAccountContact.getOperatorType())
                 .invitedOn(metsAccountContact.getInvitedOn())
+                .invitationStatus(metsAccountContact.isInvitationStatus())
                 .build();
     }
 
@@ -283,18 +289,16 @@ public class AccountDTOFactory {
                 .filter(accountHolderRepresentative ->
                         AccountContactType.PRIMARY.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
         primaryContact.ifPresent(accountHolderRepresentative -> {
-            final LocalDateTime invitedDate = accountRepresentativeInvitationRepository.findDateByRepresentativeIdAndAccountId(accountHolderRepresentative.getId(), account.getId())
-                    .orElse(null);
-            accountHolderContactInfo.setPrimaryContact(accountConversionService.convert(accountHolderRepresentative, invitedDate));
+            final Optional<AccountRepresentativeInvitation> invitation = accountRepresentativeInvitationRepository.findByRepresentativeIdAndAccountId(accountHolderRepresentative.getId(), account.getId());
+            accountHolderContactInfo.setPrimaryContact(accountConversionService.convert(accountHolderRepresentative, invitation));
         });
         // TODO: Some further checks for more than one alternative contacts should be made here.
         Optional<AccountHolderRepresentative> alternativeContact = accountHolderRepresentatives.stream()
                 .filter(accountHolderRepresentative ->
                         AccountContactType.ALTERNATIVE.equals(accountHolderRepresentative.getAccountContactType())).findFirst();
         alternativeContact.ifPresent(accountHolderRepresentative -> {
-            final LocalDateTime invitedDate = accountRepresentativeInvitationRepository.findDateByRepresentativeIdAndAccountId(accountHolderRepresentative.getId(), account.getId())
-                    .orElse(null);
-            accountHolderContactInfo.setAlternativeContact(accountConversionService.convert(accountHolderRepresentative, invitedDate));
+            final Optional<AccountRepresentativeInvitation> invitation = accountRepresentativeInvitationRepository.findByRepresentativeIdAndAccountId(accountHolderRepresentative.getId(), account.getId());
+            accountHolderContactInfo.setAlternativeContact(accountConversionService.convert(accountHolderRepresentative, invitation));
         });
         accountDTO.setAccountHolderContactInfo(accountHolderContactInfo);
 
@@ -316,6 +320,12 @@ public class AccountDTOFactory {
         } else if (noProxyCompliantEntity instanceof MaritimeOperator) {
             dto.setOperator(accountConversionService.convert((MaritimeOperator) noProxyCompliantEntity));
         }
+        
+        Optional<IntegrationChangeLog> integrationChangeLog = integrationChangeLogRepository.findTopByOperatorIdAndEntityOrderByUpdatedAtDesc(compliantEntity.getIdentifier(), "MetsAccountContact");
+        if (integrationChangeLog.isPresent()) {
+           dto.getOperator().setContactsReceivedAt(LocalDateTime.ofInstant(integrationChangeLog.get().getUpdatedAt().toInstant(),ZoneId.of("UTC")));
+        }
+        dto.getOperator().setNumberOfContactsDisabled(countDisabledContacts(account.getIdentifier()).intValue());
     }
 
     private void setupAuthorizedRepresentatives(AccountDTO accountDTO, Account account, boolean noUserToken) {
@@ -369,5 +379,17 @@ public class AccountDTOFactory {
             accountDetailsDTO.setSalesContactDetails(salesContactDetailsDTO);
         }
 
+    }
+    
+    private Long countDisabledContacts(Long accountIdentifier) {
+
+        long disabledMetsContacts =
+                accountContactRepository.countByAccount_IdentifierAndInvitationStatus(accountIdentifier, false);
+
+        long disabledRegistryContacts =
+                accountRepresentativeInvitationRepository
+                        .countByAccount_IdentifierAndInvitationStatus(accountIdentifier, false);
+
+        return disabledMetsContacts + disabledRegistryContacts;
     }
 }

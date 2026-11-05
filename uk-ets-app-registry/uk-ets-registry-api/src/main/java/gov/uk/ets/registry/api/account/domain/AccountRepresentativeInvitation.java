@@ -61,4 +61,11 @@ public class AccountRepresentativeInvitation implements Serializable {
 
     @Column(name = "invited_date")
     private LocalDateTime invitedDate;
+
+    /**
+     * A flag that indicates whether Account Claim invitations are enabled for this contact.
+     */
+    @Column(name = "invitation_status")
+    @Builder.Default
+    private boolean invitationStatus = true;
 }

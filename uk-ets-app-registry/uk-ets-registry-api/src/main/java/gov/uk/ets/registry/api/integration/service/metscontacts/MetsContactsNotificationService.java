@@ -55,7 +55,9 @@ public class MetsContactsNotificationService {
 
         List<MetsAccountContact> contactsToInvite =
                 updatedAccount.getMetsAccountContacts().stream()
+                        .filter(MetsAccountContact::isInvitationStatus)
                         .filter(c -> incomingEmails.contains(c.getEmailAddress()))
+                        .filter(MetsAccountContact::isInvitationRequired)
                         .toList();
 
         if (contactsToInvite.isEmpty()) {
@@ -75,7 +77,8 @@ public class MetsContactsNotificationService {
 
         if (accountService.isAccountClaimApplicable(updatedAccount.getId(), updatedAccount.getIdentifier())) {
             AccountDTO accountDTO = accountDTOFactory.create(accountWithAccountClaimCode, true);
-            accountContactService.sendInvitation(updatedAccount.getIdentifier(), accountDTO, dto);
+            accountContactService.sendInvitation(updatedAccount.getIdentifier(), accountDTO, dto, false);
+            contactsToInvite.forEach(c -> c.setInvitationRequired(false));
         }
     }
 

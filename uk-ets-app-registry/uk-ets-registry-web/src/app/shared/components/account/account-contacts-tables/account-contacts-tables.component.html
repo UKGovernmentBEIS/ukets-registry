@@ -13,6 +13,7 @@
         <th scope="col" class="govuk-table__header">Contact type</th>
         <th scope="col" class="govuk-table__header">Operator type</th>
         <th scope="col" class="govuk-table__header">Invited</th>
+        <th scope="col" class="govuk-table__header">Invitation status</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -36,6 +37,19 @@
           <td class="govuk-table__cell">
             {{ contact.invitedOn | gdsDateTimeShortLocal }}
           </td>
+          <td class="govuk-table__cell">
+            <app-govuk-tag
+              [color]="
+                claimInvitationStatusMap[contact.invitationStatus.toString()]
+                  .color
+              "
+            >
+              {{
+                claimInvitationStatusMap[contact.invitationStatus.toString()]
+                  .label
+              }}
+            </app-govuk-tag>
+          </td>
         </tr>
       }
     </tbody>
@@ -56,6 +70,7 @@
         <th scope="col" class="govuk-table__header">Phone number</th>
         <th scope="col" class="govuk-table__header">Contact type</th>
         <th scope="col" class="govuk-table__header">Invited</th>
+        <th scope="col" class="govuk-table__header">Invitation status</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -69,6 +84,19 @@
           </td>
           <td class="govuk-table__cell">
             {{ contact.invitedOn | gdsDateTimeShortLocal }}
+          </td>
+          <td class="govuk-table__cell">
+            <app-govuk-tag
+              [color]="
+                claimInvitationStatusMap[contact.invitationStatus.toString()]
+                  .color
+              "
+            >
+              {{
+                claimInvitationStatusMap[contact.invitationStatus.toString()]
+                  .label
+              }}
+            </app-govuk-tag>
           </td>
         </tr>
       }

@@ -2,7 +2,6 @@ import { LoginGuard } from '@shared/guards';
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 
-import { AccountHeaderGuard } from './guards/account-header.guard';
 import { ClearTransactionProposalGuard } from '@transaction-proposal/guards/clear-transaction-proposal-guard.service';
 import { ClearUpdateTrustedAccountGuard } from '@trusted-account-list/guards/clear-update-trusted-account-guard.service';
 import { AccountHoldingDetailsComponent } from '@account-management/account/account-details/holdings/account-holding-details.component';
@@ -41,11 +40,18 @@ import {
   canActivateSendInvitation,
   clearSendInvitationGuard,
 } from '@send-invitation-wizard/send-invitation-wizard.guards';
+import { AUTO_CLAIM_BASE_PATH } from '@auto-claim-wizard/auto-claim-wizard-routing.module';
+import { initAccountDetailsResolver } from '@account-management/account/resolvers';
+import { CHANGE_CONTACT_INVITATION_BASE_PATH } from '@change-contact-invitation-wizard/change-contact-invitation-wizard-routing.module';
+import { clearChangeContactInvitationGuard } from '@change-contact-invitation-wizard/guards';
 
 const routes: Routes = [
   {
     path: ':accountId',
-    canActivate: [LoginGuard, AccountHeaderGuard],
+    canActivate: [LoginGuard],
+    resolve: {
+      header: initAccountDetailsResolver,
+    },
     component: AccountDataContainerComponent,
     title: 'Account Details',
   },
@@ -56,27 +62,38 @@ const routes: Routes = [
     children: [
       {
         path: ':accountId/edit-confirm',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: ConfirmAccountDetailsUpdateContainerComponent,
       },
       {
         path: ':accountId/cancel-update',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: CancelAccountDetailsUpdateContainerComponent,
       },
       {
         path: ':accountId/updated',
-        canDeactivate: [AccountHeaderGuard],
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: AccountDetailsUpdatedContainerComponent,
       },
       {
         path: ':accountId/holdings/details',
         component: AccountHoldingDetailsComponent,
         resolve: {
+          header: initAccountDetailsResolver,
           details: HoldingDetailsResolver,
         },
       },
       {
         path: ':accountId/status',
-        canDeactivate: [AccountHeaderGuard],
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         loadChildren: () =>
           import('./account-status/account-status.module').then(
             (m) => m.AccountStatusModule
@@ -84,32 +101,52 @@ const routes: Routes = [
       },
       {
         path: ':accountId/user/:urid',
-        resolve: { user: AccountUserDetailsResolver },
+        resolve: {
+          header: initAccountDetailsResolver,
+          user: AccountUserDetailsResolver,
+        },
         component: UserDetailsContainerComponent,
       },
       {
         path: ':accountId/edit',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: EditAccountDetailsContainerComponent,
       },
       {
         path: ':accountId/edit-billing',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: EditBillingDetailsContainerComponent,
       },
       {
         path: ':accountId/exclude-billing',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: ExcludeBillingContainerComponent,
       },
       {
         path: ':accountId/cancel-exclude-billing',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: CancelExcludeBillingContainerComponent,
       },
       {
         path: ':accountId/exclude-billing-success',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         component: ExcludeBillingSucessContainerComponent,
       },
       {
         path: ':accountId/notes',
-        canDeactivate: [AccountHeaderGuard],
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         loadChildren: () =>
           import(
             './account-details/notes/account-notes-wizard/account-notes-wizard-routing.module'
@@ -117,6 +154,9 @@ const routes: Routes = [
       },
       {
         path: ':accountId/transactions',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearTransactionProposalGuard],
         loadChildren: () =>
           import('@transaction-proposal/transaction-proposal.module').then(
@@ -125,6 +165,9 @@ const routes: Routes = [
       },
       {
         path: ':accountId/' + AccountHolderDetailsWizardPathsModel.BASE_PATH,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearUpdateAccountHolderDetailsGuard],
         loadChildren: () =>
           import(
@@ -135,7 +178,10 @@ const routes: Routes = [
         path: ':accountId/' + CHANGE_ACCOUNT_HOLDER_BASE_PATH,
         canDeactivate: [clearChangeAccountHolderRequestGuard],
         canActivate: [canActivateChangeAccountHolder],
-        resolve: { isAccountHolderOrphan: IsAccountHolderOrphanResolver },
+        resolve: {
+          initAccountDetailsResolver,
+          isAccountHolderOrphan: IsAccountHolderOrphanResolver,
+        },
         loadChildren: () =>
           import(
             './change-account-holder-wizard/change-account-holder-wizard.module'
@@ -143,6 +189,9 @@ const routes: Routes = [
       },
       {
         path: ':accountId/' + SEND_INVITATION_BASE_PATH,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [clearSendInvitationGuard],
         canActivate: [canActivateSendInvitation],
         loadChildren: () =>
@@ -151,7 +200,32 @@ const routes: Routes = [
           ),
       },
       {
+        path: ':accountId/' + CHANGE_CONTACT_INVITATION_BASE_PATH,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
+        canDeactivate: [clearChangeContactInvitationGuard],
+        // canActivate: [canActivateSendInvitation],
+        loadChildren: () =>
+          import(
+            './change-contact-invitation-wizard/change-contact-invitation-wizard.module'
+          ).then((m) => m.ChangeContactInvitationWizardModule),
+      },
+      {
+        path: ':accountId/' + AUTO_CLAIM_BASE_PATH,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
+        loadChildren: () =>
+          import('./auto-claim-wizard/auto-claim-wizard.module').then(
+            (m) => m.AutoClaimWizardModule
+          ),
+      },
+      {
         path: ':accountId/tal-transaction-rules',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearUpdateTalTransactionRulesGuard],
         loadChildren: () =>
           import('./tal-transaction-rules/tal-transaction-rules.module').then(
@@ -160,6 +234,9 @@ const routes: Routes = [
       },
       {
         path: ':accountId/operator-update',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearUpdateOperatorGuard],
         loadChildren: () =>
           import('./operator-update-wizard/operator-update-wizard.module').then(
@@ -168,6 +245,9 @@ const routes: Routes = [
       },
       {
         path: ':accountId/trusted-account-list',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearUpdateTrustedAccountGuard],
         loadChildren: () =>
           import('./trusted-account-list/trusted-account-list.module').then(
@@ -176,6 +256,9 @@ const routes: Routes = [
       },
       {
         path: ':accountId/authorised-representatives',
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearUpdateAuthorisedRepresentativesGuard],
         loadChildren: () =>
           import(
@@ -184,6 +267,9 @@ const routes: Routes = [
       },
       {
         path: `:accountId/${AllocationStatusRoutePathsModel.ALLOCATION_STATUS}`,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         loadChildren: () =>
           import('./allocation-status/allocation-status.module').then(
             (m) => m.AllocationStatusModule
@@ -191,6 +277,9 @@ const routes: Routes = [
       },
       {
         path: `:accountId/${AccountTransferPathsModel.BASE_PATH}`,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearAccountTransferRequestGuard],
         loadChildren: () =>
           import('./account-transfer/account-transfer.module').then(
@@ -199,6 +288,9 @@ const routes: Routes = [
       },
       {
         path: `:accountId/${AccountClosureWizardPathsModel.BASE_PATH}`,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         loadChildren: () =>
           import('./account-closure-wizard/account-closure-wizard.module').then(
             (m) => m.AccountClosureWizardModule
@@ -206,6 +298,9 @@ const routes: Routes = [
       },
       {
         path: `:accountId/${UpdateExclusionStatusPathsModel.BASE_PATH}`,
+        resolve: {
+          header: initAccountDetailsResolver,
+        },
         canDeactivate: [ClearExclusionStatusGuard],
         loadChildren: () =>
           import(

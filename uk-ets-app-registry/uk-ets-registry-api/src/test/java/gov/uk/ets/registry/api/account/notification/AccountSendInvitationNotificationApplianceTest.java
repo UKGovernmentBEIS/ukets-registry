@@ -1,5 +1,6 @@
 package gov.uk.ets.registry.api.account.notification;
 
+import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.domain.types.AccountHolderType;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
@@ -56,10 +57,12 @@ class AccountSendInvitationNotificationApplianceTest {
         MetsContactDTO mets1 = new MetsContactDTO();
         mets1.setEmail("mets1@test.com");
         mets1.setFullName("METS One");
+        mets1.setInvitationStatus(true);
 
         RegistryContactDTO registry1 = new RegistryContactDTO();
         registry1.setEmail("reg1@test.com");
         registry1.setFullName("Registry One");
+        registry1.setInvitationStatus(true);
 
         AccountContactSendInvitationDTO sendInvitationDTO = new AccountContactSendInvitationDTO();
         sendInvitationDTO.setMetsContacts(Set.of(mets1));
@@ -90,20 +93,24 @@ class AccountSendInvitationNotificationApplianceTest {
 
         OperatorDTO operatorDTO = new OperatorDTO();
         operatorDTO.setEmitterId("EM-555");
+        operatorDTO.setAutoSendClaimInvitationEnabled(true);
         accountDTO.setOperator(operatorDTO);
+        accountDTO.setMetsContacts(List.of(mets1));
+        accountDTO.setRegistryContacts(List.of(registry1));
 
         Method method = TestService.class.getMethod(
                 "sendInvitation",
                 Long.class,
                 AccountDTO.class,
-                AccountContactSendInvitationDTO.class
+                AccountContactSendInvitationDTO.class,
+                boolean.class
         );
 
 
         when(methodSignature.getMethod()).thenReturn(method);
         when(joinPoint.getSignature()).thenReturn(methodSignature);
         when(joinPoint.getArgs()).thenReturn(
-                new Object[]{ACCOUNT_IDENTIFIER, accountDTO, sendInvitationDTO}
+                new Object[]{ACCOUNT_IDENTIFIER, accountDTO, sendInvitationDTO, true}
         );
 
         // ----- Act -----
@@ -140,6 +147,157 @@ class AccountSendInvitationNotificationApplianceTest {
     }
 
     @Test
+    void apply_shouldNotEmitNotifications_auto_send_disabled() throws NoSuchMethodException {
+
+        MetsContactDTO mets1 = new MetsContactDTO();
+        mets1.setEmail("mets1@test.com");
+        mets1.setFullName("METS One");
+
+        RegistryContactDTO registry1 = new RegistryContactDTO();
+        registry1.setEmail("reg1@test.com");
+        registry1.setFullName("Registry One");
+
+        AccountContactSendInvitationDTO sendInvitationDTO = new AccountContactSendInvitationDTO();
+        sendInvitationDTO.setMetsContacts(Set.of(mets1));
+        sendInvitationDTO.setRegistryContacts(Set.of(registry1));
+
+
+
+        when(emitsGroupNotifications.value())
+                .thenReturn(new GroupNotificationType[]{
+                        GroupNotificationType.SEND_INVITATION_TO_CONTACTS
+                });
+
+        // Mock accountDTO returned by accountService
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setAccountClaimCode("ABC123");
+
+        DetailsDTO holerDetailsDTO = new DetailsDTO();
+        holerDetailsDTO.setName("AH name");
+        AccountHolderDTO holderDTO = new AccountHolderDTO();
+        holderDTO.setType(AccountHolderType.ORGANISATION);
+        holderDTO.setDetails(holerDetailsDTO);
+        accountDTO.setAccountHolder(holderDTO);
+
+        AccountDetailsDTO detailsDTO = new AccountDetailsDTO();
+        detailsDTO.setAccountNumber("UK-123-456");
+        detailsDTO.setAccountType("Operator Holding Account");
+        accountDTO.setAccountDetails(detailsDTO);
+
+        OperatorDTO operatorDTO = new OperatorDTO();
+        operatorDTO.setEmitterId("EM-555");
+        operatorDTO.setAutoSendClaimInvitationEnabled(false);
+        accountDTO.setOperator(operatorDTO);
+
+        Method method = TestService.class.getMethod(
+                "sendInvitation",
+                Long.class,
+                AccountDTO.class,
+                AccountContactSendInvitationDTO.class,
+                boolean.class
+        );
+
+
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(joinPoint.getArgs()).thenReturn(
+                new Object[]{ACCOUNT_IDENTIFIER, accountDTO, sendInvitationDTO, false}
+        );
+
+        appliance.apply(joinPoint, emitsGroupNotifications, "returned value");
+
+        verifyNoInteractions(groupNotificationClient);
+    }
+    
+    @Test
+    void apply_shouldEmitNotificationsForEligibleContactsOnly() throws NoSuchMethodException {
+        MetsContactDTO mets1 = new MetsContactDTO();
+        mets1.setEmail("mets1@test.com");
+        mets1.setFullName("METS One");
+        mets1.setInvitationStatus(true);
+
+        RegistryContactDTO registry1 = new RegistryContactDTO();
+        registry1.setEmail("reg1@test.com");
+        registry1.setFullName("Registry One");
+        registry1.setInvitationStatus(false);
+
+        AccountContactSendInvitationDTO sendInvitationDTO = new AccountContactSendInvitationDTO();
+        sendInvitationDTO.setMetsContacts(Set.of(mets1));
+        sendInvitationDTO.setRegistryContacts(Set.of(registry1));
+
+
+
+        when(emitsGroupNotifications.value())
+                .thenReturn(new GroupNotificationType[]{
+                        GroupNotificationType.SEND_INVITATION_TO_CONTACTS
+                });
+
+        // Mock accountDTO returned by accountService
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setAccountClaimCode("ABC123");
+
+        DetailsDTO holerDetailsDTO = new DetailsDTO();
+        holerDetailsDTO.setName("AH name");
+        AccountHolderDTO holderDTO = new AccountHolderDTO();
+        holderDTO.setType(AccountHolderType.ORGANISATION);
+        holderDTO.setDetails(holerDetailsDTO);
+        accountDTO.setAccountHolder(holderDTO);
+
+        AccountDetailsDTO detailsDTO = new AccountDetailsDTO();
+        detailsDTO.setAccountNumber("UK-123-456");
+        detailsDTO.setAccountType("Operator Holding Account");
+        accountDTO.setAccountDetails(detailsDTO);
+
+        OperatorDTO operatorDTO = new OperatorDTO();
+        operatorDTO.setEmitterId("EM-555");
+        
+        accountDTO.setOperator(operatorDTO);
+        accountDTO.setMetsContacts(List.of(mets1));
+        accountDTO.setRegistryContacts(List.of(registry1));
+
+        Method method = TestService.class.getMethod(
+                "sendInvitation",
+                Long.class,
+                AccountDTO.class,
+                AccountContactSendInvitationDTO.class,
+                boolean.class
+        );
+
+
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(joinPoint.getArgs()).thenReturn(
+                new Object[]{ACCOUNT_IDENTIFIER, accountDTO, sendInvitationDTO, true}
+        );
+
+        // ----- Act -----
+        appliance.apply(joinPoint, emitsGroupNotifications, "returned value");
+
+        // ----- Assert -----
+        ArgumentCaptor<AccountSendInvitationGroupNotification> captor =
+                ArgumentCaptor.forClass(AccountSendInvitationGroupNotification.class);
+
+        verify(groupNotificationClient, times(1))
+                .emitGroupNotification(captor.capture());
+
+        List<AccountSendInvitationGroupNotification> accountSendInvitationGroupNotifications = captor.getAllValues();
+
+        // Validate emitted notifications
+        AccountSendInvitationGroupNotification metsNotification = accountSendInvitationGroupNotifications.get(0);
+
+        // METS contact
+        assertTrue(metsNotification.getRecipients().contains("mets1@test.com"));
+        assertEquals("METS One", metsNotification.getContactFullName());
+        assertEquals("ABC123", metsNotification.getAccountClaimCode());
+        assertEquals("EM-555", metsNotification.getEmitterId());
+        assertEquals("AH name", metsNotification.getOperatorName());
+        assertEquals("UK-123-456", metsNotification.getAccountNumber());
+        assertEquals("Operator Holding Account", metsNotification.getAccountType());
+        assertTrue(metsNotification.getIsMetsContact());
+        assertEquals(GroupNotificationType.SEND_INVITATION_TO_CONTACTS,  metsNotification.getType());
+    }
+
+    @Test
     void apply_shouldFailIfInvitationPayloadIsMissing() throws Exception {
 
         when(emitsGroupNotifications.value())
@@ -167,13 +325,101 @@ class AccountSendInvitationNotificationApplianceTest {
         verifyNoInteractions(groupNotificationClient);
     }
 
+
+    @Test
+    void apply_shouldEmitNotificationForAlternativeContactWhenSameEmailAsDisabledPrimary()
+            throws NoSuchMethodException {
+
+        final String sharedEmail = "shared@test.com";
+
+        RegistryContactDTO primaryContact = new RegistryContactDTO();
+        primaryContact.setEmail(sharedEmail);
+        primaryContact.setFullName("Primary Contact");
+        primaryContact.setContactType(AccountContactType.PRIMARY);
+        primaryContact.setInvitationStatus(false);
+
+        RegistryContactDTO alternativeContact = new RegistryContactDTO();
+        alternativeContact.setEmail(sharedEmail);
+        alternativeContact.setFullName("Alternative Contact");
+        alternativeContact.setContactType(AccountContactType.ALTERNATIVE);
+        alternativeContact.setInvitationStatus(true);
+
+        AccountContactSendInvitationDTO payload =
+                new AccountContactSendInvitationDTO();
+        payload.setMetsContacts(Set.of());
+        payload.setRegistryContacts(Set.of(alternativeContact));
+
+        when(emitsGroupNotifications.value())
+                .thenReturn(new GroupNotificationType[]{
+                        GroupNotificationType.SEND_INVITATION_TO_CONTACTS
+                });
+
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setAccountClaimCode("ABC123");
+        accountDTO.setRegistryContacts(List.of(primaryContact, alternativeContact));
+
+        DetailsDTO holderDetailsDTO = new DetailsDTO();
+        holderDetailsDTO.setName("AH name");
+
+        AccountHolderDTO holderDTO = new AccountHolderDTO();
+        holderDTO.setType(AccountHolderType.ORGANISATION);
+        holderDTO.setDetails(holderDetailsDTO);
+        accountDTO.setAccountHolder(holderDTO);
+
+        AccountDetailsDTO detailsDTO = new AccountDetailsDTO();
+        detailsDTO.setAccountNumber("UK-123-456");
+        detailsDTO.setAccountType("Operator Holding Account");
+        accountDTO.setAccountDetails(detailsDTO);
+
+        OperatorDTO operatorDTO = new OperatorDTO();
+        operatorDTO.setEmitterId("EM-555");
+        accountDTO.setOperator(operatorDTO);
+
+        Method method = TestService.class.getMethod(
+                "sendInvitation",
+                Long.class,
+                AccountDTO.class,
+                AccountContactSendInvitationDTO.class,
+                boolean.class
+        );
+
+        when(methodSignature.getMethod()).thenReturn(method);
+        when(joinPoint.getSignature()).thenReturn(methodSignature);
+        when(joinPoint.getArgs()).thenReturn(
+                new Object[]{ACCOUNT_IDENTIFIER, accountDTO, payload, true}
+        );
+
+        // Act
+        appliance.apply(joinPoint, emitsGroupNotifications, "returned value");
+
+        // Assert
+        ArgumentCaptor<AccountSendInvitationGroupNotification> captor =
+                ArgumentCaptor.forClass(AccountSendInvitationGroupNotification.class);
+
+        verify(groupNotificationClient, times(1))
+                .emitGroupNotification(captor.capture());
+
+        AccountSendInvitationGroupNotification notification =
+                captor.getValue();
+
+        assertTrue(notification.getRecipients().contains(sharedEmail));
+        assertEquals("Alternative Contact", notification.getContactFullName());
+        assertFalse(notification.getIsMetsContact());
+        assertEquals(
+                GroupNotificationType.SEND_INVITATION_TO_CONTACTS,
+                notification.getType()
+        );
+    }
+
+
     static class TestService {
 
         @EmitsGroupNotifications(GroupNotificationType.SEND_INVITATION_TO_CONTACTS)
         public void sendInvitation(
                 Long accountIdentifier,
                 @InvitationAccount AccountDTO accountDTO,
-                @InvitationPayload AccountContactSendInvitationDTO payload
+                @InvitationPayload AccountContactSendInvitationDTO payload,
+                boolean isManual
         ) {
 
         }

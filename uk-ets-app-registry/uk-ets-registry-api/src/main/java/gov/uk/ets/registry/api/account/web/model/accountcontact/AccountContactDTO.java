@@ -30,4 +30,9 @@ public abstract class AccountContactDTO {
     private PhoneNumberDTO phoneNumber;
 
     private LocalDateTime invitedOn;
+
+    /**
+     * A flag that indicates whether Account Claim invitations are enabled for this contact.
+     */
+    private boolean invitationStatus;
 }

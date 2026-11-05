@@ -8,6 +8,7 @@ import gov.uk.ets.registry.api.account.domain.AccountFilter;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AccountOwnership;
+import gov.uk.ets.registry.api.account.domain.AccountRepresentativeInvitation;
 import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.CompliantEntity;
@@ -27,6 +28,7 @@ import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.AccountRepresentativeInvitationRepository;
 import gov.uk.ets.registry.api.account.repository.ActivityTypeRepository;
 import gov.uk.ets.registry.api.account.repository.CompliantEntityRepository;
 import gov.uk.ets.registry.api.account.repository.InstallationOwnershipRepository;
@@ -210,6 +212,7 @@ public class AccountService {
     private final AccountContactService accountContactService;
     private final AccountAuditService accountAuditService;
     private final TaskRepository taskRepository;
+    private final AccountRepresentativeInvitationRepository accountRepresentativeInvitationRepository;
 
     /**
      * Creates an account.
@@ -404,6 +407,7 @@ public class AccountService {
         handleAccountOwnership(account, holder);
         persistenceService.save(account);
         createAuthorisedRepresentatives(accountDTO, account, AccountAccessState.ACTIVE);
+        createAccountRepresentativeInvitations(account);
         return account;
     }
 
@@ -429,6 +433,7 @@ public class AccountService {
         installation.setStartYear(installationDTO.getFirstYear());
         installation.setEndYear(installationDTO.getLastYear());
         installation.setEmitterId(installationDTO.getEmitterId());
+        installation.setAutoSendClaimInvitationEnabled(true);
         installation = persistenceService.save(installation);
 
         Set<ActivityType> activityTypes = new HashSet<>();
@@ -461,6 +466,7 @@ public class AccountService {
         aircraftOperator.setStartYear(aircraftOperatorDTO.getFirstYear());
         aircraftOperator.setEndYear(aircraftOperatorDTO.getLastYear());
         aircraftOperator.setEmitterId(aircraftOperatorDTO.getEmitterId());
+        aircraftOperator.setAutoSendClaimInvitationEnabled(true);
         aircraftOperator = persistenceService.save(aircraftOperator);
         return aircraftOperator;
     }
@@ -474,6 +480,7 @@ public class AccountService {
         maritimeOperator.setEndYear(maritimeOperatorDTO.getLastYear());
         maritimeOperator.setImo(maritimeOperatorDTO.getImo());
         maritimeOperator.setEmitterId(maritimeOperatorDTO.getEmitterId());
+        maritimeOperator.setAutoSendClaimInvitationEnabled(true);
         maritimeOperator = persistenceService.save(maritimeOperator);
         return maritimeOperator;
     }
@@ -546,6 +553,17 @@ public class AccountService {
         accountOwnershipRepository.save(newAccountOwnership);
     }
 
+    private void createAccountRepresentativeInvitations(Account account) {
+        if (account.getRegistryAccountType().equals(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT) ||
+            account.getRegistryAccountType().equals(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT) ||
+            account.getRegistryAccountType().equals(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT)) {
+
+            accountHolderRepresentativeRepository.getAccountHolderRepresentatives(account.getAccountHolder().getIdentifier())
+                    .forEach(accountHolderRepresentative ->
+                            account.setRepresentativeInvitationStatus(accountHolderRepresentative, true));
+        }
+    }
+
     /**
      * Updates the Account Holder and his contacts, if available.
      *
@@ -604,9 +622,9 @@ public class AccountService {
     }
 
     @Transactional
-    public void insertContact(AccountHolder accountHolder,
-                              AccountHolderRepresentativeDTO representativeDTO,
-                              boolean primary) {
+    public AccountHolderRepresentative insertContact(AccountHolder accountHolder,
+                                                     AccountHolderRepresentativeDTO representativeDTO,
+                                                     boolean primary) {
         Contact contact = conversionService
             .convert(ConversionParameters.builder()
                 .email(representativeDTO.getEmailAddress())
@@ -624,14 +642,17 @@ public class AccountService {
         representative.setAlsoKnownAs(representativeDTO.getDetails().getAka());
         representative.setAccountHolder(accountHolder);
         persistenceService.save(representative);
-        accountHolderRepresentativeRepository.save(representative);
+        return accountHolderRepresentativeRepository.save(representative);
     }
 
     @Transactional
     public void deleteContact(AccountHolderRepresentativeDTO representativeDTO) {
         Optional<AccountHolderRepresentative> accountHolderRepresentative =
             accountHolderRepresentativeRepository.findById(representativeDTO.getId());
-        accountHolderRepresentative.ifPresent(accountHolderRepresentativeRepository::delete);
+        accountHolderRepresentative.ifPresent(representative -> {
+            accountRepresentativeInvitationRepository.deleteByAccountHolderRepresentative_Id(representative.getId());
+            accountHolderRepresentativeRepository.delete(representative);
+        });
     }
 
 
@@ -649,7 +670,7 @@ public class AccountService {
         }
     }
 
-    public void addAccountHolderContact(AccountHolder holder,
+    public AccountHolderRepresentative addAccountHolderContact(AccountHolder holder,
                                         AccountHolderRepresentativeDTO accountHolderRepresentativeDTO,
                                         boolean primary) {
         AccountHolderRepresentative representative = new AccountHolderRepresentative();
@@ -673,7 +694,7 @@ public class AccountService {
             representative.setLastName(detailsDTO.getLastName());
             representative.setAlsoKnownAs(detailsDTO.getAka());
         }
-        accountHolderRepresentativeRepository.save(representative);
+        return accountHolderRepresentativeRepository.save(representative);
     }
 
     /**
@@ -1720,12 +1741,12 @@ public class AccountService {
     }
 
     @Transactional
-    public String sendInvitation(Long accountIdentifier, AccountContactSendInvitationDTO sendInvitationDTO) {
+    public String sendInvitation(Long accountIdentifier, AccountContactSendInvitationDTO sendInvitationDTO, boolean isManual) {
         final AccountDTO accountDTO = this.getAccountDTOWithoutAuthorization(accountIdentifier);
         final Long accountId = accountRepository.findByIdentifier(accountIdentifier).map(Account::getId)
                 .orElseThrow(() -> new UkEtsException("Account not found"));
         if (isAccountClaimApplicable(accountId, accountIdentifier)) {
-            return accountContactService.sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO);
+            return accountContactService.sendInvitation(accountIdentifier, accountDTO, sendInvitationDTO, isManual);
         }
         return null;
     }
@@ -1748,5 +1769,24 @@ public class AccountService {
                 .toList();
 
         return  accountAccesses.isEmpty() && pendingAuthorizedRepresentativeTasks == 0;
+    }
+
+    @Transactional
+    public void handleRepresentativeInvitations(AccountHolder accountHolder, Account account) {
+        if (account.getRegistryAccountType().equals(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT) ||
+                account.getRegistryAccountType().equals(RegistryAccountType.AIRCRAFT_OPERATOR_HOLDING_ACCOUNT) ||
+                account.getRegistryAccountType().equals(RegistryAccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT)) {
+            account.getRepresentativeInvitations().clear();
+            accountHolder.getAccountHolderRepresentatives().forEach(r -> {
+                Optional<AccountRepresentativeInvitation> invOptional = accountRepresentativeInvitationRepository.findByRepresentativeIdAndAccountId(r.getId(), account.getId());
+                if (invOptional.isEmpty()) {
+                    AccountRepresentativeInvitation inv = new AccountRepresentativeInvitation();
+                    inv.setAccountHolderRepresentative(r);
+                    inv.setInvitationStatus(true);
+                    inv.setAccount(account);
+                    account.getRepresentativeInvitations().add(inv);
+                }
+            });
+        }
     }
 }

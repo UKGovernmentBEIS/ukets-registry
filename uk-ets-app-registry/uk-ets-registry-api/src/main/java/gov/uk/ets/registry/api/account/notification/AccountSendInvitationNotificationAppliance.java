@@ -1,8 +1,11 @@
 package gov.uk.ets.registry.api.account.notification;
 
+import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.RegistryContactDTO;
 import gov.uk.ets.registry.api.notification.AccountSendInvitationGroupNotification;
 import gov.uk.ets.registry.api.notification.GroupNotificationClient;
 import gov.uk.ets.registry.usernotifications.EmitsGroupNotifications;
@@ -21,7 +24,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This aspect processing method is responsible for applying business logic if the underlying conditions are met.
@@ -77,16 +82,38 @@ public class AccountSendInvitationNotificationAppliance {
         require(payload != null, "Missing @InvitationPayload parameter");
         require(accountDTO != null, "Missing @InvitationAccount parameter");
 
+        final boolean isManual = (boolean) args[3];
 
-        for (GroupNotificationType type : emitsGroupNotificationsAnnotation.value()) {
+        if (isManual || accountDTO.getOperator().isAutoSendClaimInvitationEnabled()) {
 
-            if (type == GroupNotificationType.SEND_INVITATION_TO_CONTACTS) {
+            for (GroupNotificationType type : emitsGroupNotificationsAnnotation.value()) {
 
-                final AccountDTO finalAccountDTO = accountDTO;
-                final String claimCode = finalAccountDTO.getAccountClaimCode();
+                if (type == GroupNotificationType.SEND_INVITATION_TO_CONTACTS) {
 
+                    final AccountDTO finalAccountDTO = accountDTO;
+                    final String claimCode = finalAccountDTO.getAccountClaimCode();
 
-                payload.getMetsContacts().forEach(contact ->
+                final Map<String, Boolean> metsContactEmailStatusMap = finalAccountDTO.getMetsContacts().stream()
+                        .collect(Collectors.toMap(MetsContactDTO::getEmail, MetsContactDTO::isInvitationStatus));
+
+                final Set<MetsContactDTO> eligibleMetsContacts = payload.getMetsContacts().stream()
+                        .filter(contact -> Boolean.TRUE.equals(metsContactEmailStatusMap.get(contact.getEmail())))
+                        .collect(Collectors.toSet());
+
+                    final Map<RegistryContactKey, Boolean> registryContactEmailStatusMap = finalAccountDTO.getRegistryContacts().stream()
+                            .collect(Collectors.toMap(
+                                    contact -> new RegistryContactKey(
+                                            contact.getEmail(),
+                                            contact.getContactType()
+                                    ),
+                                    RegistryContactDTO::isInvitationStatus)
+                            );
+
+                    final Set<RegistryContactDTO> eligibleRegistryContacts = payload.getRegistryContacts().stream()
+                            .filter(contact -> Boolean.TRUE.equals(registryContactEmailStatusMap.get(new RegistryContactKey(contact.getEmail(), contact.getContactType()))))
+                            .collect(Collectors.toSet());
+
+                eligibleMetsContacts.forEach(contact ->
                         emitAfterCommit(() ->
                                 groupNotificationClient.emitGroupNotification(
                                         buildNotification(type, finalAccountDTO, contact, Boolean.TRUE, claimCode)
@@ -94,7 +121,7 @@ public class AccountSendInvitationNotificationAppliance {
                         )
                 );
 
-                payload.getRegistryContacts().forEach(contact ->
+                eligibleRegistryContacts.forEach(contact ->
                         emitAfterCommit(() ->
                                 groupNotificationClient.emitGroupNotification(
                                         buildNotification(type, finalAccountDTO, contact, Boolean.FALSE, claimCode)
@@ -102,6 +129,7 @@ public class AccountSendInvitationNotificationAppliance {
                         )
                 );
             }
+          }
         }
     }
 
@@ -148,4 +176,9 @@ public class AccountSendInvitationNotificationAppliance {
             throw new MissingInvitationNotificationDataException(message);
         }
     }
+
+    private record RegistryContactKey(
+            String email,
+            AccountContactType contactType
+    ) {}
 }

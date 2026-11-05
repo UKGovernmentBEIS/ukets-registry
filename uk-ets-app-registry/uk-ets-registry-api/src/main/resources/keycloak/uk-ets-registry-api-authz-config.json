@@ -124,7 +124,7 @@
       "uris": ["/api-registry/accounts.send.invitation"],
       "scopes": [
         {
-          "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+          "name": "urn:uk-ets-registry-api:actionForSeniorAndJuniorAdmin"
         }
       ]
     },
@@ -161,6 +161,30 @@
       "scopes": [
         {
           "name": "urn:uk-ets-registry-api:account:bulk-claim"
+        }
+      ]
+    },
+    {
+      "name": "Account Resource - Change Auto-send Invitation Status",
+      "ownerManagedAccess": false,
+      "displayName": "Account Resource - Change Auto-send Invitation Status",
+      "attributes": {},
+      "uris": ["/api-registry/accounts.change.auto.send.invitation.status"],
+        "scopes": [
+          {
+            "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
+          }
+        ]
+    },
+    {
+      "name": "Account Resource - Change Contacts Invitation Status",
+      "ownerManagedAccess": false,
+      "displayName": "Account Resource - Change Contacts Invitation Status",
+      "attributes": {},
+      "uris": ["/api-registry/accounts.change.contacts.invitation.status"],
+      "scopes": [
+        {
+          "name": "urn:uk-ets-registry-api:actionForSeniorAdmin"
         }
       ]
     },

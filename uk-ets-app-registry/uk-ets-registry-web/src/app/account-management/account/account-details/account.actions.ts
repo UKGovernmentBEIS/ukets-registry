@@ -193,3 +193,11 @@ export const prepareForTrustedAccountChangeDescription = createAction(
   '[Account Details Effect] Load account details of trusted account being changed',
   props<{ accountFullIdentifier: string; accountDescription: string }>()
 );
+
+export const submitAutoSendClaimInvitationUpdatedSuccess = createAction(
+  '[Account Details Auto Claim] Submit auto send claim invitation updated success'
+);
+
+export const clearAutoSendClaimInvitationUpdated = createAction(
+  '[Account Details Auto Claim] Clear auto send claim invitation updated'
+);

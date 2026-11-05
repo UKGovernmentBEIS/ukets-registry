@@ -64,6 +64,12 @@
       "@send-invitation-wizard/*": [
         "src/app/account-management/account/send-invitation-wizard/*"
       ],
+      "@auto-claim-wizard/*": [
+        "src/app/account-management/account/auto-claim-wizard/*"
+      ],
+      "@change-contact-invitation-wizard/*": [
+        "src/app/account-management/account/change-contact-invitation-wizard/*"
+      ],
       "@exclusion-status-update-wizard/*": [
         "src/app/account-management/account/exclusion-status-update-wizard/*"
       ],

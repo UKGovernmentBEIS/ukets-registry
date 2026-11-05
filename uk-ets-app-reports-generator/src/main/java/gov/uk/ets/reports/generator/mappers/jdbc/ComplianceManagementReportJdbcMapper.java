@@ -56,6 +56,11 @@ public class ComplianceManagementReportJdbcMapper
                        approval_second_ar_required,
                        transfers_outside_tal,
                        single_person_approval_required,
+                       first_invitation_date,
+                       acc_metrics.last_invitation_sent                     AS last_invitation_sent,
+                       acc_metrics.first_add_ar_created                         AS first_ar_task_created,
+                       acc_metrics.first_add_ar_approved                       AS first_ar_task_approved,
+                       COALESCE(disabled_contacts.number_of_disabled_contacts, 0) AS number_of_disabled_contacts,
                        MAX(CASE WHEN year = 2021 THEN verified_emissions_str END) AS verified_emissions_2021,
                        MAX(CASE WHEN year = 2022 THEN verified_emissions_str END) AS verified_emissions_2022,
                        MAX(CASE WHEN year = 2023 THEN verified_emissions_str END) AS verified_emissions_2023,
@@ -147,6 +152,7 @@ public class ComplianceManagementReportJdbcMapper
                                a.transfers_outside_tal,
                                a.single_person_approval_required,
                                ce.identifier,
+                               ce.first_invitation_date AS first_invitation_date,
                                CASE
                                     WHEN a.registry_account_type = 'OPERATOR_HOLDING_ACCOUNT' 
                                         THEN (SELECT installation_name FROM installation i WHERE i.compliant_entity_id = ce.id)
@@ -247,7 +253,32 @@ public class ComplianceManagementReportJdbcMapper
                     AND ttt.type IN ('AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST', 'AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST', 'AUTHORIZED_REPRESENTATIVE_REPLACEMENT_REQUEST')
                     GROUP BY ac.id
                 ) arc ON arc.account_id = t1.account_id
+                    
+                LEFT JOIN (
+                    SELECT
+                        account_id,
+                        COUNT(*) AS number_of_disabled_contacts
+                    FROM (
+                        SELECT
+                            account_id
+                        FROM account_representative_invitation
+                        WHERE invitation_status = false
                 
+                        UNION ALL
+                
+                        SELECT
+                            account_id
+                        FROM mets_account_contact
+                        WHERE invitation_status = false
+                    ) disabled_contacts
+                    GROUP BY account_id
+                ) disabled_contacts
+                    ON disabled_contacts.account_id = t1.account_id 
+                    
+                LEFT JOIN (select am.account_identifier ,am.first_add_ar_approved , am.first_add_ar_created , am.last_invitation_sent 
+                           from reporting_metrics.account_metrics am) acc_metrics
+                    ON acc_metrics.account_identifier = t1.account_identifier
+
                 LEFT JOIN LATERAL (
                     SELECT
                         ub.account_identifier as block_account_id,
@@ -270,7 +301,9 @@ public class ComplianceManagementReportJdbcMapper
                          account_closing_date, current_surrender_status, transactions_off_the_tal_allowed, 
                          ars.enrolled_ars, ars.validated_ars, ars.suspended_ars, ars.total_ars, ars.total_ars_uris, arc.ar_changes_count, arc.ar_changes_ids, 
                          arc.ar_changes_claimants, ub_summary.totalAvailable, ub_summary.totalReserved,
-                         approval_second_ar_required, transfers_outside_tal, single_person_approval_required
+                         approval_second_ar_required, transfers_outside_tal, single_person_approval_required,
+                         first_invitation_date, acc_metrics.last_invitation_sent,
+                         acc_metrics.first_add_ar_created, acc_metrics.first_add_ar_approved,disabled_contacts.number_of_disabled_contacts
                 ORDER BY ah_name, permit_or_monitoring_plan_id DESC;
         """;
 
@@ -337,6 +370,11 @@ public class ComplianceManagementReportJdbcMapper
             .staticSurrenderStatus2028(rs.getString("static_surrender_status_2028"))
             .staticSurrenderStatus2029(rs.getString("static_surrender_status_2029"))
             .staticSurrenderStatus2030(rs.getString("static_surrender_status_2030"))
+            .firstInvitationDate(parseDate(rs.getString("first_invitation_date")))
+            .lastInvitationDate(parseDate(rs.getString("last_invitation_sent")))
+            .firstAddARCreatedDate(parseDate(rs.getString("first_ar_task_created")))
+            .firstAddARApprovedDate(parseDate(rs.getString("first_ar_task_approved")))
+            .numberOfDisabledContacts(rs.getLong("number_of_disabled_contacts"))
             .build();
     }
 }

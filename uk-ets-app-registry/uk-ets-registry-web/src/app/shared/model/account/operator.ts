@@ -64,6 +64,10 @@ export interface Operator {
   lastYear?: string;
   lastYearChanged?: boolean;
   emitterId: string;
+  contactsReceivedAt?: Date;
+  autoSendClaimInvitationEnabled?: boolean;
+  firstInvitationSendAt?: Date;
+  numberOfContactsDisabled?: number;
 }
 
 export interface Installation extends Operator {

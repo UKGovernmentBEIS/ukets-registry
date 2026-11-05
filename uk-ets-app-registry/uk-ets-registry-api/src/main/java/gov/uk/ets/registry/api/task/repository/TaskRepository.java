@@ -6,15 +6,16 @@ import gov.uk.ets.registry.api.task.domain.Task;
 import gov.uk.ets.registry.api.task.domain.types.RequestStateEnum;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.user.domain.User;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository for tasks.
@@ -272,4 +273,17 @@ public interface TaskRepository extends JpaRepository<Task, Long>, TaskProjectio
     List<Task> findTasksByType(RequestType type);
 
     List<Task> findByTypeIn(List<RequestType> types);
+
+    /**
+     * Retrieve tasks by type and initiator is equal to user and initiated since a specific date.
+     */
+    @Query("select t from Task t " +
+            "left join fetch t.account a " +
+            "left join fetch a.compliantEntity " +
+            "left join fetch a.accountHolder holder " +
+            "left join fetch holder.accountHolderRepresentatives " +
+            "where t.type = :type " +
+            "and t.user.urid = t.initiatedBy.urid " +
+            "and t.initiatedDate >= :date")
+    List<Task> findSelfInitiatedTasksByTypeSince(@Param("type") RequestType type, @Param("date") Date date);
 }

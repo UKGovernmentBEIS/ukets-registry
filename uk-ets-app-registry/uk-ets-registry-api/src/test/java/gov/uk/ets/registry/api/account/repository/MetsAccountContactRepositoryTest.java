@@ -69,11 +69,11 @@ class MetsAccountContactRepositoryTest {
         entityManager.persist(account3);
         flushAndClear();
         final MetsAccountContact metsAccountContact1 = createAccountContact("contact 1", "contact1@email.com",
-                Set.of(MetsAccountContactType.PRIMARY, MetsAccountContactType.SERVICE), account1);
+                Set.of(MetsAccountContactType.PRIMARY, MetsAccountContactType.SERVICE), account1, true);
         final MetsAccountContact metsAccountContact2 = createAccountContact("contact 2", "contact2@email.com",
-                Set.of(MetsAccountContactType.SECONDARY), account1);
+                Set.of(MetsAccountContactType.SECONDARY), account1, false);
         final MetsAccountContact metsAccountContact3 = createAccountContact("contact 3", "contact3@email.com",
-                Set.of(), account2);
+                Set.of(), account2, true);
         entityManager.persist(metsAccountContact1);
         entityManager.persist(metsAccountContact2);
         entityManager.persist(metsAccountContact3);
@@ -81,7 +81,8 @@ class MetsAccountContactRepositoryTest {
     }
 
     private MetsAccountContact createAccountContact(String name, String emailAddress,
-                                                    Set<MetsAccountContactType> contactTypes, Account account) {
+                                                    Set<MetsAccountContactType> contactTypes, Account account,
+                                                    boolean invitationStatus) {
         return MetsAccountContact.builder()
                 .name(name)
                 .emailAddress(emailAddress)
@@ -90,6 +91,7 @@ class MetsAccountContactRepositoryTest {
                 .operatorType(OperatorType.OPERATOR_ADMIN)
                 .invitedOn(LocalDateTime.now())
                 .contactTypes(contactTypes)
+                .invitationStatus(invitationStatus)
                 .account(account)
                 .build();
     }
@@ -114,6 +116,23 @@ class MetsAccountContactRepositoryTest {
         assertThat(metsAccountContacts2).hasSize(1);
         assertThat(metsAccountContacts2.get(0).getContactTypes()).isEmpty();
         assertThat(metsAccountContacts3).isEmpty();
+    }
+
+    @Test
+    void countByAccount_IdentifierAndInvitationStatus() {
+        Long countEnabled1 =
+                accountContactRepository.countByAccount_IdentifierAndInvitationStatus(ACCOUNT_IDENTIFIER_1, true);
+        Long countDisabled1 =
+                accountContactRepository.countByAccount_IdentifierAndInvitationStatus(ACCOUNT_IDENTIFIER_1, false);
+        Long countEnabled2 =
+                accountContactRepository.countByAccount_IdentifierAndInvitationStatus(ACCOUNT_IDENTIFIER_2, true);
+        Long countDisabled2 =
+                accountContactRepository.countByAccount_IdentifierAndInvitationStatus(ACCOUNT_IDENTIFIER_2, false);
+
+        assertThat(countEnabled1).isEqualTo(1L);
+        assertThat(countDisabled1).isEqualTo(1L);
+        assertThat(countEnabled2).isEqualTo(1L);
+        assertThat(countDisabled2).isEqualTo(0L);
     }
 
     private void flushAndClear() {

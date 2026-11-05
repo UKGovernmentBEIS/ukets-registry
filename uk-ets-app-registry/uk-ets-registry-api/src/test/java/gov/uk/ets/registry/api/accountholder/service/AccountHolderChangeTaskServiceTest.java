@@ -9,6 +9,7 @@ import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.AccountRepresentativeInvitationRepository;
 import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
@@ -79,6 +80,8 @@ class AccountHolderChangeTaskServiceTest {
     private AccountHolderRepresentativeRepository accountHolderRepresentativeRepository;
     @Mock
     private AccountHolderFileRepository accountHolderFileRepository;
+    @Mock
+    private AccountRepresentativeInvitationRepository accountRepresentativeInvitationRepository;
 
     @Test
     void appliesFor() {
@@ -220,6 +223,7 @@ class AccountHolderChangeTaskServiceTest {
         );
 
         verify(accountHolderRepository, never()).delete(any());
+        verify(accountService).handleRepresentativeInvitations(newHolder, account);
     }
 
     @Test
@@ -267,8 +271,9 @@ class AccountHolderChangeTaskServiceTest {
         taskDTO.setAction(action);
 
         final Long accountHolderFileId = 1L;
+        final Long representativeId = 2L;
 
-        final List<AccountHolderRepresentative> accountHolderRepresentatives = List.of(createAccountHolderRepresentative());
+        final List<AccountHolderRepresentative> accountHolderRepresentatives = List.of(createAccountHolderRepresentative(representativeId));
         final List<AccountOwnership> inactiveOwnerships = List.of(inactiveOwnership);
 
         when(userService.getCurrentUser()).thenReturn(currentUser);
@@ -303,14 +308,17 @@ class AccountHolderChangeTaskServiceTest {
         verify(accountHolderRepresentativeRepository).getAccountHolderRepresentatives(oldHolder.getIdentifier());
         verify(accountHolderRepresentativeRepository).deleteAll(accountHolderRepresentatives);
         verify(accountHolderFileRepository).deleteAllById(Collections.singleton(accountHolderFileId));
+        verify(accountRepresentativeInvitationRepository).deleteByAccountHolderRepresentative_Id(representativeId);
+        verify(accountService).handleRepresentativeInvitations(newHolder, account);
     }
 
     private AccountHolderFileDTO createAccountHolderFile(Long accountHolderFileId) {
         return new AccountHolderFileDTO(accountHolderFileId, "file", "SUBMITTED", LocalDateTime.now());
     }
 
-    private AccountHolderRepresentative createAccountHolderRepresentative() {
+    private AccountHolderRepresentative createAccountHolderRepresentative(Long representativeId) {
         AccountHolderRepresentative representative = new AccountHolderRepresentative();
+        representative.setId(representativeId);
         representative.setAccountHolder(new AccountHolder());
         representative.getAccountHolder().setId(1L);
         representative.getAccountHolder().setName("Representative");
@@ -366,5 +374,6 @@ class AccountHolderChangeTaskServiceTest {
                 any(),
                 contains("rejected")
         );
+        verifyNoInteractions(accountService);
     }
 }

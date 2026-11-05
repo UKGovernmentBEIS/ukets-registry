@@ -62,18 +62,21 @@ export function diffInYears(date: Dayjs): number {
 }
 
 export function concatDateTime(date: string, time: string) {
-  const time24 = dayjs(time, [
-    'h:ma',
-    'hh:mma',
-    'h:mma',
-    'hh:ma',
-    'h:m',
-    'hh:mm',
-    'h:mm',
-    'hh:m',
-  ]).format('HH:mm');
-  const utc = dayjs.utc(date + ' ' + time24, 'DD MMM YYYY HH:mm').toDate();
-  return utc.toString();
+  if (!time) {
+    throw new Error(`Invalid date or time: ${date} ${time}`);
+  }
+  const normalizedTime = time?.trim().toLowerCase();
+  const time24 = dayjs(
+    normalizedTime,
+    ['h:ma', 'hh:mma', 'h:mma', 'hh:ma', 'h:m', 'hh:mm', 'h:mm', 'hh:m'],
+    true
+  ).format('HH:mm');
+  const utc = dayjs.utc(date + ' ' + time24, 'DD MMM YYYY HH:mm');
+  if (utc.isValid()) {
+    return utc.toDate().toString();
+  } else {
+    throw new Error(`Invalid date or time: ${date} ${time}`);
+  }
 }
 
 export function convertToUkDate(formattedUkDate: string): UkDate {

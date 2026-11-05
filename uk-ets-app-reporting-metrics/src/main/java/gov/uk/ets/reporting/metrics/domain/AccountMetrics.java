@@ -1,6 +1,7 @@
 package gov.uk.ets.reporting.metrics.domain;
 
 
+import java.time.LocalDateTime;
 import gov.uk.ets.reporting.metrics.types.ComplianceStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,4 +60,27 @@ public class AccountMetrics {
     @Enumerated(EnumType.STRING)
     private ComplianceStatus dynamicComplianceStatus;
 
+    /**
+     * When the first add ar task was created.
+     */
+    @Column(name = "first_add_ar_created")
+    private LocalDateTime firstAddArCreated;
+    
+    /**
+     * When the first add ar task was approved.
+     */
+    @Column(name = "first_add_ar_approved")
+    private LocalDateTime firstAddArApproved;
+    
+    /**
+     * When the first claim invitation was sent.
+     */
+    @Column(name = "first_invitation_date")
+    private LocalDateTime firstInvitationDate;
+    
+    /**
+     * When the last claim invitation was sent.
+     */
+    @Column(name = "last_invitation_sent")
+    private LocalDateTime lastInvitationSent;
 }

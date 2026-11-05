@@ -52,12 +52,12 @@ class AccountClaimProcessorTest {
 
         AccountContactSendInvitationDTO dto = new AccountContactSendInvitationDTO();
 
-        when(accountService.sendInvitation(ACCOUNT_ID, dto)).thenReturn("OK");
+        when(accountService.sendInvitation(ACCOUNT_ID, dto, true)).thenReturn("OK");
 
-        String result = processor.processSendInvitation(ACCOUNT_ID, dto);
+        String result = processor.processSendInvitation(ACCOUNT_ID, dto, true);
 
         assertEquals("OK", result);
-        verify(accountService).sendInvitation(ACCOUNT_ID, dto);
+        verify(accountService).sendInvitation(ACCOUNT_ID, dto, true);
     }
 
     @Test
@@ -73,9 +73,9 @@ class AccountClaimProcessorTest {
         AccountContactSendInvitationDTO dto = new AccountContactSendInvitationDTO();
 
         assertThrows(AccountActionException.class,
-                () -> processor.processSendInvitation(ACCOUNT_ID, dto));
+                () -> processor.processSendInvitation(ACCOUNT_ID, dto, true));
 
-        verify(accountService, never()).sendInvitation(any(), any());
+        verify(accountService, never()).sendInvitation(any(), any(), eq(true));
     }
 
     @Test
@@ -87,9 +87,9 @@ class AccountClaimProcessorTest {
         AccountContactSendInvitationDTO dto = new AccountContactSendInvitationDTO();
 
         assertThrows(AccountActionException.class,
-                () -> processor.processSendInvitation(ACCOUNT_ID, dto));
+                () -> processor.processSendInvitation(ACCOUNT_ID, dto, true));
 
-        verify(accountService, never()).sendInvitation(any(), any());
+        verify(accountService, never()).sendInvitation(any(), any(), eq(true));
     }
 
     @Test

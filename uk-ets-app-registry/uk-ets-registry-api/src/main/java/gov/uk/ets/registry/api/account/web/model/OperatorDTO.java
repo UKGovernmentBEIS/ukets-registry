@@ -3,6 +3,7 @@ package gov.uk.ets.registry.api.account.web.model;
 import static gov.uk.ets.commons.logging.RequestParamType.COMPLIANT_ENTITY_ID;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import jakarta.validation.Valid;
@@ -112,4 +113,15 @@ public class OperatorDTO implements Serializable {
      * The emitter id.
      */
     String emitterId;
+
+    /**
+     * A flag that indicates whether automatic Account Claim invitations are enabled for this account.
+     */
+    boolean autoSendClaimInvitationEnabled;
+    
+    private LocalDateTime contactsReceivedAt;
+    
+    private LocalDateTime firstInvitationSendAt;
+    
+    private Integer numberOfContactsDisabled;
 }

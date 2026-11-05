@@ -2,11 +2,13 @@ package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.AccountClaim;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.MetsAccountContact;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.repository.AccountClaimRepository;
 import gov.uk.ets.registry.api.account.repository.AccountContactRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
@@ -21,6 +23,9 @@ import gov.uk.ets.registry.api.ar.domain.ARUpdateActionType;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.ar.service.dto.ARUpdateActionDTO;
 import gov.uk.ets.registry.api.common.model.entities.Contact;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.AccountClaimInitiatedEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
+import gov.uk.ets.registry.api.common.reporting.metrics.types.ReportingMetricsEventType;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
 import gov.uk.ets.registry.api.user.domain.User;
@@ -42,6 +47,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -69,8 +75,16 @@ class AccountContactServiceTest {
     private AuthorizedRepresentativeService authorizedRepresentativeService;
     @Mock
     private UserService userService;
+    @Mock
+    private AccountClaimRepository accountClaimRepository;
+    @Mock
+    private ReportingMetricsEventService reportingMetricsEventService;
     @Captor
     ArgumentCaptor<ARUpdateActionDTO> updateActionCaptor;
+    @Captor
+    ArgumentCaptor<AccountClaim> accountClaimCaptor;
+    @Captor
+    ArgumentCaptor<AccountClaimInitiatedEvent> accountClaimInitiatedEventCaptor;
     @InjectMocks
     private AccountContactService accountContactService;
 
@@ -121,9 +135,9 @@ class AccountContactServiceTest {
 
         when(accountHolderRepresentativeRepository.getAccountHolderRepresentatives(Long.valueOf(accountHolderId)))
                 .thenReturn(List.of(rep));
-        when(accountRepository.findByIdentifier(accountIdentifier)).thenReturn(Optional.of(new Account()));
+        when(accountRepository.findByAccountIdentifierFetchCompliantEntity(accountIdentifier)).thenReturn(Optional.of(new Account()));
 
-        String result = accountContactService.sendInvitation(accountIdentifier, accountDTO, sendDTO);
+        String result = accountContactService.sendInvitation(accountIdentifier, accountDTO, sendDTO, true);
 
         assertEquals(accountClaimCode, result);
         assertNotNull(metsAccountContactEntity.getInvitedOn());
@@ -147,7 +161,7 @@ class AccountContactServiceTest {
 
         AccountActionException ex = assertThrows(
                 AccountActionException.class,
-                () -> accountContactService.sendInvitation(1L, accountDTO, sendDTO)
+                () -> accountContactService.sendInvitation(1L, accountDTO, sendDTO, true)
         );
 
         assertThat(ex.getMessage()).isEqualTo("Account must have at least one METS or Registry contact to send invitation to.");
@@ -169,7 +183,7 @@ class AccountContactServiceTest {
 
         AccountActionException ex = assertThrows(
                 AccountActionException.class,
-                () -> accountContactService.sendInvitation(1L, accountDTO, sendDTO)
+                () -> accountContactService.sendInvitation(1L, accountDTO, sendDTO, true)
         );
 
         assertThat(ex.getMessage()).isEqualTo("At least one contact must be specified.");
@@ -194,10 +208,64 @@ class AccountContactServiceTest {
 
         AccountActionException ex = assertThrows(
                 AccountActionException.class,
-                () -> accountContactService.sendInvitation(1L, accountDTO, sendDTO)
+                () -> accountContactService.sendInvitation(1L, accountDTO, sendDTO, true)
         );
 
         assertThat(ex.getMessage()).isEqualTo("The specified contacts are not related with this account.");
+    }
+
+    @Test
+    @DisplayName("sendInvitation: fails when specified METS contacts have disabled status")
+    void test_sendInvitation_fails_not_eligible_mets_contacts() {
+
+        final Long accountIdentifier = 999L;
+        final String accountHolderId = "99";
+        final String accountClaimCode = "ACC123456789";
+        final String metsContactMail = "john@example.com";
+        final String registryContactMail = "jane@example.com";
+
+        MetsContactDTO metsContact = MetsContactDTO.builder()
+                .fullName("John Doe")
+                .email(metsContactMail)
+                .build();
+        RegistryContactDTO registryContact = RegistryContactDTO.builder()
+                .fullName("Jane Doe")
+                .email(registryContactMail)
+                .build();
+
+        AccountDetailsDTO accountDetails = new AccountDetailsDTO();
+        accountDetails.setAccountHolderId(accountHolderId);
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setIdentifier(accountIdentifier);
+        accountDTO.setAccountDetails(accountDetails);
+        accountDTO.setAccountClaimCode(accountClaimCode);
+        accountDTO.setMetsContacts(List.of(metsContact));
+        accountDTO.setRegistryContacts(List.of(registryContact));
+
+        AccountContactSendInvitationDTO sendDTO = new AccountContactSendInvitationDTO();
+        sendDTO.setMetsContacts(Set.of(metsContact));
+
+        // Mock repository entities
+        MetsAccountContact metsAccountContactEntity = new MetsAccountContact();
+        metsAccountContactEntity.setEmailAddress(metsContactMail);
+        metsAccountContactEntity.setInvitationStatus(false);
+
+        AccountHolderRepresentative rep = new AccountHolderRepresentative();
+        Contact repContact = new Contact();
+        repContact.setEmailAddress(registryContactMail);
+        rep.setContact(repContact);
+
+        when(accountContactRepository.findByAccountIdentifier(accountIdentifier))
+                .thenReturn(List.of(metsAccountContactEntity));
+
+        when(accountHolderRepresentativeRepository.getAccountHolderRepresentatives(Long.valueOf(accountHolderId)))
+                .thenReturn(List.of(rep));
+        when(accountRepository.findByAccountIdentifierFetchCompliantEntity(accountIdentifier)).thenReturn(Optional.of(new Account()));
+        
+        String result = accountContactService.sendInvitation(accountIdentifier, accountDTO, sendDTO, true);
+
+        assertEquals(accountClaimCode, result);
+        assertNull(metsAccountContactEntity.getInvitedOn());
     }
 
     @Test
@@ -209,7 +277,8 @@ class AccountContactServiceTest {
         final Long accountIdentifier = 2L;
         final String accountClaimCode = "ACC123456789";
         final String urid = "UK123456789";
-
+        final Long requestIdentifier = 777L;
+        
         AccountClaimDTO claimDTO = new AccountClaimDTO();
         claimDTO.setRegistryId(registryId);
         claimDTO.setAccountClaimCode(accountClaimCode);
@@ -233,7 +302,7 @@ class AccountContactServiceTest {
         when(userService.getCurrentUser()).thenReturn(user);
 
         when(authorizedRepresentativeService.placeUpdateRequest(any(ARUpdateActionDTO.class)))
-                .thenReturn(777L);
+                .thenReturn(requestIdentifier);
 
         Long result = accountContactService.claimAccount(claimDTO);
 
@@ -244,6 +313,19 @@ class AccountContactServiceTest {
         assertEquals(urid, updateActionCaptorValue.getCandidate().getUrid());
         assertEquals(AccountAccessRight.SURRENDER_INITIATE_AND_APPROVE, updateActionCaptorValue.getCandidate().getRight());
         assertEquals(ARUpdateActionType.ADD, updateActionCaptorValue.getUpdateType());
+        verify(accountClaimRepository).save(accountClaimCaptor.capture());
+        final AccountClaim accountClaimCaptorValue = accountClaimCaptor.getValue();
+        assertEquals(requestIdentifier, accountClaimCaptorValue.getRequestId());
+        assertEquals(accountIdentifier, accountClaimCaptorValue.getAccountIdentifier());
+        
+        verify(reportingMetricsEventService).processEvent(accountClaimInitiatedEventCaptor.capture());
+        final AccountClaimInitiatedEvent accountClaimInitiatedEvent = accountClaimInitiatedEventCaptor.getValue();
+        assertEquals(accountIdentifier, accountClaimInitiatedEvent.getAccountIdentifier());
+        assertEquals(accountClaimCode, accountClaimInitiatedEvent.getAccountClaimCode());
+        assertNotNull(accountClaimInitiatedEvent.getAccountClaimInitiatedDateTime());
+        assertEquals(ReportingMetricsEventType.ACCOUNT_CLAIM_INITIATED, accountClaimInitiatedEvent.getType());
+        assertEquals(Long.toString(accountIdentifier), accountClaimInitiatedEvent.getIdentifier());
+        assertEquals(requestIdentifier, accountClaimInitiatedEvent.getRequestIdentifier());
     }
 
     @Test

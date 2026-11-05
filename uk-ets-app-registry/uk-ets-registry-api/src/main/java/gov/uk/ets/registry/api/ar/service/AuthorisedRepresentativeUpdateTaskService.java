@@ -26,6 +26,8 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.Onl
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.RegistryAdminCanApproveTaskWhenAccountNotClosedOrPendingClosureRule;
 import gov.uk.ets.registry.api.common.Mapper;
 import gov.uk.ets.registry.api.common.error.UkEtsException;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.AccountClaimCompletionEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTaskService;
 import gov.uk.ets.registry.api.payment.service.PaymentTaskAutoCompletionService;
 import gov.uk.ets.registry.api.task.domain.Task;
@@ -49,6 +51,8 @@ import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserAttributes;
 import gov.uk.ets.registry.api.user.service.UserService;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +91,7 @@ public class AuthorisedRepresentativeUpdateTaskService
     private final AccountContactService accountContactService;
     private final AccountClaimProcessor processor;
     private final ServiceAccountAuthorizationService serviceAccountAuthorizationService;
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     @Override
     public Set<RequestType> appliesFor() {
@@ -141,6 +146,18 @@ public class AuthorisedRepresentativeUpdateTaskService
             setUserAgentForAdditionReject(taskDTO.getNewUser().getUrid());
         }
 
+        if (taskDTO.getTaskType().equals(AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST) && processor.isAccountClaimProcess(taskDTO.getRequestId())) {
+        	Account account = extractAccountEntity(taskDTO);
+        	reportingMetricsEventService.processEvent(AccountClaimCompletionEvent
+                    .builder()
+                    .accountIdentifier(account.getIdentifier())
+                    .accountClaimCode(account.getAccountClaimCode())
+                    .accountClaimCompletionDateTime(LocalDateTime.now(Clock.systemUTC()))
+                    .requestIdentifier(taskDTO.getRequestId())
+                    .taskOutcome(taskOutcome)
+                    .build());
+        }
+        
         //UKETS-6528 Also complete child document subtasks
         requestedDocsTaskService.completeChildRequestedDocumentTasks(taskDTO.getRequestId(),taskOutcome);
         
@@ -223,7 +240,7 @@ public class AuthorisedRepresentativeUpdateTaskService
             if (removalApprove) {
                 final AccountContactSendInvitationDTO sendInvitationDTO =
                         createAccountContactInvitationDTO(accountDTO);
-                accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO);
+                accountClaimService.sendInvitation(accountIdentifier, sendInvitationDTO, false);
             } else {
                 final AccountType accountType = AccountType.parse(accountDTO.getAccountType());
                 final RegistryAccountType regAccountType = accountType != null ? accountType.getRegistryType() : null;
@@ -235,7 +252,7 @@ public class AuthorisedRepresentativeUpdateTaskService
                     final AccountContactSendInvitationDTO sendInvitationDTO =
                             createAccountContactInvitationDTO(accountDTO);
                     accountContactService.sendInvitation(accountIdentifier, accountDTO,
-                            sendInvitationDTO);
+                            sendInvitationDTO, false);
                 }
             }
         }

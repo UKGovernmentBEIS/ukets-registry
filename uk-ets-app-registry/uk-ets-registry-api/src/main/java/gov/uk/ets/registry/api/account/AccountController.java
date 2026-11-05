@@ -30,6 +30,7 @@ import gov.uk.ets.registry.api.account.web.model.AccountStatusChangeDTO;
 import gov.uk.ets.registry.api.account.web.model.InstallationSearchResultDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.ValidateAccountDTO;
+import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactChangeInvitationStatusDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.AccountContactSendInvitationDTO;
 import gov.uk.ets.registry.api.account.web.model.search.AccountFiltersDescriptor;
 import gov.uk.ets.registry.api.account.web.model.search.AccountSearchCriteria;
@@ -53,6 +54,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.AuthoritiesWithAccountA
 import gov.uk.ets.registry.api.authz.ruleengine.features.CannotSubmitRequestWhenAccountIsTransferPendingStatusRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.ReadOnlyAdministratorsCannotSubmitRequest;
 import gov.uk.ets.registry.api.authz.ruleengine.features.SeniorAdminRule;
+import gov.uk.ets.registry.api.authz.ruleengine.features.SeniorOrJuniorAdministratorRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.AccountWithOutstandingExceptDelayedTransactionsRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.AccountWithOutstandingTasksRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.account.rules.FirstYearOfVerifiedEmissionsCheckAllocationRule;
@@ -83,12 +85,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -106,6 +102,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Handles requests for account management.
@@ -678,14 +681,14 @@ public class AccountController {
     @Protected({
         AccountCanBeClaimedOnlyWhenNoActiveARsExistRule.class,
         AccountCanBeClaimedOnlyWhenNoPendingAddARTaskExistsRule.class,
-        SeniorAdminRule.class
+        SeniorOrJuniorAdministratorRule.class
     })
     @PostMapping(path = "/accounts.send.invitation")
     public ResponseEntity<String> sendInvitation(
             @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @Parameter(description = "The account identifier", required = true) @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier,
             @Valid @RequestBody @Parameter(description = "The account contact send invitation dto ", required = true) AccountContactSendInvitationDTO sendInvitationDTO) {
 
-        final String accountClaimCode = accountClaimService.sendInvitation(identifier, sendInvitationDTO);
+        final String accountClaimCode = accountClaimService.sendInvitation(identifier, sendInvitationDTO, true);
         return new ResponseEntity<>(accountClaimCode, HttpStatus.OK);
     }
 
@@ -732,6 +735,38 @@ public class AccountController {
     @PostMapping("/accounts.claim.bulk.send")
     public ResponseEntity<Void> sendBulkClaimInvitations() {
         accountClaimSchedulerService.scheduleBulkClaim();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Toggles the auto-send invitation status for the specified account.
+     *
+     * @param identifier the account identifier
+     */
+    @Protected({SeniorAdminRule.class})
+    @PostMapping(path = "/accounts.change.auto.send.invitation.status")
+    public ResponseEntity<Void> changeAutoSendInvitationStatus(
+            @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @Parameter(description = "The account identifier", required = true)
+            @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier) {
+
+        accountClaimService.changeAutoSendInvitationEnabled(identifier);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    /**
+     * Toggles the invitation status for the specified account contacts.
+     *
+     * @param identifier the account identifier
+     * @param accountContactChangeInvitationStatusDTO dto that contains contact email addresses
+     */
+    @Protected({SeniorAdminRule.class})
+    @PostMapping(path = "/accounts.change.contacts.invitation.status")
+    public ResponseEntity<Void> changeContactsInvitationStatus(
+            @RuleInput(RuleInputType.ACCOUNT_ID) @RequestParam @Parameter(description = "The account identifier", required = true)
+            @MDCParam(RequestParamType.ACCOUNT_ID) Long identifier,
+            @Valid @RequestBody @Parameter(description = "The account contact send invitation dto ", required = true) AccountContactChangeInvitationStatusDTO accountContactChangeInvitationStatusDTO) {
+
+        accountClaimService.changeContactsInvitationStatus(identifier, accountContactChangeInvitationStatusDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

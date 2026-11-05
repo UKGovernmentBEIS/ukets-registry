@@ -51,6 +51,7 @@ export interface AccountState {
   selectedTrustedAccountDescription: string;
   hasOperatorUpdatePendingApproval: boolean;
   excludeBillingRemarks: string;
+  autoSendClaimInvitationUpdated: boolean;
 }
 
 export const initialState: AccountState = {
@@ -107,6 +108,7 @@ export const initialState: AccountState = {
   selectedTrustedAccountDescription: null,
   hasOperatorUpdatePendingApproval: null,
   excludeBillingRemarks: null,
+  autoSendClaimInvitationUpdated: false,
 };
 
 const accountReducer = createReducer(
@@ -195,7 +197,7 @@ const accountReducer = createReducer(
       AccountType.MARITIME_OPERATOR_HOLDING_ACCOUNT
     ) {
       state.sideMenuItems = MOHA_ITEMS;
-    }else {
+    } else {
       state.sideMenuItems = NO_OPERATOR_ITEMS;
     }
   }),
@@ -222,6 +224,18 @@ const accountReducer = createReducer(
     state.accountHistory = [];
     state.accountDetailsLoaded = false;
   }),
+  mutableOn(
+    AccountDetailsActions.submitAutoSendClaimInvitationUpdatedSuccess,
+    (state) => {
+      state.autoSendClaimInvitationUpdated = true;
+    }
+  ),
+  mutableOn(
+    AccountDetailsActions.clearAutoSendClaimInvitationUpdated,
+    (state) => {
+      state.autoSendClaimInvitationUpdated = false;
+    }
+  ),
   mutableOn(
     EmissionsSurrendersActions.fetchComplianceOverviewSuccess,
     (state, { result }) => {

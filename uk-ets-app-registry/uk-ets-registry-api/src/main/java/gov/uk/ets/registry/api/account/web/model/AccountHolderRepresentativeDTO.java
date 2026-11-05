@@ -59,4 +59,9 @@ public class AccountHolderRepresentativeDTO implements Serializable {
 
     private LocalDateTime invitedOn;
 
+    /**
+     * A flag that indicates whether Account Claim invitations are enabled for this contact.
+     */
+    private boolean invitationStatus;
+
 }

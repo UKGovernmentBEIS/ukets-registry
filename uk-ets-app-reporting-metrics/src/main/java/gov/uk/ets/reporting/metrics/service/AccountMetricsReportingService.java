@@ -3,12 +3,16 @@ package gov.uk.ets.reporting.metrics.service;
 import gov.uk.ets.reporting.metrics.domain.AccountMetrics;
 import gov.uk.ets.reporting.metrics.domain.ProcessedAccountMetricsEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.AbstractReportingMetricsEvent;
+import gov.uk.ets.reporting.metrics.messaging.events.AccountClaimCompletionEvent;
+import gov.uk.ets.reporting.metrics.messaging.events.AccountClaimInitiatedEvent;
+import gov.uk.ets.reporting.metrics.messaging.events.AccountClaimInvitationSentEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.DynamicComplianceStatusCalculatedEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.EmissionsUpdatedEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.InstallationTransferEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.TransactionFinalisationEvent;
 import gov.uk.ets.reporting.metrics.outbox.repository.AccountMetricsRepository;
 import gov.uk.ets.reporting.metrics.outbox.repository.ProcessedAccountMetricsEventRepository;
+import gov.uk.ets.reporting.metrics.types.TaskOutcome;
 import gov.uk.ets.reporting.metrics.types.TransactionStatus;
 import gov.uk.ets.reporting.metrics.types.TransactionType;
 import java.time.LocalDateTime;
@@ -107,8 +111,52 @@ public class AccountMetricsReportingService {
                 acquiringAccountMetrics.setTotalVerifiedEmissions(accountMetrics.getTotalVerifiedEmissions());
                 acquiringAccountMetrics.setSurrenderBalance(accountMetrics.getSurrenderBalance());
                 accountMetricsRepository.save(acquiringAccountMetrics);
-
                 break; 
+            case ACCOUNT_CLAIM_INITIATED:
+            	AccountClaimInitiatedEvent accountClaimInitiatedEvent = (AccountClaimInitiatedEvent) event;
+                accountMetrics = accountMetricsRepository
+                        .findByIdentifier(accountClaimInitiatedEvent.getAccountIdentifier())
+                        .orElseGet(AccountMetrics::new);
+                if (Optional.ofNullable(accountMetrics.getIdentifier()).isEmpty()) {
+                    accountMetrics.setIdentifier(accountClaimInitiatedEvent.getAccountIdentifier());            	
+                }
+                if (Optional.ofNullable(accountMetrics.getFirstAddArCreated()).isEmpty() ||
+                		accountMetrics.getFirstAddArCreated().isAfter(accountClaimInitiatedEvent.getAccountClaimInitiatedDateTime())) {
+                    accountMetrics.setFirstAddArCreated(accountClaimInitiatedEvent.getAccountClaimInitiatedDateTime());           	
+                }
+                accountMetricsRepository.save(accountMetrics);
+                break;
+            case ACCOUNT_CLAIM_COMPLETION:
+            	AccountClaimCompletionEvent accountClaimCompletionEvent = (AccountClaimCompletionEvent) event;
+                accountMetrics = accountMetricsRepository
+                        .findByIdentifier(accountClaimCompletionEvent.getAccountIdentifier())
+                        .orElseGet(AccountMetrics::new);
+                if (Optional.ofNullable(accountMetrics.getIdentifier()).isEmpty()) {
+                    accountMetrics.setIdentifier(accountClaimCompletionEvent.getAccountIdentifier());            	
+                }
+                if (TaskOutcome.APPROVED.equals(accountClaimCompletionEvent.getTaskOutcome()) && Optional.ofNullable(accountMetrics.getFirstAddArApproved()).isEmpty()) {
+                    accountMetrics.setFirstAddArApproved(accountClaimCompletionEvent.getAccountClaimCompletionDateTime());           	
+                }
+                accountMetricsRepository.save(accountMetrics);
+                break;   
+            case ACCOUNT_CLAIM_INVITATION_SENT:
+            	AccountClaimInvitationSentEvent accountClaimInvitationSentEvent = (AccountClaimInvitationSentEvent) event;
+                accountMetrics = accountMetricsRepository
+                        .findByIdentifier(accountClaimInvitationSentEvent.getAccountIdentifier())
+                        .orElseGet(AccountMetrics::new);
+                if (Optional.ofNullable(accountMetrics.getIdentifier()).isEmpty()) {
+                    accountMetrics.setIdentifier(accountClaimInvitationSentEvent.getAccountIdentifier());            	
+                }
+                if (Optional.ofNullable(accountMetrics.getFirstInvitationDate()).isEmpty() ||
+                		accountMetrics.getFirstInvitationDate().isAfter(accountClaimInvitationSentEvent.getAccountClaimInvitationSendDateTime())) {
+                    accountMetrics.setFirstInvitationDate(accountClaimInvitationSentEvent.getAccountClaimInvitationSendDateTime());           	
+                }
+                if (Optional.ofNullable(accountMetrics.getLastInvitationSent()).isEmpty() ||
+                		accountMetrics.getLastInvitationSent().isBefore(accountClaimInvitationSentEvent.getAccountClaimInvitationSendDateTime())) {
+                    accountMetrics.setLastInvitationSent(accountClaimInvitationSentEvent.getAccountClaimInvitationSendDateTime());           	
+                }
+                accountMetricsRepository.save(accountMetrics);
+                break;                 
             default: throw new AssertionError("Unknown event type : " + event.getType());
         }
         saveProcessedMessage(event);

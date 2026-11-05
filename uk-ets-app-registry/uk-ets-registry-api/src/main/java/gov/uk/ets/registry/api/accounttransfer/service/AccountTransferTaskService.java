@@ -2,12 +2,14 @@ package gov.uk.ets.registry.api.accounttransfer.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AccountOwnership;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.types.AccountOwnershipStatus;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.AccountRepresentativeInvitationRepository;
 import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.service.TransferValidationService;
@@ -38,15 +40,16 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +67,8 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
     private final AccountOwnershipRepository accountOwnershipRepository;
     private final RegulatorNoticeService regulatorNoticeService;
     private final OperatorEventService operatorEventService;
-
+    private final AccountRepresentativeInvitationRepository accountRepresentativeInvitationRepository;
+ 
     private static final String REMOVAL_REASON = "account transfer";
 
 
@@ -146,6 +150,7 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
                     installation.setEmitterId(action.getInstallationDetails().getEmitterId());
                     operatorEventService.updateOperator(installation, account.getRegistryAccountType().name());
                 }
+                accountService.handleRepresentativeInvitations(newAccountHolder, account);
             }
         }
 
@@ -177,6 +182,7 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
      */
     private AccountHolder getOrCreateAccountHolder(AccountTransferAction action) {
         AccountHolder accountHolder;
+        AccountHolderRepresentative accountHolderRepresentative;
         switch (action.getType()) {
             case ACCOUNT_TRANSFER_TO_EXISTING_HOLDER:
                 accountHolder =
@@ -184,8 +190,9 @@ public class AccountTransferTaskService implements TaskTypeService<AccountTransf
                 break;
             case ACCOUNT_TRANSFER_TO_CREATED_HOLDER:
                 accountHolder = accountService.createHolder(action.getAccountHolderDTO());
-                accountService.addAccountHolderContact(accountHolder,
+                accountHolderRepresentative = accountService.addAccountHolderContact(accountHolder,
                     action.getAccountHolderContactInfo(), true);
+                accountHolder.setAccountHolderRepresentatives(List.of(accountHolderRepresentative));
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + action.getType());

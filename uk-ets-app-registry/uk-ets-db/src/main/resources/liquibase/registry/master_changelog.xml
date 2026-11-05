@@ -88,6 +88,8 @@
     <include file="changelogs/v5.24.0/changelog_v5_24_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.25.0/changelog_v5_25_0.xml" relativeToChangelogFile="true"/>
     <include file="changelogs/v5.33.0/changelog_v5_33_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v5.35.0/changelog_v5_35_0.xml" relativeToChangelogFile="true"/>
+    <include file="changelogs/v6.3.0/changelog_v6_3_0.xml" relativeToChangelogFile="true"/>
     <!-- Include here new files -->
 
     <!-- This changeSet should be executed at the end-->

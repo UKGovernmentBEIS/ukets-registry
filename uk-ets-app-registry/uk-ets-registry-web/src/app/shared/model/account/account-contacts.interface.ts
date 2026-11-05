@@ -1,8 +1,11 @@
+import { Status } from '../status';
+
 interface AccountContact {
   fullName: string;
   email: string;
   phoneNumber: ContactPhoneNumbers;
   invitedOn?: string;
+  invitationStatus: boolean;
 }
 
 export type MetsContactType = 'PRIMARY' | 'SECONDARY' | 'FINANCIAL' | 'SERVICE';
@@ -36,3 +39,23 @@ export interface AccountContactSendInvitationDTO {
   metsContacts: MetsContact[];
   registryContacts: RegistryContact[];
 }
+
+export interface ContactInvitationStatusDTO {
+  email: string;
+  invitationStatus: boolean;
+}
+
+export interface RegistryContactInvitationStatusDTO
+  extends ContactInvitationStatusDTO {
+  contactType: RegistryContactType;
+}
+
+export interface AccountContactChangeInvitationStatusDTO {
+  metsContacts: ContactInvitationStatusDTO[];
+  registryContacts: RegistryContactInvitationStatusDTO[];
+}
+
+export const claimInvitationStatusMap: Record<string, Status> = {
+  true: { color: 'green', label: 'Enabled' },
+  false: { color: 'red', label: 'Disabled' },
+};

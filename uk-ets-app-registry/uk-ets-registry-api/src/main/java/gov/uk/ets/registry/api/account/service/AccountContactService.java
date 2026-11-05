@@ -2,6 +2,7 @@ package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
+import gov.uk.ets.registry.api.account.domain.AccountClaim;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.MetsAccountContact;
 import gov.uk.ets.registry.api.account.domain.types.AccountAccessRight;
@@ -9,6 +10,7 @@ import gov.uk.ets.registry.api.account.domain.types.AccountAccessState;
 import gov.uk.ets.registry.api.account.notification.InvitationAccount;
 import gov.uk.ets.registry.api.account.notification.InvitationPayload;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
+import gov.uk.ets.registry.api.account.repository.AccountClaimRepository;
 import gov.uk.ets.registry.api.account.repository.AccountContactRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
@@ -23,6 +25,9 @@ import gov.uk.ets.registry.api.ar.domain.ARUpdateActionType;
 import gov.uk.ets.registry.api.ar.service.AuthorizedRepresentativeService;
 import gov.uk.ets.registry.api.ar.service.dto.ARUpdateActionDTO;
 import gov.uk.ets.registry.api.ar.service.dto.AuthorizedRepresentativeDTO;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.AccountClaimInitiatedEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.messaging.events.AccountClaimInvitationSentEvent;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.common.view.PhoneNumberDTO;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
 import gov.uk.ets.registry.api.task.repository.TaskRepository;
@@ -33,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +58,8 @@ public class AccountContactService {
     private final AccountHolderRepresentativeRepository accountHolderRepresentativeRepository;
     private final AuthorizedRepresentativeService authorizedRepresentativeService;
     private final UserService userService;
+    private final AccountClaimRepository accountClaimRepository;
+    private final ReportingMetricsEventService reportingMetricsEventService;
 
     @Transactional
     public Account saveOrUpdate(
@@ -98,7 +106,7 @@ public class AccountContactService {
                 if (dto.getOperatorType() != null) {
                     existing.setOperatorType(dto.getOperatorType());
                 }
-
+                existing.setInvitationRequired(false);
                 accountContactRepository.save(existing);
 
             } else {
@@ -108,6 +116,8 @@ public class AccountContactService {
                         .account(account)
                         .contactTypes(dto.getContactTypes())
                         .operatorType(dto.getOperatorType())
+                        .invitationRequired(true)
+                        .invitationStatus(true)
                         .build();
 
                 PhoneNumberDTO phone = dto.getPhoneNumber();
@@ -137,21 +147,23 @@ public class AccountContactService {
     public String sendInvitation(
             Long accountIdentifier,
             @InvitationAccount AccountDTO accountDTO,
-            @InvitationPayload AccountContactSendInvitationDTO sendInvitationDTO
-    ) {
-        validateSendInvitation(accountDTO, sendInvitationDTO);
-        final Set<String> metContactEmails = sendInvitationDTO.getMetsContacts().stream()
-                .map(AccountContactDTO::getEmail)
-                .collect(Collectors.toSet());
-        final Set<String> registryContactEmails = sendInvitationDTO.getRegistryContacts().stream()
-                .map(AccountContactDTO::getEmail)
-                .collect(Collectors.toSet());
+            @InvitationPayload AccountContactSendInvitationDTO sendInvitationDTO,
+            boolean isManual) {
+        if (isManual || (accountDTO.getOperator() != null && accountDTO.getOperator().isAutoSendClaimInvitationEnabled())) {
+            validateSendInvitation(accountDTO, sendInvitationDTO);
+            final Set<String> metContactEmails = sendInvitationDTO.getMetsContacts().stream()
+                    .map(AccountContactDTO::getEmail)
+                    .collect(Collectors.toSet());
+            final Set<String> registryContactEmails = sendInvitationDTO.getRegistryContacts().stream()
+                    .map(AccountContactDTO::getEmail)
+                    .collect(Collectors.toSet());
 
         final LocalDateTime now = LocalDateTime.now();
         accountContactRepository.findByAccountIdentifier(accountIdentifier).stream()
+                .filter(MetsAccountContact::isInvitationStatus)
                 .filter(metsContact -> metContactEmails.contains(metsContact.getEmailAddress()))
                 .forEach(accountContact -> accountContact.setInvitedOn(now));
-        Account account = accountRepository.findByIdentifier(accountIdentifier).orElseThrow(() -> new IllegalStateException(
+        Account account = accountRepository.findByAccountIdentifierFetchCompliantEntity(accountIdentifier).orElseThrow(() -> new IllegalStateException(
                 String.format("Account with identifier %s not found.", accountIdentifier)));
         List<AccountHolderRepresentative> accountHolderRepresentatives =
                 accountHolderRepresentativeRepository
@@ -160,7 +172,23 @@ public class AccountContactService {
                 .filter(accountHolderRepresentative -> registryContactEmails.contains(accountHolderRepresentative.getContact().getEmailAddress()))
                 .forEach(accountHolderRepresentative ->
                         account.inviteRepresentative(accountHolderRepresentative, now));
+
+        if (account.getCompliantEntity() != null && account.getCompliantEntity().getFirstInvitationDate() == null ) {
+            account.getCompliantEntity().setFirstInvitationDate(now);
+        }
+        
+        //Publish an event to metrics
+        reportingMetricsEventService.processEvent(AccountClaimInvitationSentEvent
+                .builder()
+                .accountIdentifier(accountIdentifier)
+                .accountClaimCode(account.getAccountClaimCode())
+                .manual(isManual)
+                .accountClaimInvitationSendDateTime(now)
+                .build());
+        
         return accountDTO.getAccountClaimCode();
+        }
+        return null;
     }
 
     @Transactional
@@ -186,7 +214,20 @@ public class AccountContactService {
                         .build())
                 .updateType(ARUpdateActionType.ADD)
                 .build();
-        return authorizedRepresentativeService.placeUpdateRequest(arUpdateAction);
+        final Long requestId = authorizedRepresentativeService.placeUpdateRequest(arUpdateAction);
+        final AccountClaim accountClaim = AccountClaim.builder()
+                .requestId(requestId)
+                .accountIdentifier(account.getIdentifier())
+                .build();
+        reportingMetricsEventService.processEvent(AccountClaimInitiatedEvent
+                 .builder()
+                 .accountIdentifier(account.getIdentifier())
+                 .accountClaimInitiatedDateTime(LocalDateTime.now(Clock.systemUTC()))
+                 .accountClaimCode(accountClaimDTO.getAccountClaimCode())
+                 .requestIdentifier(requestId)
+                 .build());
+        accountClaimRepository.save(accountClaim);
+        return requestId;
     }
 
     private void validateSendInvitation(AccountDTO accountDTO, AccountContactSendInvitationDTO sendInvitationDTO) {

@@ -9,6 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +27,9 @@ import org.mockito.MockitoAnnotations;
 
 import gov.uk.ets.reporting.metrics.domain.AccountMetrics;
 import gov.uk.ets.reporting.metrics.domain.ProcessedAccountMetricsEvent;
+import gov.uk.ets.reporting.metrics.messaging.events.AccountClaimCompletionEvent;
+import gov.uk.ets.reporting.metrics.messaging.events.AccountClaimInitiatedEvent;
+import gov.uk.ets.reporting.metrics.messaging.events.AccountClaimInvitationSentEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.DynamicComplianceStatusCalculatedEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.EmissionsUpdatedEvent;
 import gov.uk.ets.reporting.metrics.messaging.events.InstallationTransferEvent;
@@ -32,6 +37,7 @@ import gov.uk.ets.reporting.metrics.messaging.events.TransactionFinalisationEven
 import gov.uk.ets.reporting.metrics.outbox.repository.AccountMetricsRepository;
 import gov.uk.ets.reporting.metrics.outbox.repository.ProcessedAccountMetricsEventRepository;
 import gov.uk.ets.reporting.metrics.types.ComplianceStatus;
+import gov.uk.ets.reporting.metrics.types.TaskOutcome;
 import gov.uk.ets.reporting.metrics.types.TransactionStatus;
 import gov.uk.ets.reporting.metrics.types.TransactionType;
 
@@ -623,6 +629,239 @@ public class AccountMetricsReportingServiceTest {
         
         assertNull(actual.getDynamicComplianceStatus());
         assertEquals(installationTransferEvent.getAcquiringAccountIdentifier(), actual.getIdentifier());
+        assertNull(actual.getQuantityReversedSurrendered());
+        assertNull(actual.getQuantitySurrendered());
+        assertNull(actual.getTotalVerifiedEmissions());
+        assertNull(actual.getSurrenderBalance());
+    }
+    
+    @Test
+    @DisplayName("Verify that upon an account claim initiated event metrics are updated correctly for an account.")
+    void testAccountClaimInitiatedEventForExistingAccount() {
+    
+    	final ComplianceStatus complianceStatus = ComplianceStatus.C;
+    	final Long accountIdentifier = 10000081L;
+    	final UUID eventId = UUID.randomUUID();
+    	final LocalDateTime accountClaimInitiatedDateTime = LocalDateTime.now(Clock.systemUTC()).minusDays(5);
+    	
+    	AccountClaimInitiatedEvent accountClaimInitiatedEvent = AccountClaimInitiatedEvent
+    	.builder()
+    	.eventId(eventId)
+    	.accountIdentifier(accountIdentifier)
+    	.accountClaimCode("CLAIM_CODE")
+    	.requestIdentifier(70783L)
+    	.accountClaimInitiatedDateTime(accountClaimInitiatedDateTime)
+    	.build();  	
+    	
+    	AccountMetrics accMetrics = new AccountMetrics();
+    	accMetrics.setIdentifier(accountIdentifier);
+    	accMetrics.setDynamicComplianceStatus(complianceStatus);
+    	
+        Mockito.when(processedAccountMetricsEventRepository.findByEventId(accountClaimInitiatedEvent.getEventId())).thenReturn(
+                Optional.empty());
+        Mockito.when(accountMetricsRepository.findByIdentifier(accountClaimInitiatedEvent.getAccountIdentifier())).thenReturn(
+            Optional.of(accMetrics));
+
+        accountMetricsReportingService.processAccountMetricEvent(accountClaimInitiatedEvent);
+
+        verify(processedAccountMetricsEventRepository).findByEventId(eventId);
+        verify(accountMetricsRepository).findByIdentifier(accountClaimInitiatedEvent.getAccountIdentifier());
+        ArgumentCaptor<AccountMetrics> captor = ArgumentCaptor.forClass(AccountMetrics.class);
+        verify(accountMetricsRepository).save(captor.capture());
+        AccountMetrics actual = captor.getValue();
+        
+        assertEquals(complianceStatus,actual.getDynamicComplianceStatus());
+        assertEquals(accountClaimInitiatedDateTime,actual.getFirstAddArCreated());
+        assertEquals(accountClaimInitiatedEvent.getAccountIdentifier(), actual.getIdentifier());
+        assertNull(actual.getQuantityReversedSurrendered());
+        assertNull(actual.getQuantitySurrendered());
+        assertNull(actual.getTotalVerifiedEmissions());
+        assertNull(actual.getSurrenderBalance());
+    }
+    
+    @Test
+    @DisplayName("Verify that out of order account claim initiated event metrics are updated correctly for an account.")
+    void testOutOfOrderAccountClaimInitiatedEventForExistingAccount() {
+    
+    	final ComplianceStatus complianceStatus = ComplianceStatus.C;
+    	final Long accountIdentifier = 10000081L;
+    	final UUID eventId = UUID.randomUUID();
+    	final LocalDateTime accountClaimInitiatedDateTime = LocalDateTime.now(Clock.systemUTC()).minusDays(5);
+    	
+    	AccountClaimInitiatedEvent accountClaimInitiatedEvent = AccountClaimInitiatedEvent
+    	.builder()
+    	.eventId(eventId)
+    	.accountIdentifier(accountIdentifier)
+    	.accountClaimCode("CLAIM_CODE")
+    	.requestIdentifier(70783L)
+    	.accountClaimInitiatedDateTime(accountClaimInitiatedDateTime)
+    	.build();  	
+    	
+    	AccountMetrics accMetrics = new AccountMetrics();
+    	accMetrics.setIdentifier(accountIdentifier);
+    	accMetrics.setDynamicComplianceStatus(complianceStatus);
+    	accMetrics.setFirstAddArCreated(accountClaimInitiatedDateTime.plusDays(2));
+    	
+        Mockito.when(processedAccountMetricsEventRepository.findByEventId(accountClaimInitiatedEvent.getEventId())).thenReturn(
+                Optional.empty());
+        Mockito.when(accountMetricsRepository.findByIdentifier(accountClaimInitiatedEvent.getAccountIdentifier())).thenReturn(
+            Optional.of(accMetrics));
+
+        accountMetricsReportingService.processAccountMetricEvent(accountClaimInitiatedEvent);
+
+        verify(processedAccountMetricsEventRepository).findByEventId(eventId);
+        verify(accountMetricsRepository).findByIdentifier(accountClaimInitiatedEvent.getAccountIdentifier());
+        ArgumentCaptor<AccountMetrics> captor = ArgumentCaptor.forClass(AccountMetrics.class);
+        verify(accountMetricsRepository).save(captor.capture());
+        AccountMetrics actual = captor.getValue();
+        
+        assertEquals(complianceStatus,actual.getDynamicComplianceStatus());
+        assertEquals(accountClaimInitiatedDateTime,actual.getFirstAddArCreated());
+        assertEquals(accountClaimInitiatedEvent.getAccountIdentifier(), actual.getIdentifier());
+        assertNull(actual.getQuantityReversedSurrendered());
+        assertNull(actual.getQuantitySurrendered());
+        assertNull(actual.getTotalVerifiedEmissions());
+        assertNull(actual.getSurrenderBalance());
+    }    
+    
+    @ParameterizedTest
+    @EnumSource(TaskOutcome.class)
+    @DisplayName("Verify that upon an account claim completion of an approved event metrics are updated correctly for an account.")
+    void testAccountClaimCompletionEventForExistingAccount(TaskOutcome outcome) {
+    
+    	final ComplianceStatus complianceStatus = ComplianceStatus.C;
+    	final Long accountIdentifier = 10000081L;
+    	final UUID eventId = UUID.randomUUID();
+    	final LocalDateTime accountClaimInitiatedDateTime = LocalDateTime.now(Clock.systemUTC()).minusDays(5);
+    	final LocalDateTime accountClaimCompletionDateTime = LocalDateTime.now(Clock.systemUTC()).minusMinutes(2);
+    	
+    	AccountClaimCompletionEvent accountClaimCompletionEvent = AccountClaimCompletionEvent
+    	.builder()
+    	.eventId(eventId)
+    	.accountIdentifier(accountIdentifier)
+    	.accountClaimCode("CLAIM_CODE")
+    	.requestIdentifier(70783L)
+    	.taskOutcome(outcome)
+    	.accountClaimCompletionDateTime(accountClaimCompletionDateTime)
+    	.build();  	
+    	
+    	AccountMetrics accMetrics = new AccountMetrics();
+    	accMetrics.setIdentifier(accountIdentifier);
+    	accMetrics.setDynamicComplianceStatus(complianceStatus);
+    	accMetrics.setFirstAddArCreated(accountClaimInitiatedDateTime);
+    	
+        Mockito.when(processedAccountMetricsEventRepository.findByEventId(accountClaimCompletionEvent.getEventId())).thenReturn(
+                Optional.empty());
+        Mockito.when(accountMetricsRepository.findByIdentifier(accountClaimCompletionEvent.getAccountIdentifier())).thenReturn(
+            Optional.of(accMetrics));
+
+        accountMetricsReportingService.processAccountMetricEvent(accountClaimCompletionEvent);
+
+        verify(processedAccountMetricsEventRepository).findByEventId(eventId);
+        verify(accountMetricsRepository).findByIdentifier(accountClaimCompletionEvent.getAccountIdentifier());
+        ArgumentCaptor<AccountMetrics> captor = ArgumentCaptor.forClass(AccountMetrics.class);
+        verify(accountMetricsRepository).save(captor.capture());
+        AccountMetrics actual = captor.getValue();
+        
+        assertEquals(complianceStatus,actual.getDynamicComplianceStatus());
+        assertEquals(accountClaimInitiatedDateTime,actual.getFirstAddArCreated());
+        if(TaskOutcome.APPROVED.equals(outcome)) {
+            assertEquals(accountClaimCompletionDateTime,actual.getFirstAddArApproved());	
+        } else {
+            assertNull(actual.getFirstAddArApproved());
+        }
+
+        assertEquals(accountClaimCompletionEvent.getAccountIdentifier(), actual.getIdentifier());
+        assertNull(actual.getQuantityReversedSurrendered());
+        assertNull(actual.getQuantitySurrendered());
+        assertNull(actual.getTotalVerifiedEmissions());
+        assertNull(actual.getSurrenderBalance());
+    }
+    
+    @Test
+    @DisplayName("Verify that upon an account claim invitation sent event metrics are updated correctly for an account.")
+    void testAccountClaimInvitationSentEvent() {
+    
+    	final ComplianceStatus complianceStatus = ComplianceStatus.C;
+    	final Long accountIdentifier = 10000081L;
+    	final UUID eventId = UUID.randomUUID();
+    	final LocalDateTime accountClaimInvitationSendDateTime = LocalDateTime.now(Clock.systemUTC()).minusMinutes(5);
+    	
+    	AccountClaimInvitationSentEvent accountClaimInvitationSentEvent = AccountClaimInvitationSentEvent
+    	.builder()
+    	.eventId(eventId)
+    	.accountIdentifier(accountIdentifier)
+    	.accountClaimCode("CLAIM_CODE")
+    	.accountClaimInvitationSendDateTime(accountClaimInvitationSendDateTime)
+    	.build();  	
+    	
+    	AccountMetrics accMetrics = new AccountMetrics();
+    	accMetrics.setIdentifier(accountIdentifier);
+    	accMetrics.setDynamicComplianceStatus(complianceStatus);
+    	
+        Mockito.when(processedAccountMetricsEventRepository.findByEventId(accountClaimInvitationSentEvent.getEventId())).thenReturn(
+                Optional.empty());
+        Mockito.when(accountMetricsRepository.findByIdentifier(accountClaimInvitationSentEvent.getAccountIdentifier())).thenReturn(
+            Optional.of(accMetrics));
+
+        accountMetricsReportingService.processAccountMetricEvent(accountClaimInvitationSentEvent);
+
+        verify(processedAccountMetricsEventRepository).findByEventId(eventId);
+        verify(accountMetricsRepository).findByIdentifier(accountClaimInvitationSentEvent.getAccountIdentifier());
+        ArgumentCaptor<AccountMetrics> captor = ArgumentCaptor.forClass(AccountMetrics.class);
+        verify(accountMetricsRepository).save(captor.capture());
+        AccountMetrics actual = captor.getValue();
+        
+        assertEquals(complianceStatus,actual.getDynamicComplianceStatus());
+        assertEquals(accountClaimInvitationSendDateTime,actual.getFirstInvitationDate());
+        assertEquals(accountClaimInvitationSendDateTime,actual.getLastInvitationSent());
+        assertEquals(accountClaimInvitationSentEvent.getAccountIdentifier(), actual.getIdentifier());
+        assertNull(actual.getQuantityReversedSurrendered());
+        assertNull(actual.getQuantitySurrendered());
+        assertNull(actual.getTotalVerifiedEmissions());
+        assertNull(actual.getSurrenderBalance());
+    }
+    
+    @Test
+    @DisplayName("Verify that upon an account claim invitation sent event metrics are updated correctly for an account.")
+    void testAccountClaimInvitationSentEventForExistingInvitations() {
+    
+    	final ComplianceStatus complianceStatus = ComplianceStatus.C;
+    	final Long accountIdentifier = 10000081L;
+    	final UUID eventId = UUID.randomUUID();
+    	final LocalDateTime accountClaimInvitationSendDateTime = LocalDateTime.now(Clock.systemUTC()).minusMinutes(5);
+    	
+    	AccountClaimInvitationSentEvent accountClaimInvitationSentEvent = AccountClaimInvitationSentEvent
+    	.builder()
+    	.eventId(eventId)
+    	.accountIdentifier(accountIdentifier)
+    	.accountClaimCode("CLAIM_CODE")
+    	.accountClaimInvitationSendDateTime(accountClaimInvitationSendDateTime)
+    	.build();  	
+    	
+    	AccountMetrics accMetrics = new AccountMetrics();
+    	accMetrics.setIdentifier(accountIdentifier);
+    	accMetrics.setDynamicComplianceStatus(complianceStatus);
+    	accMetrics.setFirstInvitationDate(accountClaimInvitationSendDateTime.minusDays(6));
+    	accMetrics.setLastInvitationSent(accountClaimInvitationSendDateTime.minusDays(3));
+    	
+        Mockito.when(processedAccountMetricsEventRepository.findByEventId(accountClaimInvitationSentEvent.getEventId())).thenReturn(
+                Optional.empty());
+        Mockito.when(accountMetricsRepository.findByIdentifier(accountClaimInvitationSentEvent.getAccountIdentifier())).thenReturn(
+            Optional.of(accMetrics));
+
+        accountMetricsReportingService.processAccountMetricEvent(accountClaimInvitationSentEvent);
+
+        verify(processedAccountMetricsEventRepository).findByEventId(eventId);
+        verify(accountMetricsRepository).findByIdentifier(accountClaimInvitationSentEvent.getAccountIdentifier());
+        ArgumentCaptor<AccountMetrics> captor = ArgumentCaptor.forClass(AccountMetrics.class);
+        verify(accountMetricsRepository).save(captor.capture());
+        AccountMetrics actual = captor.getValue();
+        
+        assertEquals(complianceStatus,actual.getDynamicComplianceStatus());
+        assertEquals(accountClaimInvitationSendDateTime.minusDays(6),actual.getFirstInvitationDate());
+        assertEquals(accountClaimInvitationSendDateTime,actual.getLastInvitationSent());
+        assertEquals(accountClaimInvitationSentEvent.getAccountIdentifier(), actual.getIdentifier());
         assertNull(actual.getQuantityReversedSurrendered());
         assertNull(actual.getQuantitySurrendered());
         assertNull(actual.getTotalVerifiedEmissions());

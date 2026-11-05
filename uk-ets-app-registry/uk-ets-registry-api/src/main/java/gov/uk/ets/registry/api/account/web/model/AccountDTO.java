@@ -1,5 +1,10 @@
 package gov.uk.ets.registry.api.account.web.model;
 
+import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.uk.ets.commons.logging.MDCParam;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
 import gov.uk.ets.registry.api.account.web.model.accountcontact.MetsContactDTO;
@@ -8,16 +13,11 @@ import gov.uk.ets.registry.api.ar.service.dto.ARUpdateActionDTO;
 import gov.uk.ets.registry.api.transaction.domain.data.TrustedAccountListRulesDTO;
 import gov.uk.ets.registry.api.transaction.domain.type.AccountStatus;
 import gov.uk.ets.registry.api.transaction.domain.type.UnitType;
-
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import static gov.uk.ets.commons.logging.RequestParamType.ACCOUNT_ID;
 
 /**
  * Represents an account transfer object.
@@ -180,4 +180,7 @@ public class AccountDTO {
      * Account claim code
      */
     private String accountClaimCode;
+    
+
+    
 }

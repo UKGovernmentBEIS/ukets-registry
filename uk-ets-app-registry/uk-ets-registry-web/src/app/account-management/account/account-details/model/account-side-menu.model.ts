@@ -20,7 +20,6 @@ export const NO_OPERATOR_ITEMS = [
   MenuItemEnum.OVERVIEW,
   MenuItemEnum.ACCOUNT_DETAILS,
   MenuItemEnum.ACCOUNT_HOLDER,
-  MenuItemEnum.CONTACTS,
   MenuItemEnum.ARS,
   MenuItemEnum.HISTORY_AND_COMMENTS,
   MenuItemEnum.HOLDINGS,

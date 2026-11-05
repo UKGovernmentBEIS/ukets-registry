@@ -24,7 +24,6 @@ import {
   TrustedAccountsComponent,
 } from '@account-management/account/account-details/trusted-accounts';
 import { UserDetailsModule } from '@user-management/user-details/user-details.module';
-import { AccountHeaderGuard } from '@account-management/account/guards/account-header.guard';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AccountStatusEffects } from './account-status/store/effects/account-status.effects';
 import { AccountHoldingDetailsComponent } from '@account-management/account/account-details/holdings/account-holding-details.component';
@@ -159,7 +158,6 @@ import { AccountContactsTablesComponent } from '@registry-web/shared/components/
   ],
   providers: [
     AccountApiService,
-    AccountHeaderGuard,
     HoldingDetailsResolver,
     AccountBusinessRulesService,
     AccountUserDetailsResolver,

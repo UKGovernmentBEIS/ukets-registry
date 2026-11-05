@@ -1,7 +1,6 @@
 package gov.uk.ets.registry.api.accounttransfer.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,17 +10,36 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
+import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
 import gov.uk.ets.registry.api.account.domain.AccountOwnership;
 import gov.uk.ets.registry.api.account.domain.Installation;
 import gov.uk.ets.registry.api.account.domain.SalesContact;
+import gov.uk.ets.registry.api.account.domain.types.AccountContactType;
 import gov.uk.ets.registry.api.account.domain.types.AccountOwnershipStatus;
 import gov.uk.ets.registry.api.account.repository.AccountAccessRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.AccountRepresentativeInvitationRepository;
 import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.service.TransferValidationService;
@@ -49,20 +67,6 @@ import gov.uk.ets.registry.api.transaction.domain.type.RegistryAccountType;
 import gov.uk.ets.registry.api.transaction.domain.type.TaskOutcome;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.service.UserService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -107,7 +111,9 @@ class AccountTransferTaskServiceTest {
     private AuthorizedRepresentativeService authorizedRepresentativeService;
     @Mock
     private OperatorEventService operatorEventService;
-
+    @Mock
+    private AccountRepresentativeInvitationRepository accountRepresentativeInvitationRepository;
+    
     @InjectMocks
     private AccountTransferTaskService cut;
 
@@ -145,7 +151,7 @@ class AccountTransferTaskServiceTest {
         installation.setEmitterId("378377");
         installation.setIdentifier(2345L);
         account.setCompliantEntity(installation);
-        
+                
         when(accountHolderRepository.getAccountHolder(TEST_ACCOUNT_HOLDER_ID)).thenReturn(newAccountHolder);
 
         when(accountRepository.findByIdentifier(Long.valueOf(TEST_ACCOUNT_NUMBER))).thenReturn(Optional.of(account));
@@ -169,6 +175,12 @@ class AccountTransferTaskServiceTest {
         action.setInstallationDetails(operatorDTO);
         task.setAction(action);
         task.setAccountNumber(TEST_ACCOUNT_NUMBER);
+        
+        AccountHolderRepresentative representative = new AccountHolderRepresentative();
+        representative.setAccountContactType(AccountContactType.PRIMARY);
+        representative.setAccountHolder(newAccountHolder);
+        newAccountHolder.setAccountHolderRepresentatives(List.of(representative));
+        when(accountService.addAccountHolderContact(newAccountHolder, action.getAccountHolderContactInfo(), true)).thenReturn(representative);
     }
 
     @Test
@@ -249,6 +261,7 @@ class AccountTransferTaskServiceTest {
         verify(account, times(2)).setAccountHolder(newAccountHolder); // first call is during setup
         verify(account, times(1)).setAccountStatus(action.getPreviousAccountStatus());
         verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
+        verify(accountService).handleRepresentativeInvitations(newAccountHolder, account);
     }
 
     @Test
@@ -267,6 +280,7 @@ class AccountTransferTaskServiceTest {
 
         verify(trustedAccountRepository, times(1)).deleteAll(List.of(ta1,ta2));
         verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
+        verify(accountService).handleRepresentativeInvitations(newAccountHolder, account);
     }
 
     @Test
@@ -282,6 +296,13 @@ class AccountTransferTaskServiceTest {
         newAh.setAccounts(new ArrayList<>());
         when(accountService.createHolder(accountHolderDTO)).thenReturn(newAh);
 
+        AccountHolderRepresentative representative = new AccountHolderRepresentative();
+        representative.setAccountContactType(AccountContactType.PRIMARY);
+        representative.setAccountHolder(newAh);
+        newAh.setAccountHolderRepresentatives(List.of(representative));
+        when(accountService.addAccountHolderContact(newAh, action.getAccountHolderContactInfo(), true)).thenReturn(representative);
+        
+        
         TaskOutcome taskOutcome = TaskOutcome.APPROVED;
         String comment = "";
         cut.complete(task, taskOutcome, comment);
@@ -289,6 +310,7 @@ class AccountTransferTaskServiceTest {
         verify(accountService, times(1)).createHolder(accountHolderDTO);
         verify(accountService, times(1)).addAccountHolderContact(newAccountHolder, primaryContact, true);
         verify(operatorEventService).updateOperator(any(Installation.class), eq(RegistryAccountType.OPERATOR_HOLDING_ACCOUNT.name()));
+        verify(accountService).handleRepresentativeInvitations(newAh, account);
 
 
     }
@@ -300,6 +322,7 @@ class AccountTransferTaskServiceTest {
         verify(accountService, never()).createHolder(any());
         verify(account, times(1)).setAccountStatus(action.getPreviousAccountStatus());
         verifyNoInteractions(operatorEventService);
+        verifyNoInteractions(accountService);
     }
 
     @Test
@@ -316,6 +339,7 @@ class AccountTransferTaskServiceTest {
         AccountOwnership newAccountOwnership = accountOwnershipCaptor.getValue();
         assertThat(newAccountOwnership.getAccount()).isEqualTo(account);
         assertThat(newAccountOwnership.getStatus()).isEqualTo(AccountOwnershipStatus.ACTIVE);
+        verify(accountService).handleRepresentativeInvitations(newAccountHolder, account);
 
     }
 

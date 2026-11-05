@@ -2,6 +2,7 @@ package gov.uk.ets.registry.api.account.service;
 
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
 import gov.uk.ets.registry.api.account.domain.AccountHolderRepresentative;
+import gov.uk.ets.registry.api.account.domain.AccountRepresentativeInvitation;
 import gov.uk.ets.registry.api.account.domain.ActivityType;
 import gov.uk.ets.registry.api.account.domain.AircraftOperator;
 import gov.uk.ets.registry.api.account.domain.Installation;
@@ -14,9 +15,9 @@ import gov.uk.ets.registry.api.account.web.model.AccountDTO;
 import gov.uk.ets.registry.api.account.web.model.AccountHolderRepresentativeDTO;
 import gov.uk.ets.registry.api.account.web.model.DateInfo;
 import gov.uk.ets.registry.api.account.web.model.DetailsDTO;
-import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.LegalRepresentativeDetailsDTO;
 import gov.uk.ets.registry.api.account.web.model.MonitoringPlanDTO;
+import gov.uk.ets.registry.api.account.web.model.OperatorDTO;
 import gov.uk.ets.registry.api.account.web.model.OperatorType;
 import gov.uk.ets.registry.api.account.web.model.PermitDTO;
 import gov.uk.ets.registry.api.account.web.model.SalesContactDetailsDTO;
@@ -29,10 +30,10 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -161,12 +162,15 @@ public class AccountConversionService {
      * Converts an {@link AccountHolderRepresentativeDTO} transfer object.
      *
      * @param input the account holder representative entity input
-     * @param invitedDate date the representative was invited
+     * @param invitation account claim invitation
      * @return a new AccountHolderRepresentative DTO
      */
-    public AccountHolderRepresentativeDTO convert(AccountHolderRepresentative input, LocalDateTime invitedDate) {
+    public AccountHolderRepresentativeDTO convert(AccountHolderRepresentative input, Optional<AccountRepresentativeInvitation> invitation) {
         final AccountHolderRepresentativeDTO accountHolderRepresentativeDTO = this.convert(input);
-        accountHolderRepresentativeDTO.setInvitedOn(invitedDate);
+        invitation.ifPresent(i -> {
+            accountHolderRepresentativeDTO.setInvitedOn(i.getInvitedDate());
+            accountHolderRepresentativeDTO.setInvitationStatus(i.isInvitationStatus());
+        });
         return accountHolderRepresentativeDTO;
     }
 
@@ -205,6 +209,8 @@ public class AccountConversionService {
         result.setFirstYear(input.getStartYear());
         result.setLastYear(input.getEndYear());
         result.setName(input.getInstallationName());
+        result.setAutoSendClaimInvitationEnabled(input.isAutoSendClaimInvitationEnabled());
+        result.setFirstInvitationSendAt(input.getFirstInvitationDate());
         PermitDTO permitDTO = new PermitDTO();
         permitDTO.setId(input.getPermitIdentifier());
         result.setPermit(permitDTO);
@@ -226,6 +232,8 @@ public class AccountConversionService {
         result.setType(OperatorType.AIRCRAFT_OPERATOR.name());
         result.setFirstYear(input.getStartYear());
         result.setLastYear(input.getEndYear());
+        result.setAutoSendClaimInvitationEnabled(input.isAutoSendClaimInvitationEnabled());
+        result.setFirstInvitationSendAt(input.getFirstInvitationDate());
         MonitoringPlanDTO monitoringPlanDTO = new MonitoringPlanDTO();
         monitoringPlanDTO.setId(input.getMonitoringPlanIdentifier());
         result.setMonitoringPlan(monitoringPlanDTO);
@@ -247,6 +255,8 @@ public class AccountConversionService {
         result.setType(OperatorType.MARITIME_OPERATOR.name());
         result.setFirstYear(input.getStartYear());
         result.setLastYear(input.getEndYear());
+        result.setAutoSendClaimInvitationEnabled(input.isAutoSendClaimInvitationEnabled());
+        result.setFirstInvitationSendAt(input.getFirstInvitationDate());
         MonitoringPlanDTO monitoringPlanDTO = new MonitoringPlanDTO();
         monitoringPlanDTO.setId(input.getMaritimeMonitoringPlanIdentifier());
         result.setMonitoringPlan(monitoringPlanDTO);

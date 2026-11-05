@@ -72,6 +72,7 @@ public class MetsContactsNotificationServiceTest {
         MetsAccountContact contact = new MetsAccountContact();
         contact.setEmailAddress("invite@test.com");
         contact.setInvitedOn(null);
+        contact.setInvitationRequired(true);
 
         account.setMetsAccountContacts(List.of(contact));
 
@@ -94,7 +95,8 @@ public class MetsContactsNotificationServiceTest {
                 argThat(dto ->
                         dto.getMetsContacts().size() == 1 &&
                                 dto.getMetsContacts().iterator().next().getEmail().equals("invite@test.com")
-                )
+                ),
+                eq(false)
         );
     }
 
@@ -109,6 +111,7 @@ public class MetsContactsNotificationServiceTest {
         MetsAccountContact contact = new MetsAccountContact();
         contact.setEmailAddress("invite@test.com");
         contact.setInvitedOn(null);
+        contact.setInvitationRequired(true);
 
         account.setMetsAccountContacts(List.of(contact));
 
@@ -148,6 +151,7 @@ public class MetsContactsNotificationServiceTest {
         MetsAccountContact contact = new MetsAccountContact();
         contact.setEmailAddress("invite@test.com");
         contact.setInvitedOn(null);
+        contact.setInvitationRequired(true);
 
         account.setMetsAccountContacts(List.of(contact));
 
@@ -168,5 +172,31 @@ public class MetsContactsNotificationServiceTest {
         verify(accountGeneratorService, never()).generateAccountClaimCode();
     }
 
+    @Test
+    void shouldNotSendInvitationNoEligibleContacts() throws Exception {
+
+        Account account = new Account();
+        account.setId(1L);
+        account.setIdentifier(100L);
+        account.setAccountClaimCode("CLAIM123");
+
+        MetsAccountContact contact = new MetsAccountContact();
+        contact.setEmailAddress("invite@test.com");
+        contact.setInvitationStatus(false);
+        contact.setInvitedOn(null);
+
+        account.setMetsAccountContacts(List.of(contact));
+
+        MetsContactDTO incoming = new MetsContactDTO();
+        incoming.setEmail("invite@test.com");
+
+        AccountDTO accountDTO = new AccountDTO();
+        MetsContactDTO metsDTO = new MetsContactDTO();
+        metsDTO.setEmail("invite@test.com");
+
+        service.sendInvitation(account, List.of(incoming));
+
+        verifyNoInteractions(accountDTOFactory, accountService, accountRepository, accountGeneratorService, accountContactService);
+    }
 
 }

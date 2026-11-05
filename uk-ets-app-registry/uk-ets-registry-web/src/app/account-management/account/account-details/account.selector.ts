@@ -74,6 +74,10 @@ export const areAccountDetailsLoaded = createSelector(
   selectAccountState,
   (state) => state.accountDetailsLoaded
 );
+export const selectAutoSendClaimInvitationUpdated = createSelector(
+  selectAccountState,
+  (state) => state?.autoSendClaimInvitationUpdated ?? false
+);
 export const selectAccountAllocation = createSelector(
   selectAccountState,
   (state) => state.allocation

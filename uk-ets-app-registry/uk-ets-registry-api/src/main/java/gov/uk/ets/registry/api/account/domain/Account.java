@@ -285,12 +285,38 @@ public class Account implements Serializable {
                 .filter(i -> i.getAccountHolderRepresentative().equals(rep))
                 .findFirst()
                 .ifPresentOrElse(
-                        i -> i.setInvitedDate(invitedDate),
+                        i -> {
+                            if (i.isInvitationStatus()) {
+                                i.setInvitedDate(invitedDate);
+                            }
+                        },
                         () -> {
                             AccountRepresentativeInvitation inv =
                                     AccountRepresentativeInvitation.builder()
                                             .accountHolderRepresentative(rep)
                                             .invitedDate(invitedDate)
+                                            .invitationStatus(true)
+                                            .build();
+
+                            this.addAccountRepresentativeInvitation(inv);
+                        }
+                );
+    }
+
+    public void setRepresentativeInvitationStatus(
+            AccountHolderRepresentative rep,
+            boolean invitationStatus) {
+
+        this.representativeInvitations.stream()
+                .filter(i -> i.getAccountHolderRepresentative().equals(rep))
+                .findFirst()
+                .ifPresentOrElse(
+                        i -> i.setInvitationStatus(invitationStatus),
+                        () -> {
+                            AccountRepresentativeInvitation inv =
+                                    AccountRepresentativeInvitation.builder()
+                                            .accountHolderRepresentative(rep)
+                                            .invitationStatus(invitationStatus)
                                             .build();
 
                             this.addAccountRepresentativeInvitation(inv);

@@ -1,8 +1,75 @@
 @if (isSeniorOrJuniorAdmin()) {
-  <!-- TODO -->
-  <!-- <p class="govuk-body">
-    Latest contacts list received on 15 Jan 2025, 10:20pm
-  </p> -->
+  @if (autoSendInvitationStatusUpdated()) {
+    <div aria-live="polite">
+      <app-banner [type]="BannerType.SUCCESS">
+        <span> The auto-send invitation status has changed successfully </span>
+      </app-banner>
+    </div>
+  }
+
+  @if (account().operator?.contactsReceivedAt) {
+    <p class="govuk-body">
+      Latest contacts list received on
+      {{ account().operator.contactsReceivedAt | gdsDateTime }}
+    </p>
+  }
+  @if (account().operator) {
+    <h2 class="govuk-heading-m">Claim account details</h2>
+    <hr class="govuk-section-break govuk-section-break--visible" />
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Claim account code</dt>
+        <dd class="govuk-summary-list__value">
+          {{ account().accountClaimCode }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Auto-send invitation status</dt>
+        <dd class="govuk-summary-list__value">
+          <app-govuk-tag
+            [color]="
+              accountClaimInvitationStatusMap[
+                account().operator?.autoSendClaimInvitationEnabled?.toString()
+              ].color
+            "
+          >
+            {{
+              accountClaimInvitationStatusMap[
+                account().operator?.autoSendClaimInvitationEnabled?.toString()
+              ].label
+            }}
+          </app-govuk-tag>
+        </dd>
+        @if (isSeniorAdmin()) {
+          <dd class="govuk-summary-list__actions">
+            <a
+              class="govuk-link govuk-link--no-visited-state"
+              [routerLink]="[]"
+              (click)="navigateToChangeAutoClaim()"
+              (keypress)="navigateToChangeAutoClaim()"
+            >
+              Change<span class="govuk-visually-hidden">
+                auto send invitation status</span
+              >
+            </a>
+          </dd>
+        }
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">First invitation sent on</dt>
+        <dd class="govuk-summary-list__value">
+          {{ account().operator?.firstInvitationSendAt | gdsDateTime }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Number of contacts disabled</dt>
+        <dd class="govuk-summary-list__value">
+          {{ account().operator?.numberOfContactsDisabled }} of
+          {{ metsContacts().length + registryContacts().length }}
+        </dd>
+      </div>
+    </dl>
+  }
 
   <app-account-contacts-tables
     [metsContacts]="metsContacts()"
@@ -21,9 +88,16 @@
       >
         Send invitation
       </button>
-      <span class="govuk-body"
-        >(Claim account code: {{ account().accountClaimCode }})</span
-      >
+
+      @if (isSeniorAdmin()) {
+        <button
+          (click)="onChangeContactInvitationStatus()"
+          class="govuk-button govuk-button--secondary govuk-!-margin-right-1 govuk-!-margin-bottom-0"
+          data-module="govuk-button"
+        >
+          Change invitation status
+        </button>
+      }
     </div>
   }
 }

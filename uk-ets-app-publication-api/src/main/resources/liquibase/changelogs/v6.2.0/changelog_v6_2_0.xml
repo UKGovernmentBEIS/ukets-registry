@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    
+    <changeSet id="6_2_0_CHANGE_SERVICE_AGENT_REPORT_SUMMARY_DESCRIPTION" author="dimopoulosc" context="migrate">
+        <comment>Change summary for service agent report</comment>
+
+        <sql>
+
+            update section
+            set summary = 'A list of agents who can provide the services of administering UK ETS Registry accounts on behalf of operators.'
+            where report_type = 'R0053';
+
+        </sql>
+
+        <rollback>
+            <sql>
+
+                update section
+                set summary = 'A list of agents who can provide the services of administering registry accounts on behalf of operators.'
+                where report_type = 'R0053';
+
+            </sql>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="6_2_0_HTML_MIGRATOR_RERUN" author="dimopoulosc" context="migrate">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(1) FROM migrator_history WHERE migrator_name='PUBLICATION_SITE_MIGRATOR';
+            </sqlCheck>
+        </preConditions>
+        <comment>Forces the HTML publication migrator to run again.</comment>
+        <sql>
+            DELETE FROM migrator_history WHERE migrator_name  ='PUBLICATION_SITE_MIGRATOR';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

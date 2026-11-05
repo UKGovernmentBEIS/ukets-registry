@@ -8,9 +8,12 @@ import gov.uk.ets.reports.generator.mappers.ReportDataMapper;
 import gov.uk.ets.reports.model.ReportQueryInfoWithMetadata;
 import gov.uk.ets.reports.model.ReportType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class ComplianceManagementReportService implements ReportTypeService<ComplianceManagementReportData> {
@@ -88,6 +92,14 @@ public class ComplianceManagementReportService implements ReportTypeService<Comp
         data.add(reportData.getStaticSurrenderStatus2028());
         data.add(reportData.getStaticSurrenderStatus2029());
         data.add(reportData.getStaticSurrenderStatus2030());
+        data.add(reportData.getFirstInvitationDate());
+        data.add(reportData.getLastInvitationDate());
+        data.add(reportData.getFirstAddARCreatedDate());
+        data.add(reportData.getFirstAddARApprovedDate());
+        data.add(reportData.getDaysBetweenAccountCreationAndFirstAddAR());
+        data.add(reportData.getDaysBetweenAddARCreationAndApproval());
+        data.add(reportData.getDaysBetweenAccountCreationAndFirstAddARApproval());
+        data.add(reportData.getNumberOfDisabledContacts());
         return data;
     }
 
@@ -146,7 +158,15 @@ public class ComplianceManagementReportService implements ReportTypeService<Comp
             "Surrender Status 2027",
             "Surrender Status 2028",
             "Surrender Status 2029",
-            "Surrender Status 2030"
+            "Surrender Status 2030",
+            "The min(date) an invitation has been sent to any of the account’s contact",
+            "The latest date an invitation has been sent to any of the account’s contact",
+            "Add AR task created on",
+            "First Add AR task approved on",
+            "Number of days between the account opening and the creation of the Add AR task",
+            "Number of days between the creation of the Add AR task and its approval",
+            "Number of days between the account opening and the approval of the Add AR task",
+            "Number of contacts disabled for invitations"
         );
     }
 
@@ -165,6 +185,14 @@ public class ComplianceManagementReportService implements ReportTypeService<Comp
 
         results.forEach(result -> {
             String totalArsUris = result.getTotalArsUris();
+            
+            final LocalDateTime accountOpeningDate = mapper.parseDate(result.getAccountOpeningDate());
+            final LocalDateTime createdDate = result.getFirstAddARCreatedDate();
+        	
+            if(Objects.nonNull(accountOpeningDate) && Objects.nonNull(createdDate)) {
+                result.setDaysBetweenAccountCreationAndFirstAddAR(ChronoUnit.DAYS.between(accountOpeningDate, createdDate));              	
+            }
+            
             if (totalArsUris != null && !totalArsUris.isBlank()) {
                 Set<String> arsSet = Arrays.stream(totalArsUris.split(","))
                     .map(String::trim)
@@ -178,6 +206,15 @@ public class ComplianceManagementReportService implements ReportTypeService<Comp
                     .orElse(null);
 
                 result.setMostRecentSignIn(mapper.formatLocalDateTime(mostRecentLogin));
+
+                final LocalDateTime approvedDate = result.getFirstAddARApprovedDate();
+
+                if(Objects.nonNull(createdDate) && Objects.nonNull(approvedDate)) {
+                    result.setDaysBetweenAddARCreationAndApproval(ChronoUnit.DAYS.between(createdDate, approvedDate));  
+                }
+                if(Objects.nonNull(approvedDate)) {
+                    result.setDaysBetweenAccountCreationAndFirstAddARApproval(ChronoUnit.DAYS.between(accountOpeningDate, approvedDate));                	
+                }
             }
         });
         return results;

@@ -15,6 +15,6 @@ public class AccountSendInvitationService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendInvitation(Long identifier, AccountContactSendInvitationDTO dto) {
 
-        processor.processSendInvitation(identifier, dto);
+        processor.processSendInvitation(identifier, dto, false);
     }
 }

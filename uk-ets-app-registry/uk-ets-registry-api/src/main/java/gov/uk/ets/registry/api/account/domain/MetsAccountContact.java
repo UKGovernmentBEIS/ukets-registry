@@ -89,4 +89,13 @@ public class MetsAccountContact implements Serializable {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    @Column(name = "invitation_required")
+    boolean invitationRequired;
+
+    /**
+     * A flag that indicates whether Account Claim invitations are enabled for this contact.
+     */
+    @Builder.Default
+    @Column(name = "invitation_status")
+    private boolean invitationStatus = true;
 }

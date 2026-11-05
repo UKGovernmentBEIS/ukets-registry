@@ -9,6 +9,7 @@ import gov.uk.ets.registry.api.account.repository.AccountHolderRepository;
 import gov.uk.ets.registry.api.account.repository.AccountHolderRepresentativeRepository;
 import gov.uk.ets.registry.api.account.repository.AccountOwnershipRepository;
 import gov.uk.ets.registry.api.account.repository.AccountRepository;
+import gov.uk.ets.registry.api.account.repository.AccountRepresentativeInvitationRepository;
 import gov.uk.ets.registry.api.account.service.AccountConversionService;
 import gov.uk.ets.registry.api.account.service.AccountService;
 import gov.uk.ets.registry.api.account.shared.AccountHolderDTO;
@@ -59,6 +60,7 @@ public class AccountHolderChangeTaskService implements TaskTypeService<AccountHo
     private final AccountOwnershipRepository accountOwnershipRepository;
     private final AccountHolderRepresentativeRepository accountHolderRepresentativeRepository;
     private final AccountHolderFileRepository accountHolderFileRepository;
+    private final AccountRepresentativeInvitationRepository accountRepresentativeInvitationRepository;
 
     @Override
     public Set<RequestType> appliesFor() {
@@ -125,8 +127,8 @@ public class AccountHolderChangeTaskService implements TaskTypeService<AccountHo
                 handleAccountHolderFiles(currentAccountHolder.getIdentifier());
                 accountHolderRepository.delete(currentAccountHolder);
             }
+            accountService.handleRepresentativeInvitations(newAccountHolder, account);
         }
-
         publishAccountEvent(taskOutcome, currentUser, accountIdentifier, currentAccountHolder.actualName(),
                 action.getAccountHolderDTO().actualName());
 
@@ -157,8 +159,9 @@ public class AccountHolderChangeTaskService implements TaskTypeService<AccountHo
                 break;
             case ACCOUNT_HOLDER_CHANGE_TO_CREATED_HOLDER:
                 accountHolder = accountService.createHolder(action.getAccountHolderDTO());
-                accountService.insertContact(accountHolder,
+                final AccountHolderRepresentative accountHolderRepresentative = accountService.insertContact(accountHolder,
                         action.getAccountHolderContactInfo(), true);
+                accountHolder.setAccountHolderRepresentatives(List.of(accountHolderRepresentative));
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + action.getType());
@@ -211,6 +214,9 @@ public class AccountHolderChangeTaskService implements TaskTypeService<AccountHo
         List<AccountHolderRepresentative> accountHolderRepresentatives =
                 accountHolderRepresentativeRepository.getAccountHolderRepresentatives(accountHolderIdentifier);
         if (!accountHolderRepresentatives.isEmpty()) {
+            accountHolderRepresentatives.forEach(representative -> {
+                accountRepresentativeInvitationRepository.deleteByAccountHolderRepresentative_Id(representative.getId());
+            });
             accountHolderRepresentativeRepository.deleteAll(accountHolderRepresentatives);
         }
     }

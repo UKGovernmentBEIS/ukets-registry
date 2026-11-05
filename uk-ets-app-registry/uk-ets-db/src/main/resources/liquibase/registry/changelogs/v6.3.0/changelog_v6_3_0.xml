@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+    <changeSet id="6_3_0_ADD_AUTO_SEND_CLAIM_INVITATION_ENABLED_COLUMN_TO_COMPLIANT_ENTITY" author="dimopoulosc" context="migrate">
+        <comment>Add auto send claim invitation enabled flag column to compliant entity table</comment>
+        <sql>
+            ALTER TABLE "compliant_entity" ADD COLUMN IF NOT EXISTS "auto_send_claim_invitation_enabled" BOOLEAN DEFAULT TRUE;
+            COMMENT ON COLUMN "compliant_entity"."auto_send_claim_invitation_enabled" IS 'A flag that indicates whether automatic Account Claim invitations are enabled for this account.';
+        </sql>
+        <rollback>
+            <sql>
+                ALTER TABLE "compliant_entity" DROP COLUMN IF EXISTS "auto_send_claim_invitation_enabled";
+            </sql>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="6_3_0_CREATE_ACCOUNT_CLAIM_TABLE" author="dimopoulosc" context="migrate">
+        <comment>Account claim table</comment>
+        <sql>
+            CREATE SEQUENCE account_claim_seq MINVALUE 0 MAXVALUE 999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 1 NO CYCLE;
+
+            CREATE TABLE IF NOT EXISTS "account_claim"
+            (
+                "id"  BIGINT NOT NULL,
+            "account_identifier" BIGINT,
+            "request_id" BIGINT,
+            CONSTRAINT "pk_account_claim" PRIMARY KEY("id")
+            );
+
+            COMMENT ON TABLE "account_claim" is 'Represents a completed account claim process.';
+
+            COMMENT ON COLUMN "account_claim"."id" is 'Primary key.';
+            COMMENT ON COLUMN "account_claim"."account_identifier" IS 'The account identifier.';
+            COMMENT ON COLUMN "account_claim"."request_id" is 'The request identifier.';
+
+        </sql>
+
+        <rollback>
+            <sql>
+                DROP TABLE IF EXISTS account_claim;
+                DROP SEQUENCE IF EXISTS account_claim_seq;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="6_3_0_CREATE_ACCOUNT_CLAIM_TABLE_INDEXES" author="dimopoulosc" context="migrate">
+        <comment>Account claim table indexes</comment>
+        <sql>
+            create unique index "account_claim_idx1" on "account_claim" ("request_id");
+        </sql>
+
+        <rollback>
+            <sql>
+                drop index account_claim_idx1;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="6_3_0_ADD_INVITATION_STATUS_COLUMN_TO_METS_ACCOUNT_CONTACTS_TABLE" author="dimopoulosc" context="migrate">
+        <comment>Add invitation status column to mets account contacts.</comment>
+        <sql>
+            alter table mets_account_contact add column if not exists invitation_status boolean default true;
+        </sql>
+        <rollback>
+            <sql>
+                alter table mets_account_contact drop column if exists invitation_status;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="6_3_0_ADD_INVITATION_STATUS_COLUMN_TO_ACCOUNT_REPRESENTATIVE_INVITATION_TABLE" author="dimopoulosc" context="migrate">
+        <comment>Add invitation status column to account representative invitations.</comment>
+        <sql>
+            alter table account_representative_invitation add column if not exists invitation_status boolean default true;
+        </sql>
+        <rollback>
+            <sql>
+                alter table account_representative_invitation drop column if exists invitation_status;
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="6_3_0_MIGRATE_NON_INVITED_REGISTRY_CONTACTS" author="dimopoulosc" context="migrate">
+        <comment>Add an entry in account_representative_invitation table for not yet invited registry contacts.</comment>
+        <sql>
+            insert into account_representative_invitation (id, account_id, account_holder_representative_id, invitation_status)
+            select nextval('account_rep_inv_seq'),a.id,ahr.id,true
+            from account a inner join account_holder ah on a.account_holder_id = ah.id inner join account_holder_representative ahr on ah.id=ahr.account_holder_id inner join contact c on ahr.contact_id = c.id
+            where a.registry_account_type in ('AIRCRAFT_OPERATOR_HOLDING_ACCOUNT','MARITIME_OPERATOR_HOLDING_ACCOUNT','OPERATOR_HOLDING_ACCOUNT') and not exists (select 1 from account_representative_invitation ari where ari.account_id = a.id and ari.account_holder_representative_id =ahr.id)
+        </sql>
+        <rollback>
+            <sql>
+                delete from account_representative_invitation ari
+                where ari.invitation_status = true and ari.invited_date is null
+                and exists (
+                    select 1
+                    from account a
+                    join account_holder ah
+                        on a.account_holder_id = ah.id
+                    join account_holder_representative ahr
+                        on ah.id = ahr.account_holder_id
+                    where ari.account_id = a.id
+                      and ari.account_holder_representative_id = ahr.id
+                      and a.registry_account_type in (
+                          'AIRCRAFT_OPERATOR_HOLDING_ACCOUNT',
+                          'MARITIME_OPERATOR_HOLDING_ACCOUNT',
+                          'OPERATOR_HOLDING_ACCOUNT'
+                      )
+                );
+            </sql>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="6_3_0_ADD_FIRST_ADD_AR_CREATED_AND_FIRST_ADD_AR_APPROVED_COLUMNS_TO_ACCOUNT_METRICS_TABLE" author="dimopoulosc" context="migrate">
+        <comment>Add first_add_ar_created and first_add_ar_approved column to account metrics.</comment>
+        <sql>
+            alter table reporting_metrics.account_metrics add column if not exists first_add_ar_created timestamp;
+            alter table reporting_metrics.account_metrics add column if not exists first_add_ar_approved timestamp;
+        </sql>
+        <rollback>
+            <sql>
+                alter table reporting_metrics.account_metrics drop column if exists first_add_ar_created;
+                alter table reporting_metrics.account_metrics drop column if exists first_add_ar_approved;
+            </sql>
+        </rollback>
+    </changeSet>
+    
+        <changeSet id="6_3_0_ADD_FIRST_INVITATION_DATE_AND_LAST_INVITATION_SENT_COLUMNS_TO_ACCOUNT_METRICS_TABLE" author="dimopoulosc" context="migrate">
+        <comment>Add first_invitation_date and last_invitation_sent columns to account metrics.</comment>
+        <sql>
+            alter table reporting_metrics.account_metrics add column if not exists last_invitation_sent timestamp;
+            alter table reporting_metrics.account_metrics add column if not exists first_invitation_date timestamp;
+        </sql>
+        <rollback>
+            <sql>
+                alter table reporting_metrics.account_metrics drop column if exists last_invitation_sent;
+                alter table reporting_metrics.account_metrics drop column if exists first_invitation_date;
+            </sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -16,6 +16,7 @@ import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.Onl
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.OnlySeniorRegistryAdminCanRejectTaskRule;
 import gov.uk.ets.registry.api.authz.ruleengine.features.task.rules.complete.RegistryAdminCanApproveTaskWhenAccountNotClosedOrPendingClosureRule;
 import gov.uk.ets.registry.api.common.Mapper;
+import gov.uk.ets.registry.api.common.reporting.metrics.service.ReportingMetricsEventService;
 import gov.uk.ets.registry.api.file.upload.requesteddocs.service.RequestedDocsTaskService;
 import gov.uk.ets.registry.api.payment.service.PaymentTaskAutoCompletionService;
 import gov.uk.ets.registry.api.task.domain.types.RequestType;
@@ -50,12 +51,13 @@ public class AuthorisedRepresentativeChangeRightsTaskService extends AuthorisedR
                                                            AccountClaimService accountClaimService,
                                                            AccountContactService accountContactService,
                                                            AccountClaimProcessor accountClaimProcessor,
-                                                           ServiceAccountAuthorizationService serviceAccountAuthorizationService) {
+                                                           ServiceAccountAuthorizationService serviceAccountAuthorizationService,
+                                                           ReportingMetricsEventService reportingMetricsEventService) {
         super(accountService, userConversionService, userAdministrationService, accountAccessRepository, userService,
             taskRepository, authorizedRepresentativeService, userStateService, requestedDocsTaskService,
                 mapper, taskARStatusRepository, paymentTaskAutoCompletionService,
                 accountClaimService, accountContactService,
-                accountClaimProcessor, serviceAccountAuthorizationService);
+                accountClaimProcessor, serviceAccountAuthorizationService, reportingMetricsEventService);
     }
 
     @Override

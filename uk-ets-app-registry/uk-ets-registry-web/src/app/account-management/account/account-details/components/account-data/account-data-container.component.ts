@@ -13,6 +13,7 @@ import {
   selectAccount,
   selectAccountHolderFiles,
   selectAccountHoldings,
+  selectAutoSendClaimInvitationUpdated,
   selectHasOperatorUpdatePendingApproval,
   selectIsAOHAorMOHAorOHAO,
   selectIsKyotoAccountType,
@@ -29,6 +30,7 @@ import {
 import { AuthApiService } from '@registry-web/auth/auth-api.service';
 import { AccountDataComponent } from '@account-management/account/account-details/components/account-data/account-data.component';
 import {
+  clearAutoSendClaimInvitationUpdated,
   fetchAccountHolderFile,
   navigateToUpdateAccountAllocationWizard,
   prepareForTrustedAccountChangeDescription,
@@ -38,7 +40,10 @@ import { RequestDocumentsOrigin } from '@shared/model/request-documents/request-
 import { enterRequestDocumentsWizard } from '@request-documents/wizard/actions';
 import { DocumentsRequestType } from '@shared/model/request-documents/documents-request-type';
 import { FileDetails } from '@shared/model/file/file-details.model';
-import { isSeniorAdmin, isSeniorOrJuniorAdmin } from '@registry-web/auth/auth.selector';
+import {
+  isSeniorAdmin,
+  isSeniorOrJuniorAdmin,
+} from '@registry-web/auth/auth.selector';
 import { AccountComplianceSelector } from '@account-management/account/account-details/store/reducers';
 import {
   clearDeleteFileName,
@@ -54,6 +59,7 @@ import {
   selectAccountNotes,
 } from '@registry-web/account-management/account/account-details/notes/store/account-notes.selector';
 import { Note } from '@registry-web/shared/model/note';
+import { AutoClaimWizardActions } from '@registry-web/account-management/account/auto-claim-wizard/store/actions/auto-claim-wizard.actions';
 
 @Component({
   selector: 'app-account-data-container',
@@ -91,6 +97,9 @@ import { Note } from '@registry-web/shared/model/note';
       [fileDeleted]="fileDeleted$ | async"
       [isCancelPendingActivationSuccessDisplayed]="
         isCancelPendingActivationSuccessDisplayed$ | async
+      "
+      [autoSendInvitationStatusUpdated]="
+        autoSendClaimInvitationUpdated$ | async
       "
       [selectedTrustedAccountDescription]="
         selectedTrustedAccountDescription$ | async
@@ -136,6 +145,7 @@ export class AccountDataContainerComponent implements OnInit {
   isReportSuccess$: Observable<boolean>;
   accountNotes$: Observable<Note[]>;
   accountHolderNotes$: Observable<Note[]>;
+  autoSendClaimInvitationUpdated$: Observable<boolean>;
 
   constructor(
     private route: ActivatedRoute,
@@ -191,6 +201,15 @@ export class AccountDataContainerComponent implements OnInit {
     this.isReportSuccess$ = this.store.select(selectIsReportSuccess);
     this.accountNotes$ = this.store.select(selectAccountNotes); //
     this.accountHolderNotes$ = this.store.select(selectAccountHolderNotes); //
+
+    this.autoSendClaimInvitationUpdated$ = this.store.select(
+      selectAutoSendClaimInvitationUpdated
+    );
+    // show banner for 3 seconds
+    setTimeout(
+      () => this.store.dispatch(clearAutoSendClaimInvitationUpdated()),
+      3000
+    );
   }
 
   onSelectMenuItem(selectedMenuItem: string): void {

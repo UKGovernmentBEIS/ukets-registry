@@ -1,6 +1,7 @@
 package gov.uk.ets.registry.api.account.domain;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -122,4 +123,16 @@ public abstract class CompliantEntity implements Serializable {
      */
     @Enumerated(EnumType.STRING)
     private AllocationStatusType allocationWithholdStatus;
+
+    /**
+     * Date of first account claim invitation.
+     */
+    @Column(name = "first_invitation_date")
+    private LocalDateTime firstInvitationDate;
+    
+    /**
+     * A flag that indicates whether automatic Account Claim invitations are enabled for this account.
+     */
+    @Column(name = "auto_send_claim_invitation_enabled")
+    private boolean autoSendClaimInvitationEnabled = true;
 }

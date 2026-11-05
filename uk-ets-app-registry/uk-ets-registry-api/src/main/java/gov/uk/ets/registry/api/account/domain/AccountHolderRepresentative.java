@@ -28,7 +28,7 @@ import java.util.Date;
 /** Represents a legal representative. */
 @Getter
 @Setter
-@EqualsAndHashCode(of = { "firstName", "lastName", "accountHolder" })
+@EqualsAndHashCode(of = { "firstName", "lastName", "accountHolder", "accountContactType" })
 @Entity
 @Table(name = "account_holder_representative")
 public class AccountHolderRepresentative implements Serializable {

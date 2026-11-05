@@ -1,8 +1,5 @@
 package gov.uk.ets.registry.api.task.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import gov.uk.ets.registry.api.account.domain.Account;
 import gov.uk.ets.registry.api.account.domain.AccountAccess;
 import gov.uk.ets.registry.api.account.domain.AccountHolder;
@@ -32,12 +29,6 @@ import gov.uk.ets.registry.api.user.domain.IamUserRole;
 import gov.uk.ets.registry.api.user.domain.IamUserRoleRepository;
 import gov.uk.ets.registry.api.user.domain.User;
 import gov.uk.ets.registry.api.user.domain.UserStatus;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Stream;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +40,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=create"})
@@ -1080,6 +1082,77 @@ class TaskRepositoryTest {
 
         final Long actual = taskRepository.countPendingTasksByAccountIdAndRequestIdentifierNotEqual(account.getId(), 11115L);
         assertEquals(1L, actual);
+    }
+
+    @Test
+    void findTasksInitiatedByUserSince_should_return_one_task() {
+        Account account = new Account();
+        account.setIdentifier(100001L);
+        entityManager.persist(account);
+
+        final User initiatorUser = getUserSearchInitiator();
+        initiatorUser.setUrid("123456789");
+        entityManager.persist(initiatorUser);
+        final User claimantUser = getUserSearchClaimant();
+        claimantUser.setUrid("987654321");
+        entityManager.persist(claimantUser);
+
+        final Date initiatedDate = Date.from(LocalDate.of(2026, 2, 20)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant());
+
+        Task task1 = new Task();
+        task1.setRequestId(11111L);
+        task1.setAccount(account);
+        task1.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        task1.setStatus(RequestStateEnum.APPROVED);
+        task1.setInitiatedBy(initiatorUser);
+        task1.setUser(initiatorUser);
+        task1.setInitiatedDate(initiatedDate);
+
+        Task task2 = new Task();
+        task2.setRequestId(11112L);
+        task2.setAccount(account);
+        task2.setType(RequestType.AUTHORIZED_REPRESENTATIVE_REMOVAL_REQUEST);
+        task2.setStatus(RequestStateEnum.SUBMITTED_NOT_YET_APPROVED);
+        task2.setInitiatedBy(initiatorUser);
+        task2.setUser(initiatorUser);
+        task2.setInitiatedDate(initiatedDate);
+
+        Task task3 = new Task();
+        task3.setRequestId(11113L);
+        task3.setAccount(account);
+        task3.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        task3.setStatus(RequestStateEnum.APPROVED);
+        task3.setInitiatedBy(initiatorUser);
+        task3.setUser(claimantUser);
+        task3.setInitiatedDate(initiatedDate);
+
+        Task task4 = new Task();
+        task4.setRequestId(11114L);
+        task4.setAccount(account);
+        task4.setType(RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST);
+        task4.setStatus(RequestStateEnum.APPROVED);
+        task4.setInitiatedBy(initiatorUser);
+        task4.setUser(initiatorUser);
+        task4.setInitiatedDate(Date.from(LocalDate.of(2026, 2, 15)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()));
+
+        entityManager.persist(task1);
+        entityManager.persist(task2);
+        entityManager.persist(task3);
+        entityManager.persist(task4);
+
+        final Date from = Date.from(LocalDate.of(2026, 2, 18)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant());
+
+
+        final List<Task> actual = taskRepository.findSelfInitiatedTasksByTypeSince(
+                RequestType.AUTHORIZED_REPRESENTATIVE_ADDITION_REQUEST, from);
+
+        assertThat(actual).extracting(Task::getRequestId).containsExactly(11111L);
     }
 
     private static class SearchByFirstNameLastNameTestCase {
